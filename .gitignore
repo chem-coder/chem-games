@@ -18,6 +18,9 @@ Desktop.ini
 .env.local
 .env.*.local
 
+# Local/private source materials
+_teaching-materials/
+
 # Logs
 *.log
 npm-debug.log*
