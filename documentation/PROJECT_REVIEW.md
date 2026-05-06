@@ -9,6 +9,7 @@ Chem Games is currently a collection of vanilla HTML/CSS/JavaScript chemistry le
 Top-level areas:
 
 - `documentation/Chem_Games_Project_Brief.md` - project concept and first major product direction.
+- `imat-chem-stoichiometry/` - active first Chem Games app, a visual equation-balancing trainer.
 - `chem-nomenclature/` - chemical elements and compound nomenclature app versions.
 - `chem-pH-calculator/` - pH calculator prototypes.
 - `-Chemistry Game/` - early chemistry game prototype.

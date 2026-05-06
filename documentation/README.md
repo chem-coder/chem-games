@@ -18,6 +18,7 @@ App-specific notes belong beside the relevant app as local Markdown files, usual
 
 Current examples:
 
+- `../imat-chem-stoichiometry/README.md`
 - `../chem-nomenclature/v1/README.md`
 - `../chem-nomenclature/v2/README-v2.md`
 - `../chem-nomenclature/v3/README-v3.md`
