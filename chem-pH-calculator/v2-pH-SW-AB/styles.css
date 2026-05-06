@@ -1,0 +1,51 @@
+:root {
+	font-family: Georgia, serif;
+}
+
+body {
+	justify-items: center;
+}
+
+h2 {
+	font-size: 18px;
+}
+
+.data {
+
+}
+
+input {
+	position: relative;
+	left: 50%;
+}
+
+label {
+	position: absolute;
+	left: 40%;
+}
+
+.M {
+	position: absolute;
+	left: 63%;
+}
+
+input:disabled {
+    background-color: #f0f0f0;
+    color: #aaa;
+    border-color: #ccc;
+  }
+
+.active-input {
+  outline: 2px solid #4CAF50; /* green highlight */
+  background-color: #eaffea;
+}
+
+.subscript {
+	position: relative;
+	top: 2px;
+	font-size: 0.75em;
+}
+
+.italics {
+	font-style: italic;
+}

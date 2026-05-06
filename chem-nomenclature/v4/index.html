@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Inorganic Chemical Nomenclature App</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+	<header></header>
+	<main>
+		<h1>Chemical Nomenclature App</h1>
+		
+		<select name="naming-app-options" id="app-select">
+		  <option value="none">--Please choose an option--</option>
+		  <option value="element">Name elements</option>
+		  <option value="compound">Name compounds from formula</option>
+		</select>
+		<div id="loading">Loading...</div>
+		<div id="element-naming-section">
+			<p>Please enter a valid chemical symbol or name (letters only):</p>
+			<form id="element-form">
+				<input id="element-input" type="text" value="" autocomplete="off">
+				<ul id="element-suggestions"></ul>
+			</form>
+			<button id="element-submit">Name</button>
+			<p id="element-output"></p>
+		</div>
+
+		<div id="compound-naming-section">
+			<p>Please enter a valid chemical formula (letters only):</p>
+			<form id="compound-form">
+				<input id="compound-input" type="text" value="" autocomplete="off">
+				<ul id="compound-suggestions"></ul>
+			</form>
+			<button id="compound-submit">Name</button>
+			<p id="compound-output"></p>
+		</div>
+
+	</main>
+	<footer></footer>
+	<script type="text/javascript" src="script.js"></script>
+</body>
+</html>

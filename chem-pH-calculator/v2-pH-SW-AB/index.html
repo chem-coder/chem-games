@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>pH Calculator</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<h1>pH Calculator</h1>
+	<p id="pH-output"></p>
+	<button type="button" id="calculate-pH">Calculate pH</button>
+
+	<h2>Strong Acid</h2>
+	<div class="data">
+		<label for="SA-conc">Concentration: </label>
+		<input class="conc" id="SA-conc" type="text" name="" placeholder="concentration" >
+		<span class="M">M</span>			
+	</div>
+
+	<h2>Weak Acid</h2>
+	<div class="data">
+		<label for="Ka"><span class="italics">K</span><span class="subscript">a</span>: </label>
+		<input class="Ka-Kb" id="Ka" type="text" name="" placeholder="acid dissociation constant" >
+		<br>
+		<label for="WA-conc">Concentration: </label>
+		<input class="conc" id="WA-conc" type="text" name="" placeholder="concentration" >
+		<span class="M">M</span>
+	</div>
+
+	<h2>Strong Base</h2>
+	<div class="data">
+		<label for="SB-conc">Concentration: </label>
+		<input class="conc" id="SB-conc" type="text" name="" placeholder="concentration" >
+		<span class="M">M</span>			
+	</div>
+
+	<h2>Weak Base</h2>
+	<div class="data">
+		<label for="Kb"><span class="italics">K</span><span class="subscript">b</span>: </label>
+		<input class="Ka-Kb" id="Kb" type="text" name="" placeholder="base dissociation constant" >
+		<br>
+		<label for="WB-conc">Concentration: </label>
+		<input class="conc" id="WB-conc" type="text" name="" placeholder="concentration" >
+		<span class="M">M</span>
+	</div>
+
+	<script type="text/javascript" src="script.js"></script>
+</body>
+</html>

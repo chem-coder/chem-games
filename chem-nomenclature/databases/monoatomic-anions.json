@@ -1,0 +1,72 @@
+[
+  {
+    "name": "hydride",
+    "formula": "H",
+    "charge": -1
+  },
+  {
+    "name": "fluoride",
+    "formula": "F",
+    "charge": -1
+  },
+  {
+    "name": "chloride",
+    "formula": "Cl",
+    "charge": -1
+  },
+  {
+    "name": "bromide",
+    "formula": "Br",
+    "charge": -1
+  },
+  {
+    "name": "iodide",
+    "formula": "I",
+    "charge": -1
+  },
+  {
+    "name": "astatide",
+    "formula": "At",
+    "charge": -1
+  },
+  {
+    "name": "tennesside",
+    "formula": "Ts",
+    "charge": -1
+  },
+  {
+    "name": "oxide",
+    "formula": "O",
+    "charge": -2
+  },
+  {
+    "name": "sulfide",
+    "formula": "S",
+    "charge": -2
+  },
+  {
+    "name": "selenide",
+    "formula": "Se",
+    "charge": -2
+  },
+  {
+    "name": "telluride",
+    "formula": "Te",
+    "charge": -2
+  },
+  {
+    "name": "polonide",
+    "formula": "Po",
+    "charge": -2
+  },
+  {
+    "name": "nitride",
+    "formula": "N",
+    "charge": -3
+  },
+  {
+    "name": "phosphide",
+    "formula": "P",
+    "charge": -3
+  }
+]

@@ -1,0 +1,15 @@
+:root {
+	font-family: Georgia, serif;
+}
+
+body {
+	justify-items: center;
+}
+
+h2 {
+	font-size: 18px;
+}
+
+button {
+	margin: 10px;
+}

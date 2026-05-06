@@ -1,0 +1,163 @@
+[
+  {
+    "name": "nitrate",
+    "formula": "NO3",
+    "charge": -1
+  },
+  {
+    "name": "nitrite",
+    "formula": "NO2",
+    "charge": -1
+  },
+  {
+    "name": "hydroxide",
+    "formula": "OH",
+    "charge": -1
+  },
+  {
+    "name": "cyanide",
+    "formula": "CN",
+    "charge": -1
+  },
+  {
+    "name": "acetate",
+    "formula": "C2H3O2",
+    "charge": -1
+  },
+  {
+    "name": "acetate",
+    "formula": "CH3COO",
+    "charge": -1
+  },
+  {
+    "name": "acetate",
+    "formula": "CH3COO",
+    "charge": -1
+  },
+  {
+    "name": "permanganate",
+    "formula": "MnO4",
+    "charge": -1
+  },
+  {
+    "name": "hydrogen carbonate",
+    "alt name": "bicarbonate",
+    "formula": "HCO3",
+    "charge": -1
+  },
+  {
+    "name": "chlorate",
+    "formula": "ClO3",
+    "charge": -1
+  },
+  {
+    "name": "chlorite",
+    "formula": "ClO2",
+    "charge": -1
+  },
+  {
+    "name": "hypochlorite",
+    "formula": "ClO",
+    "charge": -1
+  },
+  {
+    "name": "perchlorate",
+    "formula": "ClO4",
+    "charge": -1
+  },
+  {
+    "name": "carbonate",
+    "formula": "CO3",
+    "charge": -2
+  },
+  {
+    "name": "sulfate",
+    "formula": "SO4",
+    "charge": -2
+  },
+  {
+    "name": "sulfite",
+    "formula": "SO3",
+    "charge": -2
+  },
+  {
+    "name": "hydrogen sulfate",
+    "alt name": "bisulfate",
+    "formula": "HSO4",
+    "charge": -1
+  },
+  {
+    "name": "hydrogen sulfite",
+    "alt name": "bisulfite",
+    "formula": "HSO3",
+    "charge": -1
+  },
+  {
+    "name": "thiosulfate",
+    "formula": "S2O3",
+    "charge": -2
+  },
+  {
+    "name": "oxalate",
+    "formula": "C2O4",
+    "charge": -2
+  },
+  {
+    "name": "chromate",
+    "formula": "CrO4",
+    "charge": -2
+  },
+  {
+    "name": "dichromate",
+    "formula": "Cr2O7",
+    "charge": -2
+  },
+  {
+    "name": "phosphate",
+    "formula": "PO4",
+    "charge": -3
+  },
+  {
+    "name": "hydrogen phosphate",
+    "alt name": "biphosphate",
+    "formula": "HPO4",
+    "charge": -2
+  },
+  {
+    "name": "dihydrogen phosphate",
+    "formula": "H2PO4",
+    "charge": -1
+  },
+  {
+    "name": "arsenate",
+    "formula": "AsO4",
+    "charge": -3
+  },
+  {
+    "name": "hydrogen arsenate",
+    "alt name": "biarsenate",
+    "formula": "HAsO4",
+    "charge": -2
+  },
+  {
+    "name": "dihydrogen arsenate",
+    "formula": "H2AsO4",
+    "charge": -1
+  },
+  {
+    "name": "borate",
+    "formula": "BO3",
+    "charge": -3
+  },
+  {
+    "name": "hydrogen borate",
+    "alt name": "biborate",
+    "formula": "HBO3",
+    "charge": -2
+  },
+  {
+    "name": "dihydrogen borate",
+    "formula": "H2BO3",
+    "charge": -1
+  }
+]
