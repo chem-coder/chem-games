@@ -16,6 +16,7 @@
       id: reaction.id,
       title: reaction.title,
       difficulty: reaction.difficulty,
+      hints: [...(reaction.hints || [])],
       solution: {
         reactants: [...reaction.solution.reactants],
         products: [...reaction.solution.products]
@@ -114,4 +115,3 @@
     resetReaction
   };
 })(window);
-

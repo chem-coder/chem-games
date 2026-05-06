@@ -4,7 +4,11 @@ First Chem Games vertical slice: a visual equation-balancing game for IMAT chemi
 
 ## Current Scope
 
-- Five reaction-balancing levels.
+- Fifteen reaction-balancing levels.
+- Easy, medium, and harder difficulty labels.
+- Progressive hint data for each reaction.
+- Quiet points system based on difficulty and hint use.
+- Numbered level grid for jumping between reactions.
 - Coefficient controls for every reactant and product.
 - Live atom totals for both sides of the equation.
 - Per-element balanced/unbalanced feedback.
@@ -87,9 +91,23 @@ chem-games:imat-stoichiometry-balancer
 Saved state includes:
 
 - current level index
-- completed reaction IDs
+- per-level status
+- per-level best score
+- hints used on the current/recent attempt
 
 The reset button clears this local progress and starts again from level 1.
+
+## Scoring
+
+Base score by difficulty:
+
+- Easy: 4 points
+- Medium: 5 points
+- Harder: 6 points
+
+Each revealed hint subtracts 1 point from the current attempt. A solved level always earns at least 1 point unless the learner reveals the solution.
+
+If the learner reveals the solution, the level is marked for review and earns 0 points for that attempt. Resetting that level allows a fresh retry.
 
 ## Verification
 
@@ -109,15 +127,14 @@ node --check imat-chem-stoichiometry/js/balancingRenderer.js
 
 ## Next Options
 
-Recommended next step: add more reactions before building a larger gamification system.
+Recommended next step: playtest the 15-level sequence before building a larger gamification system.
 
 Good near-term improvements:
 
-- Add 10-20 more reaction levels.
-- Group levels by difficulty.
-- Add hints for each reaction.
-- Add a simple level-select view.
+- Adjust reaction ordering based on playtest friction.
 - Add a more satisfying completion state after the final level.
+- Add optional keyboard shortcuts for level navigation.
+- Add an explicit review mode for red levels.
 
 Avoid for now:
 

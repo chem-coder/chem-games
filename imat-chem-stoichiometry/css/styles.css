@@ -79,7 +79,7 @@ h1 {
 }
 
 h2 {
-  margin-bottom: 18px;
+  margin-bottom: 0;
   font-size: 1.35rem;
   line-height: 1.2;
 }
@@ -95,7 +95,7 @@ h2 {
 
 .top-panel {
   display: grid;
-  grid-template-columns: minmax(150px, max-content) 1fr max-content;
+  grid-template-columns: minmax(150px, max-content) 1fr max-content max-content;
   gap: 16px;
   align-items: center;
   margin-bottom: 16px;
@@ -120,6 +120,29 @@ h2 {
   font-size: 0.9rem;
 }
 
+.score-panel {
+  min-width: 82px;
+  text-align: right;
+}
+
+.score-label,
+.score-value {
+  margin: 0;
+}
+
+.score-label {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.score-value {
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 850;
+}
+
 .progress-meter {
   height: 10px;
   overflow: hidden;
@@ -136,6 +159,121 @@ h2 {
 
 .game-panel {
   padding: 20px;
+}
+
+.level-grid-panel {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid rgba(149, 166, 179, 0.55);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+  gap: 8px;
+}
+
+.level-tile {
+  min-height: 38px;
+  border: 1px solid #bdcbd5;
+  border-radius: 7px;
+  background: #f6f9fb;
+  color: #52616d;
+  font-weight: 850;
+}
+
+.level-tile--completed {
+  border-color: #87c99f;
+  background: #dff7e9;
+  color: #12603c;
+}
+
+.level-tile--review {
+  border-color: #eda1ae;
+  background: #ffe1e7;
+  color: #8c2636;
+}
+
+.level-tile.is-current {
+  outline: 3px solid rgba(36, 107, 254, 0.22);
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
+.level-grid-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.legend-item::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border: 1px solid #bdcbd5;
+  border-radius: 3px;
+  background: #f6f9fb;
+}
+
+.legend-item--completed::before {
+  border-color: #87c99f;
+  background: #dff7e9;
+}
+
+.legend-item--review::before {
+  border-color: #eda1ae;
+  background: #ffe1e7;
+}
+
+.level-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.difficulty-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.difficulty-pill--1 {
+  color: #12603c;
+  background: #def7e9;
+  border-color: #9bd8b6;
+}
+
+.difficulty-pill--2 {
+  color: #7a5514;
+  background: #fff0c8;
+  border-color: #e1bf68;
+}
+
+.difficulty-pill--3 {
+  color: #8c2636;
+  background: #ffe1e7;
+  border-color: #eda1ae;
 }
 
 .equation-panel {
@@ -235,6 +373,10 @@ h2 {
 
 .formula-text {
   display: inline-block;
+}
+
+.formula-text--long {
+  font-size: 1.32rem;
 }
 
 .molecule-formula sub {
@@ -367,10 +509,86 @@ h2 {
   background: #8293a1;
 }
 
+.element-sodium {
+  background: #b58cff;
+}
+
+.element-chlorine {
+  background: #67b86a;
+}
+
+.element-magnesium {
+  background: #7fcbd1;
+}
+
+.element-potassium {
+  background: #c48ac7;
+}
+
+.element-calcium {
+  background: #e7cf77;
+}
+
+.element-sulfur {
+  background: #f2d449;
+}
+
+.element-phosphorus {
+  background: #e98558;
+}
+
 .atom-more {
   color: var(--muted);
   font-size: 0.85rem;
   font-weight: 800;
+}
+
+.hint-panel {
+  display: grid;
+  gap: 10px;
+  margin: -2px 0 18px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.hint-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hint-title,
+.hint-note {
+  margin: 0;
+}
+
+.hint-title {
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.hint-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hint-list {
+  margin: 0;
+  padding: 0 18px 0 26px;
+  color: #3d4b57;
+}
+
+.hint-list li + li {
+  margin-top: 6px;
+}
+
+.solution-button {
+  justify-self: start;
+  min-height: 34px;
+  color: #8c2636;
 }
 
 .row-state {
@@ -405,6 +623,11 @@ h2 {
 .status-panel.is-balanced {
   background: #ecfbf1;
   border-color: #84cea0;
+}
+
+.status-panel.is-review {
+  background: #fff0f3;
+  border-color: #eda1ae;
 }
 
 .status-message {
@@ -456,6 +679,13 @@ h2 {
   color: var(--accent);
 }
 
+.secondary-button:disabled,
+.text-button:disabled {
+  border-color: #d3dde5;
+  color: #92a0ab;
+  background: #f6f9fb;
+}
+
 .complete-panel {
   max-width: 640px;
   margin: 80px auto 0;
@@ -479,6 +709,15 @@ h2 {
 
   .top-panel {
     grid-template-columns: 1fr;
+  }
+
+  .score-panel {
+    text-align: left;
+  }
+
+  .hint-header {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .equation-panel {

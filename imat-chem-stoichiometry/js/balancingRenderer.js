@@ -29,9 +29,27 @@
     return coefficient > 1 ? String(coefficient) : "";
   }
 
+  function getDifficultyLabel(difficulty) {
+    if (difficulty === 1) return "Easy";
+    if (difficulty === 2) return "Medium";
+    return "Harder";
+  }
+
+  function renderLevelHeading(reaction) {
+    const heading = createElement("div", "level-heading");
+    heading.appendChild(createElement("h2", "", reaction.title));
+    heading.appendChild(
+      createElement(
+        "span",
+        `difficulty-pill difficulty-pill--${reaction.difficulty}`,
+        getDifficultyLabel(reaction.difficulty)
+      )
+    );
+    return heading;
+  }
+
   function renderProgress(state) {
     const progress = createElement("section", "top-panel");
-    const completed = state.completedIds.length;
     const levelText = createElement(
       "p",
       "level-label",
@@ -40,8 +58,12 @@
 
     const meter = createElement("div", "progress-meter");
     const bar = createElement("div", "progress-meter__bar");
-    bar.style.width = `${Math.round((completed / state.totalLevels) * 100)}%`;
+    bar.style.width = `${Math.round((state.attemptedCount / state.totalLevels) * 100)}%`;
     meter.appendChild(bar);
+
+    const score = createElement("div", "score-panel");
+    score.appendChild(createElement("p", "score-label", "Points"));
+    score.appendChild(createElement("p", "score-value", `${state.totalScore}/${state.maxScore}`));
 
     const resetButton = createElement("button", "text-button", "Reset");
     resetButton.type = "button";
@@ -49,12 +71,42 @@
 
     const meta = createElement("div", "progress-meta");
     meta.appendChild(levelText);
-    meta.appendChild(createElement("p", "completed-label", `${completed} complete`));
+    meta.appendChild(createElement("p", "completed-label", `${state.attemptedCount} attempted`));
 
     progress.appendChild(meta);
     progress.appendChild(meter);
+    progress.appendChild(score);
     progress.appendChild(resetButton);
     return progress;
+  }
+
+  function renderLevelGrid(state) {
+    const nav = createElement("nav", "level-grid-panel");
+    nav.setAttribute("aria-label", "Choose reaction level");
+
+    const grid = createElement("div", "level-grid");
+    state.reactions.forEach((reaction, index) => {
+      const record = state.levelRecords[reaction.id] || {};
+      const status = record.status || "pending";
+      const button = createElement(
+        "button",
+        `level-tile level-tile--${status}${index === state.currentIndex ? " is-current" : ""}`,
+        String(index + 1)
+      );
+      button.type = "button";
+      button.setAttribute("aria-label", `Go to level ${index + 1}: ${reaction.title}`);
+      button.addEventListener("click", () => state.onSelectLevel(index));
+      grid.appendChild(button);
+    });
+
+    const legend = createElement("div", "level-grid-legend");
+    legend.appendChild(createElement("span", "legend-item legend-item--pending", "Not tried"));
+    legend.appendChild(createElement("span", "legend-item legend-item--completed", "Solved"));
+    legend.appendChild(createElement("span", "legend-item legend-item--review", "Review"));
+
+    nav.appendChild(grid);
+    nav.appendChild(legend);
+    return nav;
   }
 
   function renderMolecule(molecule, side, index, onCoefficientChange) {
@@ -72,7 +124,8 @@
 
     const formula = createElement("div", "molecule-formula");
     const coefficient = coefficientText(molecule.coefficient);
-    formula.innerHTML = `<span class="formula-text">${coefficient ? `<span class="coefficient">${coefficient}</span>` : ""}${formatFormula(molecule.formula)}</span>`;
+    const formulaClass = `formula-text${molecule.formula.length + coefficient.length > 5 ? " formula-text--long" : ""}`;
+    formula.innerHTML = `<span class="${formulaClass}">${coefficient ? `<span class="coefficient">${coefficient}</span>` : ""}${formatFormula(molecule.formula)}</span>`;
 
     card.appendChild(upButton);
     card.appendChild(formula);
@@ -97,6 +150,56 @@
     equation.appendChild(createElement("span", "reaction-arrow", "→"));
     equation.appendChild(renderSide(reaction.products, "products", onCoefficientChange));
     return equation;
+  }
+
+  function renderHints(state) {
+    const hints = state.reaction.hints || [];
+    if (!hints || hints.length === 0) return document.createDocumentFragment();
+
+    const panel = createElement("section", "hint-panel");
+    const header = createElement("div", "hint-header");
+    const title = createElement(
+      "p",
+      "hint-title",
+      `Hints used: ${state.hintsUsed}/${hints.length}`
+    );
+    const showHint = createElement(
+      "button",
+      "secondary-button hint-button",
+      state.hintsUsed >= hints.length ? "No more hints" : "Show hint"
+    );
+    showHint.type = "button";
+    showHint.disabled = state.hintsUsed >= hints.length || state.isReview || state.isBalanced;
+    showHint.addEventListener("click", state.onShowHint);
+
+    const list = createElement("ol", "hint-list");
+    hints.slice(0, state.hintsUsed).forEach((hint) => {
+      list.appendChild(createElement("li", "", hint));
+    });
+
+    const note = createElement(
+      "p",
+      "hint-note",
+      state.hintsUsed === 0
+        ? `This level is currently worth ${state.potentialScore} points.`
+        : `Current possible score: ${state.potentialScore} points.`
+    );
+
+    const showSolution = createElement("button", "text-button solution-button", "Show solution");
+    showSolution.type = "button";
+    showSolution.disabled = state.isReview || state.isBalanced;
+    showSolution.addEventListener("click", state.onShowSolution);
+
+    header.appendChild(title);
+    header.appendChild(showHint);
+    panel.appendChild(header);
+    if (state.hintsUsed > 0) {
+      panel.appendChild(list);
+    }
+    panel.appendChild(note);
+    panel.appendChild(showSolution);
+
+    return panel;
   }
 
   function renderAtom(symbol, elementStyles) {
@@ -167,11 +270,18 @@
   }
 
   function renderStatus(state) {
-    const panel = createElement("section", `status-panel ${state.isBalanced ? "is-balanced" : ""}`);
+    const panel = createElement(
+      "section",
+      `status-panel ${state.isBalanced ? "is-balanced" : ""} ${state.isReview ? "is-review" : ""}`
+    );
     const message = createElement(
       "p",
       "status-message",
-      state.isBalanced ? "Balanced" : "Keep balancing"
+      state.isReview
+        ? "Solution shown. Marked for review."
+        : state.isBalanced
+          ? `Balanced. Earn ${state.potentialScore} points.`
+          : `Keep balancing. Worth up to ${state.potentialScore} points.`
     );
 
     const actions = createElement("div", "status-actions");
@@ -182,7 +292,7 @@
     const next = createElement(
       "button",
       "primary-button",
-      state.isLastLevel ? "Finish" : "Next"
+      state.willCompleteSet ? "Finish" : "Next"
     );
     next.type = "button";
     next.disabled = !state.isBalanced;
@@ -200,8 +310,8 @@
     const shell = createElement("div", "app-shell");
     const complete = createElement("section", "complete-panel");
     complete.appendChild(createElement("p", "eyebrow", "Stoichiometry"));
-    complete.appendChild(createElement("h1", "", "All levels balanced"));
-    complete.appendChild(createElement("p", "complete-copy", "The first reaction set is complete."));
+    complete.appendChild(createElement("h1", "", "All levels attempted"));
+    complete.appendChild(createElement("p", "complete-copy", `Score: ${state.totalScore}/${state.maxScore} points.`));
 
     const restart = createElement("button", "primary-button", "Restart");
     restart.type = "button";
@@ -226,13 +336,15 @@
     header.appendChild(createElement("h1", "", "Visual Equation Balancer"));
 
     const gamePanel = createElement("section", "game-panel");
-    gamePanel.appendChild(createElement("h2", "", state.reaction.title));
+    gamePanel.appendChild(renderLevelHeading(state.reaction));
     gamePanel.appendChild(renderEquation(state.reaction, state.onCoefficientChange));
+    gamePanel.appendChild(renderHints(state));
     gamePanel.appendChild(renderBalanceBoard(state.balanceStatus, state.elementStyles));
     gamePanel.appendChild(renderStatus(state));
 
     shell.appendChild(header);
     shell.appendChild(renderProgress(state));
+    shell.appendChild(renderLevelGrid(state));
     shell.appendChild(gamePanel);
     root.appendChild(shell);
   }

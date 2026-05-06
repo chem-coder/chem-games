@@ -2,13 +2,14 @@
   window.ChemGames = window.ChemGames || {};
 
   const STORAGE_KEY = "chem-games:imat-stoichiometry-balancer";
+  const EMPTY_STATE = { currentIndex: 0, levels: {} };
 
   function readState() {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : { currentIndex: 0, completedIds: [] };
+      return saved ? JSON.parse(saved) : { ...EMPTY_STATE };
     } catch (error) {
-      return { currentIndex: 0, completedIds: [] };
+      return { ...EMPTY_STATE };
     }
   }
 
@@ -23,9 +24,21 @@
 
   function getProgress() {
     const state = readState();
+    const levels = state.levels && typeof state.levels === "object" ? state.levels : {};
+
+    if (Array.isArray(state.completedIds)) {
+      state.completedIds.forEach((reactionId) => {
+        levels[reactionId] = levels[reactionId] || {
+          status: "completed",
+          bestScore: 0,
+          hintsUsed: 0
+        };
+      });
+    }
+
     return {
       currentIndex: Number.isInteger(state.currentIndex) ? state.currentIndex : 0,
-      completedIds: Array.isArray(state.completedIds) ? state.completedIds : []
+      levels
     };
   }
 
@@ -35,23 +48,61 @@
     writeState(state);
   }
 
-  function markComplete(reactionId) {
+  function saveHintsUsed(reactionId, hintsUsed) {
     const state = getProgress();
-    if (!state.completedIds.includes(reactionId)) {
-      state.completedIds.push(reactionId);
-    }
+    const previous = state.levels[reactionId] || {};
+    state.levels[reactionId] = {
+      status: previous.status || "pending",
+      bestScore: previous.bestScore || 0,
+      hintsUsed
+    };
+    writeState(state);
+  }
+
+  function markComplete(reactionId, score, hintsUsed) {
+    const state = getProgress();
+    const previous = state.levels[reactionId] || {};
+    state.levels[reactionId] = {
+      status: "completed",
+      bestScore: Math.max(previous.bestScore || 0, score),
+      hintsUsed
+    };
+    writeState(state);
+  }
+
+  function markReview(reactionId, hintsUsed) {
+    const state = getProgress();
+    const previous = state.levels[reactionId] || {};
+    state.levels[reactionId] = {
+      status: previous.status === "completed" ? "completed" : "review",
+      bestScore: previous.bestScore || 0,
+      hintsUsed
+    };
+    writeState(state);
+  }
+
+  function resetLevelAttempt(reactionId) {
+    const state = getProgress();
+    const previous = state.levels[reactionId] || {};
+    state.levels[reactionId] = {
+      status: previous.bestScore > 0 ? "completed" : "pending",
+      bestScore: previous.bestScore || 0,
+      hintsUsed: 0
+    };
     writeState(state);
   }
 
   function resetProgress() {
-    writeState({ currentIndex: 0, completedIds: [] });
+    writeState({ ...EMPTY_STATE });
   }
 
   window.ChemGames.ProgressStorage = {
     getProgress,
     saveCurrentIndex,
+    saveHintsUsed,
     markComplete,
+    markReview,
+    resetLevelAttempt,
     resetProgress
   };
 })(window);
-

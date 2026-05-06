@@ -17,10 +17,45 @@
       colorClass: "element-carbon",
       shapeClass: "shape-circle"
     },
+    Na: {
+      name: "Sodium",
+      colorClass: "element-sodium",
+      shapeClass: "shape-square"
+    },
+    Cl: {
+      name: "Chlorine",
+      colorClass: "element-chlorine",
+      shapeClass: "shape-square"
+    },
+    Mg: {
+      name: "Magnesium",
+      colorClass: "element-magnesium",
+      shapeClass: "shape-diamond"
+    },
+    K: {
+      name: "Potassium",
+      colorClass: "element-potassium",
+      shapeClass: "shape-diamond"
+    },
+    Ca: {
+      name: "Calcium",
+      colorClass: "element-calcium",
+      shapeClass: "shape-square"
+    },
     N: {
       name: "Nitrogen",
       colorClass: "element-nitrogen",
       shapeClass: "shape-circle"
+    },
+    S: {
+      name: "Sulfur",
+      colorClass: "element-sulfur",
+      shapeClass: "shape-circle"
+    },
+    P: {
+      name: "Phosphorus",
+      colorClass: "element-phosphorus",
+      shapeClass: "shape-diamond"
     },
     Al: {
       name: "Aluminum",
@@ -34,4 +69,3 @@
     }
   };
 })(window);
-
