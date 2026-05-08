@@ -2,7 +2,20 @@
   window.ChemGames = window.ChemGames || {};
 
   const STORAGE_KEY = "chem-games:imat-stoichiometry-balancer";
-  const EMPTY_STATE = { currentIndex: 0, levels: {}, introSeen: false };
+  const EMPTY_STATE = { currentIndex: 0, levels: {}, introSeen: false, activeSet: null };
+
+  function normalizeActiveSet(activeSet) {
+    if (!activeSet || !Array.isArray(activeSet.reactionIds)) return null;
+
+    return {
+      difficulty: typeof activeSet.difficulty === "string" ? activeSet.difficulty : "all",
+      topic: typeof activeSet.topic === "string" ? activeSet.topic : "all",
+      questionCount: Number.isInteger(activeSet.questionCount)
+        ? activeSet.questionCount
+        : activeSet.reactionIds.length,
+      reactionIds: activeSet.reactionIds.filter((reactionId) => typeof reactionId === "string")
+    };
+  }
 
   function readState() {
     try {
@@ -39,7 +52,8 @@
     return {
       currentIndex: Number.isInteger(state.currentIndex) ? state.currentIndex : 0,
       levels,
-      introSeen: state.introSeen === true
+      introSeen: state.introSeen === true,
+      activeSet: normalizeActiveSet(state.activeSet)
     };
   }
 
@@ -52,6 +66,21 @@
   function saveCurrentIndex(currentIndex) {
     const state = getProgress();
     state.currentIndex = currentIndex;
+    writeState(state);
+  }
+
+  function saveActiveSet(activeSet) {
+    const state = getProgress();
+    state.activeSet = normalizeActiveSet(activeSet);
+    state.currentIndex = 0;
+    state.introSeen = true;
+    writeState(state);
+  }
+
+  function clearActiveSet() {
+    const state = getProgress();
+    state.activeSet = null;
+    state.currentIndex = 0;
     writeState(state);
   }
 
@@ -121,6 +150,8 @@
   window.ChemGames.ProgressStorage = {
     getProgress,
     saveCurrentIndex,
+    saveActiveSet,
+    clearActiveSet,
     markIntroSeen,
     saveHintsUsed,
     beginReviewAttempt,

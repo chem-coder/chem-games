@@ -6,9 +6,9 @@
     elementStyles: window.ChemGames.elementStyles,
     engine: window.ChemGames.BalancingEngine,
     renderer: window.ChemGames.BalancingRenderer,
-    storage: window.ChemGames.ProgressStorage
+    storage: window.ChemGames.ProgressStorage,
+    setSize: 5
   });
 
   game.start();
 })(window);
-

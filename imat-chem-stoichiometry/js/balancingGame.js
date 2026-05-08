@@ -1,26 +1,31 @@
 (function (window) {
   window.ChemGames = window.ChemGames || {};
 
+  const ANY_FILTER = "all";
+  const DEFAULT_SET_SIZE = 5;
+
   function createBalancingGame(options) {
     const root = options.root;
-    const reactions = options.reactions;
+    const allReactions = options.reactions;
     const elementStyles = options.elementStyles;
     const engine = options.engine;
     const renderer = options.renderer;
     const storage = options.storage;
+    const setSize = options.setSize || DEFAULT_SET_SIZE;
 
     let progress = storage.getProgress();
-    let currentIndex = Math.min(progress.currentIndex, reactions.length - 1);
-    let currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
-    let isComplete = areAllLevelsAttempted(progress);
-    let showIntro = !progress.introSeen && getAttemptedCount(progress) === 0;
+    let selectedDifficulty = progress.activeSet ? progress.activeSet.difficulty : ANY_FILTER;
+    let selectedTopic = progress.activeSet ? progress.activeSet.topic : ANY_FILTER;
+    let selectedQuestionCount = progress.activeSet
+      ? progress.activeSet.reactionIds.length
+      : getDefaultQuestionCount(selectedDifficulty, selectedTopic);
+    let reactions = getStoredSetReactions(progress.activeSet);
+    let showMenu = reactions.length === 0;
+    let currentIndex = showMenu ? 0 : Math.min(progress.currentIndex, reactions.length - 1);
+    let currentReaction = showMenu ? null : engine.createPlayableReaction(reactions[currentIndex]);
+    let isComplete = !showMenu && areAllLevelsAttempted(progress);
     let reviewMode = false;
     let solutionShown = false;
-
-    if (showIntro) {
-      currentIndex = 0;
-      currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
-    }
 
     function getBaseScore(difficulty) {
       if (difficulty === 1) return 4;
@@ -28,8 +33,14 @@
       return 6;
     }
 
-    function getMaxScore() {
-      return reactions.reduce((total, reaction) => total + getBaseScore(reaction.difficulty), 0);
+    function getDifficultyLabel(difficulty) {
+      if (difficulty === 1) return "Easy";
+      if (difficulty === 2) return "Medium";
+      return "Hard";
+    }
+
+    function getMaxScore(reactionList) {
+      return reactionList.reduce((total, reaction) => total + getBaseScore(reaction.difficulty), 0);
     }
 
     function getTotalScore(currentProgress) {
@@ -65,7 +76,7 @@
     }
 
     function areAllLevelsAttempted(currentProgress) {
-      return getAttemptedCount(currentProgress) === reactions.length;
+      return reactions.length > 0 && getAttemptedCount(currentProgress) === reactions.length;
     }
 
     function willCompleteSetAfterCurrent(currentProgress) {
@@ -112,6 +123,97 @@
       return Math.max(1, getBaseScore(reaction.difficulty) - hintsUsed);
     }
 
+    function getStoredSetReactions(activeSet) {
+      if (!activeSet || !Array.isArray(activeSet.reactionIds)) return [];
+
+      return activeSet.reactionIds
+        .map((reactionId) => allReactions.find((reaction) => reaction.id === reactionId))
+        .filter(Boolean);
+    }
+
+    function getNormalizedDifficulty(difficulty) {
+      return difficulty === ANY_FILTER ? ANY_FILTER : Number(difficulty);
+    }
+
+    function matchesDifficulty(reaction, difficulty) {
+      const normalizedDifficulty = getNormalizedDifficulty(difficulty);
+      return normalizedDifficulty === ANY_FILTER || reaction.difficulty === normalizedDifficulty;
+    }
+
+    function matchesTopic(reaction, topic) {
+      return topic === ANY_FILTER || (reaction.topics || []).includes(topic);
+    }
+
+    function getMatchingReactions(difficulty, topic) {
+      return allReactions.filter((reaction) => (
+        matchesDifficulty(reaction, difficulty) && matchesTopic(reaction, topic)
+      ));
+    }
+
+    function getDefaultQuestionCount(difficulty, topic) {
+      return Math.min(setSize, getMatchingReactions(difficulty, topic).length);
+    }
+
+    function getClampedQuestionCount(questionCount, maxCount) {
+      if (maxCount <= 0) return 0;
+      return Math.min(maxCount, Math.max(1, questionCount));
+    }
+
+    function getQuestionCountOptions(maxCount) {
+      return Array.from({ length: maxCount }, (_, index) => {
+        const count = index + 1;
+        return {
+          value: String(count),
+          label: `${count} ${count === 1 ? "question" : "questions"}`
+        };
+      });
+    }
+
+    function getSetReactions(difficulty, topic, questionCount) {
+      const matchingReactions = getMatchingReactions(difficulty, topic);
+      return matchingReactions.slice(0, getClampedQuestionCount(questionCount, matchingReactions.length));
+    }
+
+    function getDifficultyOptions() {
+      const difficulties = [1, 2, 3];
+      return [
+        {
+          value: ANY_FILTER,
+          label: "Any difficulty",
+          count: getMatchingReactions(ANY_FILTER, selectedTopic).length
+        },
+        ...difficulties.map((difficulty) => ({
+          value: String(difficulty),
+          label: getDifficultyLabel(difficulty),
+          count: getMatchingReactions(String(difficulty), selectedTopic).length
+        }))
+      ];
+    }
+
+    function getTopicOptions() {
+      const topicCounts = new Map();
+      allReactions
+        .filter((reaction) => matchesDifficulty(reaction, selectedDifficulty))
+        .forEach((reaction) => {
+          (reaction.topics || []).forEach((topic) => {
+            topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
+          });
+        });
+
+      const topicOptions = [...topicCounts.entries()]
+        .map(([topic, count]) => ({ value: topic, count }))
+        .sort((first, second) => first.value.localeCompare(second.value));
+
+      return [
+        {
+          value: ANY_FILTER,
+          label: "Any topic",
+          count: getMatchingReactions(selectedDifficulty, ANY_FILTER).length
+        },
+        ...topicOptions
+      ];
+    }
+
     function createSolvedReaction(reaction) {
       const solved = engine.createPlayableReaction(reaction);
       solved.reactants.forEach((molecule, index) => {
@@ -141,15 +243,36 @@
       progress = storage.getProgress();
     }
 
+    function renderMenu() {
+      const matchingReactions = getMatchingReactions(selectedDifficulty, selectedTopic);
+      selectedQuestionCount = getClampedQuestionCount(selectedQuestionCount, matchingReactions.length);
+      const setPreview = matchingReactions.slice(0, selectedQuestionCount);
+
+      renderer.render(root, {
+        showMenu: true,
+        totalReactionCount: allReactions.length,
+        setSize,
+        selectedDifficulty,
+        selectedTopic,
+        selectedQuestionCount: String(selectedQuestionCount),
+        difficultyOptions: getDifficultyOptions(),
+        topicOptions: getTopicOptions(),
+        questionCountOptions: getQuestionCountOptions(matchingReactions.length),
+        matchingCount: matchingReactions.length,
+        setCount: setPreview.length,
+        setPreview,
+        maxScore: getMaxScore(setPreview),
+        onDifficultyChange: handleDifficultyChange,
+        onTopicChange: handleTopicChange,
+        onQuestionCountChange: handleQuestionCountChange,
+        onStartSet: handleStartSet
+      });
+    }
+
     function render() {
       progress = storage.getProgress();
-      if (showIntro) {
-        renderer.render(root, {
-          showIntro: true,
-          totalLevels: reactions.length,
-          maxScore: getMaxScore(),
-          onStartIntro: handleStartIntro
-        });
+      if (showMenu) {
+        renderMenu();
         return;
       }
 
@@ -167,7 +290,7 @@
         totalLevels: reactions.length,
         attemptedCount: getAttemptedCount(progress),
         totalScore: getTotalScore(progress),
-        maxScore: getMaxScore(),
+        maxScore: getMaxScore(reactions),
         reviewCount,
         reviewPosition: getReviewPosition(progress),
         hintsUsed,
@@ -184,6 +307,7 @@
         onPrimaryAction: solutionShown && reviewMode ? handleResetLevel : handleNextLevel,
         onResetLevel: handleResetLevel,
         onResetAll: handleResetAll,
+        onChooseSet: handleChooseSet,
         onShowHint: handleShowHint,
         onShowSolution: handleShowSolution,
         onSelectLevel: handleSelectLevel,
@@ -198,12 +322,69 @@
       if (reviewMode) {
         return getReviewCount(currentProgress) <= 1 ? "Finish review" : "Next review";
       }
-      return willCompleteSetAfterCurrent(currentProgress) ? "Finish" : "Next";
+      return willCompleteSetAfterCurrent(currentProgress) ? "Finish set" : "Next";
     }
 
-    function handleStartIntro() {
-      storage.markIntroSeen();
-      showIntro = false;
+    function handleDifficultyChange(difficulty) {
+      selectedDifficulty = difficulty;
+      if (
+        selectedTopic !== ANY_FILTER &&
+        getMatchingReactions(selectedDifficulty, selectedTopic).length === 0
+      ) {
+        selectedTopic = ANY_FILTER;
+      }
+      selectedQuestionCount = getDefaultQuestionCount(selectedDifficulty, selectedTopic);
+      render();
+    }
+
+    function handleTopicChange(topic) {
+      selectedTopic = topic;
+      selectedQuestionCount = getDefaultQuestionCount(selectedDifficulty, selectedTopic);
+      render();
+    }
+
+    function handleQuestionCountChange(questionCount) {
+      const parsedCount = Number(questionCount);
+      selectedQuestionCount = Number.isInteger(parsedCount) ? parsedCount : setSize;
+      render();
+    }
+
+    function handleStartSet() {
+      const selectedReactions = getSetReactions(
+        selectedDifficulty,
+        selectedTopic,
+        selectedQuestionCount
+      );
+      if (selectedReactions.length === 0) return;
+
+      reactions = selectedReactions;
+      currentIndex = 0;
+      currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
+      isComplete = false;
+      showMenu = false;
+      reviewMode = false;
+      solutionShown = false;
+
+      storage.saveActiveSet({
+        difficulty: selectedDifficulty,
+        topic: selectedTopic,
+        questionCount: reactions.length,
+        reactionIds: reactions.map((reaction) => reaction.id)
+      });
+      syncProgressIndex();
+      render();
+    }
+
+    function handleChooseSet() {
+      storage.clearActiveSet();
+      progress = storage.getProgress();
+      showMenu = true;
+      isComplete = false;
+      reviewMode = false;
+      solutionShown = false;
+      reactions = [];
+      currentIndex = 0;
+      currentReaction = null;
       render();
     }
 
@@ -317,17 +498,21 @@
     function handleResetAll() {
       storage.resetProgress();
       progress = storage.getProgress();
+      selectedDifficulty = ANY_FILTER;
+      selectedTopic = ANY_FILTER;
+      selectedQuestionCount = getDefaultQuestionCount(selectedDifficulty, selectedTopic);
+      reactions = [];
       currentIndex = 0;
       isComplete = false;
-      showIntro = true;
+      showMenu = true;
       reviewMode = false;
       solutionShown = false;
-      currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
+      currentReaction = null;
       render();
     }
 
     function start() {
-      syncProgressIndex();
+      if (!showMenu) syncProgressIndex();
       render();
     }
 

@@ -102,6 +102,10 @@ h2 {
   padding: 24px;
 }
 
+.set-menu-panel {
+  max-width: 860px;
+}
+
 .intro-copy {
   max-width: 34rem;
   margin: -6px 0 0;
@@ -133,9 +137,74 @@ h2 {
   justify-self: start;
 }
 
+.set-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.set-filter {
+  display: grid;
+  gap: 6px;
+}
+
+.set-filter__label,
+.set-preview-title {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.set-filter__select {
+  min-height: 42px;
+  width: 100%;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid #b7c5cf;
+  border-radius: 7px;
+}
+
+.set-preview-title {
+  margin: 2px 0 -8px;
+}
+
+.set-preview {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.set-preview__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 8px 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.set-preview__title {
+  font-weight: 850;
+}
+
+.set-preview__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
 .top-panel {
   display: grid;
-  grid-template-columns: minmax(150px, max-content) 1fr max-content max-content max-content;
+  grid-template-columns: minmax(150px, max-content) 1fr max-content max-content max-content max-content;
   gap: 16px;
   align-items: center;
   margin-bottom: 16px;
@@ -443,6 +512,14 @@ h2 {
   font-size: 1.32rem;
 }
 
+.formula-text--very-long {
+  font-size: 1.05rem;
+}
+
+.formula-text--extra-long {
+  font-size: 0.86rem;
+}
+
 .molecule-formula sub {
   font-size: 0.6em;
   line-height: 0;
@@ -599,6 +676,54 @@ h2 {
 
 .element-phosphorus {
   background: #e98558;
+}
+
+.element-boron {
+  background: #9fc98a;
+}
+
+.element-bromine {
+  background: #a55b42;
+}
+
+.element-lithium {
+  background: #d69af2;
+}
+
+.element-rubidium {
+  background: #c277d8;
+}
+
+.element-cesium {
+  background: #a86bd6;
+}
+
+.element-silicon {
+  background: #7fa6a3;
+}
+
+.element-fluorine {
+  background: #9ce39b;
+}
+
+.element-silver {
+  background: #c8d1d6;
+}
+
+.element-cobalt {
+  background: #5580c8;
+}
+
+.element-titanium {
+  background: #98a7b4;
+}
+
+.element-barium {
+  background: #d7c86d;
+}
+
+.element-arsenic {
+  background: #8da472;
 }
 
 .atom-more {
@@ -795,6 +920,10 @@ h2 {
   }
 
   .top-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .set-filters {
     grid-template-columns: 1fr;
   }
 

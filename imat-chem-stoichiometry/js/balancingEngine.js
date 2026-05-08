@@ -1,7 +1,7 @@
 (function (window) {
   window.ChemGames = window.ChemGames || {};
 
-  const MAX_COEFFICIENT = 12;
+  const MAX_COEFFICIENT = 36;
 
   function cloneMolecule(molecule) {
     return {

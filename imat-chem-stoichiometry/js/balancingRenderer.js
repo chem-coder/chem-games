@@ -67,7 +67,7 @@
   function getDifficultyLabel(difficulty) {
     if (difficulty === 1) return "Easy";
     if (difficulty === 2) return "Medium";
-    return "Harder";
+    return "Hard";
   }
 
   const TOPIC_LABELS = {
@@ -76,12 +76,15 @@
     combustion: "Combustion",
     decomposition: "Decomposition",
     "double-displacement": "Double displacement",
+    "formal-equation": "Formal equation",
     "gas-formation": "Gas formation",
+    hydrolysis: "Hydrolysis",
     hydrocarbon: "Hydrocarbon",
     "metal-oxidation": "Metal oxidation",
     neutralization: "Neutralization",
     "nonmetal-oxidation": "Nonmetal oxidation",
     "oxide-reduction": "Oxide reduction",
+    precipitation: "Precipitation",
     reduction: "Reduction",
     redox: "Redox",
     "single-replacement": "Single replacement",
@@ -90,6 +93,53 @@
 
   function getTopicLabel(topic) {
     return TOPIC_LABELS[topic] || topic;
+  }
+
+  function renderFilterControl(id, label, value, options, onChange) {
+    const field = createElement("label", "set-filter");
+    field.setAttribute("for", id);
+    field.appendChild(createElement("span", "set-filter__label", label));
+
+    const select = createElement("select", "set-filter__select");
+    select.id = id;
+    select.addEventListener("change", (event) => onChange(event.target.value));
+
+    options.forEach((option) => {
+      const item = document.createElement("option");
+      item.value = option.value;
+      item.textContent = option.count === undefined
+        ? option.label || getTopicLabel(option.value)
+        : `${option.label || getTopicLabel(option.value)} (${option.count})`;
+      item.disabled = option.count === 0;
+      select.appendChild(item);
+    });
+
+    select.value = value;
+    field.appendChild(select);
+    return field;
+  }
+
+  function renderSetPreview(reactions) {
+    const preview = createElement("ol", "set-preview");
+    reactions.forEach((reaction) => {
+      const item = createElement("li", "set-preview__item");
+      const title = createElement("span", "set-preview__title", reaction.title);
+      const meta = createElement("span", "set-preview__meta");
+      meta.appendChild(
+        createElement(
+          "span",
+          `difficulty-pill difficulty-pill--${reaction.difficulty}`,
+          getDifficultyLabel(reaction.difficulty)
+        )
+      );
+      (reaction.topics || []).slice(0, 3).forEach((topic) => {
+        meta.appendChild(createElement("span", "topic-pill", getTopicLabel(topic)));
+      });
+      item.appendChild(title);
+      item.appendChild(meta);
+      preview.appendChild(item);
+    });
+    return preview;
   }
 
   function renderLevelHeading(reaction) {
@@ -119,7 +169,7 @@
       "level-label",
       state.isReviewMode
         ? `Review ${state.reviewPosition || 1} of ${state.reviewCount}`
-        : `Level ${state.currentIndex + 1} of ${state.totalLevels}`
+        : `Question ${state.currentIndex + 1} of ${state.totalLevels}`
     );
 
     const meter = createElement("div", "progress-meter");
@@ -134,6 +184,10 @@
     const resetButton = createElement("button", "text-button", "Reset");
     resetButton.type = "button";
     resetButton.addEventListener("click", state.onResetAll);
+
+    const chooseSetButton = createElement("button", "text-button", "Change set");
+    chooseSetButton.type = "button";
+    chooseSetButton.addEventListener("click", state.onChooseSet);
 
     const reviewButton = createElement(
       "button",
@@ -164,6 +218,7 @@
     progress.appendChild(score);
     progress.appendChild(reviewButton);
     progress.appendChild(resetButton);
+    progress.appendChild(chooseSetButton);
     return progress;
   }
 
@@ -186,8 +241,8 @@
       button.setAttribute(
         "aria-label",
         isDisabled
-          ? `Level ${index + 1}: not in review`
-          : `Go to level ${index + 1}: ${reaction.title}`
+          ? `Question ${index + 1}: not in review`
+          : `Go to question ${index + 1}: ${reaction.title}`
       );
       button.addEventListener("click", () => state.onSelectLevel(index));
       grid.appendChild(button);
@@ -218,7 +273,13 @@
 
     const formula = createElement("div", "molecule-formula");
     const coefficient = coefficientText(molecule.coefficient);
-    const formulaClass = `formula-text${molecule.formula.length + coefficient.length > 5 ? " formula-text--long" : ""}`;
+    const formulaLength = molecule.formula.length + coefficient.length;
+    const formulaClass = [
+      "formula-text",
+      formulaLength > 5 ? "formula-text--long" : "",
+      formulaLength > 9 ? "formula-text--very-long" : "",
+      formulaLength > 13 ? "formula-text--extra-long" : ""
+    ].filter(Boolean).join(" ");
     formula.innerHTML = `<span class="${formulaClass}">${coefficient ? `<span class="coefficient">${coefficient}</span>` : ""}${formatFormula(molecule.formula)}</span>`;
 
     card.appendChild(upButton);
@@ -410,27 +471,71 @@
     return panel;
   }
 
-  function renderIntroState(root, state) {
+  function renderMenuState(root, state) {
     root.innerHTML = "";
 
     const shell = createElement("div", "app-shell");
-    const intro = createElement("section", "intro-panel");
+    const intro = createElement("section", "intro-panel set-menu-panel");
     intro.appendChild(createElement("p", "eyebrow", "Stoichiometry"));
     intro.appendChild(createElement("h1", "", "Visual Equation Balancer"));
     intro.appendChild(
-      createElement("p", "intro-copy", "Balance all equations. Hints cost 1 point.")
+      createElement("p", "intro-copy", "Choose a difficulty, topic, and practice length.")
+    );
+
+    const filters = createElement("div", "set-filters");
+    filters.appendChild(
+      renderFilterControl(
+        "difficulty-filter",
+        "Difficulty",
+        state.selectedDifficulty,
+        state.difficultyOptions,
+        state.onDifficultyChange
+      )
+    );
+    filters.appendChild(
+      renderFilterControl(
+        "topic-filter",
+        "Topic",
+        state.selectedTopic,
+        state.topicOptions,
+        state.onTopicChange
+      )
+    );
+    filters.appendChild(
+      renderFilterControl(
+        "question-count-filter",
+        "Questions",
+        state.selectedQuestionCount,
+        state.questionCountOptions,
+        state.onQuestionCountChange
+      )
     );
 
     const meta = createElement("div", "intro-meta");
-    meta.appendChild(createElement("span", "intro-meta-item", `${state.totalLevels} levels`));
+    meta.appendChild(createElement("span", "intro-meta-item", `${state.setCount} in this set`));
+    meta.appendChild(createElement("span", "intro-meta-item", `${state.matchingCount} matching reactions`));
     meta.appendChild(createElement("span", "intro-meta-item", `${state.maxScore} possible points`));
-    meta.appendChild(createElement("span", "intro-meta-item", "Solutions mark review"));
 
-    const start = createElement("button", "primary-button", "Start balancing");
+    const previewTitle = createElement("p", "set-preview-title", "This set");
+    const empty = createElement(
+      "p",
+      "intro-copy",
+      "No reactions match this combination yet."
+    );
+
+    const start = createElement(
+      "button",
+      "primary-button",
+      state.setCount > 0 ? `Start ${state.setCount}-reaction set` : "No matching set"
+    );
     start.type = "button";
-    start.addEventListener("click", state.onStartIntro);
+    start.disabled = state.setCount === 0;
+    start.addEventListener("click", state.onStartSet);
 
+    intro.appendChild(filters);
     intro.appendChild(meta);
+    intro.appendChild(previewTitle);
+    intro.appendChild(state.setCount > 0 ? renderSetPreview(state.setPreview) : empty);
     intro.appendChild(start);
     shell.appendChild(intro);
     root.appendChild(shell);
@@ -441,7 +546,7 @@
     const shell = createElement("div", "app-shell");
     const complete = createElement("section", "complete-panel");
     complete.appendChild(createElement("p", "eyebrow", "Stoichiometry"));
-    complete.appendChild(createElement("h1", "", "All levels attempted"));
+    complete.appendChild(createElement("h1", "", "Set complete"));
     complete.appendChild(createElement("p", "complete-copy", `Score: ${state.totalScore}/${state.maxScore} points.`));
 
     if (state.reviewCount > 0) {
@@ -465,11 +570,16 @@
     const restart = createElement(
       "button",
       state.reviewCount > 0 ? "secondary-button" : "primary-button",
-      "Restart"
+      "Reset progress"
     );
     restart.type = "button";
     restart.addEventListener("click", state.onRestart);
     actions.appendChild(restart);
+
+    const chooseSet = createElement("button", "secondary-button", "Choose another set");
+    chooseSet.type = "button";
+    chooseSet.addEventListener("click", state.onChooseSet);
+    actions.appendChild(chooseSet);
     complete.appendChild(actions);
 
     shell.appendChild(complete);
@@ -477,8 +587,8 @@
   }
 
   function render(root, state) {
-    if (state.showIntro) {
-      renderIntroState(root, state);
+    if (state.showMenu) {
+      renderMenuState(root, state);
       return;
     }
 

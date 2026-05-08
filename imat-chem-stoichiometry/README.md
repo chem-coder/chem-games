@@ -4,9 +4,11 @@ First Chem Games vertical slice: a visual equation-balancing game for IMAT chemi
 
 ## Current Scope
 
-- Fifteen reaction-balancing levels.
-- Compact first-run intro with the core rules.
-- Easy, medium, and harder difficulty labels.
+- Seventy-four reaction-balancing reactions in the current pool.
+- Start menu for choosing difficulty, topic, and practice length.
+- Practice sets default to 5 reactions or the matching pool size, whichever is smaller.
+- Easy, medium, and hard difficulty labels.
+- Topic labels for each reaction.
 - Progressive hint data for each reaction.
 - Quiet points system based on difficulty and hint use.
 - Numbered level grid for jumping between reactions.
@@ -15,7 +17,7 @@ First Chem Games vertical slice: a visual equation-balancing game for IMAT chemi
 - Live atom totals for both sides of the equation.
 - Per-element balanced/unbalanced feedback.
 - Success state and next-level flow.
-- Progress saved in `localStorage`.
+- Progress and the currently selected practice set saved in `localStorage`.
 
 ## Run Locally
 
@@ -51,6 +53,8 @@ The main flow is:
 
 ```text
 reaction data
+  -> selected difficulty/topic filter
+  -> active practice set
   -> balancing engine
   -> game state controller
   -> renderer
@@ -69,8 +73,10 @@ Each reaction stores:
 
 - `id` - stable identifier for progress tracking.
 - `title` - display label for the level.
-- `difficulty` - numeric level used for scoring and grouping (`1` easy, `2` medium, `3` harder).
-- `topics` - one or more topic labels for future pools and filters, such as `combustion`, `acid-base`, `double-displacement`, or `redox`.
+- `difficulty` - numeric level used for scoring and grouping (`1` easy, `2` medium, `3` hard).
+- `topics` - one or more topic labels for pools and filters, such as `combustion`, `acid-base`, `double-displacement`, `formal-equation`, or `redox`.
+
+`formal-equation` marks equations that are useful for coefficient-balancing practice but should not be taught as having a clear net ionic driving force under ordinary aqueous conditions.
 - `reactants` - molecules on the left side.
 - `products` - molecules on the right side.
 - `solution` - expected balanced coefficients.
@@ -94,12 +100,13 @@ chem-games:imat-stoichiometry-balancer
 Saved state includes:
 
 - current level index
+- active practice set filters, question count, and reaction IDs
 - whether the intro has been seen
 - per-level status
 - per-level best score
 - hints used on the current/recent attempt
 
-The reset button clears this local progress and starts again from level 1.
+The reset button clears this local progress and returns to the set menu.
 
 ## Scoring
 
@@ -107,7 +114,7 @@ Base score by difficulty:
 
 - Easy: 4 points
 - Medium: 5 points
-- Harder: 6 points
+- Hard: 6 points
 
 Each revealed hint subtracts 1 point from the current attempt. A solved level always earns at least 1 point unless the learner reveals the solution.
 
@@ -131,8 +138,8 @@ Current manual checks:
 
 - Each JavaScript file passes `node --check`.
 - Each stored solution balances correctly through `BalancingEngine.isReactionBalanced`.
-- The app, CSS, and JavaScript files load from the local dev server.
-- The five starter levels can be played in the browser.
+- The menu can filter by difficulty and topic.
+- The game operates on the selected active set instead of the full reaction pool.
 
 Useful commands:
 
@@ -143,12 +150,13 @@ node --check imat-chem-stoichiometry/js/balancingRenderer.js
 
 ## Next Options
 
-Recommended next step: playtest the 15-level sequence before building a larger gamification system.
+Recommended next step: playtest the enlarged pool and then mine the CHEM 1315 Exam 2 files.
 
 Good near-term improvements:
 
-- Adjust reaction ordering based on playtest friction.
-- Add a more satisfying completion state after the final level.
+- Add more reactions from CHEM 1315 Exam 2 files and tag them by difficulty/topic.
+- Adjust reaction ordering inside pools based on playtest friction.
+- Add a more satisfying completion state after each set.
 - Add optional keyboard shortcuts for level navigation.
 - Tune Review Mode language after playtesting.
 

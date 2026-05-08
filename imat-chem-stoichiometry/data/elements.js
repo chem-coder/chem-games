@@ -66,6 +66,66 @@
       name: "Iron",
       colorClass: "element-iron",
       shapeClass: "shape-square"
+    },
+    B: {
+      name: "Boron",
+      colorClass: "element-boron",
+      shapeClass: "shape-diamond"
+    },
+    Br: {
+      name: "Bromine",
+      colorClass: "element-bromine",
+      shapeClass: "shape-square"
+    },
+    Li: {
+      name: "Lithium",
+      colorClass: "element-lithium",
+      shapeClass: "shape-diamond"
+    },
+    Rb: {
+      name: "Rubidium",
+      colorClass: "element-rubidium",
+      shapeClass: "shape-diamond"
+    },
+    Cs: {
+      name: "Cesium",
+      colorClass: "element-cesium",
+      shapeClass: "shape-diamond"
+    },
+    Si: {
+      name: "Silicon",
+      colorClass: "element-silicon",
+      shapeClass: "shape-square"
+    },
+    F: {
+      name: "Fluorine",
+      colorClass: "element-fluorine",
+      shapeClass: "shape-square"
+    },
+    Ag: {
+      name: "Silver",
+      colorClass: "element-silver",
+      shapeClass: "shape-square"
+    },
+    Co: {
+      name: "Cobalt",
+      colorClass: "element-cobalt",
+      shapeClass: "shape-square"
+    },
+    Ti: {
+      name: "Titanium",
+      colorClass: "element-titanium",
+      shapeClass: "shape-square"
+    },
+    Ba: {
+      name: "Barium",
+      colorClass: "element-barium",
+      shapeClass: "shape-square"
+    },
+    As: {
+      name: "Arsenic",
+      colorClass: "element-arsenic",
+      shapeClass: "shape-diamond"
     }
   };
 })(window);
