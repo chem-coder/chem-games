@@ -13,6 +13,12 @@
     let currentIndex = Math.min(progress.currentIndex, reactions.length - 1);
     let currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
     let isComplete = areAllLevelsAttempted(progress);
+    let showIntro = !progress.introSeen && getAttemptedCount(progress) === 0;
+
+    if (showIntro) {
+      currentIndex = 0;
+      currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
+    }
 
     function getBaseScore(difficulty) {
       if (difficulty === 1) return 4;
@@ -96,6 +102,16 @@
 
     function render() {
       progress = storage.getProgress();
+      if (showIntro) {
+        renderer.render(root, {
+          showIntro: true,
+          totalLevels: reactions.length,
+          maxScore: getMaxScore(),
+          onStartIntro: handleStartIntro
+        });
+        return;
+      }
+
       const isBalanced = engine.isReactionBalanced(currentReaction);
       const currentRecord = getLevelRecord(currentReaction.id);
       const hintsUsed = getCurrentHintsUsed();
@@ -126,6 +142,12 @@
         onSelectLevel: handleSelectLevel,
         onRestart: handleResetAll
       });
+    }
+
+    function handleStartIntro() {
+      storage.markIntroSeen();
+      showIntro = false;
+      render();
     }
 
     function handleCoefficientChange(side, moleculeIndex, direction) {
@@ -195,6 +217,7 @@
       progress = storage.getProgress();
       currentIndex = 0;
       isComplete = false;
+      showIntro = true;
       currentReaction = engine.createPlayableReaction(reactions[currentIndex]);
       render();
     }

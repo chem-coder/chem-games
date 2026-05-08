@@ -2,7 +2,7 @@
   window.ChemGames = window.ChemGames || {};
 
   const STORAGE_KEY = "chem-games:imat-stoichiometry-balancer";
-  const EMPTY_STATE = { currentIndex: 0, levels: {} };
+  const EMPTY_STATE = { currentIndex: 0, levels: {}, introSeen: false };
 
   function readState() {
     try {
@@ -38,8 +38,15 @@
 
     return {
       currentIndex: Number.isInteger(state.currentIndex) ? state.currentIndex : 0,
-      levels
+      levels,
+      introSeen: state.introSeen === true
     };
+  }
+
+  function markIntroSeen() {
+    const state = getProgress();
+    state.introSeen = true;
+    writeState(state);
   }
 
   function saveCurrentIndex(currentIndex) {
@@ -99,6 +106,7 @@
   window.ChemGames.ProgressStorage = {
     getProgress,
     saveCurrentIndex,
+    markIntroSeen,
     saveHintsUsed,
     markComplete,
     markReview,

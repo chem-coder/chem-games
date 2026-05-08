@@ -305,6 +305,32 @@
     return panel;
   }
 
+  function renderIntroState(root, state) {
+    root.innerHTML = "";
+
+    const shell = createElement("div", "app-shell");
+    const intro = createElement("section", "intro-panel");
+    intro.appendChild(createElement("p", "eyebrow", "Stoichiometry"));
+    intro.appendChild(createElement("h1", "", "Visual Equation Balancer"));
+    intro.appendChild(
+      createElement("p", "intro-copy", "Balance all equations. Hints cost 1 point.")
+    );
+
+    const meta = createElement("div", "intro-meta");
+    meta.appendChild(createElement("span", "intro-meta-item", `${state.totalLevels} levels`));
+    meta.appendChild(createElement("span", "intro-meta-item", `${state.maxScore} possible points`));
+    meta.appendChild(createElement("span", "intro-meta-item", "Solutions mark review"));
+
+    const start = createElement("button", "primary-button", "Start balancing");
+    start.type = "button";
+    start.addEventListener("click", state.onStartIntro);
+
+    intro.appendChild(meta);
+    intro.appendChild(start);
+    shell.appendChild(intro);
+    root.appendChild(shell);
+  }
+
   function renderCompleteState(root, state) {
     root.innerHTML = "";
     const shell = createElement("div", "app-shell");
@@ -323,6 +349,11 @@
   }
 
   function render(root, state) {
+    if (state.showIntro) {
+      renderIntroState(root, state);
+      return;
+    }
+
     if (state.isComplete) {
       renderCompleteState(root, state);
       return;

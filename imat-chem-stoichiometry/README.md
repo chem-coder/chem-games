@@ -5,6 +5,7 @@ First Chem Games vertical slice: a visual equation-balancing game for IMAT chemi
 ## Current Scope
 
 - Fifteen reaction-balancing levels.
+- Compact first-run intro with the core rules.
 - Easy, medium, and harder difficulty labels.
 - Progressive hint data for each reaction.
 - Quiet points system based on difficulty and hint use.
@@ -91,6 +92,7 @@ chem-games:imat-stoichiometry-balancer
 Saved state includes:
 
 - current level index
+- whether the intro has been seen
 - per-level status
 - per-level best score
 - hints used on the current/recent attempt
