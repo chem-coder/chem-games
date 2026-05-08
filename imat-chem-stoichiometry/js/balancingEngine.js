@@ -16,6 +16,7 @@
       id: reaction.id,
       title: reaction.title,
       difficulty: reaction.difficulty,
+      topics: [...(reaction.topics || [])],
       hints: [...(reaction.hints || [])],
       solution: {
         reactants: [...reaction.solution.reactants],

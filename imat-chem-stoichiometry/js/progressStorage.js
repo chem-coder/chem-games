@@ -66,6 +66,17 @@
     writeState(state);
   }
 
+  function beginReviewAttempt(reactionId) {
+    const state = getProgress();
+    const previous = state.levels[reactionId] || {};
+    state.levels[reactionId] = {
+      status: "review",
+      bestScore: previous.bestScore || 0,
+      hintsUsed: 0
+    };
+    writeState(state);
+  }
+
   function markComplete(reactionId, score, hintsUsed) {
     const state = getProgress();
     const previous = state.levels[reactionId] || {};
@@ -92,7 +103,11 @@
     const state = getProgress();
     const previous = state.levels[reactionId] || {};
     state.levels[reactionId] = {
-      status: previous.bestScore > 0 ? "completed" : "pending",
+      status: previous.status === "review"
+        ? "review"
+        : previous.bestScore > 0
+          ? "completed"
+          : "pending",
       bestScore: previous.bestScore || 0,
       hintsUsed: 0
     };
@@ -108,6 +123,7 @@
     saveCurrentIndex,
     markIntroSeen,
     saveHintsUsed,
+    beginReviewAttempt,
     markComplete,
     markReview,
     resetLevelAttempt,

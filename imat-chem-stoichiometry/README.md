@@ -10,6 +10,7 @@ First Chem Games vertical slice: a visual equation-balancing game for IMAT chemi
 - Progressive hint data for each reaction.
 - Quiet points system based on difficulty and hint use.
 - Numbered level grid for jumping between reactions.
+- Review Mode for retrying red levels after a solution is shown.
 - Coefficient controls for every reactant and product.
 - Live atom totals for both sides of the equation.
 - Per-element balanced/unbalanced feedback.
@@ -68,7 +69,8 @@ Each reaction stores:
 
 - `id` - stable identifier for progress tracking.
 - `title` - display label for the level.
-- `difficulty` - lightweight sorting/grouping metadata.
+- `difficulty` - numeric level used for scoring and grouping (`1` easy, `2` medium, `3` harder).
+- `topics` - one or more topic labels for future pools and filters, such as `combustion`, `acid-base`, `double-displacement`, or `redox`.
 - `reactants` - molecules on the left side.
 - `products` - molecules on the right side.
 - `solution` - expected balanced coefficients.
@@ -111,6 +113,18 @@ Each revealed hint subtracts 1 point from the current attempt. A solved level al
 
 If the learner reveals the solution, the level is marked for review and earns 0 points for that attempt. Resetting that level allows a fresh retry.
 
+## Review Mode
+
+Red levels are levels where the solution was shown before the learner solved the equation independently.
+
+Review Mode focuses only on those red levels. Starting Review Mode resets hint use for the review attempt, keeps the level marked red while the learner works, and turns the level green when it is solved. Review attempts can still use hints, and those hints reduce the score in the normal way.
+
+## Hint Style
+
+Hints should teach a balancing strategy, not just state an atom count. Good hints name where to start, what mismatch to notice, and which species to leave for last because changing its coefficient affects only one element.
+
+The third hint may give one anchor coefficient for one compound, but it must not reveal the full balanced equation.
+
 ## Verification
 
 Current manual checks:
@@ -136,7 +150,7 @@ Good near-term improvements:
 - Adjust reaction ordering based on playtest friction.
 - Add a more satisfying completion state after the final level.
 - Add optional keyboard shortcuts for level navigation.
-- Add an explicit review mode for red levels.
+- Tune Review Mode language after playtesting.
 
 Avoid for now:
 

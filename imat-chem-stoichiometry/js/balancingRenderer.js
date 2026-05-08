@@ -25,6 +25,41 @@
     return formula.replace(/\d/g, (digit) => `<sub>${SUBSCRIPT_DIGITS[digit]}</sub>`);
   }
 
+  function createFormulaTextNode(formula) {
+    const node = createElement("span", "hint-formula");
+    formula.split("").forEach((character) => {
+      if (/\d/.test(character)) {
+        node.appendChild(createElement("sub", "", SUBSCRIPT_DIGITS[character]));
+      } else {
+        node.append(character);
+      }
+    });
+    return node;
+  }
+
+  function appendFormattedHintText(parent, hint) {
+    const formulaPattern = /[A-Z][A-Za-z0-9()]*/g;
+    let lastIndex = 0;
+    let match = formulaPattern.exec(hint);
+
+    while (match) {
+      const token = match[0];
+      const isFormula = /\d/.test(token);
+
+      parent.append(hint.slice(lastIndex, match.index));
+      if (isFormula) {
+        parent.appendChild(createFormulaTextNode(token));
+      } else {
+        parent.append(token);
+      }
+
+      lastIndex = match.index + token.length;
+      match = formulaPattern.exec(hint);
+    }
+
+    parent.append(hint.slice(lastIndex));
+  }
+
   function coefficientText(coefficient) {
     return coefficient > 1 ? String(coefficient) : "";
   }
@@ -35,16 +70,45 @@
     return "Harder";
   }
 
+  const TOPIC_LABELS = {
+    "acid-base": "Acid-base",
+    "acid-metal": "Acid + metal",
+    combustion: "Combustion",
+    decomposition: "Decomposition",
+    "double-displacement": "Double displacement",
+    "gas-formation": "Gas formation",
+    hydrocarbon: "Hydrocarbon",
+    "metal-oxidation": "Metal oxidation",
+    neutralization: "Neutralization",
+    "nonmetal-oxidation": "Nonmetal oxidation",
+    "oxide-reduction": "Oxide reduction",
+    reduction: "Reduction",
+    redox: "Redox",
+    "single-replacement": "Single replacement",
+    synthesis: "Synthesis"
+  };
+
+  function getTopicLabel(topic) {
+    return TOPIC_LABELS[topic] || topic;
+  }
+
   function renderLevelHeading(reaction) {
     const heading = createElement("div", "level-heading");
     heading.appendChild(createElement("h2", "", reaction.title));
-    heading.appendChild(
+
+    const meta = createElement("div", "level-heading__meta");
+    meta.appendChild(
       createElement(
         "span",
         `difficulty-pill difficulty-pill--${reaction.difficulty}`,
         getDifficultyLabel(reaction.difficulty)
       )
     );
+    (reaction.topics || []).forEach((topic) => {
+      meta.appendChild(createElement("span", "topic-pill", getTopicLabel(topic)));
+    });
+
+    heading.appendChild(meta);
     return heading;
   }
 
@@ -53,7 +117,9 @@
     const levelText = createElement(
       "p",
       "level-label",
-      `Level ${state.currentIndex + 1} of ${state.totalLevels}`
+      state.isReviewMode
+        ? `Review ${state.reviewPosition || 1} of ${state.reviewCount}`
+        : `Level ${state.currentIndex + 1} of ${state.totalLevels}`
     );
 
     const meter = createElement("div", "progress-meter");
@@ -69,13 +135,34 @@
     resetButton.type = "button";
     resetButton.addEventListener("click", state.onResetAll);
 
+    const reviewButton = createElement(
+      "button",
+      state.isReviewMode ? "secondary-button review-mode-button is-active" : "secondary-button review-mode-button",
+      state.isReviewMode ? "Exit review" : `Review (${state.reviewCount})`
+    );
+    reviewButton.type = "button";
+    reviewButton.disabled = !state.isReviewMode && state.reviewCount === 0;
+    reviewButton.addEventListener(
+      "click",
+      state.isReviewMode ? state.onExitReviewMode : state.onStartReviewMode
+    );
+
     const meta = createElement("div", "progress-meta");
     meta.appendChild(levelText);
-    meta.appendChild(createElement("p", "completed-label", `${state.attemptedCount} attempted`));
+    meta.appendChild(
+      createElement(
+        "p",
+        "completed-label",
+        state.reviewCount > 0
+          ? `${state.attemptedCount} attempted · ${state.reviewCount} review`
+          : `${state.attemptedCount} attempted`
+      )
+    );
 
     progress.appendChild(meta);
     progress.appendChild(meter);
     progress.appendChild(score);
+    progress.appendChild(reviewButton);
     progress.appendChild(resetButton);
     return progress;
   }
@@ -88,13 +175,20 @@
     state.reactions.forEach((reaction, index) => {
       const record = state.levelRecords[reaction.id] || {};
       const status = record.status || "pending";
+      const isDisabled = state.isReviewMode && status !== "review";
       const button = createElement(
         "button",
-        `level-tile level-tile--${status}${index === state.currentIndex ? " is-current" : ""}`,
+        `level-tile level-tile--${status}${index === state.currentIndex ? " is-current" : ""}${isDisabled ? " is-muted" : ""}`,
         String(index + 1)
       );
       button.type = "button";
-      button.setAttribute("aria-label", `Go to level ${index + 1}: ${reaction.title}`);
+      button.disabled = isDisabled;
+      button.setAttribute(
+        "aria-label",
+        isDisabled
+          ? `Level ${index + 1}: not in review`
+          : `Go to level ${index + 1}: ${reaction.title}`
+      );
       button.addEventListener("click", () => state.onSelectLevel(index));
       grid.appendChild(button);
     });
@@ -169,12 +263,14 @@
       state.hintsUsed >= hints.length ? "No more hints" : "Show hint"
     );
     showHint.type = "button";
-    showHint.disabled = state.hintsUsed >= hints.length || state.isReview || state.isBalanced;
+    showHint.disabled = state.hintsUsed >= hints.length || state.isSolutionShown || state.isBalanced;
     showHint.addEventListener("click", state.onShowHint);
 
     const list = createElement("ol", "hint-list");
     hints.slice(0, state.hintsUsed).forEach((hint) => {
-      list.appendChild(createElement("li", "", hint));
+      const item = createElement("li");
+      appendFormattedHintText(item, hint);
+      list.appendChild(item);
     });
 
     const note = createElement(
@@ -187,7 +283,7 @@
 
     const showSolution = createElement("button", "text-button solution-button", "Show solution");
     showSolution.type = "button";
-    showSolution.disabled = state.isReview || state.isBalanced;
+    showSolution.disabled = state.isSolutionShown || state.isBalanced;
     showSolution.addEventListener("click", state.onShowSolution);
 
     header.appendChild(title);
@@ -274,14 +370,23 @@
       "section",
       `status-panel ${state.isBalanced ? "is-balanced" : ""} ${state.isReview ? "is-review" : ""}`
     );
+    let statusText = `Keep balancing. Worth up to ${state.potentialScore} points.`;
+    if (state.isSolutionShown) {
+      statusText = state.isReviewMode
+        ? "Solution shown again. This level stays in review."
+        : "Solution shown. Marked for review.";
+    } else if (state.isReview && state.isBalanced) {
+      statusText = `Review solved. Earn ${state.potentialScore} points.`;
+    } else if (state.isReview) {
+      statusText = "Review retry. Balance this to clear the red level.";
+    } else if (state.isBalanced) {
+      statusText = `Balanced. Earn ${state.potentialScore} points.`;
+    }
+
     const message = createElement(
       "p",
       "status-message",
-      state.isReview
-        ? "Solution shown. Marked for review."
-        : state.isBalanced
-          ? `Balanced. Earn ${state.potentialScore} points.`
-          : `Keep balancing. Worth up to ${state.potentialScore} points.`
+      statusText
     );
 
     const actions = createElement("div", "status-actions");
@@ -292,11 +397,11 @@
     const next = createElement(
       "button",
       "primary-button",
-      state.willCompleteSet ? "Finish" : "Next"
+      state.primaryActionLabel
     );
     next.type = "button";
-    next.disabled = !state.isBalanced;
-    next.addEventListener("click", state.onNextLevel);
+    next.disabled = state.primaryActionDisabled;
+    next.addEventListener("click", state.onPrimaryAction);
 
     actions.appendChild(resetLevel);
     actions.appendChild(next);
@@ -339,10 +444,33 @@
     complete.appendChild(createElement("h1", "", "All levels attempted"));
     complete.appendChild(createElement("p", "complete-copy", `Score: ${state.totalScore}/${state.maxScore} points.`));
 
-    const restart = createElement("button", "primary-button", "Restart");
+    if (state.reviewCount > 0) {
+      complete.appendChild(
+        createElement(
+          "p",
+          "complete-copy",
+          `${state.reviewCount} ${state.reviewCount === 1 ? "level needs" : "levels need"} review.`
+        )
+      );
+    }
+
+    const actions = createElement("div", "complete-actions");
+    if (state.reviewCount > 0) {
+      const review = createElement("button", "primary-button", "Review red levels");
+      review.type = "button";
+      review.addEventListener("click", state.onStartReviewMode);
+      actions.appendChild(review);
+    }
+
+    const restart = createElement(
+      "button",
+      state.reviewCount > 0 ? "secondary-button" : "primary-button",
+      "Restart"
+    );
     restart.type = "button";
     restart.addEventListener("click", state.onRestart);
-    complete.appendChild(restart);
+    actions.appendChild(restart);
+    complete.appendChild(actions);
 
     shell.appendChild(complete);
     root.appendChild(shell);
