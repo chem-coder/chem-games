@@ -4,9 +4,24 @@
   const ANY_FILTER = "all";
   const DEFAULT_SET_SIZE = 5;
 
+  function isAlreadyBalancedAsWritten(reaction) {
+    const solution = reaction.solution || {};
+    const coefficients = [
+      ...(solution.reactants || []),
+      ...(solution.products || [])
+    ];
+
+    return coefficients.length > 0 && coefficients.every((coefficient) => coefficient === 1);
+  }
+
+  function isBalancingPracticeReaction(reaction) {
+    return !isAlreadyBalancedAsWritten(reaction);
+  }
+
   function createBalancingGame(options) {
     const root = options.root;
     const allReactions = options.reactions;
+    const balancingReactions = allReactions.filter(isBalancingPracticeReaction);
     const elementStyles = options.elementStyles;
     const engine = options.engine;
     const renderer = options.renderer;
@@ -14,12 +29,12 @@
     const setSize = options.setSize || DEFAULT_SET_SIZE;
 
     let progress = storage.getProgress();
+    let reactions = getStoredSetReactions(progress.activeSet);
     let selectedDifficulty = progress.activeSet ? progress.activeSet.difficulty : ANY_FILTER;
     let selectedTopic = progress.activeSet ? progress.activeSet.topic : ANY_FILTER;
-    let selectedQuestionCount = progress.activeSet
-      ? progress.activeSet.reactionIds.length
+    let selectedQuestionCount = progress.activeSet && reactions.length > 0
+      ? reactions.length
       : getDefaultQuestionCount(selectedDifficulty, selectedTopic);
-    let reactions = getStoredSetReactions(progress.activeSet);
     let showMenu = reactions.length === 0;
     let currentIndex = showMenu ? 0 : Math.min(progress.currentIndex, reactions.length - 1);
     let currentReaction = showMenu ? null : engine.createPlayableReaction(reactions[currentIndex]);
@@ -127,7 +142,7 @@
       if (!activeSet || !Array.isArray(activeSet.reactionIds)) return [];
 
       return activeSet.reactionIds
-        .map((reactionId) => allReactions.find((reaction) => reaction.id === reactionId))
+        .map((reactionId) => balancingReactions.find((reaction) => reaction.id === reactionId))
         .filter(Boolean);
     }
 
@@ -145,7 +160,7 @@
     }
 
     function getMatchingReactions(difficulty, topic) {
-      return allReactions.filter((reaction) => (
+      return balancingReactions.filter((reaction) => (
         matchesDifficulty(reaction, difficulty) && matchesTopic(reaction, topic)
       ));
     }
@@ -192,7 +207,7 @@
 
     function getTopicOptions() {
       const topicCounts = new Map();
-      allReactions
+      balancingReactions
         .filter((reaction) => matchesDifficulty(reaction, selectedDifficulty))
         .forEach((reaction) => {
           (reaction.topics || []).forEach((topic) => {
@@ -250,7 +265,7 @@
 
       renderer.render(root, {
         showMenu: true,
-        totalReactionCount: allReactions.length,
+        totalReactionCount: balancingReactions.length,
         setSize,
         selectedDifficulty,
         selectedTopic,

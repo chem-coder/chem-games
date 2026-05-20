@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balloon Temperature Lab</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <p class="eyebrow">Gas Laws Motion Lab</p>
+      <h1>Balloon Temperature Lab</h1>
+    </header>
+
+    <section class="lab" aria-label="Balloon temperature environment">
+      <canvas id="balloonCanvas" width="1100" height="680" aria-label="A red transparent balloon with gas particles inside, suspended in a seasonal outdoor scene"></canvas>
+
+      <div class="temperature-panel">
+        <label for="temperatureSlider">
+          Outside temperature
+          <span id="temperatureReadout">20 C</span>
+        </label>
+        <input id="temperatureSlider" type="range" min="-20" max="40" step="1" value="20">
+      </div>
+    </section>
+  </main>
+
+  <script src="js/charlesLaw.js"></script>
+</body>
+</html>

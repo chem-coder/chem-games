@@ -4,7 +4,8 @@ First Chem Games vertical slice: a visual equation-balancing game for IMAT chemi
 
 ## Current Scope
 
-- Seventy-four reaction-balancing reactions in the current pool.
+- Seventy-four shared reaction records in the current data stack.
+- Sixty-nine reactions currently eligible for the equation-balancing practice pool.
 - Start menu for choosing difficulty, topic, and practice length.
 - Practice sets default to 5 reactions or the matching pool size, whichever is smaller.
 - Easy, medium, and hard difficulty labels.
@@ -37,7 +38,7 @@ http://localhost:8000/imat-chem-stoichiometry/
 
 - `index.html` - app shell and script loading.
 - `css/styles.css` - visual design and responsive layout.
-- `data/reactions.js` - balancing level data.
+- `data/reactions.js` - shared reaction records used by this and future chemistry games.
 - `data/elements.js` - visual style metadata for elements.
 - `js/balancingEngine.js` - pure balancing logic.
 - `js/balancingRenderer.js` - DOM rendering.
@@ -53,6 +54,7 @@ The main flow is:
 
 ```text
 reaction data
+  -> exclude already-balanced-as-written records
   -> selected difficulty/topic filter
   -> active practice set
   -> balancing engine
@@ -80,6 +82,8 @@ Each reaction stores:
 - `reactants` - molecules on the left side.
 - `products` - molecules on the right side.
 - `solution` - expected balanced coefficients.
+
+Reactions whose full solution is `1:1` or `1:1:1:1` style all-one coefficients stay in `data/reactions.js`, but the balancing game excludes them from its menu and practice sets. They are still useful for future games about reaction classification, products, solubility, or equation interpretation.
 
 Each molecule stores:
 
@@ -138,6 +142,7 @@ Current manual checks:
 
 - Each JavaScript file passes `node --check`.
 - Each stored solution balances correctly through `BalancingEngine.isReactionBalanced`.
+- Reactions already balanced as written remain in the shared data stack but are excluded from balancing practice.
 - The menu can filter by difficulty and topic.
 - The game operates on the selected active set instead of the full reaction pool.
 

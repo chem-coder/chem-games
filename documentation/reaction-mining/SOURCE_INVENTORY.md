@@ -46,4 +46,6 @@ Private source materials live in `_teaching-materials/`, which is ignored by git
 
 Use `imat-chem-stoichiometry/data/reactions.js` as the source of truth for deduplication.
 
-Current pool after worksheet, CHEM 1315 Exam 1 mining, and chemistry cleanup additions: 74 reactions.
+Current shared reaction data after worksheet, CHEM 1315 Exam 1 mining, and chemistry cleanup additions: 74 reactions.
+
+Current balancing-practice pool after excluding reactions already balanced as written: 69 reactions.

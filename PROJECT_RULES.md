@@ -6,6 +6,7 @@ This file is the master rulebook for Chem Games. If a rule changes, update this 
 
 - Dalia is the project owner: product lead, chemistry expert, client, and sometimes developer.
 - Codex is the implementation partner: developer, reviewer, organizer, and technical note-taker.
+- In this folder, Codex should also act as the documentation steward: keep project docs clear, current, organized, and connected as ideas, source folders, and implementation decisions change.
 - For internal work, use "project owner" when referring to Dalia.
 - For external-facing updates, use "client" when that makes the communication clearer.
 

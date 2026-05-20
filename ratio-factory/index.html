@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ratio Factory</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Home</a>
+      <p class="eyebrow">Ratio Factory</p>
+      <h1 id="scenarioTitle">Cheese Sandwich Factory</h1>
+    </header>
+
+    <section class="factory-layout" aria-label="Ratio Factory game">
+      <div class="text-card-toggle-row">
+        <button
+          id="toggleTextCardsButton"
+          class="text-card-toggle"
+          type="button"
+          aria-expanded="true"
+          aria-controls="textCards"
+          aria-label="Collapse text recipe and inventory cards"
+          title="Collapse text recipe and inventory cards"
+        >
+          <span class="toggle-chevron" aria-hidden="true">▾</span>
+          <span class="toggle-label">Text recipe and inventory</span>
+        </button>
+      </div>
+
+      <section id="textCards" class="text-card-row" aria-label="Text recipe and inventory cards">
+        <section class="panel" aria-labelledby="inventoryTitle">
+          <h2 id="inventoryTitle">Available Inventory</h2>
+          <div id="inventoryList" class="part-list"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="recipeTitle">
+          <h2 id="recipeTitle">Recipe</h2>
+          <div id="recipeList" class="part-list"></div>
+          <p id="recipeOutput" class="output-line"></p>
+        </section>
+      </section>
+
+      <section class="panel ratio-graphic-panel" aria-label="Two bread slices plus one cheese slice make one cheese sandwich">
+        <div class="ratio-equation">
+          <p class="graphic-question">How many sandwiches can be made with the available inventory?</p>
+
+          <figure class="ratio-token">
+            <div class="food-art" aria-hidden="true">
+              <svg viewBox="0 0 120 96" role="img">
+                <path d="M20 42c0-18 16-30 40-30s40 12 40 30v24c0 7-5 12-12 12H32c-7 0-12-5-12-12V42Z" fill="#f6d79a" stroke="#9d6d2e" stroke-width="4"/>
+                <path d="M30 44c0-11 12-20 30-20s30 9 30 20v20H30V44Z" fill="#fff0c8"/>
+                <path d="M20 50c0-18 16-30 40-30s40 12 40 30v24c0 7-5 12-12 12H32c-7 0-12-5-12-12V50Z" fill="#e9b765" stroke="#9d6d2e" stroke-width="4"/>
+                <path d="M31 51c0-11 11-20 29-20s29 9 29 20v19H31V51Z" fill="#ffe0a8"/>
+                <circle cx="46" cy="44" r="3" fill="#b77b2e"/>
+                <circle cx="65" cy="39" r="3" fill="#b77b2e"/>
+                <circle cx="76" cy="51" r="3" fill="#b77b2e"/>
+              </svg>
+            </div>
+            <figcaption>2 bread slices</figcaption>
+          </figure>
+
+          <span class="equation-mark" aria-hidden="true">+</span>
+
+          <figure class="ratio-token">
+            <div class="food-art" aria-hidden="true">
+              <svg viewBox="0 0 120 96" role="img">
+                <path d="M18 28h84v44H18V28Z" fill="#ffd75d" stroke="#bf8d19" stroke-width="4" transform="rotate(-8 60 50)"/>
+                <circle cx="38" cy="42" r="6" fill="#f4b83f"/>
+                <circle cx="62" cy="56" r="7" fill="#f4b83f"/>
+                <circle cx="82" cy="40" r="5" fill="#f4b83f"/>
+                <path d="M98 30l-18 9 20 9Z" fill="#f6c74d" stroke="#bf8d19" stroke-width="4" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <figcaption>1 cheese slice</figcaption>
+          </figure>
+
+          <span class="equation-arrow" aria-hidden="true">&rarr;</span>
+
+          <figure class="ratio-token product-token">
+            <div class="food-art" aria-hidden="true">
+              <svg viewBox="0 0 132 96" role="img">
+                <path d="M18 39c0-17 19-29 48-29s48 12 48 29v10H18V39Z" fill="#f4ca82" stroke="#9d6d2e" stroke-width="4"/>
+                <path d="M25 49h82L96 64H36L25 49Z" fill="#f6d94d" stroke="#bf8d19" stroke-width="4" stroke-linejoin="round"/>
+                <path d="M20 63h92v14c0 6-5 11-11 11H31c-6 0-11-5-11-11V63Z" fill="#e8ad58" stroke="#9d6d2e" stroke-width="4"/>
+                <circle cx="50" cy="27" r="3" fill="#b77b2e"/>
+                <circle cx="68" cy="22" r="3" fill="#b77b2e"/>
+                <circle cx="83" cy="31" r="3" fill="#b77b2e"/>
+              </svg>
+            </div>
+            <figcaption>1 cheese sandwich</figcaption>
+          </figure>
+
+          <p class="graphic-inventory-label">Available inventory:</p>
+
+          <p class="graphic-inventory-count bread-count" data-graphic-inventory-for="bread">11 bread slices</p>
+          <span class="graphic-spacer" aria-hidden="true"></span>
+          <p class="graphic-inventory-count cheese-count" data-graphic-inventory-for="cheese">4 cheese slices</p>
+          <span class="graphic-spacer" aria-hidden="true"></span>
+          <p id="productInventoryGraphic" class="graphic-inventory-count product-count">? sandwiches</p>
+        </div>
+      </section>
+
+      <section class="panel answer-panel" aria-labelledby="answerTitle">
+        <h2 id="answerTitle">Factory Run</h2>
+        <div class="score-strip" aria-live="polite">
+          <p class="score-chip">
+            <span>Total points</span>
+            <strong id="totalScoreReadout">0</strong>
+          </p>
+          <p class="score-chip">
+            <span>This round</span>
+            <strong id="roundScoreReadout">4 pts</strong>
+          </p>
+          <p class="score-chip">
+            <span>Hints used</span>
+            <strong id="hintCountReadout">0/3</strong>
+          </p>
+        </div>
+        <form id="answerForm" novalidate>
+          <div class="answer-grid">
+            <div id="leftoverFields" class="leftover-fields"></div>
+
+            <div class="answer-slot product-answer">
+              <label class="answer-field" for="maxObjectsInput">
+                Maximum sandwiches
+                <input id="maxObjectsInput" name="maxObjects" type="number" min="0" step="1" inputmode="numeric" autocomplete="off">
+              </label>
+              <p id="maxObjectsFeedback" class="field-feedback" aria-live="polite" hidden></p>
+            </div>
+
+            <div class="answer-slot limiting-field">
+              <label class="answer-field" for="limitingPartInput">
+                Limiting part
+                <select id="limitingPartInput" name="limitingPart">
+                  <option value="">Choose a part</option>
+                </select>
+              </label>
+              <p id="limitingPartFeedback" class="field-feedback" aria-live="polite" hidden></p>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="checkAnswerButton" type="submit">Check Answer</button>
+            <button id="hintButton" class="secondary-button" type="button">Show Hint</button>
+            <button id="giveUpButton" class="secondary-button" type="button">Give Up</button>
+            <button id="newInventoryButton" class="secondary-button" type="button">New Inventory</button>
+          </div>
+        </form>
+
+        <section id="hintPanel" class="hint-panel" aria-live="polite" hidden>
+          <h3 id="hintTitle">Hints</h3>
+          <ul id="hintList" class="hint-list"></ul>
+        </section>
+      </section>
+
+      <section id="resultsPanel" class="panel results-panel" aria-labelledby="resultsTitle" hidden>
+        <div id="explanationBox" class="explanation" hidden>
+          <h3>Reasoning</h3>
+          <ul id="explanationList" class="explanation-lines"></ul>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

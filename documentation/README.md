@@ -7,6 +7,9 @@ This folder is for internal project documentation: goals, decisions, implementat
 - `PROJECT_REVIEW.md` - current project inventory, goals, documentation status, database plan, and working process.
 - `Chem_Games_Project_Brief.md` - high-level product brief for the IMAT chemistry / stoichiometry trainer direction.
 - `IDEA_BACKLOG.md` - organized product and learning-game ideas migrated from the old `.docx` backlog.
+- `GAME_IDEAS_NOTEBOOK.md` - active brainstorming notebook for new game concepts and lookup tools before they become formal specs.
+- `idea-box/README.md` - landing zone for raw idea docs and summaries before they are processed into the notebook.
+- `idea-box/stoichiometry_game_ideas_summary.md` - raw source summary for the Ratio Factory / stoichiometry game direction.
 - `reaction-mining/README.md` - workflow for extracting reaction candidates from teaching materials.
 - `reaction-mining/TODO.md` - editable checklist for the reaction mining project.
 - `reaction-mining/SOURCE_INVENTORY.md` - source priority and extraction status.
@@ -28,6 +31,8 @@ Current examples:
 - `../chem-nomenclature/v3/README-v3.md`
 - `../chem-nomenclature/databases/readme.md`
 - `../chem-pH-calculator/README.md`
+- `../chem-gas-laws/README.md`
+- `../ratio-factory/README.md`
 
 ## Archive
 

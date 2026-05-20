@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chem Games Home</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #eef3f5;
+      --surface: #ffffff;
+      --surface-soft: #f6f9fa;
+      --ink: #18242c;
+      --muted: #61717a;
+      --line: #cbd8de;
+      --blue: #286bd8;
+      --teal: #12706c;
+      --shadow: 0 18px 42px rgba(28, 43, 54, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef3f5 0%, #dde8eb 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 44px;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: 0.78rem;
+      font-weight: 850;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(2.1rem, 5vw, 3.4rem);
+      line-height: 1.05;
+    }
+
+    .intro {
+      max-width: 42rem;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.45;
+    }
+
+    .section-heading {
+      margin: 30px 0 12px;
+      color: #243640;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      display: grid;
+      gap: 10px;
+      min-height: 178px;
+      padding: 18px;
+      color: inherit;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid rgba(147, 164, 174, 0.62);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      border-color: rgba(40, 107, 216, 0.7);
+      outline: 3px solid rgba(40, 107, 216, 0.14);
+      outline-offset: 2px;
+    }
+
+    .card h2 {
+      margin-bottom: 0;
+      font-size: 1.28rem;
+      line-height: 1.15;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-self: end;
+    }
+
+    .tag {
+      padding: 5px 8px;
+      color: #30515a;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .placeholder {
+      color: var(--muted);
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          #ffffff,
+          #ffffff 10px,
+          #f4f7f8 10px,
+          #f4f7f8 20px
+        );
+    }
+
+    .footer-note {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    code {
+      padding: 2px 5px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+
+    @media (max-width: 850px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">Chem Games</p>
+      <h1>Local Game Hub</h1>
+      <p class="intro">A simple launch page for current chemistry games and prototypes. Serve the project root, then open this page at <code>http://localhost:8000/</code>.</p>
+    </header>
+
+    <h2 class="section-heading">Current Builds</h2>
+    <section class="grid" aria-label="Current Chem Games">
+      <a class="card" href="imat-chem-stoichiometry/">
+        <h2>Visual Equation Balancer</h2>
+        <p>Balance chemical equations with coefficient controls and live atom-count feedback.</p>
+        <div class="tag-row">
+          <span class="tag">Stoichiometry</span>
+          <span class="tag">Balancing</span>
+        </div>
+      </a>
+
+      <a class="card" href="chem-gas-laws/">
+        <h2>Balloon Temperature Lab</h2>
+        <p>Explore outside temperature, seasonal changes, and gas particles inside a transparent balloon.</p>
+        <div class="tag-row">
+          <span class="tag">Gas Laws</span>
+          <span class="tag">Balloon</span>
+        </div>
+      </a>
+
+      <a class="card" href="chem-nomenclature/v4/">
+        <h2>Nomenclature App v4</h2>
+        <p>Look up elements and try early inorganic compound naming behavior.</p>
+        <div class="tag-row">
+          <span class="tag">Nomenclature</span>
+          <span class="tag">Lookup</span>
+        </div>
+      </a>
+
+      <a class="card" href="ratio-factory/">
+        <h2>Ratio Factory</h2>
+        <p>Build complete everyday objects from fixed part ratios and identify the limiting part.</p>
+        <div class="tag-row">
+          <span class="tag">Ratios</span>
+          <span class="tag">Limiting Parts</span>
+        </div>
+      </a>
+    </section>
+
+    <h2 class="section-heading">More Prototypes</h2>
+    <section class="grid" aria-label="Additional prototypes">
+      <a class="card" href="chem-pH-calculator/v2-pH-SW-AB/">
+        <h2>pH Calculator v2</h2>
+        <p>Strong and weak acid/base pH calculation prototype.</p>
+        <div class="tag-row">
+          <span class="tag">Acid-Base</span>
+          <span class="tag">Calculator</span>
+        </div>
+      </a>
+
+      <a class="card" href="chem-pH-calculator/pH-1.html">
+        <h2>pH Calculator v1</h2>
+        <p>Early single-input pH calculator.</p>
+        <div class="tag-row">
+          <span class="tag">pH</span>
+          <span class="tag">Prototype</span>
+        </div>
+      </a>
+
+      <a class="card" href="-Chemistry%20Game/">
+        <h2>Early Chemistry Game</h2>
+        <p>Original exploratory chemistry game prototype.</p>
+        <div class="tag-row">
+          <span class="tag">Archive</span>
+          <span class="tag">Prototype</span>
+        </div>
+      </a>
+    </section>
+
+    <h2 class="section-heading">Room For More</h2>
+    <section class="grid" aria-label="Future game slots">
+      <div class="card placeholder">
+        <h2>Ion Charge Builder</h2>
+        <p>Future game for building neutral ionic formulas from cation and anion charges.</p>
+        <div class="tag-row">
+          <span class="tag">Planned</span>
+        </div>
+      </div>
+
+      <div class="card placeholder">
+        <h2>Conversion Path Builder</h2>
+        <p>Future unit-conversion practice with visible cancellation and conversion-factor tiles.</p>
+        <div class="tag-row">
+          <span class="tag">Planned</span>
+        </div>
+      </div>
+
+      <div class="card placeholder">
+        <h2>Reaction Studio</h2>
+        <p>Future bundle for product prediction, reaction types, solubility, and net ionic equations.</p>
+        <div class="tag-row">
+          <span class="tag">Planned</span>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">This page is intentionally basic. Add a new card here whenever a new game folder becomes runnable.</p>
+  </main>
+</body>
+</html>

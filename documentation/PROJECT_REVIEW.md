@@ -1,6 +1,6 @@
 # Project Review
 
-Last reviewed: 2026-05-06
+Last reviewed: 2026-05-18
 
 ## Current Shape
 
@@ -8,14 +8,20 @@ Chem Games is currently a collection of vanilla HTML/CSS/JavaScript chemistry le
 
 Top-level areas:
 
+- `index.html` - local launch hub for runnable Chem Games prototypes.
 - `documentation/Chem_Games_Project_Brief.md` - project concept and first major product direction.
 - `imat-chem-stoichiometry/` - active first Chem Games app, a visual equation-balancing trainer.
+- `ratio-factory/` - fixed-ratio reasoning prototype that prepares students for limiting-reagent stoichiometry without chemistry notation.
 - `chem-nomenclature/` - chemical elements and compound nomenclature app versions.
 - `chem-pH-calculator/` - pH calculator prototypes.
+- `chem-gas-laws/` - gas-laws learning prototypes, starting with a balloon temperature lab for Charles' law intuition.
 - `-Chemistry Game/` - early chemistry game prototype.
 - `documentation/IDEA_BACKLOG.md` - older idea backlog migrated from `.docx` on 2026-05-06.
+- `documentation/GAME_IDEAS_NOTEBOOK.md` - active idea notebook for new games, lookup tools, and teaching-material synthesis.
+- `documentation/idea-box/` - raw idea inbox for documents from other chats before they are distilled into active docs.
+- `_teaching-materials/CHEM 101 and 111 - Gas Laws/` - source folder for gas laws, kinetic-molecular theory, partial pressure, and gas stoichiometry teaching/game ideas.
 
-The folder is not currently a Git repository, so there is no local `origin` remote to pull from yet.
+The folder is a Git repository. Current branch during this review: `imat-stoichiometry-balancer`. Current `origin` remote: `git@github.com:chem-coder/chem-games.git`.
 
 ## Existing Product Direction
 
