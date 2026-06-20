@@ -237,6 +237,14 @@ h3 {
   overflow: visible;
 }
 
+.molecule-glyph {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
 figcaption {
   color: var(--ink);
   font-size: 0.9rem;

@@ -80,6 +80,182 @@ const scenarios = [
       }
     ],
     productGraphic: "apple-pie"
+  },
+
+  // Mole lens (Rung 2): chemical reactions run on the SAME engine, with "mol" units
+  // and coefficients from a balanced equation. Coefficients/solutions hand-verified
+  // against the balancer's reaction set. TODO: lift recipe data into data/recipes.js.
+  {
+    id: "water-synthesis",
+    kind: "reaction",
+    title: "Water Synthesis",
+    menuLabel: "Water",
+    ariaLabel: "Two moles of hydrogen plus one mole of oxygen make two moles of water",
+    productCommonSingular: "mol H₂O",
+    productCommonPlural: "mol H₂O",
+    productSingular: "mol H₂O",
+    productPlural: "mol H₂O",
+    productFormula: "H₂O",
+    productPerProduct: 2,
+    batchNounSingular: "reaction",
+    batchNounPlural: "reactions",
+    parts: [
+      {
+        id: "h2",
+        name: "H₂",
+        displayName: "H₂",
+        perProduct: 2,
+        available: 8,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 4,
+        randomMaximum: 18
+      },
+      {
+        id: "o2",
+        name: "O₂",
+        displayName: "O₂",
+        perProduct: 1,
+        available: 3,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 2,
+        randomMaximum: 12
+      }
+    ]
+  },
+  {
+    id: "ammonia-synthesis",
+    kind: "reaction",
+    title: "Ammonia Synthesis",
+    menuLabel: "Ammonia",
+    ariaLabel: "One mole of nitrogen plus three moles of hydrogen make two moles of ammonia",
+    productCommonSingular: "mol NH₃",
+    productCommonPlural: "mol NH₃",
+    productSingular: "mol NH₃",
+    productPlural: "mol NH₃",
+    productFormula: "NH₃",
+    productPerProduct: 2,
+    batchNounSingular: "reaction",
+    batchNounPlural: "reactions",
+    parts: [
+      {
+        id: "n2",
+        name: "N₂",
+        displayName: "N₂",
+        perProduct: 1,
+        available: 5,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 3,
+        randomMaximum: 12
+      },
+      {
+        id: "h2",
+        name: "H₂",
+        displayName: "H₂",
+        perProduct: 3,
+        available: 9,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 6,
+        randomMaximum: 30
+      }
+    ]
+  },
+  {
+    id: "hydrogen-chloride",
+    kind: "reaction",
+    title: "Hydrogen Chloride Synthesis",
+    menuLabel: "HCl",
+    ariaLabel: "One mole of hydrogen plus one mole of chlorine make two moles of hydrogen chloride",
+    productCommonSingular: "mol HCl",
+    productCommonPlural: "mol HCl",
+    productSingular: "mol HCl",
+    productPlural: "mol HCl",
+    productFormula: "HCl",
+    productPerProduct: 2,
+    batchNounSingular: "reaction",
+    batchNounPlural: "reactions",
+    parts: [
+      {
+        id: "h2",
+        name: "H₂",
+        displayName: "H₂",
+        perProduct: 1,
+        available: 6,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 3,
+        randomMaximum: 18
+      },
+      {
+        id: "cl2",
+        name: "Cl₂",
+        displayName: "Cl₂",
+        perProduct: 1,
+        available: 4,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 2,
+        randomMaximum: 14
+      }
+    ]
+  },
+  {
+    id: "sulfur-dioxide",
+    kind: "reaction",
+    title: "Sulfur Dioxide Synthesis",
+    menuLabel: "SO₂",
+    ariaLabel: "One mole of sulfur plus one mole of oxygen make one mole of sulfur dioxide",
+    productCommonSingular: "mol SO₂",
+    productCommonPlural: "mol SO₂",
+    productSingular: "mol SO₂",
+    productPlural: "mol SO₂",
+    productFormula: "SO₂",
+    productPerProduct: 1,
+    batchNounSingular: "reaction",
+    batchNounPlural: "reactions",
+    parts: [
+      {
+        id: "s",
+        name: "S",
+        displayName: "S",
+        perProduct: 1,
+        available: 7,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 3,
+        randomMaximum: 16
+      },
+      {
+        id: "o2",
+        name: "O₂",
+        displayName: "O₂",
+        perProduct: 1,
+        available: 5,
+        recipeUnitSingular: "mol",
+        recipeUnitPlural: "mol",
+        inventoryUnitSingular: "mol",
+        inventoryUnitPlural: "mol",
+        randomMinimum: 2,
+        randomMaximum: 12
+      }
+    ]
   }
 ];
 
@@ -231,7 +407,7 @@ function renderScenario() {
     leftoverFields.appendChild(slot);
   });
 
-  recipeOutput.textContent = `Makes 1 ${scenario.productSingular}`;
+  recipeOutput.textContent = `Makes ${answer.productPerBatch} ${scenario.productSingular}`;
   renderRatioGraphic();
   resetGameState();
 }
@@ -244,9 +420,11 @@ function renderRatioGraphic() {
   question.textContent = `How many ${scenario.productPlural} can be made with the available inventory?`;
   ratioEquation.appendChild(question);
 
+  const isReaction = scenario.kind === "reaction";
+
   scenario.parts.forEach((part, index) => {
     ratioEquation.appendChild(createRatioToken(
-      getGraphicSvg(part.graphic),
+      getTokenVisual(isReaction ? part.displayName : part.graphic, isReaction),
       formatQuantity(part.perProduct, part.recipeUnitSingular, part.recipeUnitPlural)
     ));
 
@@ -257,8 +435,8 @@ function renderRatioGraphic() {
 
   ratioEquation.appendChild(createEquationSymbol("\u2192", "equation-arrow"));
   ratioEquation.appendChild(createRatioToken(
-    getGraphicSvg(scenario.productGraphic),
-    `1 ${scenario.productSingular}`,
+    getTokenVisual(isReaction ? scenario.productFormula : scenario.productGraphic, isReaction),
+    isReaction ? `${answer.productPerBatch} ${scenario.productCommonPlural}` : `1 ${scenario.productSingular}`,
     true
   ));
 
@@ -317,6 +495,13 @@ function createGraphicSpacer() {
   spacer.className = "graphic-spacer";
   spacer.setAttribute("aria-hidden", "true");
   return spacer;
+}
+
+function getTokenVisual(value, isReaction) {
+  if (isReaction) {
+    return `<span class="molecule-glyph">${value}</span>`;
+  }
+  return getGraphicSvg(value);
 }
 
 function getGraphicSvg(graphicName) {
@@ -488,6 +673,18 @@ function renderHints() {
 }
 
 function getHints() {
+  if (scenario.kind === "reaction") {
+    const runsHint = scenario.parts.map((part) => {
+      return `${part.displayName}: ${part.available} \u00f7 ${part.perProduct}`;
+    }).join(";  ");
+
+    return [
+      "Work out how many times the reaction can run from each reactant on its own (mol \u00f7 coefficient).",
+      `${runsHint}.`,
+      "The limiting reactant gives the fewest runs. Multiply runs by the product's coefficient for the amount of product, then subtract what each reactant uses to get the leftovers."
+    ];
+  }
+
   const divisionHint = scenario.parts.map((part) => {
     return `${part.displayName}: ${part.available} \u00f7 ${part.perProduct}.`;
   }).join(" ");
@@ -545,6 +742,11 @@ function renderExplanation() {
   const times = "\u00d7";
   explanationList.innerHTML = "";
 
+  if (scenario.kind === "reaction") {
+    renderReactionExplanation(divide, times);
+    return;
+  }
+
   scenario.parts.forEach((part) => {
     const possibleProducts = answer.possibleProducts[part.id];
     const extraParts = part.available - (possibleProducts * part.perProduct);
@@ -575,6 +777,40 @@ function renderExplanation() {
       `Leftover ${part.name}: ${part.available} - (${answer.maxProducts} ${times} ${part.perProduct}) = ${leftover} ${formatRecipeUnit(part, leftover)}.`
     );
   });
+}
+
+function renderReactionExplanation(divide, times) {
+  const minus = "\u2212";
+
+  scenario.parts.forEach((part) => {
+    const runs = answer.possibleProducts[part.id];
+    addExplanationLine(
+      `${part.displayName}: ${part.available} mol ${divide} ${part.perProduct} = ${formatBatches(runs)}.`
+    );
+  });
+
+  const limitNames = formatPartNames(answer.limitingPartIds);
+  const single = answer.limitingPartIds.length === 1;
+  addExplanationLine(
+    `${limitNames} ${single ? "is" : "are"} limiting \u2014 ${single ? "it runs" : "they run"} out first, so only ${formatBatches(answer.batches)} can run.`
+  );
+  addExplanationLine(
+    `Product: ${answer.batches} ${times} ${answer.productPerBatch} = ${answer.maxProducts} ${scenario.productCommonPlural}.`,
+    true
+  );
+
+  scenario.parts.forEach((part) => {
+    const leftover = answer.leftovers[part.id];
+    addExplanationLine(
+      `Leftover ${part.displayName}: ${part.available} ${minus} (${answer.batches} ${times} ${part.perProduct}) = ${leftover} mol.`
+    );
+  });
+}
+
+function formatBatches(count) {
+  const singular = scenario.batchNounSingular || "reaction";
+  const plural = scenario.batchNounPlural || "reactions";
+  return `${count} ${count === 1 ? singular : plural}`;
 }
 
 function hideAnswerKey() {
@@ -641,28 +877,34 @@ function addExplanationLine(text, hasBreak = false) {
 
 function getScenarioAnswer(currentScenario) {
   const possibleProducts = {};
-  let maxProducts = Infinity;
+  let batches = Infinity;
 
   currentScenario.parts.forEach((part) => {
     const possible = Math.floor(part.available / part.perProduct);
     possibleProducts[part.id] = possible;
-    maxProducts = Math.min(maxProducts, possible);
+    batches = Math.min(batches, possible);
   });
 
+  const productPerBatch = currentScenario.productPerProduct || 1;
   const leftovers = {};
   const limitingPartIds = [];
 
   currentScenario.parts.forEach((part) => {
-    leftovers[part.id] = part.available - (maxProducts * part.perProduct);
+    leftovers[part.id] = part.available - (batches * part.perProduct);
 
-    if (possibleProducts[part.id] === maxProducts) {
+    if (possibleProducts[part.id] === batches) {
       limitingPartIds.push(part.id);
     }
   });
 
+  // `batches` = complete reaction runs (limits leftover math). `maxProducts` = the
+  // amount of product the learner answers for: runs x the product's coefficient.
+  // Everyday recipes have productPerProduct undefined => 1, so maxProducts === batches.
   return {
     possibleProducts,
-    maxProducts,
+    batches,
+    productPerBatch,
+    maxProducts: batches * productPerBatch,
     limitingPartIds,
     leftovers
   };
