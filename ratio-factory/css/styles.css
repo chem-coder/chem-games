@@ -468,6 +468,36 @@ select:focus {
   outline: 3px solid rgba(30, 114, 104, 0.16);
 }
 
+/* Personal scratch space — ephemeral, never saved or read by the game. Dashed to
+   signal it is informal working, not an answer field. */
+.scratch-row {
+  grid-column: 1 / -1;
+}
+
+.scratch-pad {
+  width: min(100%, 30ch);
+  min-height: 3rem;
+  padding: 8px 10px;
+  color: var(--ink);
+  background: var(--surface-soft);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.scratch-pad:focus {
+  border-style: solid;
+  border-color: var(--accent);
+  outline: 3px solid rgba(30, 114, 104, 0.16);
+}
+
+.scratch-pad::placeholder {
+  color: var(--muted);
+}
+
 .button-row {
   display: flex;
   flex-wrap: wrap;
