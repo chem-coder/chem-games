@@ -66,6 +66,44 @@ h1 {
   line-height: 1.05;
 }
 
+.pack-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 4px;
+}
+
+.pack-choice {
+  min-height: 38px;
+  padding: 8px 14px;
+  color: var(--accent-dark);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pack-choice.is-active {
+  color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.equation {
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
 .game {
   display: grid;
   gap: 18px;

@@ -124,7 +124,7 @@ The owner blessed this ordering. It supersedes the 5-rung sketch above by making
 4. **Weight-per-item** — marbles 5 g each, 40 g → 8 marbles. The everyday rehearsal for molar mass.
 
 ### Tier 3 — the mole (chemistry, same machine)
-5. **Mole ratio** — mol A → mol B from balanced-equation coefficients. The balancer feeds this rung.
+5. **Mole ratio** — mol A → mol B from balanced-equation coefficients. *(Built — the "Mole ratios" pack in Conversion Conveyor.)* The balancer feeds this rung.
 6. **Molar mass** — g ⇄ mol via g/mol (chemistry twin of rung 4; masses from `elements.json`).
 7. **Gram-to-gram** — g A → mol A → mol B → g B (chemistry twin of rung 3).
 
@@ -134,7 +134,7 @@ The owner blessed this ordering. It supersedes the 5-rung sketch above by making
 10. **Theoretical & percent yield.**
 
 ### Where the existing games sit
-- **Conversion Conveyor** = rung 1, the new opener (drag-to-cancel; ESM engine with `node --test`).
+- **Conversion Conveyor** = rungs 1 & 5 — everyday ratios + the mole-ratio pack (place→predict→Check→cancel; ESM engine with `node --test`, plus a data test guarding every problem's answer).
 - **Ratio Factory** = Tier 4 (limiting reagent) — built first, but it lives near the end.
 - The **balancer** produces the balanced equation that feeds rung 5.
 
@@ -142,4 +142,4 @@ The owner blessed this ordering. It supersedes the 5-rung sketch above by making
 Build each tier as its own small game sharing `shared/css/tokens.css` and the same drag-cancel mechanic — not one monolith. A world-map shell can come once 3+ rungs exist.
 
 ### Build order
-Conversion Conveyor (done) → money (rung 2, same engine) → mole ratio (rung 5) → molar mass / gram-to-gram → fold in Ratio Factory as the LR capstone.
+Conversion Conveyor everyday + mole-ratio packs (done) → money (rung 2, same engine) → molar mass & gram-to-gram packs → fold in Ratio Factory as the LR capstone.

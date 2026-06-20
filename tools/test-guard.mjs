@@ -8,6 +8,7 @@ import { dirname, join } from "node:path";
 const root = dirname(dirname(fileURLToPath(import.meta.url))); // tools/.. = repo root
 const SUITES = [
   "conversion-conveyor/js/engine.test.js",
+  "conversion-conveyor/js/problems.test.js",
   "tools/validate-reactions.test.js"
 ];
 
