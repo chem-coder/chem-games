@@ -9,6 +9,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url))); // tools/.. = rep
 const SUITES = [
   "shared/js/conversion-engine.test.js",
   "conversion-conveyor/js/problems.test.js",
+  "conversion-builder/js/builder.test.js",
   "tools/validate-reactions.test.js"
 ];
 
