@@ -1,15 +1,12 @@
+/*
+  Ratio Factory — True Autumn palette.
+  Shared tokens load first via ../shared/css/tokens.css; this file uses var(--token).
+  Only the terracotta "incorrect" family is local (not in the shared set).
+*/
 :root {
-  color-scheme: light;
-  --surface: #ffffff;
-  --surface-soft: #f6f9fa;
-  --ink: #17242c;
-  --muted: #61727a;
-  --line: #c9d6dd;
-  --teal: #12706c;
-  --blue: #286bd8;
-  --green: #1f7a4d;
-  --red: #b33d3d;
-  --shadow: 0 18px 42px rgba(28, 43, 54, 0.13);
+  --danger: #8a3a2a;
+  --danger-soft: #f5e2d9;
+  --danger-line: #dca890;
 }
 
 * {
@@ -20,8 +17,8 @@ body {
   min-height: 100vh;
   margin: 0;
   color: var(--ink);
-  background: linear-gradient(180deg, #edf3f4 0%, #dce7ea 100%);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  font-family: var(--font-body);
 }
 
 .app-shell {
@@ -31,15 +28,31 @@ body {
 }
 
 .app-header {
+  position: relative;
   margin-bottom: 18px;
+}
+
+.app-header::before {
+  content: "";
+  display: block;
+  height: 6px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--el-carbon) 0 25%,
+    var(--el-oxygen) 25% 50%,
+    var(--el-nitrogen) 50% 75%,
+    var(--el-sulfur) 75% 100%
+  );
 }
 
 .home-link {
   display: inline-flex;
   margin-bottom: 14px;
-  color: var(--blue);
+  color: var(--accent);
   font-size: 0.92rem;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -50,10 +63,11 @@ body {
 
 .eyebrow {
   margin: 0 0 6px;
-  color: var(--teal);
+  color: var(--plum-dark);
+  font-family: var(--font-display);
   font-size: 0.78rem;
-  font-weight: 850;
-  letter-spacing: 0;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -62,6 +76,12 @@ h2,
 h3,
 p {
   margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
 }
 
 h1 {
@@ -80,29 +100,31 @@ h1 {
 .scenario-choice {
   min-height: 38px;
   padding: 8px 12px;
-  color: var(--blue);
-  background: #ffffff;
-  border: 1px solid rgba(40, 107, 216, 0.36);
-  border-radius: 8px;
+  color: var(--accent-dark);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .scenario-choice.is-active {
   color: #ffffff;
-  background: var(--teal);
-  border-color: var(--teal);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 h2 {
   margin-bottom: 14px;
-  color: #243640;
+  color: var(--ink);
   font-size: 1.18rem;
   line-height: 1.2;
 }
 
 h3 {
   margin-bottom: 10px;
-  color: #243640;
+  color: var(--ink);
   font-size: 1rem;
 }
 
@@ -115,8 +137,8 @@ h3 {
 .panel {
   padding: 18px;
   background: var(--surface);
-  border: 1px solid rgba(147, 164, 174, 0.62);
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
@@ -138,20 +160,20 @@ h3 {
   width: 100%;
   min-height: 36px;
   padding: 7px 10px;
-  color: #30515a;
-  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
-  font-weight: 900;
+  font-weight: 700;
   text-align: left;
 }
 
 .text-card-toggle:hover,
 .text-card-toggle:focus-visible {
-  color: var(--blue);
-  background: #ffffff;
-  outline: 3px solid rgba(40, 107, 216, 0.14);
+  color: var(--accent-dark);
+  background: var(--surface);
+  outline: 3px solid rgba(30, 114, 104, 0.16);
   outline-offset: 2px;
 }
 
@@ -159,7 +181,7 @@ h3 {
   display: inline-grid;
   place-items: center;
   width: 18px;
-  color: var(--teal);
+  color: var(--accent);
   font-size: 1rem;
   line-height: 1;
 }
@@ -205,7 +227,7 @@ h3 {
   aspect-ratio: 5 / 4;
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .food-art svg {
@@ -216,25 +238,26 @@ h3 {
 }
 
 figcaption {
-  color: #2a3c46;
+  color: var(--ink);
   font-size: 0.9rem;
-  font-weight: 850;
+  font-weight: 600;
   line-height: 1.25;
   text-align: center;
 }
 
 .equation-mark,
 .equation-arrow {
-  color: var(--teal);
   font-weight: 900;
   line-height: 1;
 }
 
 .equation-mark {
+  color: var(--muted);
   font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
 .equation-arrow {
+  color: var(--accent);
   font-size: clamp(2rem, 6vw, 3.2rem);
 }
 
@@ -244,7 +267,7 @@ figcaption {
   margin: 2px 0 -4px;
   color: var(--muted);
   font-size: 0.9rem;
-  font-weight: 850;
+  font-weight: 700;
 }
 
 .graphic-inventory-count {
@@ -252,17 +275,17 @@ figcaption {
   margin: 0;
   padding: 8px 10px;
   width: min(100%, 150px);
-  color: var(--blue);
+  color: var(--plum-dark);
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  font-weight: 900;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
   line-height: 1.25;
   text-align: center;
 }
 
 .product-count {
-  color: var(--teal);
+  color: var(--accent);
 }
 
 .graphic-question {
@@ -270,12 +293,12 @@ figcaption {
   justify-self: stretch;
   margin: 0;
   padding: 12px 14px;
-  color: #243640;
-  background: #eef8f7;
-  border: 1px solid rgba(18, 112, 108, 0.25);
-  border-radius: 8px;
+  color: var(--ink);
+  background: var(--accent-soft);
+  border: 1px solid rgba(30, 114, 104, 0.25);
+  border-radius: var(--radius-sm);
   font-size: 1rem;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1.35;
   text-align: center;
 }
@@ -293,25 +316,25 @@ figcaption {
   padding: 12px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .part-name {
-  color: #2a3c46;
-  font-weight: 850;
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .part-amount {
-  color: var(--blue);
+  color: var(--plum-dark);
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .output-line {
   margin: 12px 0 0;
   color: var(--muted);
-  font-weight: 750;
+  font-weight: 600;
 }
 
 form {
@@ -331,11 +354,11 @@ form {
   gap: 2px;
   margin: 0;
   padding: 10px 12px;
-  color: #30515a;
+  color: var(--ink);
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  font-weight: 850;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
 }
 
 .score-chip span {
@@ -344,7 +367,7 @@ form {
 }
 
 .score-chip strong {
-  color: var(--blue);
+  color: var(--plum-dark);
   font-size: 1.08rem;
 }
 
@@ -368,9 +391,9 @@ form {
 label {
   display: grid;
   gap: 8px;
-  color: #2a3c46;
+  color: var(--ink);
   font-size: 0.95rem;
-  font-weight: 850;
+  font-weight: 600;
 }
 
 .answer-field {
@@ -379,7 +402,7 @@ label {
   padding: 12px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .part-answer {
@@ -399,23 +422,24 @@ label {
   margin: 0;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  font-weight: 900;
+  font-weight: 700;
   line-height: 1.2;
   text-align: center;
 }
 
 .field-feedback.correct {
-  color: var(--green);
-  background: #eef8f2;
-  border-color: rgba(31, 122, 77, 0.35);
+  color: #0f6b3c;
+  background: var(--success-vivid-soft);
+  border-color: #8fd9a8;
+  animation: rf-pop 220ms ease-out;
 }
 
 .field-feedback.incorrect {
-  color: var(--red);
-  background: #fff1f1;
-  border-color: rgba(179, 61, 61, 0.35);
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-color: var(--danger-line);
 }
 
 input,
@@ -424,16 +448,16 @@ select {
   min-height: 44px;
   padding: 10px 12px;
   color: var(--ink);
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font: inherit;
 }
 
 input:focus,
 select:focus {
-  border-color: rgba(40, 107, 216, 0.7);
-  outline: 3px solid rgba(40, 107, 216, 0.14);
+  border-color: var(--accent);
+  outline: 3px solid rgba(30, 114, 104, 0.16);
 }
 
 .button-row {
@@ -444,33 +468,41 @@ select:focus {
 
 button {
   min-height: 44px;
-  padding: 10px 16px;
+  padding: 10px 18px;
   color: #ffffff;
-  background: var(--blue);
-  border: 0;
-  border-radius: 8px;
+  background: var(--accent);
+  border: none;
+  border-bottom: 3px solid var(--accent-dark);
+  border-radius: var(--radius-sm);
   font: inherit;
-  font-weight: 850;
+  font-family: var(--font-display);
+  font-weight: 600;
   cursor: pointer;
 }
 
 button:hover,
 button:focus-visible {
-  background: #1f5fc4;
-  outline: 3px solid rgba(40, 107, 216, 0.18);
+  background: var(--accent-dark);
+  outline: 3px solid rgba(30, 114, 104, 0.18);
   outline-offset: 2px;
 }
 
+button:active:not(:disabled) {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
+
 .secondary-button {
-  color: var(--blue);
-  background: #ffffff;
-  border: 1px solid rgba(40, 107, 216, 0.4);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-bottom-width: 3px;
 }
 
 .secondary-button:hover,
 .secondary-button:focus-visible {
-  color: #ffffff;
-  background: #214f9e;
+  color: var(--accent-dark);
+  background: var(--surface);
 }
 
 button:disabled,
@@ -484,13 +516,13 @@ button:disabled:hover {
   padding: 14px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .hint-list {
   margin: 0;
   padding-left: 22px;
-  color: #2c3f49;
+  color: var(--ink);
   line-height: 1.45;
 }
 
@@ -502,14 +534,14 @@ button:disabled:hover {
   padding: 14px;
   background: var(--surface-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
 }
 
 .explanation-lines {
   display: block;
   margin: 0;
   padding: 0;
-  color: #2c3f49;
+  color: var(--ink);
   list-style: none;
   line-height: 1.55;
 }
@@ -520,6 +552,24 @@ button:disabled:hover {
 
 .explanation-lines li.explanation-break {
   margin-bottom: 18px;
+}
+
+@keyframes rf-pop {
+  from {
+    transform: scale(0.97);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-feedback.correct {
+    animation: none;
+  }
 }
 
 @media (max-width: 760px) {
