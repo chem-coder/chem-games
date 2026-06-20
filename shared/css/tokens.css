@@ -1,0 +1,50 @@
+/*
+  Chem Games — shared design tokens (True Autumn palette).
+  Canonical source for colors, type, radii. See documentation/ARCHITECTURE.md sec 3a.
+  Each app links this BEFORE its own stylesheet, then uses var(--token).
+  Fonts (Outfit + Lexend) are loaded via a <link> in each app's <head>.
+*/
+:root {
+  color-scheme: light;
+
+  --font-display: "Outfit", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body: "Lexend", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Surfaces */
+  --bg: #f4eee2;
+  --surface: #fffdf8;
+  --surface-soft: #f7f1e6;
+  --ink: #2d2a23;
+  --muted: #897f6d;
+  --line: #e5dbc9;
+
+  /* Primary brand — deep warm teal */
+  --accent: #1e7268;
+  --accent-dark: #134f48;
+  --accent-soft: #e0ebe5;
+
+  /* Secondary accent — muted amethyst/plum */
+  --plum: #835f7d;
+  --plum-dark: #6b4d68;
+  --plum-soft: #ece1ea;
+
+  /* Semantic states */
+  --success: #356b45;
+  --success-soft: #e2efe1;
+  --success-line: #b6d3b2;
+  --success-vivid: #1f9d5a;
+  --success-vivid-soft: #d6f2df;
+  --warning-soft: #f6e7c5;
+  --warning-line: #e3c277;
+
+  /* Element atom colors (double as the multi-color accent set) */
+  --el-carbon: #322e27;
+  --el-oxygen: #c0492f;
+  --el-hydrogen: #e6dac2;
+  --el-nitrogen: #436074;
+  --el-sulfur: #ce9b22;
+
+  --radius: 14px;
+  --radius-sm: 11px;
+  --shadow: 0 16px 40px rgba(74, 58, 30, 0.13);
+}

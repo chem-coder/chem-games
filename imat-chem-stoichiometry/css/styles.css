@@ -1,42 +1,4 @@
-:root {
-  color-scheme: light;
-
-  --font-display: "Outfit", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-body: "Lexend", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-
-  --bg: #f4eee2;
-  --surface: #fffdf8;
-  --surface-soft: #f7f1e6;
-  --ink: #2d2a23;
-  --muted: #897f6d;
-  --line: #e5dbc9;
-
-  --accent: #1e7268;
-  --accent-dark: #134f48;
-  --accent-soft: #e0ebe5;
-
-  --plum: #835f7d;
-  --plum-dark: #6b4d68;
-  --plum-soft: #ece1ea;
-
-  --success: #356b45;
-  --success-soft: #e2efe1;
-  --success-line: #b6d3b2;
-  --success-vivid: #1f9d5a;
-  --success-vivid-soft: #d6f2df;
-  --warning-soft: #f6e7c5;
-  --warning-line: #e3c277;
-
-  --el-carbon: #322e27;
-  --el-oxygen: #c0492f;
-  --el-hydrogen: #e6dac2;
-  --el-nitrogen: #436074;
-  --el-sulfur: #ce9b22;
-
-  --radius: 14px;
-  --radius-sm: 11px;
-  --shadow: 0 16px 40px rgba(74, 58, 30, 0.13);
-}
+/* Design tokens (colors, type, radii) live in ../../shared/css/tokens.css, linked before this file. */
 
 * {
   box-sizing: border-box;
