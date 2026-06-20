@@ -9,6 +9,7 @@ This folder is for internal project documentation: goals, decisions, implementat
 - `ARCHITECTURE.md` - durable technical-decisions blueprint: standard game module pattern, light shared foundation, shared content spine, chemistry-correctness safety net, and deploy. Fills the slot earlier reserved for `TECHNICAL_DECISIONS.md`.
 - `STOICHIOMETRY_WORLD.md` - product and engine design for connecting Ratio Factory + the balancer into one stoichiometry track (everyday ratios → mole ratios → mass → limiting reagent → percent yield).
 - `ROADMAP.md` - phased near-term plan for building and launching the Stoichiometry World.
+- `CONVERSION_BUILDER_DESIGN.md` - spec for the next-gen "build the dimensional-analysis grid from tiles" game that upgrades the Conversion Conveyor (teaches the given-over-1 step learners miss; challenge-and-discovery design).
 - `IDEA_BACKLOG.md` - organized product and learning-game ideas migrated from the old `.docx` backlog.
 - `GAME_IDEAS_NOTEBOOK.md` - active brainstorming notebook for new game concepts and lookup tools before they become formal specs.
 - `idea-box/README.md` - landing zone for raw idea docs and summaries before they are processed into the notebook.

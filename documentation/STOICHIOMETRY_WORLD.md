@@ -143,3 +143,5 @@ Build each tier as its own small game sharing `shared/css/tokens.css` and the sa
 
 ### Build order
 Conversion Conveyor everyday + mole-ratio packs (done) → money (rung 2, same engine) → molar mass & gram-to-gram packs → fold in Ratio Factory as the LR capstone.
+
+**Next-gen mechanic (planned):** the conveyor's pick-an-orientation is only the warm-up. The real game is the **Conversion Builder** — the learner constructs the whole dimensional-analysis grid from tiles, *including the given-over-1 first step* (the bit that defeats the 50/50 guess and teaches "given moles ≠ ratio moles," which is exactly where Malcolm gets stuck). Full spec: `CONVERSION_BUILDER_DESIGN.md`.
