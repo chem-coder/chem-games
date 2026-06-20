@@ -8,6 +8,14 @@ everyone skips. This is the real game; the conveyor is its gentle warm-up.
 Source: Dalia's design notes (2026-06-21). Companion: `STOICHIOMETRY_WORLD.md` (the ladder),
 `ARCHITECTURE.md` (conventions).
 
+**Status (2026-06-21): Tier A built** — `conversion-builder/`. Tap-to-place tiles into a
+2-column grid (given/1 × ratio), predict-then-Check, unit-cancel animation, derived
+distractors, per-question diagnostics that never reveal the answer. Seeds: 2 H₂ + O₂ → 2 H₂O,
+N₂ + 3 H₂ → 2 NH₃, H₂ + Cl₂ → 2 HCl, each with a reactant-given and a product-given round and
+any→any questions. **Build step 1 done:** the conveyor's engine is promoted to
+`shared/js/conversion-engine.js` (+ test); both games import it. Pure grid logic lives in
+`conversion-builder/js/builder.js`, guarded by `builder.test.js` (in `tools/test-guard.mjs`).
+
 ---
 
 ## 1. Why the conveyor isn't enough
@@ -69,7 +77,7 @@ that were required). Same reaction, many doors in and out. This is what makes it
 
 - **Tier A — whole-piece tiles.** Tiles are complete quantities: `6 mol H₂`, `1`, `2 mol H₂O`,
   `2 mol H₂`, plus distractors. The learner arranges numerators and denominators. Already
-  forces the given-over-1 insight and kills the coin flip. **Start here.**
+  forces the given-over-1 insight and kills the coin flip. **Built** (`conversion-builder/`).
 - **Tier B — atomic tokens.** Tiles are `6`, `mol`, `H₂`, `1`, `2`, `H₂O`, `g`, … and the
   learner builds *every* quantity from tokens. Much more effortful; deep structure. Later.
 
@@ -127,4 +135,6 @@ Resolved with the owner:
 Still open (decide during the build):
 
 - Should a correct build "lock in" as a referenceable worked example across the multi-question
-  set?
+  set? **Deferred** in the Tier A build: each question resets to a fresh empty grid (re-placing
+  the given-over-1 every time is the reinforcement). Revisit if students want the prior worked
+  example kept visible.
