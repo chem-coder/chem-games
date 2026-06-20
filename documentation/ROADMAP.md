@@ -40,11 +40,12 @@ Definition of done: `node tools/validate-reactions.mjs` passes on all 74 reactio
 
 Goal: the same Ratio Factory reasoning, now with real chemical formulas.
 
-- [ ] Stand up `stoichiometry-world/` on the standard module pattern (engine extracted from Ratio Factory's generic ratio math).
-- [ ] Rung 1 (everyday ratios) runs inside the new shell — port the existing scenarios.
-- [ ] Rung 2: formula tiles instead of food; `perProduct` = balanced-equation coefficients; reasoning stays in whole moles.
-- [ ] Derive chemical recipes from existing balanced reactions (gated by Phase 0.5).
-- [ ] Balancer → rung-2 handoff ("you balanced it — now make product with it").
+Decision (2026-06-20): built **in place inside `ratio-factory/`** rather than standing up a separate `stoichiometry-world/` app — its engine is already the generic ratio math, so a parallel app would mean porting for no near-term gain. Revisit the shell split when rungs 3–5 make the single file unwieldy.
+
+- [x] Rung 2: chemical recipes on the same engine — molecule glyphs (Unicode subscripts), `perProduct` = balanced-equation coefficients, product-coefficient support (runs × coeff), reaction-aware hints + reasoning; amounts stay in whole moles. Committed `aeee484`.
+- [x] Seeded 4 hand-verified reactions (water, ammonia, HCl, SO₂) in moles.
+- [ ] (Optional) Balancer → rung-2 handoff ("you balanced it — now make product with it").
+- [ ] (Cleanup) Lift recipe data from `ratio-factory/js/app.js` into `data/recipes.js`.
 
 Definition of done: Malcolm can do limiting-reagent reasoning on `2 H₂ + O₂ → 2 H₂O`-style problems with the same UI he already likes.
 
