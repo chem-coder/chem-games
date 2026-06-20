@@ -108,3 +108,38 @@ Malcolm-first: rung 2 is the immediate build, because it is the smallest step fr
 - For rung 2, do we hand-author chemical recipes or auto-derive them from existing balanced reactions? Auto-derive is cleaner once the validation script (`ARCHITECTURE.md` §5) guarantees the solutions are correct. (Here "auto-derive" only means reading coefficients from the human-verified `solution` — deterministic copying, not AI balancing.)
 - How much assembly animation (parts consumed into products) is worth building before rung 3?
 - Where does the balancer handoff live — a "now use it" button at the end of a balance, or a separate rung-2 entry that references a pre-balanced reaction?
+
+---
+
+## 8. The blessed skill ladder (2026-06-21)
+
+The owner blessed this ordering. It supersedes the 5-rung sketch above by making the *through-line* explicit: **every rung is the same move — dimensional analysis. Drag conversion factors onto a track so units cancel; the answer falls out.** Only two things escalate: *which* conversion factor, and *how many* you chain. Teach the move with everyday objects and money first; a mole is then just another unit on the same belt.
+
+### Tier 1 — learn the move (everyday)
+1. **One ratio** — 12 wheels, 4 wheels/car → 3 cars. *(Conversion Conveyor — built, `conversion-conveyor/`.)*
+2. **Money / price** — "$3 per apple"; currency makes "flip the factor so the unit cancels" obvious and is motivating.
+
+### Tier 2 — harder, still everyday
+3. **Two-step chain** — eggs → cartons → dollars (cancel an intermediate unit).
+4. **Weight-per-item** — marbles 5 g each, 40 g → 8 marbles. The everyday rehearsal for molar mass.
+
+### Tier 3 — the mole (chemistry, same machine)
+5. **Mole ratio** — mol A → mol B from balanced-equation coefficients. The balancer feeds this rung.
+6. **Molar mass** — g ⇄ mol via g/mol (chemistry twin of rung 4; masses from `elements.json`).
+7. **Gram-to-gram** — g A → mol A → mol B → g B (chemistry twin of rung 3).
+
+### Tier 4 — limiting reagent (two inputs, the capstone)
+8. **LR with objects** — *Ratio Factory — built, `ratio-factory/`.*
+9. **LR with compounds** — the chemistry recipes already in Ratio Factory (water/ammonia/HCl/SO₂).
+10. **Theoretical & percent yield.**
+
+### Where the existing games sit
+- **Conversion Conveyor** = rung 1, the new opener (drag-to-cancel; ESM engine with `node --test`).
+- **Ratio Factory** = Tier 4 (limiting reagent) — built first, but it lives near the end.
+- The **balancer** produces the balanced equation that feeds rung 5.
+
+### Architecture decision (resolves §7 Q1)
+Build each tier as its own small game sharing `shared/css/tokens.css` and the same drag-cancel mechanic — not one monolith. A world-map shell can come once 3+ rungs exist.
+
+### Build order
+Conversion Conveyor (done) → money (rung 2, same engine) → mole ratio (rung 5) → molar mass / gram-to-gram → fold in Ratio Factory as the LR capstone.
