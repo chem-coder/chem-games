@@ -62,7 +62,16 @@ This adopts the "dedicated shared `data/` folder" that `PROJECT_RULES.md` left o
 
 **Design direction (2026-06-20):** Chem Games should have its own visual identity and must *not* look like a generic AI-generated web app — specifically, avoid the default Claude Code aesthetic (the ubiquitous Inter/system font, blue-teal SaaS gradient, soft-shadow card grid). Division of labor: the project owner drives **layout** and approves direction by taste; **design execution and detailed aesthetics** (type, color, texture, component styling) are delegated to the assistant. The current Codex design is an acceptable baseline and is open to redesign.
 
-A distinctive, on-theme starting point we are exploring: derive the brand palette from the **element atom colors already in the app** (carbon ink, oxygen red, nitrogen blue, sulfur yellow, …) instead of a generic accent, paired with a "lab notebook / blueprint" surface texture rather than flat SaaS cards, and a characterful-but-legible typeface that is clearly not the default Inter. Lock tokens only after the owner reacts to concrete concepts.
+**Locked palette (2026-06-20): "True Autumn"** — the owner's personal color-analysis palette (warm, deep, muted) is the brand. Chosen after reviewing three concepts ("Lab Notebook," "Blueprint," "Bright Periodic"); Bright Periodic's layout/type won, recolored to True Autumn.
+
+- **Primary — deep warm teal** `#1e7268` (dark `#134f48`): the brand center — coefficient controls, progress bar, active level, links.
+- **Secondary accent — muted amethyst/plum** `#835f7d` / `#6b4d68`: section eyebrow, points, topic chips, and the dusty-plum alkali-metal atoms. Bright/electric purple is explicitly rejected.
+- **Ground** warm beige `#f4eee2`; warm-white cards; espresso ink `#2d2a23`; taupe muted `#897f6d`.
+- **States** hunter/pine green for balanced/solved, with a **vivid emerald** `#1f9d5a` reward pop (soft glow + entrance animation) so wins feel rewarding; mustard for medium; terracotta/dusty-rose for review/hard.
+- **Element atoms** double as a multi-color accent set (brick oxygen, mustard sulfur, charcoal carbon, denim nitrogen, dusty-plum alkali metals), surfaced as the four-segment accent bar under headers.
+- **Type** Outfit (display) + Lexend (body) — deliberately not the default Inter.
+
+These tokens live in `imat-chem-stoichiometry/css/styles.css` `:root` today and lift verbatim into `shared/css/tokens.css`. Honest caveat noted during review: this is a personal/aesthetic palette that leans calm/earthy, so engagement should be validated with real students and the reward states kept vivid.
 
 Today there are three separate stylesheets plus inline tokens in the hub. Pull the shared vocabulary into `shared/css/tokens.css`:
 
