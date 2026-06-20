@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { orientFactor, checkAnswer } from "./engine.js";
+import { orientFactor, checkAnswer } from "../../shared/js/conversion-engine.js";
 import { PACKS } from "../data/problems.js";
 
 // The orientation that puts the given unit in the denominator is the solving one.

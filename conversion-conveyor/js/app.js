@@ -1,4 +1,4 @@
-import { orientFactor, checkAnswer } from "./engine.js";
+import { orientFactor, checkAnswer } from "../../shared/js/conversion-engine.js";
 import { PACKS } from "../data/problems.js?v=20260621-packs";
 
 const root = document.querySelector("#game");

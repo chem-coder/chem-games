@@ -1,4 +1,4 @@
-// Conversion Conveyor — pure dimensional-analysis engine.
+// Shared dimensional-analysis engine (Conversion Conveyor + Conversion Builder).
 // No DOM, no globals. ESM so it can be exercised directly with `node --test`.
 //
 // A "factor" relates two quantities, e.g. { a: {value:4, unit:"wheel"}, b: {value:1, unit:"car"} }.
