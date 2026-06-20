@@ -6,6 +6,7 @@ const root = document.querySelector("#game");
 let index = 0;
 let placed = null; // { flipped } currently in the slot, or null
 let solved = false;
+let checked = false;
 let hintsUsed = 0;
 let solvedCount = 0;
 let choiceOrder = [false, true];
@@ -18,6 +19,7 @@ function loadProblem(i) {
   index = i;
   placed = null;
   solved = false;
+  checked = false;
   hintsUsed = 0;
   choiceOrder = Math.random() < 0.5 ? [false, true] : [true, false];
   render();
@@ -26,7 +28,14 @@ function loadProblem(i) {
 function pick(flipped) {
   if (solved) return;
   placed = { flipped };
-  const oriented = orientFactor(PROBLEMS[index].factor, flipped);
+  checked = false; // placing no longer reveals the answer — the learner taps Check
+  render();
+}
+
+function check() {
+  if (!placed || solved) return;
+  checked = true;
+  const oriented = orientFactor(PROBLEMS[index].factor, placed.flipped);
   if (checkAnswer(PROBLEMS[index], [oriented]).solved) {
     solved = true;
     solvedCount += 1;
@@ -75,7 +84,7 @@ function factorFraction(o, { cancelDen = false, wrong = false } = {}) {
 
 function render() {
   const p = PROBLEMS[index];
-  const wrong = !!placed && !solved;
+  const wrong = checked && !!placed && !solved;
 
   const slot = placed
     ? factorFraction(orientFactor(p.factor, placed.flipped), { cancelDen: solved, wrong })
@@ -97,6 +106,8 @@ function render() {
     feedback = `<p class="feedback ok">Correct — the ${plural(p.given.unit, 2)} cancel, leaving ${p.answer.value} ${plural(p.answer.unit, p.answer.value)}.</p>`;
   } else if (wrong) {
     feedback = `<p class="feedback no">Those units don't cancel — you need ${plural(p.given.unit, 2)} on the bottom. Try the other one.</p>`;
+  } else if (placed) {
+    feedback = `<p class="feedback">Placed — work out the answer in your head, then tap Check.</p>`;
   }
 
   const hintBlock = hintsUsed > 0 ? `<p class="hint">${hintText(p, hintsUsed)}</p>` : "";
@@ -117,7 +128,9 @@ function render() {
     <div class="controls">
       <p class="score">Solved ${solvedCount} of ${PROBLEMS.length}</p>
       <button class="action ghost" id="hintBtn" ${hintsUsed >= 3 || solved ? "disabled" : ""}>${hintsUsed >= 3 ? "No more hints" : "Hint"}</button>
-      <button class="action primary" id="nextBtn" ${solved ? "" : "disabled"}>${index + 1 < PROBLEMS.length ? "Next →" : "Finish"}</button>
+      ${solved
+        ? `<button class="action primary" id="nextBtn">${index + 1 < PROBLEMS.length ? "Next →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn" ${placed ? "" : "disabled"}>Check answer</button>`}
     </div>
   `;
 
@@ -125,7 +138,10 @@ function render() {
     btn.addEventListener("click", () => pick(btn.dataset.flip === "true"));
   });
   root.querySelector("#hintBtn").addEventListener("click", hint);
-  root.querySelector("#nextBtn").addEventListener("click", next);
+  const nextBtn = root.querySelector("#nextBtn");
+  if (nextBtn) nextBtn.addEventListener("click", next);
+  const checkBtn = root.querySelector("#checkBtn");
+  if (checkBtn) checkBtn.addEventListener("click", check);
 }
 
 function renderDone() {
