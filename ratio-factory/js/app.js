@@ -423,9 +423,13 @@ function renderRatioGraphic() {
   const isReaction = scenario.kind === "reaction";
 
   scenario.parts.forEach((part, index) => {
+    const reactantVisual = isReaction
+      ? getTokenVisual(`${part.perProduct > 1 ? part.perProduct + " " : ""}${part.displayName}`, true)
+      : getTokenVisual(part.graphic, false);
+
     ratioEquation.appendChild(createRatioToken(
-      getTokenVisual(isReaction ? part.displayName : part.graphic, isReaction),
-      formatQuantity(part.perProduct, part.recipeUnitSingular, part.recipeUnitPlural)
+      reactantVisual,
+      isReaction ? "mol" : formatQuantity(part.perProduct, part.recipeUnitSingular, part.recipeUnitPlural)
     ));
 
     if (index < scenario.parts.length - 1) {
@@ -434,9 +438,14 @@ function renderRatioGraphic() {
   });
 
   ratioEquation.appendChild(createEquationSymbol("\u2192", "equation-arrow"));
+
+  const productVisual = isReaction
+    ? getTokenVisual(`${answer.productPerBatch > 1 ? answer.productPerBatch + " " : ""}${scenario.productFormula}`, true)
+    : getTokenVisual(scenario.productGraphic, false);
+
   ratioEquation.appendChild(createRatioToken(
-    getTokenVisual(isReaction ? scenario.productFormula : scenario.productGraphic, isReaction),
-    isReaction ? `${answer.productPerBatch} ${scenario.productCommonPlural}` : `1 ${scenario.productSingular}`,
+    productVisual,
+    isReaction ? "mol" : `1 ${scenario.productSingular}`,
     true
   ));
 
