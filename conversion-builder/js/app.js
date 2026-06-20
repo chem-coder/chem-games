@@ -1,6 +1,5 @@
 import {
   ONE_UNIT,
-  correctGrid,
   checkGrid,
   buildTileBank
 } from "./builder.js";
@@ -11,19 +10,36 @@ const switcher = document.querySelector("#roundSwitcher");
 
 const EMPTY = { givenNum: null, givenDen: null, factorNum: null, factorDen: null };
 
-let roundIndex = 0;
-let questionIndex = 0;
+// Strip the "mol " prefix for compact map labels: "mol H₂O" -> "H₂O".
+const shortSpecies = (unit) => unit.replace(/^mol\s+/, "");
+
+// Flatten every (round, question) into one ordered list — this is what the player steps and
+// jumps through. Each entry carries a "given → target" label and its reaction equation.
+const QUESTIONS = [];
+ROUNDS.forEach((r, ri) =>
+  r.questions.forEach((q, qi) =>
+    QUESTIONS.push({
+      ri,
+      qi,
+      equation: r.equation,
+      label: `${shortSpecies(r.given.unit)} → ${shortSpecies(q.targetUnit)}`
+    })
+  )
+);
+const totalQuestions = QUESTIONS.length;
+
+let cur = 0; // index into QUESTIONS
 let placed = { ...EMPTY }; // slot -> tile {id,value,unit}
 let bank = []; // tiles not yet placed (shuffled)
 let selectedId = null; // tile tapped from the bank, awaiting a slot
 let checked = false;
 let solved = false;
 let hintsUsed = 0;
-let solvedCount = 0;
+let lastResult = null;
+const solvedSet = new Set(); // flat indices already solved (drives the map's progress dots)
 
-const round = () => ROUNDS[roundIndex];
-const question = () => round().questions[questionIndex];
-const totalQuestions = ROUNDS.reduce((n, r) => n + r.questions.length, 0);
+const round = () => ROUNDS[QUESTIONS[cur].ri];
+const question = () => round().questions[QUESTIONS[cur].qi];
 
 function shuffle(list) {
   const a = list.slice();
@@ -34,20 +50,21 @@ function shuffle(list) {
   return a;
 }
 
-function loadQuestion() {
+function loadCurrent() {
   placed = { ...EMPTY };
   selectedId = null;
   checked = false;
-  solved = false;
+  solved = solvedSet.has(cur);
   hintsUsed = 0;
+  lastResult = null;
   bank = shuffle(buildTileBank(round(), question()));
+  renderSwitcher();
   render();
 }
 
-function loadRound(i) {
-  roundIndex = i;
-  questionIndex = 0;
-  loadQuestion();
+function goTo(i) {
+  cur = i;
+  loadCurrent();
 }
 
 // ── interactions ────────────────────────────────────────────────────────────
@@ -79,15 +96,14 @@ function check() {
   const out = checkGrid(round(), question(), placed);
   if (!out.ready) return;
   checked = true;
+  lastResult = out;
   if (out.solved) {
     solved = true;
-    solvedCount += 1;
+    solvedSet.add(cur);
   }
-  lastResult = out;
+  renderSwitcher();
   render();
 }
-
-let lastResult = null;
 
 function hint() {
   if (hintsUsed < 3) hintsUsed += 1;
@@ -95,14 +111,8 @@ function hint() {
 }
 
 function next() {
-  if (questionIndex + 1 < round().questions.length) {
-    questionIndex += 1;
-    loadQuestion();
-  } else if (roundIndex + 1 < ROUNDS.length) {
-    loadRound(roundIndex + 1);
-  } else {
-    renderDone();
-  }
+  if (cur + 1 < totalQuestions) goTo(cur + 1);
+  else renderDone();
 }
 
 function hintText(n) {
@@ -169,22 +179,21 @@ function render() {
   }
 
   const hintBlock = hintsUsed > 0 ? `<p class="hint">${hintText(hintsUsed)}</p>` : "";
-  const qNo = round().questions.length > 1 ? ` <span class="q-of">(${questionIndex + 1} of ${round().questions.length})</span>` : "";
 
   root.innerHTML = `
     <p class="equation">${r.equation}</p>
     <p class="given">Given: <strong>${r.given.value} ${r.given.unit}</strong></p>
-    <p class="prompt">${q.prompt}${qNo}</p>
+    <p class="prompt">${q.prompt}</p>
     ${grid}
     <p class="bank-label">Build the grid — tap a tile, then tap a slot:</p>
     <div class="bank">${tiles || '<span class="bank-empty">All tiles placed.</span>'}</div>
     ${feedback}
     ${hintBlock}
     <div class="controls">
-      <p class="score">Solved ${solvedCount} of ${totalQuestions}</p>
+      <p class="score">Solved ${solvedSet.size} of ${totalQuestions}</p>
       <button class="action ghost" id="hintBtn" ${hintsUsed >= 3 || solved ? "disabled" : ""}>${hintsUsed >= 3 ? "No more hints" : "Hint"}</button>
       ${solved
-        ? `<button class="action primary" id="nextBtn">${questionIndex + 1 < round().questions.length || roundIndex + 1 < ROUNDS.length ? "Next →" : "Finish"}</button>`
+        ? `<button class="action primary" id="nextBtn">${cur + 1 < totalQuestions ? "Next →" : "Finish"}</button>`
         : `<button class="action primary" id="checkBtn">Check answer</button>`}
     </div>
   `;
@@ -202,31 +211,39 @@ function render() {
   if (nextBtn) nextBtn.addEventListener("click", next);
 }
 
+// The conversion map: one jump-button per question, grouped under its equation, with the
+// current one highlighted and solved ones ticked. Tap any to go straight to that question.
 function renderSwitcher() {
-  switcher.innerHTML = ROUNDS.map(
-    (r, i) =>
-      `<button class="round-choice${i === roundIndex ? " is-active" : ""}" data-round="${i}" type="button" aria-pressed="${i === roundIndex}">${r.name}</button>`
-  ).join("");
-  switcher.querySelectorAll(".round-choice").forEach((b) =>
-    b.addEventListener("click", () => {
-      loadRound(Number(b.dataset.round));
-      renderSwitcher();
-    })
+  let html = "";
+  let i = 0;
+  while (i < QUESTIONS.length) {
+    const eq = QUESTIONS[i].equation;
+    let tiles = "";
+    while (i < QUESTIONS.length && QUESTIONS[i].equation === eq) {
+      const q = QUESTIONS[i];
+      const cls = `q-choice${i === cur ? " is-active" : ""}${solvedSet.has(i) ? " is-solved" : ""}`;
+      tiles += `<button class="${cls}" data-i="${i}" type="button" aria-pressed="${i === cur}">${q.label}</button>`;
+      i += 1;
+    }
+    html += `<div class="map-group"><span class="map-eq">${eq}</span><div class="map-tiles">${tiles}</div></div>`;
+  }
+  switcher.innerHTML = html;
+  switcher.querySelectorAll(".q-choice").forEach((b) =>
+    b.addEventListener("click", () => goTo(Number(b.dataset.i)))
   );
 }
 
 function renderDone() {
+  renderSwitcher();
   root.innerHTML = `
-    <p class="prompt">Nice work — you built every grid and solved ${solvedCount} of ${totalQuestions} questions. Given any one amount, you found all the others.</p>
+    <p class="prompt">Nice work — you solved ${solvedSet.size} of ${totalQuestions} conversions. Given any one amount, you found all the others. Tap any tile in the map above to revisit one.</p>
     <div class="controls">
-      <button class="action primary" id="againBtn">Play again</button>
+      <button class="action primary" id="againBtn">Start over</button>
     </div>`;
   root.querySelector("#againBtn").addEventListener("click", () => {
-    solvedCount = 0;
-    loadRound(0);
-    renderSwitcher();
+    solvedSet.clear();
+    goTo(0);
   });
 }
 
-renderSwitcher();
-loadRound(0);
+goTo(0);

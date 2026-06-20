@@ -9,7 +9,7 @@
 const rounds = [
   // ── 2 H₂ + O₂ → 2 H₂O ──────────────────────────────────────────────────────────────
   {
-    id: "water-from-h2", name: "Water · from H₂",
+    id: "water-from-h2", name: "Water · given H₂",
     equation: "2 H₂ + O₂ → 2 H₂O",
     species: [
       { value: 2, unit: "mol H₂" },
@@ -27,7 +27,7 @@ const rounds = [
     ]
   },
   {
-    id: "water-from-h2o", name: "Water · from H₂O",
+    id: "water-from-h2o", name: "Water · given H₂O",
     equation: "2 H₂ + O₂ → 2 H₂O",
     species: [
       { value: 2, unit: "mol H₂" },
@@ -47,7 +47,7 @@ const rounds = [
 
   // ── N₂ + 3 H₂ → 2 NH₃ ──────────────────────────────────────────────────────────────
   {
-    id: "ammonia-from-h2", name: "Ammonia · from H₂",
+    id: "ammonia-from-h2", name: "Ammonia · given H₂",
     equation: "N₂ + 3 H₂ → 2 NH₃",
     species: [
       { value: 1, unit: "mol N₂" },
@@ -65,7 +65,7 @@ const rounds = [
     ]
   },
   {
-    id: "ammonia-from-nh3", name: "Ammonia · from NH₃",
+    id: "ammonia-from-nh3", name: "Ammonia · given NH₃",
     equation: "N₂ + 3 H₂ → 2 NH₃",
     species: [
       { value: 1, unit: "mol N₂" },
@@ -85,7 +85,7 @@ const rounds = [
 
   // ── H₂ + Cl₂ → 2 HCl ───────────────────────────────────────────────────────────────
   {
-    id: "hcl-from-cl2", name: "HCl · from Cl₂",
+    id: "hcl-from-cl2", name: "HCl · given Cl₂",
     equation: "H₂ + Cl₂ → 2 HCl",
     species: [
       { value: 1, unit: "mol H₂" },
@@ -103,7 +103,7 @@ const rounds = [
     ]
   },
   {
-    id: "hcl-from-hcl", name: "HCl · from HCl",
+    id: "hcl-from-hcl", name: "HCl · given HCl",
     equation: "H₂ + Cl₂ → 2 HCl",
     species: [
       { value: 1, unit: "mol H₂" },
