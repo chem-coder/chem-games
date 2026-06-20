@@ -464,6 +464,25 @@ function renderRatioGraphic() {
   productCount.className = "graphic-inventory-count product-count";
   productCount.textContent = `? ${getCommonProductPlural()}`;
   ratioEquation.appendChild(productCount);
+
+  // Personal scratch space, one box under each compound. These are recreated on every
+  // render, so they clear on a new recipe or new inventory (and on reload). They are
+  // never read by the game and never saved.
+  const scratchLabel = document.createElement("p");
+  scratchLabel.className = "graphic-inventory-label scratch-label";
+  scratchLabel.textContent = "Scratch space (not saved):";
+  ratioEquation.appendChild(scratchLabel);
+
+  scenario.parts.forEach((part, index) => {
+    ratioEquation.appendChild(createScratchBox(part.displayName));
+
+    if (index < scenario.parts.length - 1) {
+      ratioEquation.appendChild(createGraphicSpacer());
+    }
+  });
+
+  ratioEquation.appendChild(createGraphicSpacer());
+  ratioEquation.appendChild(createScratchBox(isReaction ? scenario.productFormula : scenario.productSingular));
 }
 
 function createRatioToken(svgMarkup, captionText, isProduct = false) {
@@ -495,6 +514,16 @@ function createGraphicSpacer() {
   spacer.className = "graphic-spacer";
   spacer.setAttribute("aria-hidden", "true");
   return spacer;
+}
+
+function createScratchBox(forLabel) {
+  const box = document.createElement("textarea");
+  box.className = "scratch-pad";
+  box.rows = 2;
+  box.autocomplete = "off";
+  box.spellcheck = false;
+  box.setAttribute("aria-label", `Scratch space for ${forLabel}, not saved`);
+  return box;
 }
 
 function getTokenVisual(value, isReaction) {

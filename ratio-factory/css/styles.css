@@ -470,13 +470,13 @@ select:focus {
 
 /* Personal scratch space — ephemeral, never saved or read by the game. Dashed to
    signal it is informal working, not an answer field. */
-.scratch-row {
-  grid-column: 1 / -1;
+.scratch-label {
+  margin-top: 8px;
 }
 
 .scratch-pad {
-  width: min(100%, 30ch);
-  min-height: 3rem;
+  width: 100%;
+  min-height: 2.6rem;
   padding: 8px 10px;
   color: var(--ink);
   background: var(--surface-soft);
