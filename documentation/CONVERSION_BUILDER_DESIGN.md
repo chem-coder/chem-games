@@ -101,9 +101,10 @@ validation.
 - **Tap-to-place for v1** (tap a tile, tap a slot), drag-and-drop as polish — same call we made
   on the conveyor. ✅ rec
 - **A few distractors**, drawn from the reaction's other species. ✅ rec
-- **Keep the Conveyor** (orientation-pick) as the gentlest warm-up / Tier 0; the Builder is the
-  main event. Likely a new game folder `conversion-builder/` reusing `conversion-conveyor`'s
-  engine (promote the engine to `shared/js/` when the second consumer appears).
+- **Keep the Conveyor** (orientation-pick) as the gentlest warm-up; the Builder is the main
+  event. **Decided:** the Builder is a new game folder `conversion-builder/`. **Build step 1:**
+  promote the conveyor's engine to `shared/js/conversion-engine.js` (+ its test) so both games
+  share it; the conveyor then imports from there.
 
 ## 9. The competitive bar
 
@@ -112,13 +113,18 @@ they're ugly, clunky, and joyless. We win on **beauty** (True Autumn, the cancel
 animation), **feel** (predict-then-Check, tactile tiles), and **discovery** (no tutorialized
 trick). Extra fun/entertainment polish can come after the mechanic is right — that's fine.
 
-## 10. Open questions
+## 10. Decisions (resolved 2026-06-21) + open
 
-- For a multi-question problem (H₂O made *and* O₂ required), is it one shared grid reused per
-  question, or stacked grids? Leaning: one grid, answered question-by-question.
-- How are distractors generated — hand-authored per problem, or derived from the reaction's
-  species + a small set of wrong numbers?
-- Should a correct build "lock in" as a worked example the learner can refer back to across the
-  multi-question set?
-- Where do molar masses come from when grams arrive — provided on the tile, or a lookup the
-  learner must do first?
+Resolved with the owner:
+
+- **Multi-question = one grid, answered question-by-question** (re-place tiles for each target).
+- **Distractors are derived** from the reaction's other species + a small set of wrong numbers
+  (no hand-authoring, so content scales).
+- **Builder is a separate game** (`conversion-builder/`); the Conveyor stays as the warm-up.
+- **Molar masses are provided** on the tiles when grams arrive (from the rung-3 discussion —
+  save the learner the lookup).
+
+Still open (decide during the build):
+
+- Should a correct build "lock in" as a referenceable worked example across the multi-question
+  set?
