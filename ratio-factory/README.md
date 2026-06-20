@@ -4,19 +4,26 @@ First fixed-ratio reasoning game for Chem Games.
 
 ## Current App
 
-`index.html` is a standalone Ratio Factory prototype.
+`index.html` is a standalone Ratio Factory prototype. Each recipe is defined as data
+(its parts, how many of each part go into one product, and a starting inventory), and
+one shared engine renders, randomizes, scores, and explains every recipe — so adding a
+recipe means adding a data entry, not new game logic.
 
-Current V1 behavior:
+Current behavior:
 
-- uses one everyday-object scenario: Cheese Sandwich Factory
+- includes two everyday-object recipes: Cheese Sandwich Factory and Apple Pie Factory
+- lets the player switch recipes with the buttons under the title
 - shows the recipe `2 bread slices + 1 cheese slice -> 1 cheese sandwich`
-- starts with available inventory: `11 bread slices` and `4 cheese slices`
-- can generate a new random bread/cheese inventory for the same recipe
-- asks for maximum complete sandwiches, limiting part, and leftover parts
+- shows the recipe `5 apples + 1 pie crust -> 1 apple pie`
+- starts Cheese Sandwich with `11 bread slices` and `4 cheese slices`
+- starts Apple Pie with `17 apples` and `4 pie crusts`
+- can generate a new random inventory for the selected recipe, always with a single
+  limiting part so the answer is never ambiguous
+- asks for maximum complete objects, the limiting part, and leftover parts
 - checks each answer separately
 - offers three progressive hints; each hint lowers the possible round score by 1 point
-- awards up to 4 points for each solved inventory round; giving up earns 0 points
-- explains the fixed-ratio reasoning with full-sandwich counts and leftovers
+- awards up to 4 points for each solved inventory round (minimum 1 once hints are used); giving up earns 0 points
+- explains the fixed-ratio reasoning with full-object counts and leftovers
 
 ## Teaching Goal
 
@@ -56,7 +63,10 @@ http://localhost:8000/ratio-factory/
 
 ## Next Options
 
-- Add more non-chemical scenarios such as deluxe sandwich, car factory, flower builder, or robot builder.
+- **Next planned step: the mole-ratio lens** — reuse this same engine to show a real
+  balanced equation (e.g. `4 Na + O₂ -> 2 Na₂O`) with mole amounts instead of food parts,
+  per [`STOICHIOMETRY_WORLD.md`](../documentation/STOICHIOMETRY_WORLD.md) rung 2.
+- Add more non-chemical recipes such as deluxe sandwich, car factory, flower builder, or robot builder.
+- Make the graphic and answer layout flexible for recipes with more than two input parts (today both grids assume two).
 - Add a visual assembly animation that consumes parts into complete products.
-- Add a chemistry bridge only after the everyday-ratio version feels natural.
 - Later map `parts -> reactants`, `recipe -> balanced equation`, `limiting part -> limiting reagent`, and `leftovers -> excess reagent`.

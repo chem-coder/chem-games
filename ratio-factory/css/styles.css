@@ -70,6 +70,29 @@ h1 {
   line-height: 1.05;
 }
 
+.scenario-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.scenario-choice {
+  min-height: 38px;
+  padding: 8px 12px;
+  color: var(--blue);
+  background: #ffffff;
+  border: 1px solid rgba(40, 107, 216, 0.36);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.scenario-choice.is-active {
+  color: #ffffff;
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
 h2 {
   margin-bottom: 14px;
   color: #243640;
@@ -359,12 +382,8 @@ label {
   border-radius: 8px;
 }
 
-.part-answer-bread {
-  grid-column: 1;
-}
-
-.part-answer-cheese {
-  grid-column: 2;
+.part-answer {
+  grid-column: var(--answer-column);
 }
 
 .product-answer {
@@ -516,8 +535,7 @@ button:disabled:hover {
     grid-template-columns: 1fr;
   }
 
-  .part-answer-bread,
-  .part-answer-cheese,
+  .part-answer,
   .product-answer,
   .limiting-field {
     grid-column: 1;
