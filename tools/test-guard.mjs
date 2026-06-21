@@ -10,6 +10,7 @@ const SUITES = [
   "shared/js/conversion-engine.test.js",
   "conversion-conveyor/js/problems.test.js",
   "conversion-builder/js/builder.test.js",
+  "acid-base-sorter/js/sorter.test.js",
   "tools/validate-reactions.test.js"
 ];
 

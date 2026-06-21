@@ -1,0 +1,142 @@
+import { gradeCard, requeue, isComplete } from "./sorter.js";
+import { DECKS } from "../data/decks.js?v=20260621-sorter";
+
+const root = document.querySelector("#game");
+const switcher = document.querySelector("#deckSwitcher");
+
+let deckIndex = 0;
+let queue = []; // card ids, front = current card
+let selections = {}; // axisId -> optionId
+let checked = false;
+let graded = null; // { perAxis, allCorrect }
+const masteredByDeck = DECKS.map(() => new Set());
+
+const deck = () => DECKS[deckIndex];
+const mastered = () => masteredByDeck[deckIndex];
+const card = () => deck().cards.find((c) => c.id === queue[0]);
+
+function shuffle(list) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function loadDeck(i) {
+  deckIndex = i;
+  masteredByDeck[i].clear();
+  queue = shuffle(deck().cards.map((c) => c.id));
+  resetCard();
+  renderSwitcher();
+}
+
+function resetCard() {
+  selections = {};
+  checked = false;
+  graded = null;
+  render();
+}
+
+function pick(axisId, optionId) {
+  if (checked) return;
+  selections[axisId] = optionId;
+  render();
+}
+
+function check() {
+  if (checked || !isComplete(deck().axes, selections)) return;
+  graded = gradeCard(deck().axes, card(), selections);
+  checked = true;
+  if (graded.allCorrect) mastered().add(card().id);
+  render();
+}
+
+function next() {
+  queue = requeue(queue, graded.allCorrect);
+  if (queue.length === 0) renderDone();
+  else resetCard();
+}
+
+// ── rendering ──
+function axisRow(ax) {
+  const buttons = ax.options
+    .map((o) => {
+      const picked = selections[ax.id] === o.id;
+      let cls = "opt";
+      if (checked) {
+        const isAnswer = card().answers[ax.id] === o.id;
+        if (isAnswer) cls += " is-answer"; // the correct option, always highlighted on Check
+        else if (picked) cls += " is-wrong"; // the student's incorrect pick
+      } else if (picked) {
+        cls += " is-picked";
+      }
+      return `<button class="${cls}" data-axis="${ax.id}" data-opt="${o.id}" ${checked ? "disabled" : ""}>${o.label}</button>`;
+    })
+    .join("");
+  const mark = checked ? (graded.perAxis[ax.id] ? '<span class="mark ok">✓</span>' : '<span class="mark no">✗</span>') : "";
+  return `<div class="axis"><span class="axis-label">${ax.label}${mark}</span><div class="opts">${buttons}</div></div>`;
+}
+
+function render() {
+  const c = card();
+  const remaining = queue.length;
+
+  const nameReveal = checked
+    ? `<p class="name-reveal">${c.formula} — <strong>${c.name}</strong></p>`
+    : `<p class="name-reveal is-hidden">name hidden — classify, then Check</p>`;
+
+  let feedback = `<p class="feedback">&nbsp;</p>`;
+  if (checked) {
+    feedback = graded.allCorrect
+      ? `<p class="feedback ok">All correct — mastered. It leaves the stack.</p>`
+      : `<p class="feedback no">Not quite — the right answers are highlighted. This card comes back around.</p>`;
+  }
+
+  root.innerHTML = `
+    <div class="card-face">
+      <span class="card-tag">${deck().label.replace(/s$/, "")}</span>
+      <p class="formula">${c.formula}</p>
+    </div>
+    ${nameReveal}
+    <div class="axes">${deck().axes.map(axisRow).join("")}</div>
+    ${feedback}
+    <div class="controls">
+      <p class="score">Mastered ${mastered().size} of ${deck().cards.length} &middot; ${remaining} in stack</p>
+      ${checked
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !graded.allCorrect ? "Next card →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn" ${isComplete(deck().axes, selections) ? "" : "disabled"}>Check</button>`}
+    </div>
+  `;
+
+  root.querySelectorAll(".opt").forEach((b) =>
+    b.addEventListener("click", () => pick(b.dataset.axis, b.dataset.opt))
+  );
+  const checkBtn = root.querySelector("#checkBtn");
+  if (checkBtn) checkBtn.addEventListener("click", check);
+  const nextBtn = root.querySelector("#nextBtn");
+  if (nextBtn) nextBtn.addEventListener("click", next);
+}
+
+function renderSwitcher() {
+  switcher.innerHTML = DECKS.map(
+    (d, i) =>
+      `<button class="deck-choice${i === deckIndex ? " is-active" : ""}" data-deck="${i}" type="button" aria-pressed="${i === deckIndex}">${d.label}</button>`
+  ).join("");
+  switcher.querySelectorAll(".deck-choice").forEach((b) =>
+    b.addEventListener("click", () => loadDeck(Number(b.dataset.deck)))
+  );
+}
+
+function renderDone() {
+  root.innerHTML = `
+    <p class="prompt">Stack cleared — you classified every ${deck().label.toLowerCase().replace(/s$/, "")} correctly. ${mastered().size} of ${deck().cards.length} mastered.</p>
+    <div class="controls">
+      <button class="action primary" id="againBtn">Shuffle &amp; go again</button>
+    </div>`;
+  root.querySelector("#againBtn").addEventListener("click", () => loadDeck(deckIndex));
+}
+
+renderSwitcher();
+loadDeck(0);
