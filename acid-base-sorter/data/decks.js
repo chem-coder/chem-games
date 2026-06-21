@@ -49,21 +49,25 @@ const bases = {
     { id: "strength", label: "Strength",
       options: [{ id: "strong", label: "Strong" }, { id: "weak", label: "Weak" }] },
     { id: "form", label: "Form",
-      options: [{ id: "hydroxide", label: "Metal hydroxide" }, { id: "molecular", label: "Molecular" }] }
+      options: [{ id: "hydroxide", label: "Metal hydroxide" }, { id: "molecular", label: "Molecular" }] },
+    { id: "ohcount", label: "OH⁻ given",
+      options: [{ id: "mono", label: "One (monoacidic)" }, { id: "poly", label: "Two+ (polyacidic)" }] }
   ],
   cards: [
-    // ── strong: group I + heavy group II hydroxides ──
-    { id: "lioh",  formula: "LiOH",     name: "lithium hydroxide",   answers: { strength: "strong", form: "hydroxide" } },
-    { id: "naoh",  formula: "NaOH",     name: "sodium hydroxide",    answers: { strength: "strong", form: "hydroxide" } },
-    { id: "koh",   formula: "KOH",      name: "potassium hydroxide", answers: { strength: "strong", form: "hydroxide" } },
-    { id: "caoh2", formula: "Ca(OH)₂",  name: "calcium hydroxide",   answers: { strength: "strong", form: "hydroxide" } },
-    { id: "sroh2", formula: "Sr(OH)₂",  name: "strontium hydroxide", answers: { strength: "strong", form: "hydroxide" } },
-    { id: "baoh2", formula: "Ba(OH)₂",  name: "barium hydroxide",    answers: { strength: "strong", form: "hydroxide" } },
+    // ── strong: soluble group I hydroxides + heavy group II hydroxides (the memorize set) ──
+    { id: "lioh",  formula: "LiOH",     name: "lithium hydroxide",   answers: { strength: "strong", form: "hydroxide", ohcount: "mono" } },
+    { id: "naoh",  formula: "NaOH",     name: "sodium hydroxide",    answers: { strength: "strong", form: "hydroxide", ohcount: "mono" } },
+    { id: "koh",   formula: "KOH",      name: "potassium hydroxide", answers: { strength: "strong", form: "hydroxide", ohcount: "mono" } },
+    { id: "rboh",  formula: "RbOH",     name: "rubidium hydroxide",  answers: { strength: "strong", form: "hydroxide", ohcount: "mono" } },
+    { id: "csoh",  formula: "CsOH",     name: "cesium hydroxide",    answers: { strength: "strong", form: "hydroxide", ohcount: "mono" } },
+    { id: "caoh2", formula: "Ca(OH)₂",  name: "calcium hydroxide",   answers: { strength: "strong", form: "hydroxide", ohcount: "poly" } },
+    { id: "sroh2", formula: "Sr(OH)₂",  name: "strontium hydroxide", answers: { strength: "strong", form: "hydroxide", ohcount: "poly" } },
+    { id: "baoh2", formula: "Ba(OH)₂",  name: "barium hydroxide",    answers: { strength: "strong", form: "hydroxide", ohcount: "poly" } },
     // ── weak ──
-    { id: "nh3",   formula: "NH₃",      name: "ammonia",             answers: { strength: "weak", form: "molecular" } },
-    { id: "ch3nh2",formula: "CH₃NH₂",   name: "methylamine",         answers: { strength: "weak", form: "molecular" } },
-    { id: "aloh3", formula: "Al(OH)₃",  name: "aluminum hydroxide",  answers: { strength: "weak", form: "hydroxide" } },
-    { id: "feoh3", formula: "Fe(OH)₃",  name: "iron(III) hydroxide", answers: { strength: "weak", form: "hydroxide" } }
+    { id: "nh3",   formula: "NH₃",      name: "ammonia",             answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "ch3nh2",formula: "CH₃NH₂",   name: "methylamine",         answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "aloh3", formula: "Al(OH)₃",  name: "aluminum hydroxide",  answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },
+    { id: "feoh3", formula: "Fe(OH)₃",  name: "iron(III) hydroxide", answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } }
   ]
 };
 

@@ -32,9 +32,13 @@ Companions: `ARCHITECTURE.md` (module pattern, shared tokens, tests), `NOMENCLAT
   monoprotic despite 4 H).
 - **Type** — Binary (H + nonmetal, no O) vs Oxyacid (contains O).
 
-**Bases** (two axes, the honest parallel — "binary vs oxy" has no meaning for bases):
-- **Strength** — Strong vs Weak.
+**Bases** (three axes, the honest parallel — "binary vs oxy" has no meaning for bases):
+- **Strength** — Strong vs Weak. Strong = the memorize set: soluble group-I hydroxides
+  (LiOH, NaOH, KOH, RbOH, CsOH) + heavy group-II hydroxides (Ca(OH)₂, Sr(OH)₂, Ba(OH)₂).
 - **Form** — Metal hydroxide (contains OH) vs Molecular (ammonia / amines).
+- **OH⁻ given** — Monoacidic (one OH⁻ / accepts one H⁺) vs Polyacidic (two+). The base parallel
+  to the acids' mono/polyprotic. Excludes solubility as an axis (it overlaps strength and the
+  Mg(OH)₂ "dissociates-but-insoluble" trap muddies it).
 
 Axes are **data-driven** (`deck.axes`), so adding a deck or an axis is just content.
 

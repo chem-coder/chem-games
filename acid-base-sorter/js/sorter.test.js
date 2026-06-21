@@ -8,7 +8,7 @@ const bases = DECKS.find((d) => d.id === "bases");
 
 // Canonical taught sets — the test asserts "strong" iff membership here.
 const STRONG_ACIDS = new Set(["HCl", "HBr", "HI", "HNO₃", "HClO₄", "HClO₃", "H₂SO₄"]);
-const STRONG_BASES = new Set(["LiOH", "NaOH", "KOH", "Ca(OH)₂", "Sr(OH)₂", "Ba(OH)₂"]);
+const STRONG_BASES = new Set(["LiOH", "NaOH", "KOH", "RbOH", "CsOH", "Ca(OH)₂", "Sr(OH)₂", "Ba(OH)₂"]);
 
 // ── engine ──
 test("gradeCard marks each axis and reports all-correct only when every axis matches", () => {
@@ -87,5 +87,12 @@ test("bases: form is metal hydroxide iff the formula contains OH", () => {
   for (const c of bases.cards) {
     const expected = c.formula.includes("OH") ? "hydroxide" : "molecular";
     assert.equal(c.answers.form, expected, `${c.formula} form should be ${expected}`);
+  }
+});
+
+test("bases: OH-count is polyacidic iff the formula shows (OH)₂/₃ (else monoacidic)", () => {
+  for (const c of bases.cards) {
+    const expected = /\(OH\)[₂₃]/.test(c.formula) ? "poly" : "mono";
+    assert.equal(c.answers.ohcount, expected, `${c.formula} OH-count should be ${expected}`);
   }
 });
