@@ -1,10 +1,12 @@
 import { gradeCard, requeue, isComplete } from "./sorter.js";
-import { DECKS } from "../data/decks.js?v=20260621-sorter";
+import { renderPeriodicTable } from "./periodic-table.js";
+import { DECKS } from "../data/decks.js?v=20260621-intro";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
 
 let deckIndex = 0;
+let mode = "intro"; // "intro" explainer screen, or "play" the stack
 let queue = []; // card ids, front = current card
 let selections = {}; // axisId -> optionId
 let checked = false;
@@ -26,10 +28,24 @@ function shuffle(list) {
 
 function loadDeck(i) {
   deckIndex = i;
+  mode = "intro";
   masteredByDeck[i].clear();
   queue = shuffle(deck().cards.map((c) => c.id));
-  resetCard();
+  selections = {};
+  checked = false;
+  graded = null;
   renderSwitcher();
+  render();
+}
+
+function startStack() {
+  mode = "play";
+  resetCard();
+}
+
+function showIntro() {
+  mode = "intro";
+  render();
 }
 
 function resetCard() {
@@ -80,6 +96,52 @@ function axisRow(ax) {
 }
 
 function render() {
+  if (mode === "intro") return renderIntro();
+  renderCard();
+}
+
+function chip(label, items) {
+  return `<div class="ex"><span class="ex-label">${label}</span><span class="ex-items">${items
+    .map((i) => `<span class="ex-chip">${i}</span>`)
+    .join("")}</span></div>`;
+}
+
+function renderIntro() {
+  const intro = deck().intro;
+  const concepts = intro.concepts
+    .map(
+      (cn) => `<div class="concept">
+        <h3>${cn.title}</h3>
+        <p>${cn.text}</p>
+        <div class="examples">${cn.examples.map((e) => chip(e.label, e.items)).join("")}</div>
+      </div>`
+    )
+    .join("");
+
+  const pt = intro.pt;
+  const legend = pt.legend
+    .map(
+      (l) => `<span class="leg"><span class="leg-swatch" style="background:${pt.palette[l.cat].fill};border-color:${pt.palette[l.cat].stroke}"></span>${l.label}</span>`
+    )
+    .join("");
+
+  root.innerHTML = `
+    <p class="intro-lede">${intro.blurb}</p>
+    <div class="concepts">${concepts}</div>
+    <div class="pt-block">
+      <h3>${pt.title}</h3>
+      <div class="pt-wrap">${renderPeriodicTable(pt.highlight, pt.palette)}</div>
+      <div class="pt-legend">${legend}</div>
+      <p class="pt-note">${pt.note}</p>
+    </div>
+    <div class="controls">
+      <button class="action primary" id="startBtn">Start the ${deck().label.toLowerCase()} stack →</button>
+    </div>
+  `;
+  root.querySelector("#startBtn").addEventListener("click", startStack);
+}
+
+function renderCard() {
   const c = card();
   const remaining = queue.length;
 
@@ -95,6 +157,7 @@ function render() {
   }
 
   root.innerHTML = `
+    <button class="intro-link" id="introBtn" type="button">↩ Intro &amp; periodic-table tips</button>
     <div class="card-face">
       <span class="card-tag">${deck().label.replace(/s$/, "")}</span>
       <p class="formula">${c.formula}</p>
@@ -110,6 +173,7 @@ function render() {
     </div>
   `;
 
+  root.querySelector("#introBtn").addEventListener("click", showIntro);
   root.querySelectorAll(".opt").forEach((b) =>
     b.addEventListener("click", () => pick(b.dataset.axis, b.dataset.opt))
   );
@@ -135,7 +199,10 @@ function renderDone() {
     <div class="controls">
       <button class="action primary" id="againBtn">Shuffle &amp; go again</button>
     </div>`;
-  root.querySelector("#againBtn").addEventListener("click", () => loadDeck(deckIndex));
+  root.querySelector("#againBtn").addEventListener("click", () => {
+    loadDeck(deckIndex);
+    startStack();
+  });
 }
 
 renderSwitcher();

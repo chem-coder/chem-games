@@ -9,6 +9,42 @@
 const acids = {
   id: "acids",
   label: "Acids",
+  intro: {
+    blurb: "Three quick reads before the stack. You'll sort each acid by strength, by how many H⁺ it can give, and by whether it carries oxygen.",
+    concepts: [
+      { title: "Strong vs Weak",
+        text: "A strong acid ionizes completely in water — practically every molecule lets go of its H⁺. A weak acid only partly ionizes; most molecules stay whole. There are just seven strong acids: treat anything not on that list as weak.",
+        examples: [
+          { label: "Strong (memorize)", items: ["HCl", "HNO₃", "H₂SO₄", "HClO₄"] },
+          { label: "Weak (everything else)", items: ["HF", "HC₂H₃O₂", "H₂CO₃"] }
+        ] },
+      { title: "Monoprotic vs Polyprotic",
+        text: "“Protic” counts the H⁺ an acid can donate. Monoprotic gives one; polyprotic gives two or more. Count only the ionizable H — acetic acid has 4 H but donates just one, so it's monoprotic.",
+        examples: [
+          { label: "Monoprotic", items: ["HCl", "HNO₃", "HC₂H₃O₂"] },
+          { label: "Polyprotic", items: ["H₂SO₄", "H₃PO₄"] }
+        ] },
+      { title: "Binary vs Oxyacid",
+        text: "A binary acid is hydrogen plus one nonmetal, no oxygen. An oxyacid contains oxygen — usually H plus a polyatomic oxyanion. The quick test: is there an O in the formula?",
+        examples: [
+          { label: "Binary (no O)", items: ["HCl", "H₂S", "HCN"] },
+          { label: "Oxyacid (has O)", items: ["HNO₃", "H₂SO₄"] }
+        ] }
+    ],
+    pt: {
+      title: "The strong binary acids live in the halogen column",
+      highlight: { Cl: "halide", Br: "halide", I: "halide", F: "exception" },
+      palette: {
+        halide: { fill: "var(--accent-soft)", stroke: "var(--accent)", text: "var(--accent-dark)" },
+        exception: { fill: "var(--danger-soft)", stroke: "var(--danger-line)", text: "var(--danger)" }
+      },
+      legend: [
+        { cat: "halide", label: "Strong binary acids — HCl, HBr, HI" },
+        { cat: "exception", label: "HF is the exception — it's weak" }
+      ],
+      note: "The three strong binary acids are the halogens just below fluorine. HF breaks the pattern — it's weak. The strong oxyacids (HNO₃, H₂SO₄, HClO₄, HClO₃) have no clean column; they're a separate short list to memorize."
+    }
+  },
   axes: [
     { id: "strength", label: "Strength",
       options: [{ id: "strong", label: "Strong" }, { id: "weak", label: "Weak" }] },
@@ -45,6 +81,46 @@ const acids = {
 const bases = {
   id: "bases",
   label: "Bases",
+  intro: {
+    blurb: "Two reads and a periodic-table trick before the stack. The strong-base list is short — and it's sitting right there in the table.",
+    concepts: [
+      { title: "Strong vs Weak",
+        text: "A strong base dissociates completely, releasing all of its OH⁻. The strong bases are a short list: the group 1 hydroxides plus the heavy group 2 hydroxides (Ca, Sr, Ba). Ammonia and most other bases are weak.",
+        examples: [
+          { label: "Strong (memorize)", items: ["NaOH", "KOH", "Ba(OH)₂"] },
+          { label: "Weak (everything else)", items: ["NH₃", "Al(OH)₃"] }
+        ] },
+      { title: "Metal hydroxide vs Molecular",
+        text: "Most bases are metal hydroxides — a metal cation joined to OH⁻. Molecular bases have no OH in the formula; they pull an H⁺ off water instead. The quick test: look for OH.",
+        examples: [
+          { label: "Metal hydroxide", items: ["NaOH", "Ca(OH)₂"] },
+          { label: "Molecular", items: ["NH₃", "CH₃NH₂"] }
+        ] },
+      { title: "Monoacidic vs Polyacidic",
+        text: "This counts how many OH⁻ a base provides (or H⁺ it can neutralize). One makes it monoacidic; two or more, polyacidic. It's the base's mirror of mono/polyprotic for acids.",
+        examples: [
+          { label: "Monoacidic", items: ["NaOH", "NH₃"] },
+          { label: "Polyacidic", items: ["Ca(OH)₂", "Al(OH)₃"] }
+        ] }
+    ],
+    pt: {
+      title: "Strong bases sit in two columns",
+      highlight: {
+        Li: "strong", Na: "strong", K: "strong", Rb: "strong", Cs: "strong", Fr: "strong",
+        Ca: "strong", Sr: "strong", Ba: "strong",
+        Be: "light", Mg: "light"
+      },
+      palette: {
+        strong: { fill: "var(--success-vivid-soft)", stroke: "var(--success-vivid)", text: "var(--success)" },
+        light: { fill: "var(--danger-soft)", stroke: "var(--danger-line)", text: "var(--danger)" }
+      },
+      legend: [
+        { cat: "strong", label: "Group 1 + Ca/Sr/Ba — form strong base hydroxides" },
+        { cat: "light", label: "Be, Mg — not strong (Mg(OH)₂ is weak)" }
+      ],
+      note: "Every group 1 metal forms a strong base hydroxide (LiOH … CsOH). In group 2, only the heavy three — Ca, Sr, Ba — do; Be and Mg don't. That's the whole strong-base list, read straight off the table."
+    }
+  },
   axes: [
     { id: "strength", label: "Strength",
       options: [{ id: "strong", label: "Strong" }, { id: "weak", label: "Weak" }] },

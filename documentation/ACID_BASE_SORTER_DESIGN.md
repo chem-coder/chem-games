@@ -72,6 +72,21 @@ debate), boric/phosphorous acids (atypical proticity), borderline-strength oxyac
 - `index.html`, `css/styles.css` — True Autumn tokens, the family look.
 - Hub card; deploys with the rest on Pages.
 
+## 4b. Intro / explainer screen (added 2026-06-21)
+
+Each deck opens on an **Introduction** before the stack (not straight into cards):
+- A one-line blurb, then a ~3-line explainer per concept with **example chips** (Strong: HCl,
+  HNO₃ … / Weak: HF, …) so each axis is shown, not just told.
+- A **highlighted periodic table** — the mnemonic Dalia uses at the board. Bases: group 1 +
+  Ca/Sr/Ba glow (strong), Be/Mg flagged (not strong) — the whole strong-base list read off the
+  table. Acids: the halogens below F (HCl/HBr/HI) glow, HF flagged as the weak exception.
+- "Start the … stack →" begins play; an "↩ Intro" link returns any time.
+
+`js/periodic-table.js` is a **pure** SVG builder — `renderPeriodicTable(highlight, palette)` over
+a full 118-element layout. Reusable; promote to `shared/` when the nomenclature game wants it.
+Guarded by `periodic-table.test.js`: highlighted symbols must be real elements, legends must be
+palette-backed (catches a typo'd `highlight` map).
+
 ## 5. Later / open
 
 - A "missed pile" review at the end; per-axis weak-spot stats (which axis trips him most).
