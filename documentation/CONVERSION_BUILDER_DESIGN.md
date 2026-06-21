@@ -114,6 +114,20 @@ validation.
   promote the conveyor's engine to `shared/js/conversion-engine.js` (+ its test) so both games
   share it; the conveyor then imports from there.
 
+## 8b. Next expansions (decided 2026-06-21)
+
+Two directions, both reusing the exact build-the-grid mechanic:
+
+- **Everyday-objects deck first.** Before the learner does dimensional analysis with *compounds*,
+  add a deck that does the identical grid with everyday objects (wheels→cars, eggs→cartons,
+  $/apple) — the Conveyor already has this content; the Builder should too, as the gentle on-ramp
+  *inside the same game*. Teaches "given over 1 + cancel" with no chemical notation in the way.
+  Pure-engine impact: none (units are just tokens) — it's a new deck + a deck switcher.
+- **Forward: masses & molar masses.** Then grow the grid a column at a time per §7 — molar mass
+  (`g/mol`), then gram-to-gram (4 columns). Molar masses are *provided on tiles* (§10) from
+  `elements.json`; keep ratio logic correct first, significant figures later
+  (`STOICHIOMETRY_WORLD.md` §4).
+
 ## 9. The competitive bar
 
 Textbook publishers (Mastering, ALEKS, OWL…) have grid-style dimensional-analysis widgets — but

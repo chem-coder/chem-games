@@ -4,6 +4,26 @@ Created: 2026-06-20. A phased plan for the next few weeks, ordered to match the 
 
 This is a living plan. Phases are sequenced by dependency, not locked dates. Companion docs: `STOICHIOMETRY_WORLD.md` (design), `ARCHITECTURE.md` (conventions).
 
+> **Update 2026-06-21.** Shipped since this was written: shared tokens + engine (`shared/`),
+> Conversion Conveyor, **Conversion Builder (Tier A)**, and the **GitHub Pages launch is DONE** —
+> the hub is live at https://chem-coder.github.io/chem-games/ and Malcolm is using it (he asked
+> for the Builder *as homework*). Phase 4's launch goal is met. Two new lanes opened the day
+> Malcolm hit Acids & Bases — see "New lanes" below; they now lead the queue alongside the
+> stoichiometry expansion.
+
+---
+
+## New lanes (2026-06-21) — ordered
+
+1. **Acid/Base Sorter** *(building now)* — flashcard classification drill; timely (Malcolm
+   started A&B today) and it previews nomenclature. Spec: `ACID_BASE_SORTER_DESIGN.md`.
+2. **Nomenclature** *(next)* — progressive naming ladder from Dalia's 100-question worksheet;
+   existing `chem-nomenclature/` prototypes + ion databases to draw on. Spec:
+   `NOMENCLATURE_DESIGN.md`.
+3. **Conversion Builder expansion** — everyday-objects deck first (DA with objects before
+   compounds), then masses/molar masses by growing the grid a column. Spec:
+   `CONVERSION_BUILDER_DESIGN.md` §8b.
+
 ---
 
 ## Guiding decisions (2026-06-20)
