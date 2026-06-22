@@ -149,6 +149,15 @@ things about the rest." Next stages, roughly in order:
    - Formula subscripts now render as real `<sub>` markup (`formulaHtml()` in app.js, sized 0.72em
      in CSS) instead of tiny unicode glyphs, so long formulas like C₆H₅COOH read clearly.
 4. **End-of-round review** of just the cards that were missed, and a "strong-only speed round."
+5. **"Same acid, many spellings" mode (Dalia's idea, 2026-06-22).** A short stack where one acid is
+   shown, and on Check it reveals the *other* accepted ways to write it — but presented as a
+   **logical progression, one small change per row** (e.g. CH₃COOH → CH₃CO₂H [COOH→CO₂H] →
+   HC₂H₃O₂ [H to front, acetate as C₂H₃O₂] → HCH₃COO / HCH₃CO₂ [acetate as CH₃COO/CH₃CO₂]), NOT a
+   flat confusing list. Show each transformation in a column so the equivalence is obvious. Only
+   real-world variants that actually appear in books/online. The accepted-set matching model in the
+   nomenclature engine ([[nomenclature-plan]]) is the natural backbone — reuse it rather than
+   re-deriving. A static disclaimer card ("Same acid, written many ways") already ships on the
+   acids intro as the lightweight first step.
 
 ## 6. Later / open
 

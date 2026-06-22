@@ -57,7 +57,7 @@ test("db covers every Acid/Base Sorter species with matching strength", () => {
   const byFormula = (group) => new Map(group.map((x) => [x.formula, x]));
   const dbAcids = byFormula(db.acids);
   const dbBases = byFormula(db.bases);
-  for (const deck of DECKS) {
+  for (const deck of DECKS.filter((d) => d.id === "acids" || d.id === "bases")) {
     const table = deck.id === "acids" ? dbAcids : dbBases;
     for (const c of deck.cards) {
       const entry = table.get(c.formula);

@@ -34,6 +34,11 @@ const acids = {
         text: "Most acids write the acidic H first (HCl, HNO₃). But carboxylic acids carry it on a –COOH group, usually written at the END of the formula — so HCOOH, CH₃COOH and C₆H₅COOH are all acids even though they don't start with H. That last H, the one on –COOH, is what ionizes (it's still just monoprotic).",
         examples: [
           { label: "–COOH (acidic H at the end)", items: ["HCOOH", "CH₃COOH", "C₆H₅COOH", "CH₂ClCOOH"] }
+        ] },
+      { title: "Same acid, written many ways",
+        text: "Don't take \"H at the end\" as a rule, though — people DO write the acidic H at the front too, and the carboxyl group itself shows up as –COOH, –COO, or –CO₂. Acetic acid alone appears a half-dozen ways below; they're all the exact same molecule (its molecular formula C₂H₄O₂ hides which H is acidic, so it's rarely used for acids). The skill is spotting the carboxyl group and its one acidic H, however it's drawn.",
+        examples: [
+          { label: "Acetic acid — all the same molecule", items: ["CH₃COOH", "CH₃CO₂H", "HC₂H₃O₂", "HCH₃COO", "HCH₃CO₂"] }
         ] }
     ],
     pt: {
