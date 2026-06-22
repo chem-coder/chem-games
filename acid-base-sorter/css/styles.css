@@ -406,6 +406,38 @@ h1 {
   line-height: 1.4;
 }
 
+/* Saved-progress line + end-of-round missed pile */
+.progress-line {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+.progress-line strong { color: var(--accent-dark); font-family: var(--font-display); }
+
+.missed-block {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.missed-label { margin: 0; font-weight: 600; }
+.missed-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.reset-link {
+  margin-left: auto;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.reset-link:hover { color: var(--danger); text-decoration: underline; }
+
 .controls {
   display: flex;
   flex-wrap: wrap;

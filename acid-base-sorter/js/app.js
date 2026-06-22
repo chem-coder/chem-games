@@ -1,9 +1,11 @@
 // Version-tag every internal import so one release bump busts the whole module graph in the
 // browser cache (otherwise a returning visitor can load a stale engine against fresh data).
-import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-bonds4";
-import { renderPeriodicTable } from "./periodic-table.js?v=20260622-bonds4";
-import { STRUCTURES } from "./structures.js?v=20260622-bonds4";
-import { DECKS } from "../data/decks.js?v=20260622-bonds4";
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-progress";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260622-progress";
+import { STRUCTURES } from "./structures.js?v=20260622-progress";
+import { recordResult, masteredCount } from "./stats.js?v=20260622-progress";
+import { loadStats, saveStats, resetStats } from "./storage.js?v=20260622-progress";
+import { DECKS } from "../data/decks.js?v=20260622-progress";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -15,6 +17,8 @@ let roundTotal = 0; // how many cards this round started with (all strong + a we
 let selections = {}; // axisId -> optionId
 let checked = false;
 let graded = null; // { perAxis, allCorrect }
+let missedThisRound = new Set(); // cards missed at least once this round → the review pile
+let stats = loadStats(); // saved all-time mastery tally, persisted across sessions
 const masteredByDeck = DECKS.map(() => new Set());
 
 const deck = () => DECKS[deckIndex];
@@ -34,18 +38,34 @@ function loadDeck(i) {
   mode = "intro";
   masteredByDeck[i].clear();
   // A fresh round: every strong card + a random sample of weak ones, reshuffled each time.
-  queue = buildStack(deck()).map((c) => c.id);
-  roundTotal = queue.length;
+  beginRound(buildStack(deck()).map((c) => c.id), false);
+  renderSwitcher();
+  render();
+}
+
+// Set up a round from a list of card ids. render=false lets loadDeck stay on the intro.
+function beginRound(ids, render = true) {
+  queue = ids;
+  roundTotal = ids.length;
+  missedThisRound = new Set();
+  masteredByDeck[deckIndex].clear();
   selections = {};
   checked = false;
   graded = null;
-  renderSwitcher();
-  render();
+  if (render) resetCard();
 }
 
 function startStack() {
   mode = "play";
   resetCard();
+}
+
+// Re-drill only the cards missed this round (the "missed pile").
+function reviewMissed() {
+  const ids = [...missedThisRound];
+  if (!ids.length) return;
+  mode = "play";
+  beginRound(ids.slice());
 }
 
 function showIntro() {
@@ -71,6 +91,10 @@ function check() {
   graded = gradeCard(deck().axes, card(), selections);
   checked = true;
   if (graded.allCorrect) mastered().add(card().id);
+  else missedThisRound.add(card().id);
+  // tally into the saved all-time stats
+  stats = recordResult(stats, deck().id, card().id, graded.allCorrect);
+  saveStats(stats);
   render();
 }
 
@@ -166,8 +190,15 @@ function renderIntro() {
   // Naming aside (acids only): the HCN "binary" explanation.
   const namingBlock = intro.naming ? `<p class="naming-note">${intro.naming}</p>` : "";
 
+  // All-time saved progress (if any).
+  const done = masteredCount(stats, deck().id);
+  const progressLine = done
+    ? `<p class="progress-line">Saved progress: mastered <strong>${done} of ${deck().cards.length}</strong> ${deck().label.toLowerCase()} so far.</p>`
+    : "";
+
   root.innerHTML = `
     <p class="intro-lede">${intro.blurb}</p>
+    ${progressLine}
     <div class="concepts">${concepts}</div>
     ${namingBlock}
     <div class="pt-block">
@@ -238,14 +269,39 @@ function renderSwitcher() {
 }
 
 function renderDone() {
+  const label = deck().label.toLowerCase().replace(/s$/, "");
+  const missed = [...missedThisRound]
+    .map((id) => deck().cards.find((c) => c.id === id))
+    .filter(Boolean);
+  const done = masteredCount(stats, deck().id);
+
+  const missedBlock = missed.length
+    ? `<div class="missed-block">
+        <p class="missed-label">You stumbled on ${missed.length} before getting ${missed.length === 1 ? "it" : "them"} — worth another pass:</p>
+        <div class="missed-chips">${missed.map((c) => `<span class="ex-chip">${formulaHtml(c.formula)}</span>`).join("")}</div>
+      </div>`
+    : `<p class="feedback ok">Clean run — no stumbles. 🎉</p>`;
+
   root.innerHTML = `
-    <p class="prompt">Stack cleared — you classified all ${roundTotal} correctly, including every strong ${deck().label.toLowerCase().replace(/s$/, "")}. Shuffle for a fresh mix.</p>
+    <p class="prompt">Stack cleared — all ${roundTotal} classified, including every strong ${label}.</p>
+    ${missedBlock}
+    <p class="progress-line">Saved progress: mastered <strong>${done} of ${deck().cards.length}</strong> ${deck().label.toLowerCase()} all-time.</p>
     <div class="controls">
-      <button class="action primary" id="againBtn">Shuffle &amp; go again</button>
+      ${missed.length ? `<button class="action primary" id="reviewBtn">Drill the ${missed.length} you missed →</button>` : ""}
+      <button class="action ${missed.length ? "ghost" : "primary"}" id="againBtn">Shuffle &amp; go again</button>
+      <button class="reset-link" id="resetBtn" type="button">Reset saved progress</button>
     </div>`;
+
+  const reviewBtn = root.querySelector("#reviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", reviewMissed);
   root.querySelector("#againBtn").addEventListener("click", () => {
     loadDeck(deckIndex);
     startStack();
+  });
+  root.querySelector("#resetBtn").addEventListener("click", () => {
+    resetStats();
+    stats = {};
+    renderDone();
   });
 }
 
