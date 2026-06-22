@@ -80,7 +80,7 @@ const methylamine = svg(
 const hydrazine = svg(
   bond(80, 74, 130, 74, "plain") + // the N–N bond
   bond(80, 74, 39, 39, "wedge") + bond(80, 74, 93, 22, "dash") +
-  bond(130, 74, 171, 109, "wedge") + bond(130, 74, 117, 126, "dash") +
+  bond(130, 74, 117, 126, "wedge") + bond(130, 74, 171, 109, "dash") +
   atom(39, 39, "H") + atom(93, 22, "H") + atom(171, 109, "H") + atom(117, 126, "H") +
   atom(80, 74, "N") + atom(130, 74, "N") +
   dots(80, 92) + dots(130, 56)
