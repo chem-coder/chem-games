@@ -36,6 +36,10 @@
   --success-vivid-soft: #d6f2df;
   --warning-soft: #f6e7c5;
   --warning-line: #e3c277;
+  /* Warm brick red (True Autumn) — wrong-answer states and the -ide accent */
+  --danger: #b4502f;
+  --danger-soft: #f6e3da;
+  --danger-line: #e0b6a3;
 
   /* Element atom colors (double as the multi-color accent set) */
   --el-carbon: #322e27;

@@ -16,6 +16,7 @@ const SUITES = [
   "acid-base-sorter/js/stats.test.js",
   "nomenclature/js/naming.test.js",
   "nomenclature/js/triad.test.js",
+  "nomenclature/builder/js/builder.test.js",
   "tools/acid-base-db.test.js",
   "tools/validate-reactions.test.js"
 ];

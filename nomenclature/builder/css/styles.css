@@ -1,0 +1,154 @@
+/* Name Builder — Type I ionic. Links shared tokens first, then this. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+.app-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+
+/* House rule: formula subscripts render at ≥50% size, slightly lowered — never the tiny default. */
+sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: inherit; }
+
+/* ── header ── */
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow {
+  margin: 18px 0 4px; color: var(--plum); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.app-header h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 52ch; }
+
+/* ── card surface ── */
+.game {
+  margin-top: 22px; padding: 24px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+/* ── intro: the visual schematic ── */
+.intro-eyebrow {
+  margin: 0 0 6px; color: var(--plum); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.8rem; letter-spacing: 0.04em;
+}
+.intro-lede { margin: 0 0 18px; font-size: 1.08rem; }
+
+.schema { display: flex; align-items: stretch; justify-content: center; gap: 14px; margin: 6px 0 16px; }
+.block {
+  flex: 1 1 0; max-width: 280px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 24px 16px; text-align: center;
+  /* soft rounded cards matching the app (not the textbook's beveled bars) */
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(74, 58, 30, 0.10);
+}
+/* metal / nonmetal are the stars; the descriptors sit small underneath. */
+.block .block-main { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; line-height: 1.1; color: var(--ink); }
+.block .block-main .suffix { font-size: 0.62em; font-weight: 600; color: var(--muted); }
+.block .block-main .suffix em { font-style: italic; }
+.block .block-sub { margin-top: 5px; font-size: 0.82rem; color: var(--muted); }
+.block .block-sub em { font-style: italic; }
+/* app-native colors (teal cation / plum anion) — our own thing, not the textbook's gold/green */
+.block.cation { background: var(--accent-soft); border: 1.5px solid var(--accent); }
+.block.anion { background: var(--plum-soft); border: 1.5px solid var(--plum); }
+.block.anion .suffix em { color: var(--danger, #b4502f); font-weight: 700; } /* the -ide accent, warm red */
+.schema-plus { align-self: center; font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; color: var(--muted); }
+
+.schema-note { margin: 0 0 16px; text-align: center; color: var(--muted); font-size: 0.92rem; }
+
+.ex-maps { display: grid; gap: 8px; justify-content: center; }
+.ex-map {
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: var(--font-display); font-size: 1.15rem;
+}
+.ex-map .ex-f { min-width: 64px; text-align: right; font-weight: 800; }
+.ex-map .arrow { color: var(--muted); }
+.w-cation { color: var(--accent-dark); font-weight: 700; } /* teal — maps to the cation block */
+.w-anion { color: var(--plum-dark); font-weight: 700; } /* plum — maps to the anion block */
+.w-anion .ide { color: var(--danger, #b4502f); } /* the -ide ending, warm red */
+
+/* ── play: formula card ── */
+.intro-link { display: inline-block; margin-bottom: 12px; padding: 0; border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+.intro-link:hover { text-decoration: underline; }
+.formula-card {
+  position: relative; text-align: center;
+  padding: 18px 16px; margin-bottom: 18px;
+  background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.card-tag {
+  position: absolute; top: 10px; left: 14px;
+  color: var(--muted); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.formula { margin: 6px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; }
+
+/* ── play: typed answer ── */
+.build-label {
+  margin: 0 0 8px; text-align: center; color: var(--muted);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.answer-row { display: flex; justify-content: center; }
+.answer-input,
+.answer-built {
+  width: min(380px, 100%); min-height: 56px;
+  padding: 12px 18px; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+}
+.answer-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.answer-built { display: inline-flex; align-items: center; justify-content: center; }
+.answer-built.ok { background: var(--success-soft); border-color: var(--success-vivid); color: var(--success); }
+.answer-built.no { background: var(--danger-soft, #f6e3da); border-color: var(--danger-line, #d9a78f); color: var(--danger, #b4502f); }
+
+/* ── play: hints ── */
+.hints { margin-top: 14px; text-align: center; }
+.hint-list {
+  list-style: none; margin: 0 auto 10px; padding: 0; max-width: 50ch;
+  display: grid; gap: 6px;
+}
+.hint-list li {
+  padding: 8px 14px; text-align: left;
+  background: var(--warning-soft); border: 1px solid var(--warning-line);
+  border-radius: var(--radius-sm); font-size: 0.92rem;
+}
+.hint-btn {
+  padding: 7px 16px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 600; font-size: 0.9rem;
+  color: var(--plum-dark); background: var(--plum-soft);
+  border: 1.5px solid var(--plum); border-radius: 999px;
+}
+.hint-btn:hover { background: #e3d2e0; }
+
+/* ── feedback / reveal ── */
+.reveal { margin: 18px 0 2px; text-align: center; font-family: var(--font-display); font-size: 1.3rem; }
+.feedback { margin: 6px 0; text-align: center; font-weight: 600; min-height: 1.4em; }
+.feedback.ok { color: var(--success); }
+.feedback.no { color: var(--danger, #b4502f); }
+
+/* ── controls ── */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.score { margin: 0; color: var(--muted); font-size: 0.88rem; }
+.action {
+  margin-left: auto; padding: 12px 22px;
+  font-family: var(--font-display); font-weight: 700; font-size: 1rem; cursor: pointer;
+  border: 0; border-radius: var(--radius-sm);
+}
+.action.primary { color: #fff; background: var(--accent); }
+.action.primary:hover { background: var(--accent-dark); }
+.action.primary:disabled { background: var(--line); color: var(--muted); cursor: default; }
+.action.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
+.action.ghost:hover { background: var(--accent-soft); }
+
+/* ── done ── */
+.prompt { margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.missed-block { margin: 8px 0 4px; }
+.missed-label { margin: 0 0 8px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 6px 12px; font-family: var(--font-display); font-weight: 700;
+  background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
