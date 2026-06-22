@@ -34,7 +34,7 @@ const methylamine =
   `<svg class="lewis" viewBox="0 0 150 112" role="img" aria-label="Methylamine, CH3NH2, with a lone pair on nitrogen">` +
   lonePair(N_X, LP_Y) +
   letter(N_X, N_Y, "N") +
-  `<text x="${H_LEFT[0] - 12}" y="${H_LEFT[1]}" text-anchor="end" font-family="var(--font-display)" font-size="21" font-weight="700" fill="var(--ink)">H<tspan font-size="15" dy="5">3</tspan></text>` +
+  `<text x="${H_LEFT[0] - 8}" y="${H_LEFT[1]}" text-anchor="end" font-family="var(--font-display)" font-size="21" font-weight="700" fill="var(--ink)">H<tspan font-size="15" dy="5">3</tspan></text>` +
   letter(H_LEFT[0], H_LEFT[1], "C") +
   letter(H_RIGHT[0], H_RIGHT[1], "H") + letter(H_BOTTOM[0], H_BOTTOM[1], "H") +
   `</svg>`;
