@@ -26,18 +26,43 @@ const FROW = 8; // y-row where the lanthanide strip starts (gap after period 7)
 
 function cell(sym, row, col, highlight, palette) {
   if (!sym) return "";
-  const cat = highlight[sym];
-  const co = cat ? palette[cat] : null;
+  const cats = sym in highlight ? [].concat(highlight[sym]) : [];
   const x = col * CELL;
   const y = row * CELL;
-  const fill = co ? co.fill : "var(--surface)";
-  const stroke = co ? co.stroke : "var(--line)";
-  const text = co ? co.text : "var(--muted)";
+  const w = CELL - 2;
+  const ix = x + 1;
+  const iy = y + 1;
+
+  if (cats.length === 0) {
+    // plain cell
+    return (
+      `<rect x="${ix}" y="${iy}" width="${w}" height="${w}" rx="3" fill="var(--surface)" stroke="var(--line)" stroke-width="1"/>` +
+      label(x, y, sym, "var(--muted)", 500)
+    );
+  }
+  if (cats.length === 1) {
+    const co = palette[cats[0]];
+    return (
+      `<rect x="${ix}" y="${iy}" width="${w}" height="${w}" rx="3" fill="${co.fill}" stroke="${co.stroke}" stroke-width="1.5"/>` +
+      label(x, y, sym, co.text, 700)
+    );
+  }
+  // dual-role: split the cell diagonally — top-left = first role, bottom-right = second.
+  const a = palette[cats[0]];
+  const b = palette[cats[1]];
   return (
-    `<rect x="${x + 1}" y="${y + 1}" width="${CELL - 2}" height="${CELL - 2}" rx="3" ` +
-    `fill="${fill}" stroke="${stroke}" stroke-width="${co ? 1.5 : 1}"/>` +
+    `<polygon points="${ix},${iy} ${ix + w},${iy} ${ix},${iy + w}" fill="${a.fill}"/>` +
+    `<polygon points="${ix + w},${iy} ${ix + w},${iy + w} ${ix},${iy + w}" fill="${b.fill}"/>` +
+    `<line x1="${ix + w}" y1="${iy}" x2="${ix}" y2="${iy + w}" stroke="var(--surface)" stroke-width="1"/>` +
+    `<rect x="${ix}" y="${iy}" width="${w}" height="${w}" rx="3" fill="none" stroke="${a.stroke}" stroke-width="1.5"/>` +
+    label(x, y, sym, "var(--ink)", 700)
+  );
+}
+
+function label(x, y, sym, color, weight) {
+  return (
     `<text x="${x + CELL / 2}" y="${y + CELL / 2 + FS * 0.35}" text-anchor="middle" ` +
-    `font-size="${FS}" font-weight="${co ? 700 : 500}" fill="${text}" font-family="var(--font-display)">${sym}</text>`
+    `font-size="${FS}" font-weight="${weight}" fill="${color}" font-family="var(--font-display)">${sym}</text>`
   );
 }
 

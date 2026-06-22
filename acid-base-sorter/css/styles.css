@@ -179,6 +179,98 @@ h1 {
 }
 .pt-note { margin: 0; color: var(--muted); line-height: 1.5; font-size: 0.95rem; }
 
+/* Naming aside (HCN explainer) */
+.naming-note {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--plum-soft);
+  border: 1px solid var(--plum);
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+  font-size: 0.97rem;
+}
+
+/* The complete "memorize these" list, chunked to mirror the periodic table */
+.mem-block {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(30, 114, 104, 0.3);
+  border-radius: var(--radius);
+}
+.mem-block h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  color: var(--accent-dark);
+}
+.mem-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: start;
+}
+.mem-chunk {
+  flex: 1 1 150px;
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.mem-heading {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mem-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.mem-items li { display: flex; flex-direction: column; }
+.mem-formula { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.mem-name { color: var(--muted); font-size: 0.86rem; }
+.mem-foot { margin: 0; color: var(--muted); font-size: 0.85rem; line-height: 1.45; font-style: italic; }
+
+/* Molecular-base Lewis structures */
+.mol-block {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.mol-block h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  color: var(--accent-dark);
+}
+.mol-block p { margin: 0; line-height: 1.5; }
+.mol-row { display: flex; flex-wrap: wrap; gap: 14px; }
+.mol-card {
+  margin: 0;
+  flex: 1 1 160px;
+  max-width: 240px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+.mol-card .lewis { width: 100%; height: auto; max-height: 110px; }
+.mol-card figcaption {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--accent-dark);
+}
+
 .intro-link {
   justify-self: start;
   padding: 4px 0;
@@ -217,19 +309,26 @@ h1 {
 .formula {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.6rem, 9vw, 4rem);
+  font-size: clamp(2.5rem, 8.5vw, 3.8rem); /* ~5% smaller than before */
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 
+/* The "back of the card" name reveal — bigger and boxed so it can't be missed. */
 .name-reveal {
   margin: 0;
-  min-height: 1.4em;
+  padding: 10px 14px;
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
 }
 .name-reveal strong { color: var(--accent-dark); font-family: var(--font-display); }
-.name-reveal.is-hidden { color: var(--muted); font-style: italic; font-size: 0.92rem; }
+.name-reveal:not(.is-hidden) {
+  background: var(--accent-soft);
+  border-color: rgba(30, 114, 104, 0.25);
+}
+.name-reveal.is-hidden { color: var(--muted); font-style: italic; font-size: 0.95rem; padding: 6px 0; }
 
 /* Classification axes */
 .axes { display: grid; gap: 12px; }

@@ -87,6 +87,23 @@ a full 118-element layout. Reusable; promote to `shared/` when the nomenclature 
 Guarded by `periodic-table.test.js`: highlighted symbols must be real elements, legends must be
 palette-backed (catches a typo'd `highlight` map).
 
+## 4c. Memorize lists + richer intro (added 2026-06-22)
+
+- **Complete "memorize these" lists**, chunked to mirror the periodic table — and **test-guarded
+  to be the exact canonical set** (acids: the 7; bases: the 8), tied to the deck's strong cards so
+  they can never silently drift to a partial subset. Acids chunk as N&S oxyacids / Cl oxyacids /
+  binary halogen acids; bases as Group 1 / Group 2 columns. **FrOH is a footnote, not a memorize
+  item** (radioactive, never studied).
+- **Periodic table** now also marks **N and S** as oxyanion central atoms, and renders **Cl as a
+  two-tone diagonal split** (it's both a strong binary acid *and* the central atom of HClO₃/HClO₄).
+  `renderPeriodicTable` accepts an array of two categories per cell for this.
+- **HCN naming note** (acids): explains "binary" means "no oxygen," not "two elements" — placed in
+  the classification section, not the strong list (HCN is weak).
+- **Molecular bases**: short lone-pair explainer + Lewis structures (NH₃, CH₃NH₂) drawn with the
+  lone pair on N, in `js/structures.js`, as the visual clue for proton-accepting capacity.
+- Flashcard tweaks: the name reveal is boxed + larger (a student couldn't miss it); the formula is
+  ~5% smaller. Guarded by `intro.test.js` + the extended `periodic-table.test.js`.
+
 ## 5. Later / open
 
 - A "missed pile" review at the end; per-axis weak-spot stats (which axis trips him most).

@@ -33,10 +33,52 @@ for (const deck of DECKS) {
     const pt = intro.pt;
     for (const sym of Object.keys(pt.highlight)) {
       assert.ok(ELEMENT_SYMBOLS.has(sym), `${deck.id} highlights real element "${sym}"`);
-      assert.ok(pt.palette[pt.highlight[sym]], `${deck.id}: "${sym}" category has a palette entry`);
+      // a highlight value may be a single category or an array of two (dual-role, split fill)
+      const cats = [].concat(pt.highlight[sym]);
+      for (const c of cats) {
+        assert.ok(pt.palette[c], `${deck.id}: "${sym}" category "${c}" has a palette entry`);
+      }
     }
     for (const l of pt.legend) {
       assert.ok(pt.palette[l.cat], `${deck.id} legend cat "${l.cat}" has a palette entry`);
     }
   });
 }
+
+const acids = DECKS.find((d) => d.id === "acids");
+const bases = DECKS.find((d) => d.id === "bases");
+
+test("acids PT: N and S are highlighted as oxyanion central atoms", () => {
+  for (const sym of ["N", "S"]) {
+    assert.ok([].concat(acids.intro.pt.highlight[sym]).includes("central"), `${sym} is a central atom`);
+  }
+});
+
+test("acids PT: Cl shows its dual role (binary halogen AND oxyacid central atom)", () => {
+  const cats = [].concat(acids.intro.pt.highlight.Cl);
+  assert.ok(cats.includes("halide"), "Cl is a binary-acid halogen");
+  assert.ok(cats.includes("central"), "Cl is also an oxyacid central atom");
+  assert.equal(cats.length, 2, "Cl carries exactly its two roles");
+});
+
+test("acids PT: F is still flagged as the weak exception", () => {
+  assert.equal(acids.intro.pt.highlight.F, "exception");
+});
+
+test("bases PT: Fr is a footnote category, not a memorize-list 'strong'", () => {
+  assert.ok("Fr" in bases.intro.pt.highlight, "Fr appears on the table");
+  assert.notEqual(bases.intro.pt.highlight.Fr, "strong", "Fr must not read as a plain strong base");
+});
+
+test("renderPeriodicTable splits a dual-role cell into both category colors", () => {
+  const svg = renderPeriodicTable(
+    { Cl: ["halide", "central"] },
+    {
+      halide: { fill: "#e0ebe5", stroke: "#1e7268", text: "#134f48" },
+      central: { fill: "#ece1ea", stroke: "#835f7d", text: "#6b4d68" }
+    }
+  );
+  assert.match(svg, />Cl</, "Cl is rendered");
+  assert.match(svg, /#e0ebe5/, "first role's color is present");
+  assert.match(svg, /#ece1ea/, "second role's color is present");
+});

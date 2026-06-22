@@ -32,18 +32,39 @@ const acids = {
         ] }
     ],
     pt: {
-      title: "The strong binary acids live in the halogen column",
-      highlight: { Cl: "halide", Br: "halide", I: "halide", F: "exception" },
+      title: "Strong acids on the periodic table",
+      highlight: { Cl: ["halide", "central"], Br: "halide", I: "halide", F: "exception", N: "central", S: "central" },
       palette: {
         halide: { fill: "var(--accent-soft)", stroke: "var(--accent)", text: "var(--accent-dark)" },
+        central: { fill: "var(--plum-soft)", stroke: "var(--plum)", text: "var(--plum-dark)" },
         exception: { fill: "var(--danger-soft)", stroke: "var(--danger-line)", text: "var(--danger)" }
       },
       legend: [
         { cat: "halide", label: "Strong binary acids — HCl, HBr, HI" },
+        { cat: "central", label: "Central atom of a strong oxyacid — N, S, Cl" },
         { cat: "exception", label: "HF is the exception — it's weak" }
       ],
-      note: "The three strong binary acids are the halogens just below fluorine. HF breaks the pattern — it's weak. The strong oxyacids (HNO₃, H₂SO₄, HClO₄, HClO₃) have no clean column; they're a separate short list to memorize."
-    }
+      note: "Two patterns. The binary strong acids are the halogens just below fluorine — HCl, HBr, HI (HF breaks it: it's weak). The strong oxyacids are built around N, S, and Cl — HNO₃, H₂SO₄, HClO₃, HClO₄. Chlorine plays both roles, so its cell is two-toned: HCl is a strong binary acid, and Cl is the central atom of HClO₃/HClO₄."
+    },
+    memorize: {
+      title: "The complete strong-acid list — memorize all 7",
+      chunks: [
+        { heading: "Oxyacids of N & S", items: [
+          { formula: "HNO₃", name: "nitric acid" },
+          { formula: "H₂SO₄", name: "sulfuric acid" }
+        ] },
+        { heading: "Chlorine oxyacids", items: [
+          { formula: "HClO₃", name: "chloric acid" },
+          { formula: "HClO₄", name: "perchloric acid" }
+        ] },
+        { heading: "Binary halogen acids", items: [
+          { formula: "HCl", name: "hydrochloric acid" },
+          { formula: "HBr", name: "hydrobromic acid" },
+          { formula: "HI", name: "hydroiodic acid" }
+        ] }
+      ]
+    },
+    naming: "Naming note: HCN is hydrocyanic acid — named like a binary acid (hydro-…-ic) and grouped as “binary” even though it has three elements (it's built on the cyanide ion, CN⁻). Here “binary” means “no oxygen,” not “only two elements.” HCN is a weak acid, so it's not on the strong list above.",
   },
   axes: [
     { id: "strength", label: "Strength",
@@ -106,19 +127,47 @@ const bases = {
     pt: {
       title: "Strong bases sit in two columns",
       highlight: {
-        Li: "strong", Na: "strong", K: "strong", Rb: "strong", Cs: "strong", Fr: "strong",
+        Li: "strong", Na: "strong", K: "strong", Rb: "strong", Cs: "strong",
         Ca: "strong", Sr: "strong", Ba: "strong",
+        Fr: "rare",
         Be: "light", Mg: "light"
       },
       palette: {
         strong: { fill: "var(--success-vivid-soft)", stroke: "var(--success-vivid)", text: "var(--success)" },
+        rare: { fill: "var(--success-soft)", stroke: "var(--success-line)", text: "var(--success)" },
         light: { fill: "var(--danger-soft)", stroke: "var(--danger-line)", text: "var(--danger)" }
       },
       legend: [
-        { cat: "strong", label: "Group 1 + Ca/Sr/Ba — form strong base hydroxides" },
+        { cat: "strong", label: "Group 1 + Ca/Sr/Ba — the 8 strong bases to memorize" },
+        { cat: "rare", label: "Fr — strong in theory, but radioactive (footnote only)" },
         { cat: "light", label: "Be, Mg — not strong (Mg(OH)₂ is weak)" }
       ],
-      note: "Every group 1 metal forms a strong base hydroxide (LiOH … CsOH). In group 2, only the heavy three — Ca, Sr, Ba — do; Be and Mg don't. That's the whole strong-base list, read straight off the table."
+      note: "Every group 1 metal forms a strong base hydroxide (LiOH … CsOH). In group 2, only the heavy three — Ca, Sr, Ba — do; Be and Mg don't. That's the whole memorize list. (Francium fits the group 1 pattern too, but it's a radioactive footnote — see below.)"
+    },
+    memorize: {
+      title: "The complete strong-base list — memorize all 8",
+      chunks: [
+        { heading: "Group 1 hydroxides", items: [
+          { formula: "LiOH", name: "lithium hydroxide" },
+          { formula: "NaOH", name: "sodium hydroxide" },
+          { formula: "KOH", name: "potassium hydroxide" },
+          { formula: "RbOH", name: "rubidium hydroxide" },
+          { formula: "CsOH", name: "cesium hydroxide" }
+        ] },
+        { heading: "Group 2 hydroxides", items: [
+          { formula: "Ca(OH)₂", name: "calcium hydroxide" },
+          { formula: "Sr(OH)₂", name: "strontium hydroxide" },
+          { formula: "Ba(OH)₂", name: "barium hydroxide" }
+        ] }
+      ],
+      footnote: "FrOH (francium hydroxide) is also a group 1 hydroxide — in theory the strongest base of all — but francium is so radioactively rare it's never studied. It's a footnote, not a memorize item."
+    },
+    molecular: {
+      text: "Not every base is a metal hydroxide. Molecular bases like ammonia and the amines have no OH at all — they accept an H⁺ using a lone pair of electrons (the two dots on N). One lone pair takes one proton, which is why these are monoacidic.",
+      examples: [
+        { name: "ammonia", formula: "NH₃", structure: "ammonia", lonePairs: 1 },
+        { name: "methylamine", formula: "CH₃NH₂", structure: "methylamine", lonePairs: 1 }
+      ]
     }
   },
   axes: [

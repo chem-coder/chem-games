@@ -12,6 +12,7 @@ const SUITES = [
   "conversion-builder/js/builder.test.js",
   "acid-base-sorter/js/sorter.test.js",
   "acid-base-sorter/js/periodic-table.test.js",
+  "acid-base-sorter/js/intro.test.js",
   "tools/validate-reactions.test.js"
 ];
 

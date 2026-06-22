@@ -1,6 +1,7 @@
 import { gradeCard, requeue, isComplete } from "./sorter.js";
 import { renderPeriodicTable } from "./periodic-table.js";
-import { DECKS } from "../data/decks.js?v=20260621-intro";
+import { STRUCTURES } from "./structures.js";
+import { DECKS } from "../data/decks.js?v=20260622-memorize";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -125,15 +126,54 @@ function renderIntro() {
     )
     .join("");
 
+  // The complete "memorize these" list, chunked to mirror the periodic table.
+  const mem = intro.memorize;
+  const memChunks = mem.chunks
+    .map(
+      (ch) => `<div class="mem-chunk">
+        <span class="mem-heading">${ch.heading}</span>
+        <ul class="mem-items">${ch.items
+          .map((it) => `<li><span class="mem-formula">${it.formula}</span><span class="mem-name">${it.name}</span></li>`)
+          .join("")}</ul>
+      </div>`
+    )
+    .join("");
+  const memBlock = `<div class="mem-block">
+      <h3>${mem.title}</h3>
+      <div class="mem-grid">${memChunks}</div>
+      ${mem.footnote ? `<p class="mem-foot">* ${mem.footnote}</p>` : ""}
+    </div>`;
+
+  // Molecular-base structures (bases only): lone-pair drawings as the proton-accepting clue.
+  let molBlock = "";
+  if (intro.molecular) {
+    const cards = intro.molecular.examples
+      .map(
+        (ex) => `<figure class="mol-card">${STRUCTURES[ex.structure] || ""}<figcaption>${ex.formula} — ${ex.name}</figcaption></figure>`
+      )
+      .join("");
+    molBlock = `<div class="mol-block">
+      <h3>Molecular bases — where the H⁺ lands</h3>
+      <p>${intro.molecular.text}</p>
+      <div class="mol-row">${cards}</div>
+    </div>`;
+  }
+
+  // Naming aside (acids only): the HCN "binary" explanation.
+  const namingBlock = intro.naming ? `<p class="naming-note">${intro.naming}</p>` : "";
+
   root.innerHTML = `
     <p class="intro-lede">${intro.blurb}</p>
     <div class="concepts">${concepts}</div>
+    ${namingBlock}
     <div class="pt-block">
       <h3>${pt.title}</h3>
       <div class="pt-wrap">${renderPeriodicTable(pt.highlight, pt.palette)}</div>
       <div class="pt-legend">${legend}</div>
       <p class="pt-note">${pt.note}</p>
     </div>
+    ${memBlock}
+    ${molBlock}
     <div class="controls">
       <button class="action primary" id="startBtn">Start the ${deck().label.toLowerCase()} stack →</button>
     </div>
