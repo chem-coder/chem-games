@@ -132,9 +132,16 @@ things about the rest." Next stages, roughly in order:
    deck.
 2. **Per-axis weak-spot stats.** Track which axis trips the student most (strength? proticity?),
    surface it, and weight the sample toward weak spots.
-3. **More content from the course.** Mine the CHEM 1415 Exam 2 & 3 Ka/Kb reference tables for more
-   weak acids/bases (needs PDF text tooling — not installed in this env yet). Keep every addition
-   passing the correctness guards (strength ⟺ canonical set; type ⟺ O; form ⟺ OH; OH-count).
+3. **More content from the course.** PDF tooling is now installed (`poppler`; see
+   [[pdf-reading-tooling]]). Done a first pass from the CHEM 1415 Exam 3 Ka/Kb tables: added weak
+   acids (formic, benzoic, lactic, chloroacetic, hypoiodous, iodic, phosphorous) and weak bases
+   (trimethylamine, propylamine, piperidine). Deliberately skipped guard-breaking species —
+   hydrazine (di-acidic base), hydroxylamine (molecular but has "OH"), and organic *polyprotic*
+   acids (citric/tartaric, which don't start H₂/H₃). Revisit by relaxing the OH-count / polyprotic
+   guards if those are wanted. Every addition still passes the guards (strength ⟺ canonical set;
+   type ⟺ O; form ⟺ OH; OH-count).
+   - Formula subscripts now render as real `<sub>` markup (`formulaHtml()` in app.js, sized 0.72em
+     in CSS) instead of tiny unicode glyphs, so long formulas like C₆H₅COOH read clearly.
 4. **End-of-round review** of just the cards that were missed, and a "strong-only speed round."
 
 ## 6. Later / open

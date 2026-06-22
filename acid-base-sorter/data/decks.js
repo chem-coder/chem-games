@@ -95,7 +95,15 @@ const acids = {
     { id: "h2co3", formula: "H₂CO₃",  name: "carbonic acid",     answers: { strength: "weak", protons: "poly", type: "oxy" } },
     { id: "h2so3", formula: "H₂SO₃",  name: "sulfurous acid",    answers: { strength: "weak", protons: "poly", type: "oxy" } },
     { id: "h3po4", formula: "H₃PO₄",  name: "phosphoric acid",   answers: { strength: "weak", protons: "poly", type: "oxy" } },
-    { id: "h2c2o4",formula: "H₂C₂O₄", name: "oxalic acid",       answers: { strength: "weak", protons: "poly", type: "oxy" } }
+    { id: "h2c2o4",formula: "H₂C₂O₄", name: "oxalic acid",       answers: { strength: "weak", protons: "poly", type: "oxy" } },
+    // more weak acids drawn from the CHEM 1415 Exam 3 Ka table
+    { id: "hcooh", formula: "HCOOH",    name: "formic acid",       answers: { strength: "weak", protons: "mono", type: "oxy" } },
+    { id: "phcooh",formula: "C₆H₅COOH", name: "benzoic acid",      answers: { strength: "weak", protons: "mono", type: "oxy" } },
+    { id: "lactic",formula: "HC₃H₅O₃",  name: "lactic acid",       answers: { strength: "weak", protons: "mono", type: "oxy" } },
+    { id: "clace", formula: "CH₂ClCOOH",name: "chloroacetic acid", answers: { strength: "weak", protons: "mono", type: "oxy" } },
+    { id: "hoi",   formula: "HOI",      name: "hypoiodous acid",   answers: { strength: "weak", protons: "mono", type: "oxy" } },
+    { id: "hio3",  formula: "HIO₃",     name: "iodic acid",        answers: { strength: "weak", protons: "mono", type: "oxy" } },
+    { id: "h3po3", formula: "H₃PO₃",    name: "phosphorous acid",  answers: { strength: "weak", protons: "poly", type: "oxy" } }
   ]
 };
 
@@ -194,6 +202,9 @@ const bases = {
     { id: "c2h5nh2",formula: "C₂H₅NH₂",  name: "ethylamine",          answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     { id: "me2nh",  formula: "(CH₃)₂NH", name: "dimethylamine",       answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     { id: "pyridine",formula: "C₅H₅N",   name: "pyridine",            answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "me3n",   formula: "(CH₃)₃N",  name: "trimethylamine",      answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "prnh2",  formula: "C₃H₇NH₂",  name: "propylamine",         answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "piperidine",formula: "C₅H₁₁N",name: "piperidine",          answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     { id: "aniline",formula: "C₆H₅NH₂",  name: "aniline",             answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     // ── weak: metal hydroxides (insoluble / sparingly soluble) ──
     { id: "aloh3", formula: "Al(OH)₃",  name: "aluminum hydroxide",  answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },

@@ -1,9 +1,9 @@
 // Version-tag every internal import so one release bump busts the whole module graph in the
 // browser cache (otherwise a returning visitor can load a stale engine against fresh data).
-import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-stacks";
-import { renderPeriodicTable } from "./periodic-table.js?v=20260622-stacks";
-import { STRUCTURES } from "./structures.js?v=20260622-stacks";
-import { DECKS } from "../data/decks.js?v=20260622-stacks";
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-content";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260622-content";
+import { STRUCTURES } from "./structures.js?v=20260622-content";
+import { DECKS } from "../data/decks.js?v=20260622-content";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -20,6 +20,14 @@ const masteredByDeck = DECKS.map(() => new Set());
 const deck = () => DECKS[deckIndex];
 const mastered = () => masteredByDeck[deckIndex];
 const card = () => deck().cards.find((c) => c.id === queue[0]);
+
+// Render a formula's unicode subscripts (₂, ₃ …) as real <sub> markup so CSS controls their
+// size — the bare unicode glyphs render too small, especially in long formulas like C₆H₅COOH.
+function formulaHtml(s) {
+  return String(s).replace(/[₀-₉]+/g, (run) =>
+    "<sub>" + [...run].map((c) => c.charCodeAt(0) - 0x2080).join("") + "</sub>"
+  );
+}
 
 function loadDeck(i) {
   deckIndex = i;
@@ -99,7 +107,7 @@ function render() {
 
 function chip(label, items) {
   return `<div class="ex"><span class="ex-label">${label}</span><span class="ex-items">${items
-    .map((i) => `<span class="ex-chip">${i}</span>`)
+    .map((i) => `<span class="ex-chip">${formulaHtml(i)}</span>`)
     .join("")}</span></div>`;
 }
 
@@ -129,7 +137,7 @@ function renderIntro() {
       (ch) => `<div class="mem-chunk">
         <span class="mem-heading">${ch.heading}</span>
         <ul class="mem-items">${ch.items
-          .map((it) => `<li><span class="mem-formula">${it.formula}</span><span class="mem-name">${it.name}</span></li>`)
+          .map((it) => `<li><span class="mem-formula">${formulaHtml(it.formula)}</span><span class="mem-name">${it.name}</span></li>`)
           .join("")}</ul>
       </div>`
     )
@@ -145,7 +153,7 @@ function renderIntro() {
   if (intro.molecular) {
     const cards = intro.molecular.examples
       .map(
-        (ex) => `<figure class="mol-card">${STRUCTURES[ex.structure] || ""}<figcaption>${ex.formula} — ${ex.name}</figcaption></figure>`
+        (ex) => `<figure class="mol-card">${STRUCTURES[ex.structure] || ""}<figcaption>${formulaHtml(ex.formula)} — ${ex.name}</figcaption></figure>`
       )
       .join("");
     molBlock = `<div class="mol-block">
@@ -182,7 +190,7 @@ function renderCard() {
   const remaining = queue.length;
 
   const nameReveal = checked
-    ? `<p class="name-reveal">${c.formula} — <strong>${c.name}</strong></p>`
+    ? `<p class="name-reveal">${formulaHtml(c.formula)} — <strong>${c.name}</strong></p>`
     : `<p class="name-reveal is-hidden">name hidden — classify, then Check</p>`;
 
   let feedback = `<p class="feedback">&nbsp;</p>`;
@@ -196,7 +204,7 @@ function renderCard() {
     <button class="intro-link" id="introBtn" type="button">↩ Intro &amp; periodic-table tips</button>
     <div class="card-face">
       <span class="card-tag">${deck().label.replace(/s$/, "")}</span>
-      <p class="formula">${c.formula}</p>
+      <p class="formula">${formulaHtml(c.formula)}</p>
     </div>
     ${nameReveal}
     <div class="axes">${deck().axes.map(axisRow).join("")}</div>
