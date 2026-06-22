@@ -1,0 +1,377 @@
+/* Polyatomic Ion Trainer — True Autumn palette via ../shared/css/tokens.css. Shares the family look
+   with the Acid/Base Sorter (same shell, buttons, deck switcher) plus trainer-specific pieces. */
+:root {
+  --danger: #8a3a2a;
+  --danger-soft: #f5e2d9;
+  --danger-line: #dca890;
+}
+
+* { box-sizing: border-box; }
+
+/* House rule: formula subscripts at a comfortably readable size, never the tiny default. */
+sub { font-size: 0.72em; line-height: 0; vertical-align: -0.18em; }
+sup.charge { font-size: 0.62em; line-height: 0; vertical-align: 0.5em; margin-left: 0.04em; font-weight: 700; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--font-body);
+}
+
+.app-shell { width: min(760px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 40px; }
+.app-header { position: relative; margin-bottom: 18px; }
+.app-header::before {
+  content: "";
+  display: block;
+  height: 6px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--el-carbon) 0 25%, var(--el-oxygen) 25% 50%, var(--el-nitrogen) 50% 75%, var(--el-sulfur) 75% 100%);
+}
+.home-link { display: inline-flex; margin-bottom: 14px; color: var(--accent); font-size: 0.92rem; font-weight: 700; text-decoration: none; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--plum-dark);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+h1 { margin: 0; font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3rem); line-height: 1.05; }
+.lede { margin: 10px 0 0; max-width: 44rem; color: var(--muted); font-size: 1.02rem; line-height: 1.45; }
+.lede strong { color: var(--accent-dark); }
+
+.deck-switcher { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+.deck-choice {
+  min-height: 38px;
+  padding: 8px 16px;
+  color: var(--accent-dark);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 600;
+  cursor: pointer;
+}
+.deck-choice.is-active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+.game {
+  display: grid;
+  gap: 16px;
+  margin-top: 4px;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ── Intro / study screen ── */
+.intro-lede { margin: 0; font-size: 1.06rem; line-height: 1.5; }
+
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+/* Grouped decks: each related family is a column of mini-cards. Columns sit side by side and wrap
+   on narrow screens; cards are deliberately small so two or three columns fit a phone. */
+.study-columns { display: flex; justify-content: center; flex-wrap: wrap; gap: 14px; }
+.study-col { display: flex; flex-direction: column; gap: 6px; min-width: 168px; }
+.study-col-head {
+  text-align: center;
+  padding-bottom: 2px;
+  color: var(--accent-dark);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.study-note { margin: 2px 0 0; text-align: center; color: var(--muted); font-size: 0.82rem; font-style: italic; }
+.study-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 13px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+/* Parent (reference) ion — plum-tinted and dashed, to read as "context, not quizzed". */
+.study-item.is-ref { background: var(--plum-soft); border-style: dashed; border-color: var(--plum); }
+.study-formula { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; }
+.study-name { color: var(--muted); font-size: 0.88rem; text-align: right; }
+.study-name .alt { color: var(--muted); opacity: 0.7; font-size: 0.8rem; }
+
+/* Capitalization hint shown when the formula is right but mis-cased. */
+.cap-hint {
+  margin: 6px auto 0;
+  max-width: 460px;
+  text-align: center;
+  color: var(--plum-dark);
+  font-size: 0.85rem;
+}
+.cap-hint strong { font-family: var(--font-display); }
+
+.dir-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+.dir-choice {
+  min-height: 40px;
+  padding: 8px 18px;
+  color: var(--plum-dark);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 600;
+  cursor: pointer;
+}
+.dir-choice.is-active { color: #fff; background: var(--plum); border-color: var(--plum-dark); }
+
+/* ── Card ── */
+.intro-link {
+  justify-self: start;
+  padding: 2px 0;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.intro-link:hover { text-decoration: underline; }
+
+.card-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 130px;
+  padding: 30px 18px 22px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.card-tag {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.prompt-facet { margin: 0; font-family: var(--font-display); font-weight: 700; text-align: center; }
+.prompt-facet.formula { font-size: clamp(2.6rem, 9vw, 4rem); letter-spacing: 0.01em; }
+.prompt-facet.word { font-size: clamp(1.8rem, 6vw, 2.8rem); color: var(--accent-dark); }
+
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Answer ── */
+.answer { display: grid; justify-items: center; gap: 12px; padding: 14px 0; }
+.prompt-lead { margin: 4px 0 0; color: var(--muted); font-family: var(--font-display); font-weight: 600; }
+
+/* The ion block groups the formula box with its charge selector — the charge belongs to the
+   formula, so they read as one unit (a soft panel). The charge stack sits inside, on the right. */
+.ion-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-soft);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+
+/* The formula box — squared, text right-aligned and vertically centred (a single-line input
+   centres its text automatically; the display box mirrors it with flex). */
+.ion-composer { position: relative; display: inline-block; }
+.formula-input,
+.ion-built,
+.ion-given {
+  box-sizing: border-box;
+  width: 168px;
+  height: 96px;
+  padding: 8px 16px;
+  text-align: right;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.formula-input { font-size: 1.6rem; }
+.ion-built,
+.ion-given { display: flex; align-items: center; justify-content: flex-end; }
+.ion-built { font-size: 1.6rem; }
+.ion-given { font-size: 1.9rem; border-color: var(--accent-soft); }   /* the given prompt formula */
+.formula-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.ion-built.editable { cursor: pointer; }
+.ion-built.editable:hover { border-color: var(--accent); }
+.ion-built.ok { background: var(--success-soft); border-color: var(--success-vivid); color: var(--success); }
+.ion-built.no { background: var(--danger-soft); border-color: var(--danger-line); color: var(--danger); }
+.formula-display { line-height: 1; }
+
+/* The charge corner: a dashed "charge?" slot at the formula's top-right that fills in (solid plum)
+   once a charge is picked. Tells the student this still needs doing — not an error. */
+.charge-slot {
+  position: absolute;
+  top: -12px;
+  right: 6px;
+  padding: 2px 8px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1.5px dashed var(--accent);
+  border-radius: 999px;
+}
+.charge-slot.is-set { font-size: 0.95rem; color: #fff; background: var(--plum); border-style: solid; border-color: var(--plum-dark); }
+
+/* Compact vertical charge stack inside the ion block. */
+.charge-stack { display: flex; flex-direction: column; gap: 5px; }
+.charge-stack .charge-opt {
+  flex: 0 0 auto;
+  min-width: 62px;
+  min-height: 30px;
+  padding: 2px 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+.charge-stack .charge-opt:hover:not(:disabled) { border-color: var(--accent); }
+.charge-stack .charge-opt:active:not(:disabled) { transform: translateY(1px); }
+.charge-opt.is-picked { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+.charge-opt.is-answer { color: var(--success); background: var(--success-soft); border-color: var(--success-vivid); }
+.charge-opt.is-wrong { color: var(--danger); background: var(--danger-soft); border-color: var(--danger-line); text-decoration: line-through; }
+.charge-opt:disabled { cursor: default; }
+
+/* Name field (recognize) — sits below the ion block, centred. */
+.name-composer { display: inline-block; }
+.name-input,
+.name-built {
+  box-sizing: border-box;
+  width: min(320px, 64vw);
+  min-height: 52px;
+  padding: 10px 16px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.name-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.name-built { display: inline-block; }
+.name-built.ok { background: var(--success-soft); border-color: var(--success-vivid); color: var(--success); }
+.name-built.no { background: var(--danger-soft); border-color: var(--danger-line); color: var(--danger); }
+
+.entry-hint { margin: 0; color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+.reveal {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(30, 114, 104, 0.25);
+  border-radius: var(--radius-sm);
+}
+.reveal-ion { margin: 0; font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; }
+.reveal-name { color: var(--accent-dark); font-size: 1.15rem; margin-left: 6px; }
+.reveal-note { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+.feedback { margin: 0; min-height: 1.4em; font-weight: 600; }
+.feedback.ok { color: var(--success-vivid); }
+.feedback.no { color: var(--danger); }
+
+.prompt {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(30, 114, 104, 0.25);
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.progress-line { margin: 0; color: var(--muted); font-size: 0.96rem; }
+.progress-line strong { color: var(--accent-dark); font-family: var(--font-display); }
+
+.missed-block {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.missed-label { margin: 0; font-weight: 600; }
+.missed-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ex-chip {
+  padding: 4px 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.reset-link {
+  margin-left: auto;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.reset-link:hover { color: var(--danger); text-decoration: underline; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.score { margin: 0 auto 0 0; color: var(--muted); font-weight: 700; }
+
+button.action {
+  min-height: 44px;
+  padding: 0 20px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+button.primary { border: none; border-bottom: 3px solid var(--accent-dark); background: var(--accent); color: #fff; }
+button.primary:hover:not(:disabled) { background: var(--accent-dark); }
+button.primary:active:not(:disabled) { transform: translateY(1px); border-bottom-width: 2px; }
+button.primary:disabled { opacity: 0.5; cursor: default; }
+button.ghost { background: var(--surface); border: 1.5px solid var(--line); color: var(--accent-dark); }
+button.ghost:hover { border-color: var(--accent); }
