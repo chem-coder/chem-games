@@ -168,7 +168,7 @@ const bases = {
           { formula: "Ba(OH)₂", name: "barium hydroxide" }
         ] }
       ],
-      footnote: "FrOH (francium hydroxide) is also a group 1 hydroxide — in theory the strongest base of all — but francium is so radioactively rare it's never studied. It's a footnote, not a memorize item."
+      footnote: "FrOH (francium hydroxide) is also a group 1 hydroxide — in theory the strongest base of all — but francium is intensely radioactive and decays almost as fast as it forms, so it's vanishingly rare and FrOH is never studied. It's a footnote, not a memorize item."
     },
     molecular: {
       text: "Not every base is a metal hydroxide. Molecular bases like ammonia and the amines have no OH at all — they accept an H⁺ using a lone pair of electrons (the two dots on N). Count the lone pairs: one means it takes one proton (monoacidic), but hydrazine has a nitrogen on each end — two lone pairs — so it can take two (polyacidic).",
