@@ -11,31 +11,33 @@ const acids = {
   label: "Acids",
   intro: {
     blurb: "Three quick reads before the stack. You'll sort each acid by strength, by how many H⁺ it can give, and by whether it carries oxygen.",
+    // Order the intro sections (concept ids + the special blocks pt/memorize/naming/molecular).
+    order: ["strength", "pt", "memorize", "protons", "type", "naming", "carboxylic", "spellings"],
     concepts: [
-      { title: "Strong vs Weak",
+      { id: "strength", title: "Strong vs Weak",
         text: "A strong acid ionizes completely in water — practically every molecule lets go of its H⁺. A weak acid only partly ionizes; most molecules stay whole. There are just seven strong acids: treat anything not on that list as weak.",
         examples: [
           { label: "Strong — all 7, memorize", items: ["HCl", "HBr", "HI", "HNO₃", "H₂SO₄", "HClO₃", "HClO₄"] },
           { label: "Weak (everything else)", items: ["HF", "HC₂H₃O₂", "H₂CO₃"] }
         ] },
-      { title: "Monoprotic vs Polyprotic",
+      { id: "protons", title: "Monoprotic vs Polyprotic",
         text: "“Protic” counts the H⁺ an acid can donate. Monoprotic gives one; polyprotic gives two or more. Count only the ionizable H — acetic acid has 4 H but donates just one, so it's monoprotic.",
         examples: [
           { label: "Monoprotic", items: ["HCl", "HNO₃", "HC₂H₃O₂"] },
           { label: "Polyprotic", items: ["H₂SO₄", "H₃PO₄"] }
         ] },
-      { title: "Binary vs Oxyacid",
+      { id: "type", title: "Binary vs Oxyacid",
         text: "A binary acid is hydrogen plus one nonmetal, no oxygen. An oxyacid contains oxygen — usually H plus a polyatomic oxyanion. The quick test: is there an O in the formula?",
         examples: [
           { label: "Binary (no O)", items: ["HCl", "H₂S", "HCN"] },
           { label: "Oxyacid (has O)", items: ["HNO₃", "H₂SO₄"] }
         ] },
-      { title: "Carboxylic acids — the H hides at the end",
+      { id: "carboxylic", title: "Carboxylic acids — the H hides at the end",
         text: "Most acids write the acidic H first (HCl, HNO₃). But carboxylic acids carry it on a –COOH group, usually written at the END of the formula — so HCOOH, CH₃COOH and C₆H₅COOH are all acids even though they don't start with H. That last H, the one on –COOH, is what ionizes (it's still just monoprotic).",
         examples: [
           { label: "–COOH (acidic H at the end)", items: ["HCOOH", "CH₃COOH", "C₆H₅COOH", "CH₂ClCOOH"] }
         ] },
-      { title: "Same acid, written many ways",
+      { id: "spellings", title: "Same acid, written many ways",
         text: "Don't take \"H at the end\" as a rule, though — people DO write the acidic H at the front too, and the carboxyl group itself shows up as –COOH, –COO, or –CO₂. Acetic acid alone appears a half-dozen ways below; they're all the exact same molecule (its molecular formula C₂H₄O₂ hides which H is acidic, so it's rarely used for acids). The skill is spotting the carboxyl group and its one acidic H, however it's drawn.",
         examples: [
           { label: "Acetic acid — all the same molecule", items: ["CH₃COOH", "CH₃CO₂H", "HC₂H₃O₂", "HCH₃COO", "HCH₃CO₂"] }
@@ -122,20 +124,21 @@ const bases = {
   label: "Bases",
   intro: {
     blurb: "Two reads and a periodic-table trick before the stack. The strong-base list is short — and it's sitting right there in the table.",
+    order: ["strength", "pt", "memorize", "form", "ohcount", "molecular"],
     concepts: [
-      { title: "Strong vs Weak",
+      { id: "strength", title: "Strong vs Weak",
         text: "A strong base dissociates completely, releasing all of its OH⁻. The strong bases are a short list: the group 1 hydroxides plus the heavy group 2 hydroxides (Ca, Sr, Ba). Ammonia and most other bases are weak.",
         examples: [
           { label: "Strong — all 8, memorize", items: ["LiOH", "NaOH", "KOH", "RbOH", "CsOH", "Ca(OH)₂", "Sr(OH)₂", "Ba(OH)₂"] },
           { label: "Weak (everything else)", items: ["NH₃", "Al(OH)₃"] }
         ] },
-      { title: "Metal hydroxide vs Molecular",
+      { id: "form", title: "Metal hydroxide vs Molecular",
         text: "Most bases are metal hydroxides — a metal cation joined to OH⁻. Molecular bases have no OH in the formula; they pull an H⁺ off water instead. The quick test: look for OH.",
         examples: [
           { label: "Metal hydroxide", items: ["NaOH", "Ca(OH)₂"] },
           { label: "Molecular", items: ["NH₃", "CH₃NH₂"] }
         ] },
-      { title: "Monoacidic vs Polyacidic",
+      { id: "ohcount", title: "Monoacidic vs Polyacidic",
         text: "This counts how many OH⁻ a base provides (or H⁺ it can neutralize). One makes it monoacidic; two or more, polyacidic. It's the base's mirror of mono/polyprotic for acids.",
         examples: [
           { label: "Monoacidic", items: ["NaOH", "NH₃"] },

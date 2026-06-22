@@ -1,11 +1,11 @@
 // Version-tag every internal import so one release bump busts the whole module graph in the
 // browser cache (otherwise a returning visitor can load a stale engine against fresh data).
-import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-mix";
-import { renderPeriodicTable } from "./periodic-table.js?v=20260622-mix";
-import { STRUCTURES } from "./structures.js?v=20260622-mix";
-import { recordResult, masteredCount } from "./stats.js?v=20260622-mix";
-import { loadStats, saveStats, resetStats } from "./storage.js?v=20260622-mix";
-import { DECKS } from "../data/decks.js?v=20260622-mix";
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-order";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260622-order";
+import { STRUCTURES } from "./structures.js?v=20260622-order";
+import { recordResult, masteredCount } from "./stats.js?v=20260622-order";
+import { loadStats, saveStats, resetStats } from "./storage.js?v=20260622-order";
+import { DECKS } from "../data/decks.js?v=20260622-order";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -138,15 +138,16 @@ function chip(label, items) {
 
 function renderIntro() {
   const intro = deck().intro;
-  const concepts = intro.concepts
-    .map(
-      (cn) => `<div class="concept">
+  // Each concept's HTML, keyed by id (fallback to index) so an `order` list can interleave them
+  // with the special blocks (pt / memorize / naming / molecular).
+  const conceptHtml = {};
+  intro.concepts.forEach((cn, i) => {
+    conceptHtml[cn.id ?? `c${i}`] = `<div class="concept">
         <h3>${cn.title}</h3>
         <p>${cn.text}</p>
         <div class="examples">${cn.examples.map((e) => chip(e.label, e.items)).join("")}</div>
-      </div>`
-    )
-    .join("");
+      </div>`;
+  });
 
   // Periodic-table block (acids/bases only; the mix intro skips it).
   let ptBlock = "";
@@ -210,14 +211,22 @@ function renderIntro() {
     ? `<p class="progress-line">Saved progress: mastered <strong>${done} of ${deck().cards.length}</strong> ${deck().label.toLowerCase()} so far.</p>`
     : "";
 
+  // Assemble the sections. If the deck's intro defines an `order`, lay them out in that exact
+  // sequence (interleaving concepts with the blocks); otherwise fall back to the default grouping.
+  const blocks = { pt: ptBlock, memorize: memBlock, naming: namingBlock, molecular: molBlock };
+  const sectionFor = (tok) => conceptHtml[tok] ?? blocks[tok] ?? "";
+  let body;
+  if (intro.order) {
+    body = intro.order.map(sectionFor).join("");
+  } else {
+    const concepts = intro.concepts.map((cn, i) => conceptHtml[cn.id ?? `c${i}`]).join("");
+    body = `<div class="concepts">${concepts}</div>${namingBlock}${ptBlock}${memBlock}${molBlock}`;
+  }
+
   root.innerHTML = `
     <p class="intro-lede">${intro.blurb}</p>
     ${progressLine}
-    <div class="concepts">${concepts}</div>
-    ${namingBlock}
-    ${ptBlock}
-    ${memBlock}
-    ${molBlock}
+    ${body}
     <div class="controls">
       <button class="action primary" id="startBtn">Start the ${deck().label.toLowerCase()} stack →</button>
     </div>
