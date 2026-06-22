@@ -59,7 +59,7 @@ const ammonia = svg(
   bond(105, 60, 138, 102, "dash") +
   atom(72, 102, "H") + atom(105, 116, "H") + atom(138, 102, "H") +
   atom(105, 60, "N") +
-  dots(105, 45)
+  dots(105, 42) // 18px above the N, matching hydrazine's lone-pair distance
 );
 
 // Methylamine: N bonded to a methyl C (in-plane), two H (wedge / dash), one lone pair on top.
@@ -70,7 +70,7 @@ const methylamine = svg(
   `<text x="${67}" y="${109}" text-anchor="end" font-family="var(--font-display)" font-size="21" font-weight="700" fill="${INK}">H<tspan font-size="15" dy="5">3</tspan></text>` +
   atom(76, 102, "C") + atom(120, 116, "H") + atom(152, 102, "H") +
   atom(120, 60, "N") +
-  dots(120, 45)
+  dots(120, 42) // 18px above the N, matching hydrazine's lone-pair distance
 );
 
 // Hydrazine: two pyramidal N joined by an in-plane N–N bond; each N has two H (wedge / dash) and a
