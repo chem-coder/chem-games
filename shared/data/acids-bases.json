@@ -1,0 +1,851 @@
+{
+  "_meta": {
+    "title": "Acids & Bases — Chem Games shared reference",
+    "description": "Canonical species table for acid–base trainers. Classifications match the Acid/Base Sorter; Ka/Kb come from the CHEM 1415 course reference tables (25 °C).",
+    "version": "2026-06-22",
+    "sources": [
+      "Species + classifications: acid-base-sorter deck",
+      "Ka/Kb: CHEM 1415 Exam reference Tables I & II, 25 °C",
+      "HClO₂ (chlorous) Ka is a standard textbook value — not in the course table"
+    ],
+    "notes": [
+      "Ka/Kb are arrays of STEPWISE constants (Ka1, Ka2, …).",
+      "'strong' marks a step that ionizes essentially completely (K ≫ 1).",
+      "Weak metal hydroxides (Al, Fe, Zn, Cu) are sparingly soluble — described by Ksp, not Kb; their Kb is null.",
+      "pKa/pKb = -log10 of each step (null where the step is 'strong' or null).",
+      "'formula' uses unicode subscripts; 'formulaPlain' is ASCII for search/matching.",
+      "Extensible: the full course table has more weak species (citric, tartaric, arsenic, codeine, …) not yet needed by a game."
+    ],
+    "counts": {
+      "acids": 26,
+      "bases": 23
+    }
+  },
+  "acids": [
+    {
+      "id": "hcl",
+      "formula": "HCl",
+      "formulaPlain": "HCl",
+      "name": "hydrochloric acid",
+      "strength": "strong",
+      "type": "binary",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        "strong"
+      ],
+      "pKa": [
+        null
+      ]
+    },
+    {
+      "id": "hbr",
+      "formula": "HBr",
+      "formulaPlain": "HBr",
+      "name": "hydrobromic acid",
+      "strength": "strong",
+      "type": "binary",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        "strong"
+      ],
+      "pKa": [
+        null
+      ]
+    },
+    {
+      "id": "hi",
+      "formula": "HI",
+      "formulaPlain": "HI",
+      "name": "hydroiodic acid",
+      "strength": "strong",
+      "type": "binary",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        "strong"
+      ],
+      "pKa": [
+        null
+      ]
+    },
+    {
+      "id": "hno3",
+      "formula": "HNO₃",
+      "formulaPlain": "HNO3",
+      "name": "nitric acid",
+      "strength": "strong",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        "strong"
+      ],
+      "pKa": [
+        null
+      ]
+    },
+    {
+      "id": "hclo4",
+      "formula": "HClO₄",
+      "formulaPlain": "HClO4",
+      "name": "perchloric acid",
+      "strength": "strong",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        "strong"
+      ],
+      "pKa": [
+        null
+      ]
+    },
+    {
+      "id": "hclo3",
+      "formula": "HClO₃",
+      "formulaPlain": "HClO3",
+      "name": "chloric acid",
+      "strength": "strong",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        "strong"
+      ],
+      "pKa": [
+        null
+      ]
+    },
+    {
+      "id": "h2so4",
+      "formula": "H₂SO₄",
+      "formulaPlain": "H2SO4",
+      "name": "sulfuric acid",
+      "strength": "strong",
+      "type": "oxyacid",
+      "protons": 2,
+      "proticity": "polyprotic",
+      "Ka": [
+        "strong",
+        0.012
+      ],
+      "pKa": [
+        null,
+        1.92
+      ]
+    },
+    {
+      "id": "hf",
+      "formula": "HF",
+      "formulaPlain": "HF",
+      "name": "hydrofluoric acid",
+      "strength": "weak",
+      "type": "binary",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.00068
+      ],
+      "pKa": [
+        3.17
+      ]
+    },
+    {
+      "id": "hcn",
+      "formula": "HCN",
+      "formulaPlain": "HCN",
+      "name": "hydrocyanic acid",
+      "strength": "weak",
+      "type": "binary",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        6.2e-10
+      ],
+      "pKa": [
+        9.21
+      ]
+    },
+    {
+      "id": "h2s",
+      "formula": "H₂S",
+      "formulaPlain": "H2S",
+      "name": "hydrosulfuric acid",
+      "strength": "weak",
+      "type": "binary",
+      "protons": 2,
+      "proticity": "polyprotic",
+      "Ka": [
+        1e-7,
+        1e-19
+      ],
+      "pKa": [
+        7,
+        19
+      ]
+    },
+    {
+      "id": "hc2h3o2",
+      "formula": "HC₂H₃O₂",
+      "formulaPlain": "HC2H3O2",
+      "name": "acetic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.000018
+      ],
+      "pKa": [
+        4.74
+      ]
+    },
+    {
+      "id": "hno2",
+      "formula": "HNO₂",
+      "formulaPlain": "HNO2",
+      "name": "nitrous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.00045
+      ],
+      "pKa": [
+        3.35
+      ]
+    },
+    {
+      "id": "hclo2",
+      "formula": "HClO₂",
+      "formulaPlain": "HClO2",
+      "name": "chlorous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.011
+      ],
+      "pKa": [
+        1.96
+      ]
+    },
+    {
+      "id": "hclo",
+      "formula": "HClO",
+      "formulaPlain": "HClO",
+      "name": "hypochlorous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        3.5e-8
+      ],
+      "pKa": [
+        7.46
+      ]
+    },
+    {
+      "id": "hbro",
+      "formula": "HBrO",
+      "formulaPlain": "HBrO",
+      "name": "hypobromous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        2e-9
+      ],
+      "pKa": [
+        8.7
+      ]
+    },
+    {
+      "id": "h2co3",
+      "formula": "H₂CO₃",
+      "formulaPlain": "H2CO3",
+      "name": "carbonic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 2,
+      "proticity": "polyprotic",
+      "Ka": [
+        4.3e-7,
+        5.6e-11
+      ],
+      "pKa": [
+        6.37,
+        10.25
+      ]
+    },
+    {
+      "id": "h2so3",
+      "formula": "H₂SO₃",
+      "formulaPlain": "H2SO3",
+      "name": "sulfurous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 2,
+      "proticity": "polyprotic",
+      "Ka": [
+        0.015,
+        6.3e-8
+      ],
+      "pKa": [
+        1.82,
+        7.2
+      ]
+    },
+    {
+      "id": "h3po4",
+      "formula": "H₃PO₄",
+      "formulaPlain": "H3PO4",
+      "name": "phosphoric acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 3,
+      "proticity": "polyprotic",
+      "Ka": [
+        0.0075,
+        6.2e-8,
+        4.8e-13
+      ],
+      "pKa": [
+        2.12,
+        7.21,
+        12.32
+      ]
+    },
+    {
+      "id": "h2c2o4",
+      "formula": "H₂C₂O₄",
+      "formulaPlain": "H2C2O4",
+      "name": "oxalic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 2,
+      "proticity": "polyprotic",
+      "Ka": [
+        0.059,
+        0.000064
+      ],
+      "pKa": [
+        1.23,
+        4.19
+      ]
+    },
+    {
+      "id": "hcooh",
+      "formula": "HCOOH",
+      "formulaPlain": "HCOOH",
+      "name": "formic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.00018
+      ],
+      "pKa": [
+        3.74
+      ]
+    },
+    {
+      "id": "c6h5cooh",
+      "formula": "C₆H₅COOH",
+      "formulaPlain": "C6H5COOH",
+      "name": "benzoic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.000065
+      ],
+      "pKa": [
+        4.19
+      ]
+    },
+    {
+      "id": "hc3h5o3",
+      "formula": "HC₃H₅O₃",
+      "formulaPlain": "HC3H5O3",
+      "name": "lactic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.00014
+      ],
+      "pKa": [
+        3.85
+      ]
+    },
+    {
+      "id": "ch2clcooh",
+      "formula": "CH₂ClCOOH",
+      "formulaPlain": "CH2ClCOOH",
+      "name": "chloroacetic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.0014
+      ],
+      "pKa": [
+        2.85
+      ]
+    },
+    {
+      "id": "hoi",
+      "formula": "HOI",
+      "formulaPlain": "HOI",
+      "name": "hypoiodous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        2.3e-11
+      ],
+      "pKa": [
+        10.64
+      ]
+    },
+    {
+      "id": "hio3",
+      "formula": "HIO₃",
+      "formulaPlain": "HIO3",
+      "name": "iodic acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 1,
+      "proticity": "monoprotic",
+      "Ka": [
+        0.17
+      ],
+      "pKa": [
+        0.77
+      ]
+    },
+    {
+      "id": "h3po3",
+      "formula": "H₃PO₃",
+      "formulaPlain": "H3PO3",
+      "name": "phosphorous acid",
+      "strength": "weak",
+      "type": "oxyacid",
+      "protons": 2,
+      "proticity": "polyprotic",
+      "Ka": [
+        0.01,
+        2.6e-7
+      ],
+      "pKa": [
+        2,
+        6.59
+      ]
+    }
+  ],
+  "bases": [
+    {
+      "id": "lioh",
+      "formula": "LiOH",
+      "formulaPlain": "LiOH",
+      "name": "lithium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 1,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "naoh",
+      "formula": "NaOH",
+      "formulaPlain": "NaOH",
+      "name": "sodium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 1,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "koh",
+      "formula": "KOH",
+      "formulaPlain": "KOH",
+      "name": "potassium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 1,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "rboh",
+      "formula": "RbOH",
+      "formulaPlain": "RbOH",
+      "name": "rubidium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 1,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "csoh",
+      "formula": "CsOH",
+      "formulaPlain": "CsOH",
+      "name": "cesium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 1,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "caoh2",
+      "formula": "Ca(OH)₂",
+      "formulaPlain": "Ca(OH)2",
+      "name": "calcium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 2,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "sroh2",
+      "formula": "Sr(OH)₂",
+      "formulaPlain": "Sr(OH)2",
+      "name": "strontium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 2,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "baoh2",
+      "formula": "Ba(OH)₂",
+      "formulaPlain": "Ba(OH)2",
+      "name": "barium hydroxide",
+      "strength": "strong",
+      "form": "hydroxide",
+      "hydroxides": 2,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        "strong"
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "nh3",
+      "formula": "NH₃",
+      "formulaPlain": "NH3",
+      "name": "ammonia",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.000018
+      ],
+      "pKb": [
+        4.74
+      ]
+    },
+    {
+      "id": "ch3nh2",
+      "formula": "CH₃NH₂",
+      "formulaPlain": "CH3NH2",
+      "name": "methylamine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.00037
+      ],
+      "pKb": [
+        3.43
+      ]
+    },
+    {
+      "id": "c2h5nh2",
+      "formula": "C₂H₅NH₂",
+      "formulaPlain": "C2H5NH2",
+      "name": "ethylamine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.00064
+      ],
+      "pKb": [
+        3.19
+      ]
+    },
+    {
+      "id": "ch32nh",
+      "formula": "(CH₃)₂NH",
+      "formulaPlain": "(CH3)2NH",
+      "name": "dimethylamine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.00054
+      ],
+      "pKb": [
+        3.27
+      ]
+    },
+    {
+      "id": "c5h5n",
+      "formula": "C₅H₅N",
+      "formulaPlain": "C5H5N",
+      "name": "pyridine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        1.8e-9
+      ],
+      "pKb": [
+        8.74
+      ]
+    },
+    {
+      "id": "ch33n",
+      "formula": "(CH₃)₃N",
+      "formulaPlain": "(CH3)3N",
+      "name": "trimethylamine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.000065
+      ],
+      "pKb": [
+        4.19
+      ]
+    },
+    {
+      "id": "c3h7nh2",
+      "formula": "C₃H₇NH₂",
+      "formulaPlain": "C3H7NH2",
+      "name": "propylamine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.00051
+      ],
+      "pKb": [
+        3.29
+      ]
+    },
+    {
+      "id": "c5h11n",
+      "formula": "C₅H₁₁N",
+      "formulaPlain": "C5H11N",
+      "name": "piperidine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        0.0013
+      ],
+      "pKb": [
+        2.89
+      ]
+    },
+    {
+      "id": "n2h4",
+      "formula": "N₂H₄",
+      "formulaPlain": "N2H4",
+      "name": "hydrazine",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        8.9e-7
+      ],
+      "pKb": [
+        6.05
+      ]
+    },
+    {
+      "id": "c6h5nh2",
+      "formula": "C₆H₅NH₂",
+      "formulaPlain": "C6H5NH2",
+      "name": "aniline",
+      "strength": "weak",
+      "form": "molecular",
+      "hydroxides": null,
+      "protonsAccepted": 1,
+      "acidity": "monoacidic",
+      "Kb": [
+        4.3e-10
+      ],
+      "pKb": [
+        9.37
+      ]
+    },
+    {
+      "id": "aloh3",
+      "formula": "Al(OH)₃",
+      "formulaPlain": "Al(OH)3",
+      "name": "aluminum hydroxide",
+      "strength": "weak",
+      "form": "hydroxide",
+      "hydroxides": 3,
+      "protonsAccepted": 3,
+      "acidity": "polyacidic",
+      "Kb": [
+        null
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "feoh3",
+      "formula": "Fe(OH)₃",
+      "formulaPlain": "Fe(OH)3",
+      "name": "iron(III) hydroxide",
+      "strength": "weak",
+      "form": "hydroxide",
+      "hydroxides": 3,
+      "protonsAccepted": 3,
+      "acidity": "polyacidic",
+      "Kb": [
+        null
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "feoh2",
+      "formula": "Fe(OH)₂",
+      "formulaPlain": "Fe(OH)2",
+      "name": "iron(II) hydroxide",
+      "strength": "weak",
+      "form": "hydroxide",
+      "hydroxides": 2,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        null
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "znoh2",
+      "formula": "Zn(OH)₂",
+      "formulaPlain": "Zn(OH)2",
+      "name": "zinc hydroxide",
+      "strength": "weak",
+      "form": "hydroxide",
+      "hydroxides": 2,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        null
+      ],
+      "pKb": [
+        null
+      ]
+    },
+    {
+      "id": "cuoh2",
+      "formula": "Cu(OH)₂",
+      "formulaPlain": "Cu(OH)2",
+      "name": "copper(II) hydroxide",
+      "strength": "weak",
+      "form": "hydroxide",
+      "hydroxides": 2,
+      "protonsAccepted": 2,
+      "acidity": "polyacidic",
+      "Kb": [
+        null
+      ],
+      "pKb": [
+        null
+      ]
+    }
+  ]
+}

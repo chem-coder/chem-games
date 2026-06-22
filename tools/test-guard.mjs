@@ -14,6 +14,9 @@ const SUITES = [
   "acid-base-sorter/js/periodic-table.test.js",
   "acid-base-sorter/js/intro.test.js",
   "acid-base-sorter/js/stats.test.js",
+  "nomenclature/js/naming.test.js",
+  "nomenclature/js/triad.test.js",
+  "tools/acid-base-db.test.js",
   "tools/validate-reactions.test.js"
 ];
 
