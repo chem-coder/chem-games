@@ -30,7 +30,10 @@ test("bases: FrOH is NOT a memorize item (footnote only)", () => {
 });
 
 // ── the displayed list must agree with the deck's strong cards (no drift) ──
-for (const deck of DECKS) {
+// Only the acids/bases decks carry "memorize these" lists; the mix deck's chips are illustrative.
+const memorizeDecks = DECKS.filter((d) => d.intro.memorize);
+
+for (const deck of memorizeDecks) {
   test(`${deck.id}: memorize list matches the deck's strong cards exactly`, () => {
     assert.deepEqual(new Set(memFormulas(deck)), new Set(strongCards(deck)));
   });
@@ -42,10 +45,10 @@ for (const deck of DECKS) {
 }
 
 // ── ANY list that claims to be the strong/memorize set must be the complete canonical set ──
-// (the "Weak (everything else)" chips are explicitly illustrative and are excluded.)
+// (Scoped to the memorize decks; the mix deck's "Strong (a few)" chips are explicitly illustrative.)
 test("every 'Strong'/'memorize' example list is the complete canonical set, never a subset", () => {
   const canon = { acids: new Set(STRONG_ACIDS), bases: new Set(STRONG_BASES) };
-  for (const deck of DECKS) {
+  for (const deck of memorizeDecks) {
     for (const cn of deck.intro.concepts) {
       for (const ex of cn.examples) {
         if (/\b(strong|memorize)\b/i.test(ex.label)) {

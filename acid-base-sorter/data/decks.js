@@ -29,6 +29,11 @@ const acids = {
         examples: [
           { label: "Binary (no O)", items: ["HCl", "H₂S", "HCN"] },
           { label: "Oxyacid (has O)", items: ["HNO₃", "H₂SO₄"] }
+        ] },
+      { title: "Carboxylic acids — the H hides at the end",
+        text: "Most acids write the acidic H first (HCl, HNO₃). But carboxylic acids carry it on a –COOH group, usually written at the END of the formula — so HCOOH, CH₃COOH and C₆H₅COOH are all acids even though they don't start with H. That last H, the one on –COOH, is what ionizes (it's still just monoprotic).",
+        examples: [
+          { label: "–COOH (acidic H at the end)", items: ["HCOOH", "CH₃COOH", "C₆H₅COOH", "CH₂ClCOOH"] }
         ] }
     ],
     pt: {
@@ -217,4 +222,39 @@ const bases = {
   ]
 };
 
-export const DECKS = [acids, bases];
+// Mix mode: acids and bases together, just two calls per card — acid/base and strong/weak.
+// Cards are derived from both decks (so it can never drift), with ids prefixed to stay unique.
+const mix = {
+  id: "mix",
+  label: "Mix",
+  roundSize: 10,
+  intro: {
+    blurb: "Acids and bases together. For each formula make just two calls: is it an acid or a base, and is it strong or weak? It draws from every species in both decks — including some less-common ones, so expect a few you haven't seen.",
+    concepts: [
+      { title: "Acid or base?",
+        text: "Acids donate H⁺ — they start with H, or carry an ionizable H like the –COOH on a carboxylic acid. Bases accept H⁺ — metal hydroxides (an OH group) or molecular bases like ammonia and the amines.",
+        examples: [
+          { label: "Acids", items: ["HCl", "HNO₃", "CH₃COOH"] },
+          { label: "Bases", items: ["NaOH", "NH₃", "Ca(OH)₂"] }
+        ] },
+      { title: "Strong or weak?",
+        text: "Strong = ionizes or dissociates completely: the 7 strong acids and the group 1 + heavy group 2 hydroxides. Everything else is weak. The Acids and Bases intros have the full memorize lists and the periodic-table tricks.",
+        examples: [
+          { label: "Strong (a few)", items: ["HCl", "H₂SO₄", "KOH", "Ba(OH)₂"] },
+          { label: "Weak (a few)", items: ["HF", "CH₃COOH", "NH₃"] }
+        ] }
+    ]
+  },
+  axes: [
+    { id: "kind", label: "Acid or base?",
+      options: [{ id: "acid", label: "Acid" }, { id: "base", label: "Base" }] },
+    { id: "strength", label: "Strength",
+      options: [{ id: "strong", label: "Strong" }, { id: "weak", label: "Weak" }] }
+  ],
+  cards: [
+    ...acids.cards.map((c) => ({ id: "a-" + c.id, formula: c.formula, name: c.name, answers: { kind: "acid", strength: c.answers.strength } })),
+    ...bases.cards.map((c) => ({ id: "b-" + c.id, formula: c.formula, name: c.name, answers: { kind: "base", strength: c.answers.strength } }))
+  ]
+};
+
+export const DECKS = [acids, bases, mix];

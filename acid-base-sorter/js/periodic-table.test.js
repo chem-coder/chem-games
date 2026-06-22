@@ -30,6 +30,7 @@ for (const deck of DECKS) {
       assert.ok(cn.title && cn.text, `${deck.id} concept has title + text`);
       assert.ok(cn.examples.length >= 1, `${deck.id} concept has examples`);
     }
+    if (!intro.pt) return; // the mix deck's intro has no periodic table — that's fine
     const pt = intro.pt;
     for (const sym of Object.keys(pt.highlight)) {
       assert.ok(ELEMENT_SYMBOLS.has(sym), `${deck.id} highlights real element "${sym}"`);

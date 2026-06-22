@@ -113,38 +113,49 @@ test("bases: hydrazine (N₂H₄) is the polyacidic molecular base (the di-acidi
   assert.equal(hz.answers.ohcount, "poly");
 });
 
-// ── stack building: every strong species is ALWAYS tested; the weak fill varies ──
-const strongIds = (deck) => deck.cards.filter((c) => c.answers.strength === "strong").map((c) => c.id);
-const weakIds = (deck) => deck.cards.filter((c) => c.answers.strength !== "strong").map((c) => c.id);
-
+// ── stack building: coverage-aware rounds driven by saved progress ──
 for (const deck of DECKS) {
-  test(`${deck.id}: a built stack ALWAYS contains every strong card`, () => {
-    // try a range of target sizes, and with the real RNG several times
-    for (const size of [0, 3, DEFAULT_STACK_SIZE, 999]) {
-      for (let run = 0; run < 8; run += 1) {
-        const ids = buildStack(deck, size).map((c) => c.id);
-        for (const sid of strongIds(deck)) {
-          assert.ok(ids.includes(sid), `${deck.id} stack (size ${size}) is missing strong card ${sid}`);
-        }
-      }
-    }
-  });
-
-  test(`${deck.id}: a built stack is strong + a weak sample, no duplicates, weak drawn only from the pool`, () => {
-    const stack = buildStack(deck, DEFAULT_STACK_SIZE, () => 0); // deterministic rng
-    const ids = stack.map((c) => c.id);
-    assert.equal(new Set(ids).size, ids.length, "no duplicate cards");
-    const strong = strongIds(deck);
-    const expectedLen = strong.length + Math.min(weakIds(deck).length, Math.max(0, DEFAULT_STACK_SIZE - strong.length));
-    assert.equal(ids.length, expectedLen, "stack size = all strong + weak fill to the target");
-    const pool = new Set(weakIds(deck));
-    for (const id of ids) {
-      if (!strong.includes(id)) assert.ok(pool.has(id), `${id} came from the weak pool`);
-    }
-  });
-
-  test(`${deck.id}: the weak pool is bigger than its stack slots, so the fill genuinely varies`, () => {
-    const slots = DEFAULT_STACK_SIZE - strongIds(deck).length;
-    assert.ok(weakIds(deck).length > slots, `${deck.id} needs more weak cards (${weakIds(deck).length}) than slots (${slots})`);
+  test(`${deck.id}: a round holds size distinct cards, all from the deck`, () => {
+    const ids = buildStack(deck, {}, 8).map((c) => c.id);
+    assert.equal(ids.length, Math.min(8, deck.cards.length));
+    assert.equal(new Set(ids).size, ids.length, "no duplicates");
+    const pool = new Set(deck.cards.map((c) => c.id));
+    for (const id of ids) assert.ok(pool.has(id), `${id} is a real card`);
   });
 }
+
+test("with no saved progress, a round is just a random sample (no forced strong set)", () => {
+  const deck = acids;
+  const ids = buildStack(deck, {}, 5, () => 0).map((c) => c.id);
+  assert.equal(ids.length, 5);
+  // nothing requires every strong acid to appear — the old rule is gone
+});
+
+test("mastered cards are deprioritised — unmastered cards fill the round first", () => {
+  const deck = acids;
+  // mark all but two cards mastered; a size-2 round should pick the two UN-mastered ones
+  const stats = { acids: {} };
+  const unmastered = [deck.cards[0].id, deck.cards[1].id];
+  for (const c of deck.cards) {
+    if (!unmastered.includes(c.id)) stats.acids[c.id] = { seen: 1, missed: 0, mastered: true };
+  }
+  const ids = buildStack(deck, stats, 2, () => 0.5).map((c) => c.id);
+  assert.deepEqual(new Set(ids), new Set(unmastered), "the two unmastered cards are chosen");
+});
+
+test("within unmastered, least-seen cards come first (rotation through the pool)", () => {
+  const deck = acids;
+  // everything unmastered; give the first card a high seen count so it sorts last
+  const stats = { acids: {} };
+  deck.cards.forEach((c, i) => { stats.acids[c.id] = { seen: i === 0 ? 99 : 0, missed: 0, mastered: false }; });
+  const ids = buildStack(deck, stats, deck.cards.length - 1, () => 0.5).map((c) => c.id);
+  assert.ok(!ids.includes(deck.cards[0].id), "the most-seen card is held back when the round can't fit everyone");
+});
+
+test("a finished pool (all mastered) still fills the round (review mode)", () => {
+  const deck = bases;
+  const stats = { bases: {} };
+  for (const c of deck.cards) stats.bases[c.id] = { seen: 3, missed: 0, mastered: true };
+  const ids = buildStack(deck, stats, 6, () => 0.5).map((c) => c.id);
+  assert.equal(ids.length, 6, "mastered cards still come back around for review");
+});

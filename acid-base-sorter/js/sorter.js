@@ -29,9 +29,8 @@ export function isComplete(axes, selections) {
   return axes.every((ax) => selections[ax.id] != null);
 }
 
-// Default round length. A round always tests EVERY strong species, then fills the rest with a
-// random sample of weak ones — so the strong list is fully drilled while the round stays varied.
-export const DEFAULT_STACK_SIZE = 15;
+// Default round length. Short rounds (saved progress handles full coverage over time).
+export const DEFAULT_STACK_SIZE = 8;
 
 function shuffle(arr, rng) {
   const a = arr.slice();
@@ -42,12 +41,18 @@ function shuffle(arr, rng) {
   return a;
 }
 
-// Build one round: ALL strong cards (guaranteed — the memory test must be exhaustive) plus a
-// random sample of weak cards up to targetSize, then shuffled. rng is injectable for tests.
-export function buildStack(deck, targetSize = DEFAULT_STACK_SIZE, rng = Math.random) {
-  const strong = deck.cards.filter((c) => c.answers.strength === "strong");
-  const weak = deck.cards.filter((c) => c.answers.strength !== "strong");
-  const need = Math.max(0, targetSize - strong.length);
-  const chosenWeak = shuffle(weak, rng).slice(0, need);
-  return shuffle([...strong, ...chosenWeak], rng);
+// Build one round, COVERAGE-AWARE. Using saved stats, prefer cards the student hasn't mastered
+// yet, least-seen first (so rounds rotate through the whole pool instead of repeating the same
+// few); top up with already-mastered cards only if there aren't enough unmastered ones to fill
+// the round. rng is injectable for tests. stats is the saved-progress object (see stats.js).
+export function buildStack(deck, stats = {}, size = DEFAULT_STACK_SIZE, rng = Math.random) {
+  const d = stats[deck.id] || {};
+  const decorated = deck.cards.map((c) => {
+    const rec = d[c.id] || {};
+    return { card: c, tier: rec.mastered ? 1 : 0, seen: rec.seen || 0, r: rng() };
+  });
+  // unmastered before mastered; within a tier, least-seen first; random tiebreak
+  decorated.sort((a, b) => a.tier - b.tier || a.seen - b.seen || a.r - b.r);
+  const chosen = decorated.slice(0, Math.min(size, decorated.length)).map((x) => x.card);
+  return shuffle(chosen, rng); // shuffle so play order isn't the priority order
 }

@@ -1,11 +1,11 @@
 // Version-tag every internal import so one release bump busts the whole module graph in the
 // browser cache (otherwise a returning visitor can load a stale engine against fresh data).
-import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-progress";
-import { renderPeriodicTable } from "./periodic-table.js?v=20260622-progress";
-import { STRUCTURES } from "./structures.js?v=20260622-progress";
-import { recordResult, masteredCount } from "./stats.js?v=20260622-progress";
-import { loadStats, saveStats, resetStats } from "./storage.js?v=20260622-progress";
-import { DECKS } from "../data/decks.js?v=20260622-progress";
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-mix";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260622-mix";
+import { STRUCTURES } from "./structures.js?v=20260622-mix";
+import { recordResult, masteredCount } from "./stats.js?v=20260622-mix";
+import { loadStats, saveStats, resetStats } from "./storage.js?v=20260622-mix";
+import { DECKS } from "../data/decks.js?v=20260622-mix";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -37,8 +37,9 @@ function loadDeck(i) {
   deckIndex = i;
   mode = "intro";
   masteredByDeck[i].clear();
-  // A fresh round: every strong card + a random sample of weak ones, reshuffled each time.
-  beginRound(buildStack(deck()).map((c) => c.id), false);
+  // A fresh round, coverage-aware: prefers cards not yet mastered (least-seen first) using the
+  // saved progress, so rounds rotate through the whole pool instead of repeating the same few.
+  beginRound(buildStack(deck(), stats, deck().roundSize ?? 8).map((c) => c.id), false);
   renderSwitcher();
   render();
 }
@@ -147,30 +148,43 @@ function renderIntro() {
     )
     .join("");
 
-  const pt = intro.pt;
-  const legend = pt.legend
-    .map(
-      (l) => `<span class="leg"><span class="leg-swatch" style="background:${pt.palette[l.cat].fill};border-color:${pt.palette[l.cat].stroke}"></span>${l.label}</span>`
-    )
-    .join("");
+  // Periodic-table block (acids/bases only; the mix intro skips it).
+  let ptBlock = "";
+  if (intro.pt) {
+    const pt = intro.pt;
+    const legend = pt.legend
+      .map(
+        (l) => `<span class="leg"><span class="leg-swatch" style="background:${pt.palette[l.cat].fill};border-color:${pt.palette[l.cat].stroke}"></span>${l.label}</span>`
+      )
+      .join("");
+    ptBlock = `<div class="pt-block">
+      <h3>${pt.title}</h3>
+      <div class="pt-wrap">${renderPeriodicTable(pt.highlight, pt.palette)}</div>
+      <div class="pt-legend">${legend}</div>
+      <p class="pt-note">${pt.note}</p>
+    </div>`;
+  }
 
-  // The complete "memorize these" list, chunked to mirror the periodic table.
-  const mem = intro.memorize;
-  const memChunks = mem.chunks
-    .map(
-      (ch) => `<div class="mem-chunk">
+  // The complete "memorize these" list, chunked to mirror the periodic table (acids/bases only).
+  let memBlock = "";
+  if (intro.memorize) {
+    const mem = intro.memorize;
+    const memChunks = mem.chunks
+      .map(
+        (ch) => `<div class="mem-chunk">
         <span class="mem-heading">${ch.heading}</span>
         <ul class="mem-items">${ch.items
           .map((it) => `<li><span class="mem-formula">${formulaHtml(it.formula)}</span><span class="mem-name">${it.name}</span></li>`)
           .join("")}</ul>
       </div>`
-    )
-    .join("");
-  const memBlock = `<div class="mem-block">
+      )
+      .join("");
+    memBlock = `<div class="mem-block">
       <h3>${mem.title}</h3>
       <div class="mem-grid">${memChunks}</div>
       ${mem.footnote ? `<p class="mem-foot">* ${mem.footnote}</p>` : ""}
     </div>`;
+  }
 
   // Molecular-base structures (bases only): lone-pair drawings as the proton-accepting clue.
   let molBlock = "";
@@ -201,12 +215,7 @@ function renderIntro() {
     ${progressLine}
     <div class="concepts">${concepts}</div>
     ${namingBlock}
-    <div class="pt-block">
-      <h3>${pt.title}</h3>
-      <div class="pt-wrap">${renderPeriodicTable(pt.highlight, pt.palette)}</div>
-      <div class="pt-legend">${legend}</div>
-      <p class="pt-note">${pt.note}</p>
-    </div>
+    ${ptBlock}
     ${memBlock}
     ${molBlock}
     <div class="controls">

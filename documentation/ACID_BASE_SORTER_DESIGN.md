@@ -104,18 +104,24 @@ palette-backed (catches a typo'd `highlight` map).
 - Flashcard tweaks: the name reveal is boxed + larger (a student couldn't miss it); the formula is
   ~5% smaller. Guarded by `intro.test.js` + the extended `periodic-table.test.js`.
 
-## 4d. Randomized rounds (added 2026-06-22)
+## 4d. Coverage-aware rounds + Mix mode (revised 2026-06-22)
 
-A round is no longer the whole deck (that was repetitive at 19 cards). `buildStack(deck, size)`
-(pure, in `js/sorter.js`, `DEFAULT_STACK_SIZE = 15`) returns **every strong card — always, the
-memory test must be exhaustive — plus a random sample of weak cards** up to the target size, then
-shuffled. So the strong list is fully drilled every round while the weak fill varies for freshness.
+**Short, coverage-aware rounds.** Rounds are 8 cards (acids/bases) or 10 (Mix). The old "every
+strong species every round" rule is **gone** — saved progress now guarantees coverage instead.
+`buildStack(deck, stats, size, rng)` (pure, `js/sorter.js`) prefers cards **not yet mastered,
+least-seen first**, topping up with mastered cards only if a round would be short. So rounds rotate
+through the whole pool rather than repeating the same few. Needed a `seen` counter in `stats.js`.
+Guarded by `sorter.test.js`: mastered cards are deprioritised, least-seen come first, a finished
+pool still fills (review). Verified in-browser: 0 overlap across consecutive rounds; ~24/26 acids
+covered in 3 rounds.
 
-Guarded by `sorter.test.js`: a built stack always contains every strong card (across many sizes
-and RNG runs); size = all-strong + weak-fill; weak items come only from the weak pool; and the
-weak pool is strictly larger than the weak slots so the fill genuinely varies. To keep that
-guarantee true, the weak-base pool was expanded (amines: ethyl/dimethyl/pyridine/aniline; weak
-metal hydroxides: Fe(II)/Zn/Cu) — acids weak pool 12, bases weak pool 11, both > their ~7-8 slots.
+**Mix mode** (`mix` deck, derived from the acids+bases decks so it can't drift): two axes only —
+**Acid or base?** and **Strong or weak?** — across all 49 species, 10 per round, its own saved
+progress. Lighter intro (no periodic table / memorize list — `renderIntro` makes those optional).
+
+**Carboxylic-acid card** on the acids intro: explains the –COOH "acidic H at the end" so the
+carboxylic formulas (HCOOH, CH₃COOH, C₆H₅COOH, CH₂ClCOOH) don't confuse — especially in Mix, which
+surfaces less-common species.
 
 Cache note: `app.js` version-tags its whole import graph (`?v=`), so one release bump busts every
 module — without it a returning visitor could load a stale engine against fresh data (blank page).

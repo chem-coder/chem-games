@@ -1,6 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { recordResult, masteredCount, masteredIds } from "./stats.js";
+import { recordResult, masteredCount, masteredIds, seenCount } from "./stats.js";
+
+test("recordResult counts every appearance via seen (drives coverage rotation)", () => {
+  let s = recordResult({}, "acids", "hf", false);
+  assert.equal(seenCount(s, "acids", "hf"), 1);
+  s = recordResult(s, "acids", "hf", true);
+  assert.equal(seenCount(s, "acids", "hf"), 2);
+  assert.equal(seenCount(s, "acids", "never"), 0);
+});
 
 test("recordResult marks a card mastered on a correct check and leaves misses alone", () => {
   let s = {};

@@ -6,12 +6,18 @@
 
 export function recordResult(stats, deckId, cardId, allCorrect) {
   const deckStats = { ...(stats[deckId] || {}) };
-  const prev = deckStats[cardId] || { missed: 0, mastered: false };
+  const prev = deckStats[cardId] || { seen: 0, missed: 0, mastered: false };
   deckStats[cardId] = {
+    seen: (prev.seen || 0) + 1,
     missed: prev.missed + (allCorrect ? 0 : 1),
     mastered: prev.mastered || allCorrect
   };
   return { ...stats, [deckId]: deckStats };
+}
+
+// How many times a card has been checked (0 if never). Drives coverage — least-seen first.
+export function seenCount(stats, deckId, cardId) {
+  return stats[deckId]?.[cardId]?.seen || 0;
 }
 
 export function masteredIds(stats, deckId) {
