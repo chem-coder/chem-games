@@ -39,4 +39,14 @@ const methylamine =
   letter(H_RIGHT[0], H_RIGHT[1], "H") + letter(H_BOTTOM[0], H_BOTTOM[1], "H") +
   `</svg>`;
 
-export const STRUCTURES = { ammonia, methylamine };
+// Hydrazine H₂N–NH₂: TWO nitrogens, each with a lone pair — so it can accept two H⁺ (di-acidic).
+// The two lone pairs are the whole point; letters and dots only, like the others.
+const hydrazine =
+  `<svg class="lewis" viewBox="0 0 210 112" role="img" aria-label="Hydrazine, N2H4, with a lone pair on each nitrogen">` +
+  lonePair(66, 40) + lonePair(144, 40) +
+  letter(90, 70, "N") + letter(120, 70, "N") +
+  letter(58, 70, "H") + letter(90, 98, "H") +
+  letter(152, 70, "H") + letter(120, 98, "H") +
+  `</svg>`;
+
+export const STRUCTURES = { ammonia, methylamine, hydrazine };

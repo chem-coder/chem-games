@@ -1,9 +1,9 @@
 // Version-tag every internal import so one release bump busts the whole module graph in the
 // browser cache (otherwise a returning visitor can load a stale engine against fresh data).
-import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-content";
-import { renderPeriodicTable } from "./periodic-table.js?v=20260622-content";
-import { STRUCTURES } from "./structures.js?v=20260622-content";
-import { DECKS } from "../data/decks.js?v=20260622-content";
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-hydrazine";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260622-hydrazine";
+import { STRUCTURES } from "./structures.js?v=20260622-hydrazine";
+import { DECKS } from "../data/decks.js?v=20260622-hydrazine";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");

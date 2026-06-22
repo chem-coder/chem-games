@@ -90,11 +90,27 @@ test("bases: form is metal hydroxide iff the formula contains OH", () => {
   }
 });
 
-test("bases: OH-count is polyacidic iff the formula shows (OH)₂/₃ (else monoacidic)", () => {
-  for (const c of bases.cards) {
+test("bases: for metal hydroxides, OH-count is poly iff the formula shows (OH)₂/₃", () => {
+  for (const c of bases.cards.filter((b) => b.answers.form === "hydroxide")) {
     const expected = /\(OH\)[₂₃]/.test(c.formula) ? "poly" : "mono";
     assert.equal(c.answers.ohcount, expected, `${c.formula} OH-count should be ${expected}`);
   }
+});
+
+// Molecular bases get their proton capacity from lone-pair sites, not OH groups — so OH-count is
+// hand-set (not formula-derivable). Most amines are monoacidic; hydrazine is the di-acidic one.
+test("bases: molecular bases carry a valid hand-set mono/poly OH-count", () => {
+  for (const c of bases.cards.filter((b) => b.answers.form === "molecular")) {
+    assert.ok(["mono", "poly"].includes(c.answers.ohcount), `${c.formula} has a valid OH-count`);
+  }
+});
+
+test("bases: hydrazine (N₂H₄) is the polyacidic molecular base (the di-acidic exception)", () => {
+  const hz = bases.cards.find((c) => c.formula === "N₂H₄");
+  assert.ok(hz, "hydrazine is in the base pool");
+  assert.equal(hz.answers.strength, "weak");
+  assert.equal(hz.answers.form, "molecular");
+  assert.equal(hz.answers.ohcount, "poly");
 });
 
 // ── stack building: every strong species is ALWAYS tested; the weak fill varies ──

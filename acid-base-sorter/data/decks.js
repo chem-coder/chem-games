@@ -171,10 +171,11 @@ const bases = {
       footnote: "FrOH (francium hydroxide) is also a group 1 hydroxide — in theory the strongest base of all — but francium is so radioactively rare it's never studied. It's a footnote, not a memorize item."
     },
     molecular: {
-      text: "Not every base is a metal hydroxide. Molecular bases like ammonia and the amines have no OH at all — they accept an H⁺ using a lone pair of electrons (the two dots on N). One lone pair takes one proton, which is why these are monoacidic.",
+      text: "Not every base is a metal hydroxide. Molecular bases like ammonia and the amines have no OH at all — they accept an H⁺ using a lone pair of electrons (the two dots on N). Count the lone pairs: one means it takes one proton (monoacidic), but hydrazine has a nitrogen on each end — two lone pairs — so it can take two (polyacidic).",
       examples: [
         { name: "ammonia", formula: "NH₃", structure: "ammonia", lonePairs: 1 },
-        { name: "methylamine", formula: "CH₃NH₂", structure: "methylamine", lonePairs: 1 }
+        { name: "methylamine", formula: "CH₃NH₂", structure: "methylamine", lonePairs: 1 },
+        { name: "hydrazine", formula: "N₂H₄", structure: "hydrazine", lonePairs: 2 }
       ]
     }
   },
@@ -205,6 +206,7 @@ const bases = {
     { id: "me3n",   formula: "(CH₃)₃N",  name: "trimethylamine",      answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     { id: "prnh2",  formula: "C₃H₇NH₂",  name: "propylamine",         answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     { id: "piperidine",formula: "C₅H₁₁N",name: "piperidine",          answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "n2h4",   formula: "N₂H₄",    name: "hydrazine",           answers: { strength: "weak", form: "molecular", ohcount: "poly" } }, // di-acidic: a lone pair on each N
     { id: "aniline",formula: "C₆H₅NH₂",  name: "aniline",             answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
     // ── weak: metal hydroxides (insoluble / sparingly soluble) ──
     { id: "aloh3", formula: "Al(OH)₃",  name: "aluminum hydroxide",  answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },
