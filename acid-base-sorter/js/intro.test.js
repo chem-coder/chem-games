@@ -41,6 +41,25 @@ for (const deck of DECKS) {
   });
 }
 
+// ── ANY list that claims to be the strong/memorize set must be the complete canonical set ──
+// (the "Weak (everything else)" chips are explicitly illustrative and are excluded.)
+test("every 'Strong'/'memorize' example list is the complete canonical set, never a subset", () => {
+  const canon = { acids: new Set(STRONG_ACIDS), bases: new Set(STRONG_BASES) };
+  for (const deck of DECKS) {
+    for (const cn of deck.intro.concepts) {
+      for (const ex of cn.examples) {
+        if (/\b(strong|memorize)\b/i.test(ex.label)) {
+          assert.deepEqual(
+            new Set(ex.items),
+            canon[deck.id],
+            `${deck.id} · "${cn.title}" · "${ex.label}" must list every strong species, not a subset`
+          );
+        }
+      }
+    }
+  }
+});
+
 // ── grouping / chunking ──
 test("acids: memorize is chunked N&S oxyacids / chlorine oxyacids / binary halogen acids", () => {
   const chunks = acids.intro.memorize.chunks.map((c) => c.items.map((i) => i.formula));

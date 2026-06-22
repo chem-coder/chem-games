@@ -15,7 +15,7 @@ const acids = {
       { title: "Strong vs Weak",
         text: "A strong acid ionizes completely in water — practically every molecule lets go of its H⁺. A weak acid only partly ionizes; most molecules stay whole. There are just seven strong acids: treat anything not on that list as weak.",
         examples: [
-          { label: "Strong (memorize)", items: ["HCl", "HNO₃", "H₂SO₄", "HClO₄"] },
+          { label: "Strong — all 7, memorize", items: ["HCl", "HBr", "HI", "HNO₃", "H₂SO₄", "HClO₃", "HClO₄"] },
           { label: "Weak (everything else)", items: ["HF", "HC₂H₃O₂", "H₂CO₃"] }
         ] },
       { title: "Monoprotic vs Polyprotic",
@@ -108,7 +108,7 @@ const bases = {
       { title: "Strong vs Weak",
         text: "A strong base dissociates completely, releasing all of its OH⁻. The strong bases are a short list: the group 1 hydroxides plus the heavy group 2 hydroxides (Ca, Sr, Ba). Ammonia and most other bases are weak.",
         examples: [
-          { label: "Strong (memorize)", items: ["NaOH", "KOH", "Ba(OH)₂"] },
+          { label: "Strong — all 8, memorize", items: ["LiOH", "NaOH", "KOH", "RbOH", "CsOH", "Ca(OH)₂", "Sr(OH)₂", "Ba(OH)₂"] },
           { label: "Weak (everything else)", items: ["NH₃", "Al(OH)₃"] }
         ] },
       { title: "Metal hydroxide vs Molecular",
