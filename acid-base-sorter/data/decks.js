@@ -188,11 +188,19 @@ const bases = {
     { id: "caoh2", formula: "Ca(OH)₂",  name: "calcium hydroxide",   answers: { strength: "strong", form: "hydroxide", ohcount: "poly" } },
     { id: "sroh2", formula: "Sr(OH)₂",  name: "strontium hydroxide", answers: { strength: "strong", form: "hydroxide", ohcount: "poly" } },
     { id: "baoh2", formula: "Ba(OH)₂",  name: "barium hydroxide",    answers: { strength: "strong", form: "hydroxide", ohcount: "poly" } },
-    // ── weak ──
-    { id: "nh3",   formula: "NH₃",      name: "ammonia",             answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
-    { id: "ch3nh2",formula: "CH₃NH₂",   name: "methylamine",         answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    // ── weak: molecular (amines/N bases — accept 1 H⁺ via a lone pair) ──
+    { id: "nh3",    formula: "NH₃",      name: "ammonia",             answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "ch3nh2", formula: "CH₃NH₂",   name: "methylamine",         answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "c2h5nh2",formula: "C₂H₅NH₂",  name: "ethylamine",          answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "me2nh",  formula: "(CH₃)₂NH", name: "dimethylamine",       answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "pyridine",formula: "C₅H₅N",   name: "pyridine",            answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    { id: "aniline",formula: "C₆H₅NH₂",  name: "aniline",             answers: { strength: "weak", form: "molecular", ohcount: "mono" } },
+    // ── weak: metal hydroxides (insoluble / sparingly soluble) ──
     { id: "aloh3", formula: "Al(OH)₃",  name: "aluminum hydroxide",  answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },
-    { id: "feoh3", formula: "Fe(OH)₃",  name: "iron(III) hydroxide", answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } }
+    { id: "feoh3", formula: "Fe(OH)₃",  name: "iron(III) hydroxide", answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },
+    { id: "feoh2", formula: "Fe(OH)₂",  name: "iron(II) hydroxide",  answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },
+    { id: "znoh2", formula: "Zn(OH)₂",  name: "zinc hydroxide",      answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } },
+    { id: "cuoh2", formula: "Cu(OH)₂",  name: "copper(II) hydroxide",answers: { strength: "weak", form: "hydroxide", ohcount: "poly" } }
   ]
 };
 

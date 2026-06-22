@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { gradeCard, requeue, isComplete } from "./sorter.js";
+import { gradeCard, requeue, isComplete, buildStack, DEFAULT_STACK_SIZE } from "./sorter.js";
 import { DECKS } from "../data/decks.js";
 
 const acids = DECKS.find((d) => d.id === "acids");
@@ -96,3 +96,39 @@ test("bases: OH-count is polyacidic iff the formula shows (OH)₂/₃ (else mono
     assert.equal(c.answers.ohcount, expected, `${c.formula} OH-count should be ${expected}`);
   }
 });
+
+// ── stack building: every strong species is ALWAYS tested; the weak fill varies ──
+const strongIds = (deck) => deck.cards.filter((c) => c.answers.strength === "strong").map((c) => c.id);
+const weakIds = (deck) => deck.cards.filter((c) => c.answers.strength !== "strong").map((c) => c.id);
+
+for (const deck of DECKS) {
+  test(`${deck.id}: a built stack ALWAYS contains every strong card`, () => {
+    // try a range of target sizes, and with the real RNG several times
+    for (const size of [0, 3, DEFAULT_STACK_SIZE, 999]) {
+      for (let run = 0; run < 8; run += 1) {
+        const ids = buildStack(deck, size).map((c) => c.id);
+        for (const sid of strongIds(deck)) {
+          assert.ok(ids.includes(sid), `${deck.id} stack (size ${size}) is missing strong card ${sid}`);
+        }
+      }
+    }
+  });
+
+  test(`${deck.id}: a built stack is strong + a weak sample, no duplicates, weak drawn only from the pool`, () => {
+    const stack = buildStack(deck, DEFAULT_STACK_SIZE, () => 0); // deterministic rng
+    const ids = stack.map((c) => c.id);
+    assert.equal(new Set(ids).size, ids.length, "no duplicate cards");
+    const strong = strongIds(deck);
+    const expectedLen = strong.length + Math.min(weakIds(deck).length, Math.max(0, DEFAULT_STACK_SIZE - strong.length));
+    assert.equal(ids.length, expectedLen, "stack size = all strong + weak fill to the target");
+    const pool = new Set(weakIds(deck));
+    for (const id of ids) {
+      if (!strong.includes(id)) assert.ok(pool.has(id), `${id} came from the weak pool`);
+    }
+  });
+
+  test(`${deck.id}: the weak pool is bigger than its stack slots, so the fill genuinely varies`, () => {
+    const slots = DEFAULT_STACK_SIZE - strongIds(deck).length;
+    assert.ok(weakIds(deck).length > slots, `${deck.id} needs more weak cards (${weakIds(deck).length}) than slots (${slots})`);
+  });
+}

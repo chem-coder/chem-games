@@ -1,7 +1,9 @@
-import { gradeCard, requeue, isComplete } from "./sorter.js";
-import { renderPeriodicTable } from "./periodic-table.js";
-import { STRUCTURES } from "./structures.js";
-import { DECKS } from "../data/decks.js?v=20260622-memorize";
+// Version-tag every internal import so one release bump busts the whole module graph in the
+// browser cache (otherwise a returning visitor can load a stale engine against fresh data).
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-stacks";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260622-stacks";
+import { STRUCTURES } from "./structures.js?v=20260622-stacks";
+import { DECKS } from "../data/decks.js?v=20260622-stacks";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -9,6 +11,7 @@ const switcher = document.querySelector("#deckSwitcher");
 let deckIndex = 0;
 let mode = "intro"; // "intro" explainer screen, or "play" the stack
 let queue = []; // card ids, front = current card
+let roundTotal = 0; // how many cards this round started with (all strong + a weak sample)
 let selections = {}; // axisId -> optionId
 let checked = false;
 let graded = null; // { perAxis, allCorrect }
@@ -18,20 +21,13 @@ const deck = () => DECKS[deckIndex];
 const mastered = () => masteredByDeck[deckIndex];
 const card = () => deck().cards.find((c) => c.id === queue[0]);
 
-function shuffle(list) {
-  const a = list.slice();
-  for (let i = a.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 function loadDeck(i) {
   deckIndex = i;
   mode = "intro";
   masteredByDeck[i].clear();
-  queue = shuffle(deck().cards.map((c) => c.id));
+  // A fresh round: every strong card + a random sample of weak ones, reshuffled each time.
+  queue = buildStack(deck()).map((c) => c.id);
+  roundTotal = queue.length;
   selections = {};
   checked = false;
   graded = null;
@@ -206,7 +202,7 @@ function renderCard() {
     <div class="axes">${deck().axes.map(axisRow).join("")}</div>
     ${feedback}
     <div class="controls">
-      <p class="score">Mastered ${mastered().size} of ${deck().cards.length} &middot; ${remaining} in stack</p>
+      <p class="score">Mastered ${mastered().size} of ${roundTotal} &middot; ${remaining} in stack</p>
       ${checked
         ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !graded.allCorrect ? "Next card →" : "Finish"}</button>`
         : `<button class="action primary" id="checkBtn" ${isComplete(deck().axes, selections) ? "" : "disabled"}>Check</button>`}
@@ -235,7 +231,7 @@ function renderSwitcher() {
 
 function renderDone() {
   root.innerHTML = `
-    <p class="prompt">Stack cleared — you classified every ${deck().label.toLowerCase().replace(/s$/, "")} correctly. ${mastered().size} of ${deck().cards.length} mastered.</p>
+    <p class="prompt">Stack cleared — you classified all ${roundTotal} correctly, including every strong ${deck().label.toLowerCase().replace(/s$/, "")}. Shuffle for a fresh mix.</p>
     <div class="controls">
       <button class="action primary" id="againBtn">Shuffle &amp; go again</button>
     </div>`;

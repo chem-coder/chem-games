@@ -104,7 +104,40 @@ palette-backed (catches a typo'd `highlight` map).
 - Flashcard tweaks: the name reveal is boxed + larger (a student couldn't miss it); the formula is
   ~5% smaller. Guarded by `intro.test.js` + the extended `periodic-table.test.js`.
 
-## 5. Later / open
+## 4d. Randomized rounds (added 2026-06-22)
+
+A round is no longer the whole deck (that was repetitive at 19 cards). `buildStack(deck, size)`
+(pure, in `js/sorter.js`, `DEFAULT_STACK_SIZE = 15`) returns **every strong card — always, the
+memory test must be exhaustive — plus a random sample of weak cards** up to the target size, then
+shuffled. So the strong list is fully drilled every round while the weak fill varies for freshness.
+
+Guarded by `sorter.test.js`: a built stack always contains every strong card (across many sizes
+and RNG runs); size = all-strong + weak-fill; weak items come only from the weak pool; and the
+weak pool is strictly larger than the weak slots so the fill genuinely varies. To keep that
+guarantee true, the weak-base pool was expanded (amines: ethyl/dimethyl/pyridine/aniline; weak
+metal hydroxides: Fe(II)/Zn/Cu) — acids weak pool 12, bases weak pool 11, both > their ~7-8 slots.
+
+Cache note: `app.js` version-tags its whole import graph (`?v=`), so one release bump busts every
+module — without it a returning visitor could load a stale engine against fresh data (blank page).
+
+## 5. Future expansion (multistage — notes for next sessions)
+
+The current build is "good enough for Malcolm to memorize his strong acids/bases and learn a few
+things about the rest." Next stages, roughly in order:
+
+1. **Per-user mastery tally (localStorage).** Persist which cards are mastered vs missed across
+   sessions (`chem-games:acid-base-sorter` per ARCHITECTURE §3c). Then shorter ~10-card rounds can
+   prioritise not-yet-mastered and recently-missed cards (spaced repetition with memory), instead
+   of resampling blind each round. This is the main reason rounds are a separate concept from the
+   deck.
+2. **Per-axis weak-spot stats.** Track which axis trips the student most (strength? proticity?),
+   surface it, and weight the sample toward weak spots.
+3. **More content from the course.** Mine the CHEM 1415 Exam 2 & 3 Ka/Kb reference tables for more
+   weak acids/bases (needs PDF text tooling — not installed in this env yet). Keep every addition
+   passing the correctness guards (strength ⟺ canonical set; type ⟺ O; form ⟺ OH; OH-count).
+4. **End-of-round review** of just the cards that were missed, and a "strong-only speed round."
+
+## 6. Later / open
 
 - A "missed pile" review at the end; per-axis weak-spot stats (which axis trips him most).
 - More cards once the mechanic proves out; possibly a third axis for bases (number of OH).
