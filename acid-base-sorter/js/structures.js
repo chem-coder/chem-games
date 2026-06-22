@@ -75,11 +75,13 @@ const methylamine = svg(
 
 // Hydrazine: two pyramidal N joined by an in-plane N–N bond; each N has two H (wedge / dash) and a
 // lone pair — placed TRANS (below the left N, above the right N), each sitting on its own N.
+// H's sit ~54px from their N — the same N–H distance as ammonia/methylamine — so the bond
+// segments and wedges come out the same size (bond length is 30% of the N–H distance).
 const hydrazine = svg(
   bond(80, 74, 130, 74, "plain") + // the N–N bond
-  bond(80, 74, 52, 50, "wedge") + bond(80, 74, 88, 42, "dash") +
-  bond(130, 74, 158, 98, "wedge") + bond(130, 74, 122, 106, "dash") +
-  atom(52, 50, "H") + atom(88, 42, "H") + atom(158, 98, "H") + atom(122, 106, "H") +
+  bond(80, 74, 39, 39, "wedge") + bond(80, 74, 93, 22, "dash") +
+  bond(130, 74, 171, 109, "wedge") + bond(130, 74, 117, 126, "dash") +
+  atom(39, 39, "H") + atom(93, 22, "H") + atom(171, 109, "H") + atom(117, 126, "H") +
   atom(80, 74, "N") + atom(130, 74, "N") +
   dots(80, 92) + dots(130, 56)
 );
