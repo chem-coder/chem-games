@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-steps";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-steps";
-import { renderMetalsTable } from "./periodic-table.js?v=20260623-steps";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-charge9";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-charge9";
+import { renderMetalsTable } from "./periodic-table.js?v=20260623-charge9";
 
 const root = document.querySelector("#game");
 
@@ -33,7 +33,7 @@ function type2Table() {
   const highlight = {}, labels = {};
   for (const [sym, states] of Object.entries(VARIABLE_STATES)) {
     highlight[sym] = "v";
-    labels[sym] = states.join(",");
+    labels[sym] = states; // array → laid out as signed charges in a shape
   }
   return renderMetalsTable(highlight, TYPE2_PALETTE, labels);
 }
@@ -51,6 +51,17 @@ let checked = false;
 let graded = null;
 let masteredThisRound = 0;
 let cleanSolves = 0; // got it right with zero hints
+
+// The "how to find the charge" explainer auto-opens the first time the student lands on the
+// Type II tab, then stays collapsed (their choice to reopen). A blocked store just means it
+// opens every time — harmless.
+const CHARGE_CARD_KEY = "chem-games:builder:charge-card-seen";
+function chargeCardSeen() {
+  try { return localStorage.getItem(CHARGE_CARD_KEY) === "1"; } catch { return false; }
+}
+function markChargeCardSeen() {
+  try { localStorage.setItem(CHARGE_CARD_KEY, "1"); } catch { /* ignore */ }
+}
 let missedThisRound = [];
 
 function startRound() {
@@ -151,6 +162,83 @@ function introTypeI() {
   </div>`;
 }
 
+// Teaching card: how to deduce a variable metal's charge from a formula. Two routes —
+// criss-cross (graphical) and charge-balance (the reliable one) — plus the reduced-formula
+// trap that makes balancing the trustworthy method. variant "full" lives on the Type II tab;
+// "mini" is a short recap on the Polyatomic tab that points back here.
+function chargeCard({ variant = "full", open = false } = {}) {
+  const openAttr = open ? " open" : "";
+  if (variant === "mini") {
+    return `<details class="charge-card cc-mini"${openAttr}>
+      <summary class="cc-summary"><span class="cc-chevron" aria-hidden="true"></span><span>Reminder — how to find the metal's charge</span></summary>
+      <div class="cc-body">
+        <p class="cc-mini-lede">Polyatomic ion = known charge. Balance to zero → read off the metal.</p>
+        <p class="cc-mini-ex">${toSubHtml("Fe2(SO4)3")}: three SO<sub>4</sub><sup class="cc-q cc-plum">2−</sup> → <strong>−6</strong>; two Fe share <strong>+6</strong> → each <strong class="cc-teal">+3</strong> → iron(III)</p>
+        <p class="cc-mini-foot">Full walkthrough on the <strong>Type&nbsp;II</strong> tab.</p>
+      </div>
+    </details>`;
+  }
+  return `<details class="charge-card"${openAttr}>
+    <summary class="cc-summary"><span class="cc-chevron" aria-hidden="true"></span><span>How do you find the metal's charge?</span></summary>
+    <div class="cc-body">
+      <p class="cc-lede">One method always works — one shortcut often does.</p>
+      <p class="cc-lede cc-lede-q"><span class="cc-f">${toSubHtml("FeCl3")}</span> — what's iron's charge?</p>
+      <div class="cc-methods">
+        <div class="cc-method">
+          <p class="cc-method-h"><span class="cc-mtag">A</span> Balance the charges</p>
+          <p class="cc-method-tag">always works</p>
+          <p class="cc-balance">total <span class="q-pos">+</span> = total <span class="q-neg">−</span></p>
+          <p class="cc-anchor-lead">Start from a known charge</p>
+          <div class="cc-chips">
+            <span class="cc-chip">H<sup class="cc-q">+</sup></span>
+            <span class="cc-chip">O<sup class="cc-q">2−</sup></span>
+            <span class="cc-chip">S<sup class="cc-q">2−</sup></span>
+            <span class="cc-chip">N<sup class="cc-q">3−</sup></span>
+            <span class="cc-chip">P<sup class="cc-q">3−</sup></span>
+            <span class="cc-chip">F<sup class="cc-q">−</sup></span>
+            <span class="cc-chip">Cl<sup class="cc-q">−</sup></span>
+            <span class="cc-chip">Br<sup class="cc-q">−</sup></span>
+            <span class="cc-chip">I<sup class="cc-q">−</sup></span>
+            <span class="cc-chip">group 1 metals<sup class="cc-q">+</sup></span>
+            <span class="cc-chip">group 2 metals<sup class="cc-q">2+</sup></span>
+          </div>
+          <ol class="steps cc-steps">
+            <li><span class="step-num">1</span><span class="step-text">Cl<sup class="cc-q">−</sup> known → 3 × (−1) = <strong>−3</strong></span></li>
+            <li><span class="step-num">2</span><span class="step-text">Fe must cancel it → <strong>+3</strong></span></li>
+            <li><span class="step-num">3</span><span class="step-text">One Fe → <strong>+3</strong> → iron(III)</span></li>
+          </ol>
+          <p class="cc-eg2"><span class="cc-eg2-h">${toSubHtml("Fe2O3")}</span><span>3 × O<sup class="cc-q">2−</sup> = <strong>−6</strong> charge</span><span>2 × Fe → must be <strong>Fe<sup class="cc-q">3+</sup></strong> each</span></p>
+        </div>
+        <div class="cc-method">
+          <p class="cc-method-h"><span class="cc-mtag">B</span> Criss-cross</p>
+          <p class="cc-method-tag">often works</p>
+          <div class="cc-cross">
+            <div class="cc-row">
+              <span class="cc-ion"><span class="cc-sym">Fe</span><sup class="cc-q cc-teal">3+</sup></span>
+              <span class="cc-ion"><span class="cc-sym">Cl</span><sup class="cc-q cc-plum">1−</sup></span>
+            </div>
+            <div class="cc-band"><span class="cc-diag d1"></span><span class="cc-diag d2"></span></div>
+            <div class="cc-row">
+              <span class="cc-res"><span class="cc-sym">Fe</span><sub class="cc-plum">1</sub></span>
+              <span class="cc-res"><span class="cc-sym">Cl</span><sub class="cc-teal">3</sub></span>
+            </div>
+            <p class="cc-cross-out">→ ${toSubHtml("FeCl3")} <span class="cc-aside">(drop the&nbsp;1)</span></p>
+          </div>
+          <p class="cc-method-foot">Charges often land as the opposite subscripts — but not always (see below)</p>
+          <p class="cc-confirm">Confirm with the math!</p>
+        </div>
+      </div>
+      <div class="cc-trap">
+        <p class="cc-trap-line"><strong>Why you can't trust criss-cross alone:</strong> run backwards, it can lie</p>
+        <p class="cc-trap-line"><span class="cc-f">${toSubHtml("PbO2")}</span>: shortcut says lead is Pb<sup class="cc-q">2+</sup> — but really it is Pb<sup class="cc-q">4+</sup></p>
+        <p class="cc-trap-line">Pb<sup class="cc-q">4+</sup> bonds with O<sup class="cc-q">2−</sup>. That's ${toSubHtml("Pb2O4")}! But reduce to the smallest common multiple: ${toSubHtml("Pb2O4")} becomes ${toSubHtml("PbO2")} <span class="cc-aside">(exception: ${toSubHtml("H2O2")} is a real molecule — not reduced to HO)</span></p>
+        <p class="cc-trap-line">So in ${toSubHtml("PbO2")} the subscripts were reduced from ${toSubHtml("Pb2O4")}, <strong>hiding the charges</strong> — but</p>
+        <p class="cc-trap-line cc-trap-punch">Math never slips: <strong>2 × (−2) = −4 → +4</strong></p>
+      </div>
+    </div>
+  </details>`;
+}
+
 function introTypeII() {
   return `<div class="intro">
     <p class="intro-eyebrow">Binary ionic · Type II metal (variable charge)</p>
@@ -166,20 +254,18 @@ function introTypeII() {
         <span class="block-sub"><em>anion name root</em></span>
       </div>
     </div>
-    <p class="schema-note">Find the charge from the formula: balance the anion's total, then read off the metal's.</p>
+    ${(() => { const first = !chargeCardSeen(); markChargeCardSeen(); return chargeCard({ variant: "full", open: first }); })()}
     <div class="ex-maps">
       <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl")}</span><span class="arrow">→</span><span class="w-cation">copper</span><span class="w-roman">(I)</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
       <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl2")}</span><span class="arrow">→</span><span class="w-cation">copper</span><span class="w-roman">(II)</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
       <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2O3")}</span><span class="arrow">→</span><span class="w-cation">iron</span><span class="w-roman">(III)</span> <span class="w-anion">ox<span class="ide">ide</span></span></div>
     </div>
     <div class="pt-block">
-      <p class="pt-heading">The variable-charge metals — just get the idea</p>
+      <p class="pt-heading">The variable-charge metals</p>
       ${type2Table()}
       <ul class="pt-points prose">
-        <li>These are mostly transition metals, and they can take more than one charge.</li>
-        <li>The small numbers are their common oxidation states.</li>
-        <li>Don't memorize them — just know the charge <strong>varies</strong>.</li>
-        <li>So you have to work it out from each formula.</li>
+        <li>Mostly transition metals — the charge <strong>varies</strong>.</li>
+        <li>Don't memorize — work it out from the formula.</li>
       </ul>
     </div>
     <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
@@ -206,6 +292,7 @@ function introPoly() {
       </div>
     </div>
     <p class="schema-note">Type I metal → no numeral. Type II metal → balance the polyatomic's charge, then add a Roman numeral.</p>
+    ${chargeCard({ variant: "mini", open: false })}
     <div class="ex-maps">
       <div class="ex-map"><span class="ex-f">${toSubHtml("Mg(NO3)2")}</span><span class="arrow">→</span><span class="w-cation">magnesium</span> <span class="w-anion">nitrate</span></div>
       <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2(SO4)3")}</span><span class="arrow">→</span><span class="w-cation">iron</span><span class="w-roman">(III)</span> <span class="w-anion">sulfate</span></div>

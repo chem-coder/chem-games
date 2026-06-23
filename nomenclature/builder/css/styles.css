@@ -99,7 +99,11 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
 
 /* ── periodic-table memory aid ── */
 .pt-block { margin: 22px 0 6px; }
-.pt-heading { margin: 0 0 10px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+.pt-heading {
+  width: fit-content; margin: 0 auto 12px; padding: 5px 16px;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.95rem;
+  color: var(--accent-dark); background: var(--accent-soft); border-radius: 999px;
+}
 .ptable { display: block; width: 100%; height: auto; margin: 0 auto; }
 .pt-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 12px; }
 .leg { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); }
@@ -196,3 +200,131 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
   padding: 6px 12px; font-family: var(--font-display); font-weight: 700;
   background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm);
 }
+
+/* ── "How to find the charge" explainer card ─────────────────────────────── */
+.charge-card {
+  margin: 2px 0 18px; background: var(--surface-soft);
+  border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+}
+.cc-summary {
+  display: flex; align-items: center; gap: 10px; padding: 13px 16px;
+  cursor: pointer; list-style: none;
+  font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--accent-dark);
+}
+.cc-summary::-webkit-details-marker { display: none; }
+.cc-chevron {
+  flex: none; width: 0; height: 0;
+  border-left: 7px solid var(--accent);
+  border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+  transition: transform 0.18s ease;
+}
+.charge-card[open] .cc-chevron { transform: rotate(90deg); }
+.cc-body { padding: 0 18px 18px; }
+.cc-lede { margin: 0 0 4px; color: var(--ink); }
+.cc-lede-q { margin: 0 0 14px; font-weight: 700; }
+.cc-f { font-family: var(--font-display); font-weight: 800; color: var(--ink); white-space: nowrap; }
+.cc-teal { color: var(--accent); }
+.cc-plum { color: var(--plum); }
+.cc-eq { font-family: var(--font-display); font-weight: 700; color: var(--ink); white-space: nowrap; }
+
+.cc-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cc-method {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); padding: 14px 14px 12px;
+}
+.cc-method-h {
+  display: flex; align-items: center; gap: 8px; margin: 0 0 4px;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ink);
+}
+.cc-mtag {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.55em; height: 1.55em; border-radius: 50%;
+  background: var(--accent); color: #fff; font-size: 0.8em; font-weight: 800;
+}
+.cc-method-sub { margin: 0 0 8px; color: var(--muted); font-size: 0.86rem; }
+.cc-method-tag {
+  margin: 0 0 8px; font-size: 0.74rem; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.cc-method-foot { margin: 8px 0 0; font-size: 0.9rem; color: var(--ink); }
+.cc-confirm {
+  margin: 6px 0 0; text-align: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 1rem; color: var(--accent);
+}
+.cc-steps { margin: 0; font-size: 0.95rem; }
+
+/* charge-balance rule with circular +/− badges */
+.cc-balance {
+  margin: 0 0 10px; text-align: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.08rem; color: var(--ink);
+}
+.q-pos, .q-neg {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.2em; height: 1.2em; border-radius: 50%;
+  font-size: 0.92em; font-weight: 800; line-height: 1; vertical-align: 0.16em; color: #fff;
+}
+.q-pos { background: var(--accent); }
+.q-neg { background: var(--plum); }
+
+/* "start from a known charge" chips */
+.cc-anchor-lead { margin: 0 0 6px; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.cc-chips { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 12px; }
+.cc-chip {
+  padding: 3px 9px; font-family: var(--font-display); font-weight: 700; font-size: 0.82rem;
+  color: var(--accent-dark); background: var(--accent-soft); border-radius: 999px;
+}
+
+/* second worked example (two metal atoms → divide) — stacked lines, no trailing period */
+.cc-eg2 {
+  display: grid; gap: 2px;
+  margin: 10px 0 0; padding: 8px 10px; font-size: 0.85rem; color: var(--ink);
+  background: var(--surface-soft); border-radius: var(--radius-sm);
+}
+.cc-eg2-h { font-family: var(--font-display); font-weight: 800; }
+
+/* criss-cross graphic — two color-coded diagonals carry each charge to the opposite subscript */
+.cc-cross { width: 196px; margin: 8px auto 4px; }
+.cc-row { display: flex; justify-content: space-between; padding: 0 30px; }
+.cc-ion, .cc-res { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--ink); }
+.cc-q { font-size: 0.6em; font-weight: 800; vertical-align: 0.55em; margin-left: 1px; }
+.cc-band { position: relative; height: 44px; }
+.cc-diag {
+  position: absolute; top: 0; height: 2px; width: 116px;
+  transform-origin: top left; border-radius: 2px;
+}
+.cc-diag::after {
+  content: ""; position: absolute; right: -1px; top: 50%; transform: translateY(-50%);
+  border-left: 7px solid currentColor;
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+}
+.cc-diag.d1 { left: 47px; background: var(--accent); color: var(--accent); transform: rotate(22.2deg); }
+.cc-diag.d2 { left: 149px; background: var(--plum); color: var(--plum); transform: rotate(157.8deg); }
+.cc-cross-out {
+  margin: 6px 0 0; text-align: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--ink);
+}
+.cc-aside { font-family: var(--font-body); font-weight: 500; font-size: 0.78rem; color: var(--muted); }
+
+.cc-trap {
+  margin-top: 14px; padding: 12px 14px;
+  background: var(--warning-soft); border: 1px solid var(--warning-line); border-radius: var(--radius-sm);
+}
+.cc-trap-h {
+  margin: 0 0 6px; font-family: var(--font-display); font-weight: 800; font-size: 0.95rem; color: var(--ink);
+}
+.cc-trap-line { margin: 0 0 4px; font-size: 0.9rem; line-height: 1.45; color: var(--ink); }
+.cc-trap-line:first-child { margin-bottom: 8px; }
+.cc-trap-punch { margin-top: 8px; text-align: center; font-family: var(--font-display); font-size: 0.98rem; }
+.cc-trap-line:last-child { margin-bottom: 0; }
+
+/* mini recap on the Polyatomic tab */
+.cc-mini .cc-summary { font-size: 0.95rem; }
+.cc-mini-lede { margin: 0 0 8px; color: var(--ink); }
+.cc-mini-ex {
+  margin: 0 0 8px; padding: 10px 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+.cc-mini-foot { margin: 0; color: var(--muted); font-size: 0.85rem; }
+
+@media (max-width: 560px) { .cc-methods { grid-template-columns: 1fr; } }

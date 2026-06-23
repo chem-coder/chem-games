@@ -32,6 +32,20 @@ function labelText(x, y, lab, color) {
   return `<text x="${x + CELL / 2}" y="${y + CELL * 0.84}" text-anchor="middle" font-size="${labelFont(lab)}" font-weight="800" fill="${color}" font-family="var(--font-display)">${lab}</text>`;
 }
 
+// Multiple oxidation states laid out as a small shape under the symbol (house rule: always show
+// the sign, never a comma list). 2 → a line, 3 → inverted triangle, 4 → a 2×2 square.
+function statesLayout(x, y, states, color) {
+  const cx = x + CELL / 2;
+  const L = x + CELL * 0.31, R = x + CELL * 0.69;     // two-column x's
+  const hi = y + CELL * 0.71, lo = y + CELL * 0.93, mid = y + CELL * 0.85; // rows
+  const t = (px, py, n) => `<text x="${px}" y="${py}" text-anchor="middle" font-size="8.5" font-weight="800" fill="${color}" font-family="var(--font-display)">+${n}</text>`;
+  const s = states;
+  if (s.length === 1) return t(cx, mid, s[0]);
+  if (s.length === 2) return t(L, mid, s[0]) + t(R, mid, s[1]);
+  if (s.length === 3) return t(L, hi, s[0]) + t(R, hi, s[1]) + t(cx, lo, s[2]);
+  return t(L, hi, s[0]) + t(R, hi, s[1]) + t(L, lo, s[2]) + t(R, lo, s[3]); // 4
+}
+
 function cell(sym, r, c, highlight, palette, labels) {
   if (!sym) return "";
   const x = c * CELL;
@@ -48,9 +62,10 @@ function cell(sym, r, c, highlight, palette, labels) {
       symText(x, y, sym, "var(--muted)", 500, false);
   }
   const co = palette[cat];
+  const labelSvg = Array.isArray(lab) ? statesLayout(x, y, lab, co.text) : lab ? labelText(x, y, lab, co.text) : "";
   return `<rect x="${ix}" y="${iy}" width="${w}" height="${w}" rx="4" fill="${co.fill}" stroke="${co.stroke}" stroke-width="1.6"/>` +
-    symText(x, y, sym, co.text, 800, !!lab) +
-    (lab ? labelText(x, y, lab, co.text) : "");
+    symText(x, y, sym, co.text, 800, !!labelSvg) +
+    labelSvg;
 }
 
 // highlight: { symbol: categoryId }. palette: { categoryId: { fill, stroke, text } }.
