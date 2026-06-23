@@ -6,10 +6,10 @@
 // name — practicing the periodic-table recall (Na → sodium) that tiles would hand them. Stuck
 // students can reveal progressive hints.
 
-import { assemble } from "../../js/naming.js";
-import { gradeName } from "../../js/matching.js";
-import { toRoman } from "../../js/chem.js";
-import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID } from "../../data/ions.js";
+import { assemble } from "../../js/naming.js?v=20260623-deal";
+import { gradeName } from "../../js/matching.js?v=20260623-deal";
+import { toRoman } from "../../js/chem.js?v=20260623-deal";
+import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260623-deal";
 
 // The quizzed sets — familiar fixed-charge metals and common monoatomic anions.
 export const TYPE_I_CATIONS = ["Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag"];
@@ -97,6 +97,10 @@ export function typeTwoCompounds() {
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const chg = (n) => `${Math.abs(n)}${n > 0 ? "+" : "−"}`; // always show magnitude in prose: 1+, 2−
 
+// Cation helpers that also handle ammonium (a polyatomic cation, not a periodic-table metal).
+const isVariableCation = (sym) => !!CATION_BY_SYMBOL[sym]?.variable;
+const cationName = (sym) => POLY_CATION_BY_ID[sym]?.names?.[0] ?? ELEMENTS[sym];
+
 export function buildProblemII(spec) {
   const built = assemble({ kind: "ionic", cation: spec.cation, cationCharge: spec.cationCharge, anion: spec.anion });
   const metal = ELEMENTS[spec.cation];
@@ -119,11 +123,105 @@ export function buildProblemII(spec) {
   };
 }
 
-// The builder's levels: one typed-name + hint + 5-per-round mechanic, different content & intro.
-export const LEVELS = [
-  { id: "type1", label: "Type I", tagline: "fixed-charge metals", compounds: typeOneCompounds, build: buildProblem },
-  { id: "type2", label: "Type II", tagline: "variable charge → Roman numeral", compounds: typeTwoCompounds, build: buildProblemII }
+// ── Polyatomic ionic: a metal (Type I OR Type II) + a named polyatomic ion ───────
+// The student must first decide whether the metal is fixed or variable (→ Roman numeral), then
+// name the polyatomic ion, which keeps its own name (it does NOT become -ide).
+// Fixed-charge cations for the polyatomic level — common metals plus nickel and the ammonium ion.
+export const POLY_FIXED_CATIONS = ["Li", "Na", "K", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag", "Ni", "ammonium"];
+// A rich, interesting anion set — the common ones plus the oxyanion families, dichromate, oxalate,
+// cyanide, thiosulfate, bicarbonate, and the iodate/periodate pair.
+export const POLY_ANION_IDS = [
+  "nitrate", "nitrite", "sulfate", "sulfite", "carbonate", "bicarbonate", "phosphate", "hydroxide",
+  "acetate", "cyanide", "permanganate", "chromate", "dichromate", "oxalate", "thiosulfate",
+  "hypochlorite", "chlorite", "chlorate", "perchlorate", "bromate", "iodate", "periodate"
 ];
+
+export function polyatomicCompounds() {
+  const out = [];
+  for (const cation of POLY_FIXED_CATIONS) for (const anion of POLY_ANION_IDS) out.push({ cation, anion });
+  for (const cation of TYPE_II_CATIONS) {
+    for (const cationCharge of CATION_BY_SYMBOL[cation].states) {
+      for (const anion of POLY_ANION_IDS) out.push({ cation, cationCharge, anion });
+    }
+  }
+  return out;
+}
+
+export function buildProblemPoly(spec) {
+  const variable = isVariableCation(spec.cation);
+  const built = assemble({ kind: "ionic", cation: spec.cation, cationCharge: spec.cationCharge, anion: spec.anion });
+  const cation = cationName(spec.cation); // "iron", "sodium", or "ammonium"
+  const anionRec = POLY_ANION_BY_ID[spec.anion];
+  const anion = anionRec.names[0];
+  const { cation: cCount, anion: aCount } = built.ratio;
+  const total = anionRec.charge * aCount; // the polyatomic's total negative charge
+  const hints = variable
+    ? [
+        "This metal's charge can vary, so work it out from the polyatomic ion's total charge and write a Roman numeral. The polyatomic keeps its own name — it doesn't become -ide.",
+        `${cap(anion)} is ${chg(anionRec.charge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(total)} total` : ""}.`,
+        cap(`${cCount > 1 ? `${cCount} ` : ""}${cation} must total ${chg(-total)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${cation}(${toRoman(spec.cationCharge)}), and the anion is ${anion}.`)
+      ]
+    : [
+        "Name the cation, then the polyatomic ion — keep its own name (not -ide), and this cation needs no charge.",
+        `The cation is ${cation}.`,
+        `The polyatomic ion is ${anion}.`
+      ];
+  return { spec, formula: built.formula.display, target: built.name, cation, anion, hints };
+}
+
+// Polyatomic-level cations: the fixed set (incl. ammonium) plus the variable metals.
+export const POLY_CATIONS = [...POLY_FIXED_CATIONS, ...TYPE_II_CATIONS];
+
+// The builder's levels: one typed-name + hint + 5-per-round mechanic, different content & intro.
+// `cations`/`anions` feed the dealer (gameplay variety); `compounds` is the full set (integrity tests).
+export const LEVELS = [
+  { id: "type1", label: "Type I", tagline: "fixed-charge metals", cations: TYPE_I_CATIONS, anions: TYPE_I_ANIONS, compounds: typeOneCompounds, build: buildProblem },
+  { id: "type2", label: "Type II", tagline: "variable charge → Roman numeral", cations: TYPE_II_CATIONS, anions: TYPE_I_ANIONS, compounds: typeTwoCompounds, build: buildProblemII },
+  { id: "poly", label: "Polyatomic", tagline: "metal (I or II) + a polyatomic ion", cations: POLY_CATIONS, anions: POLY_ANION_IDS, compounds: polyatomicCompounds, build: buildProblemPoly }
+];
+
+// ── Dealing a varied round ───────────────────────────────────────────────────────
+// A bag draws items without replacement, reshuffling only when empty — so the player cycles through
+// EVERY item before any repeats (fixes "permanganate four times, dichromate never").
+function makeBag(items) {
+  let pile = [];
+  return (rng) => {
+    if (pile.length === 0) pile = shuffle(items, rng);
+    return pile.pop();
+  };
+}
+
+// One spec from a cation + anion: a variable metal gets ONE random oxidation state, so a 4-state
+// metal (vanadium) isn't dealt 4× as often as a 2-state one (iron).
+function specFor(cation, anion, rng) {
+  if (isVariableCation(cation)) {
+    const states = CATION_BY_SYMBOL[cation].states;
+    return { cation, cationCharge: states[Math.floor(rng() * states.length)], anion };
+  }
+  return { cation, anion };
+}
+
+// A stateful dealer for a level: cation and anion bags persist across rounds (true cycling), and a
+// round's cards are kept distinct in both slots. makeDealer(level) → deal(n, rng) → specs[].
+export function makeDealer(level) {
+  const drawCation = makeBag(level.cations);
+  const drawAnion = makeBag(level.anions);
+  return function deal(n = DEFAULT_ROUND, rng = Math.random) {
+    const cards = [];
+    const usedC = new Set();
+    const usedA = new Set();
+    for (let i = 0; i < n; i += 1) {
+      let c = drawCation(rng);
+      for (let g = 0; usedC.has(c) && g < level.cations.length; g += 1) c = drawCation(rng);
+      let a = drawAnion(rng);
+      for (let g = 0; usedA.has(a) && g < level.anions.length; g += 1) a = drawAnion(rng);
+      usedC.add(c);
+      usedA.add(a);
+      cards.push(specFor(c, a, rng));
+    }
+    return cards;
+  };
+}
 
 // ── periodic-table memory-aid data (for the intros) ──────────────────────────────
 // Type I: each fixed-charge metal → its single charge (Tro Table 5.4).

@@ -5,7 +5,9 @@ import {
   typeOneCompounds, buildProblem, gradeAnswer, buildRound, requeue,
   isWellFormedTypeOneName, DEFAULT_ROUND, TYPE_I_CATIONS, TYPE_I_ANIONS,
   typeTwoCompounds, buildProblemII, TYPE_II_CATIONS, LEVELS,
-  FIXED_CHARGES, VARIABLE_STATES
+  FIXED_CHARGES, VARIABLE_STATES,
+  polyatomicCompounds, buildProblemPoly, POLY_ANION_IDS,
+  makeDealer, CATION_BY_SYMBOL
 } from "./builder.js";
 
 function seq(values) {
@@ -130,8 +132,71 @@ test("VARIABLE_STATES lists each variable metal's possible oxidation states", ()
   for (const states of Object.values(VARIABLE_STATES)) assert.ok(states.length >= 2);
 });
 
-test("LEVELS exposes Type I and Type II with a build + compounds each", () => {
-  assert.deepEqual(LEVELS.map((l) => l.id), ["type1", "type2"]);
+// ── Polyatomic: metal (fixed or variable) + a named polyatomic ──
+test("polyatomic names come out right for both fixed and variable metals", () => {
+  const expect = {
+    "Mg//nitrate": "magnesium nitrate", // Type I cation
+    "K//phosphate": "potassium phosphate",
+    "Na//sulfate": "sodium sulfate",
+    "Fe/3/sulfate": "iron(III) sulfate", // Type II → deduced Roman numeral
+    "Cu/2/nitrate": "copper(II) nitrate",
+    "Fe/2/carbonate": "iron(II) carbonate"
+  };
+  for (const [key, name] of Object.entries(expect)) {
+    const [cation, q, anion] = key.split("/");
+    const spec = q ? { cation, cationCharge: Number(q), anion } : { cation, anion };
+    assert.equal(buildProblemPoly(spec).target.canonical, name);
+  }
+});
+
+test("polyatomic hints differ for fixed vs variable, and the polyatomic keeps its name", () => {
+  const fixed = buildProblemPoly({ cation: "Mg", anion: "nitrate" });
+  assert.equal(fixed.formula, "Mg(NO₃)₂");
+  assert.match(fixed.hints[2], /nitrate/);
+  assert.ok(!/Roman/i.test(fixed.hints[0]), "a fixed metal needs no Roman-numeral hint");
+
+  const variable = buildProblemPoly({ cation: "Fe", cationCharge: 3, anion: "sulfate" }); // Fe₂(SO₄)₃
+  assert.match(variable.hints[0], /Roman numeral/i);
+  assert.match(variable.hints[1], /Sulfate is 2−.*3.*6−/); // the polyatomic's total charge
+  assert.match(variable.hints[2], /iron\(III\).*sulfate/i);
+});
+
+test("every polyatomic compound names the metal then the polyatomic ion verbatim", () => {
+  for (const spec of polyatomicCompounds()) {
+    const p = buildProblemPoly(spec);
+    assert.ok(p.target.canonical.endsWith(p.anion), `"${p.target.canonical}" should end in "${p.anion}"`);
+  }
+  assert.ok(POLY_ANION_IDS.length >= 20, "a rich anion set, not just the common few");
+});
+
+// ── dealing: variety without repetition ──
+test("a dealt round keeps both slots distinct (no four-permanganates / four-vanadiums)", () => {
+  const poly = LEVELS.find((l) => l.id === "poly");
+  const deal = makeDealer(poly);
+  const round = deal(5, seq([0.13, 0.47, 0.81, 0.29, 0.6, 0.05, 0.9]));
+  assert.equal(round.length, 5);
+  assert.equal(new Set(round.map((c) => c.anion)).size, 5, "5 distinct anions");
+  assert.equal(new Set(round.map((c) => c.cation)).size, 5, "5 distinct cations");
+});
+
+test("the dealer cycles through EVERY anion before any repeats", () => {
+  const poly = LEVELS.find((l) => l.id === "poly");
+  const deal = makeDealer(poly);
+  const big = deal(poly.anions.length, seq([0.2, 0.7, 0.4, 0.9, 0.1, 0.55]));
+  assert.equal(new Set(big.map((c) => c.anion)).size, poly.anions.length, "all anions, no repeat in a full cycle");
+});
+
+test("a variable metal is dealt ONE oxidation state (so 4-state metals aren't over-dealt)", () => {
+  const t2 = LEVELS.find((l) => l.id === "type2");
+  const deal = makeDealer(t2);
+  for (const card of deal(20, seq([0.3, 0.8, 0.1, 0.6, 0.45]))) {
+    const states = CATION_BY_SYMBOL[card.cation].states;
+    assert.ok(states.includes(card.cationCharge), `${card.cation} charge ${card.cationCharge} is one of its states`);
+  }
+});
+
+test("LEVELS exposes Type I, Type II, and Polyatomic with a build + compounds each", () => {
+  assert.deepEqual(LEVELS.map((l) => l.id), ["type1", "type2", "poly"]);
   for (const lvl of LEVELS) {
     assert.ok(typeof lvl.build === "function" && typeof lvl.compounds === "function");
     const spec = lvl.compounds()[0];

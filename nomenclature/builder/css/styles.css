@@ -46,6 +46,20 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
 }
 .intro-lede { margin: 0 0 18px; font-size: 1.08rem; }
 
+/* Numbered steps — green-circle list. House style for short instructions / hints / rule lists.
+   Each <li> has exactly two flex children (the circle + one text span), so the gap sits only
+   between circle and text — never between a word and its trailing punctuation. */
+.ps-lead { margin: 4px 0 10px; font-weight: 600; font-size: 1.08rem; }
+.steps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; font-size: 1.08rem; }
+.steps li { display: flex; align-items: flex-start; gap: 10px; }
+.step-num {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.55em; height: 1.55em; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.82em;
+}
+.step-text { line-height: 1.55; }
+
 .schema { display: flex; align-items: stretch; justify-content: center; gap: 14px; margin: 6px 0 16px; }
 .block {
   flex: 1 1 0; max-width: 280px;

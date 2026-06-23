@@ -1,10 +1,14 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-type3c";
-import { LEVELS, gradeAnswer, buildRound, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-type3c";
-import { renderMetalsTable } from "./periodic-table.js?v=20260623-type3c";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-steps";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-steps";
+import { renderMetalsTable } from "./periodic-table.js?v=20260623-steps";
 
 const root = document.querySelector("#game");
+
+// One dealer per level, kept for the session so rounds keep cycling through all ions/cations before
+// any repeat (rather than re-sampling the full compound set each round).
+const dealer = Object.fromEntries(LEVELS.map((l) => [l.id, makeDealer(l)]));
 
 // ── periodic-table memory aids for the intros ──
 const TYPE1_PALETTE = {
@@ -50,7 +54,7 @@ let cleanSolves = 0; // got it right with zero hints
 let missedThisRound = [];
 
 function startRound() {
-  queue = buildRound(level().compounds(), DEFAULT_ROUND);
+  queue = dealer[level().id](DEFAULT_ROUND);
   roundTotal = queue.length;
   masteredThisRound = 0;
   cleanSolves = 0;
@@ -182,8 +186,39 @@ function introTypeII() {
   </div>`;
 }
 
+function introPoly() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Ionic · metal + polyatomic ion</p>
+    <p class="ps-lead">Now the anion is a <strong>polyatomic ion</strong>.</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-text">Is the metal <strong>Type I</strong> or <strong>Type II</strong>?</span></li>
+      <li><span class="step-num">2</span><span class="step-text">Name the <strong>polyatomic</strong> — it keeps its own name.</span></li>
+    </ol>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">metal <span class="roman">(?)</span></span>
+        <span class="block-sub">+ Roman numeral if Type II</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main">polyatomic</span>
+        <span class="block-sub">its own name — not <em>-ide</em></span>
+      </div>
+    </div>
+    <p class="schema-note">Type I metal → no numeral. Type II metal → balance the polyatomic's charge, then add a Roman numeral.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="ex-f">${toSubHtml("Mg(NO3)2")}</span><span class="arrow">→</span><span class="w-cation">magnesium</span> <span class="w-anion">nitrate</span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2(SO4)3")}</span><span class="arrow">→</span><span class="w-cation">iron</span><span class="w-roman">(III)</span> <span class="w-anion">sulfate</span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("K3PO4")}</span><span class="arrow">→</span><span class="w-cation">potassium</span> <span class="w-anion">phosphate</span></div>
+    </div>
+    <p class="pt-points prose"><a class="intro-link" href="../" target="_blank">↗ Don't know the polyatomic ions cold yet? Open the Ion Trainer in another tab and power through the full deck first.</a></p>
+    <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
+  </div>`;
+}
+
 function renderIntro() {
-  root.innerHTML = `${levelTabs()}${level().id === "type1" ? introTypeI() : introTypeII()}`;
+  const body = level().id === "type1" ? introTypeI() : level().id === "type2" ? introTypeII() : introPoly();
+  root.innerHTML = `${levelTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); renderIntro(); })
   );
@@ -193,8 +228,10 @@ function renderIntro() {
 function renderPlay() {
   const remaining = queue.length;
 
+  // On a correct answer, show the canonical form (proper "metal(II)" spacing) rather than echoing
+  // the student's keystrokes — the grader forgives spacing/case, but the display should model it.
   const answer = checked
-    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}">${typed || "—"}</div>`
+    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}">${graded.correct ? problem.target.canonical : (typed || "—")}</div>`
     : `<input class="answer-input" id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type the name…" value="${typed.replace(/"/g, "&quot;")}">`;
 
   // Progressive hints — reveal one per click, à la the equation balancer.
