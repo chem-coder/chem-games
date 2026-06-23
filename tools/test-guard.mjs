@@ -17,6 +17,7 @@ const SUITES = [
   "nomenclature/js/naming.test.js",
   "nomenclature/js/triad.test.js",
   "nomenclature/builder/js/builder.test.js",
+  "periodic-table/js/game.test.js",
   "tools/acid-base-db.test.js",
   "tools/validate-reactions.test.js"
 ];
