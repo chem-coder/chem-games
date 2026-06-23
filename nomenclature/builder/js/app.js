@@ -1,11 +1,41 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml } from "../../js/chem.js?v=20260623-typeC";
-import {
-  typeOneCompounds, buildProblem, gradeAnswer, buildRound, requeue, DEFAULT_ROUND
-} from "./builder.js?v=20260623-typeC";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-type3b";
+import { LEVELS, gradeAnswer, buildRound, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-type3b";
+import { renderMetalsTable } from "./periodic-table.js?v=20260623-type3b";
 
 const root = document.querySelector("#game");
+
+// ── periodic-table memory aids for the intros ──
+const TYPE1_PALETTE = {
+  c1: { fill: "var(--accent-soft)", stroke: "var(--accent)", text: "var(--accent-dark)" }, // 1+
+  c2: { fill: "var(--plum-soft)", stroke: "var(--plum)", text: "var(--plum-dark)" },       // 2+
+  c3: { fill: "var(--warning-soft)", stroke: "var(--warning-line)", text: "#7a5e15" }      // 3+
+};
+const TYPE2_PALETTE = { v: { fill: "var(--warning-soft)", stroke: "var(--warning-line)", text: "#7a5e15" } };
+
+// Type I: color each metal by its charge (so a whole column shares a color — the memory hook).
+function type1Table() {
+  const highlight = {}, labels = {};
+  for (const [sym, q] of Object.entries(FIXED_CHARGES)) {
+    highlight[sym] = q === 1 ? "c1" : q === 2 ? "c2" : "c3";
+    labels[sym] = formatCharge(q);
+  }
+  return renderMetalsTable(highlight, TYPE1_PALETTE, labels);
+}
+
+// Type II: highlight the variable metals, label each with its possible oxidation states.
+function type2Table() {
+  const highlight = {}, labels = {};
+  for (const [sym, states] of Object.entries(VARIABLE_STATES)) {
+    highlight[sym] = "v";
+    labels[sym] = states.join(",");
+  }
+  return renderMetalsTable(highlight, TYPE2_PALETTE, labels);
+}
+
+let levelIndex = 0; // 0 = Type I, 1 = Type II
+const level = () => LEVELS[levelIndex];
 
 let mode = "intro"; // "intro" | "play" | "done"
 let queue = []; // specs, front = current
@@ -20,7 +50,7 @@ let cleanSolves = 0; // got it right with zero hints
 let missedThisRound = [];
 
 function startRound() {
-  queue = buildRound(typeOneCompounds(), DEFAULT_ROUND);
+  queue = buildRound(level().compounds(), DEFAULT_ROUND);
   roundTotal = queue.length;
   masteredThisRound = 0;
   cleanSolves = 0;
@@ -30,7 +60,7 @@ function startRound() {
 }
 
 function loadCard() {
-  problem = buildProblem(queue[0]);
+  problem = level().build(queue[0]);
   typed = "";
   hintsShown = 0;
   checked = false;
@@ -69,38 +99,94 @@ function render() {
   renderPlay();
 }
 
-// The visual concept, recreated from the course slide: a name is two blocks —
-// [name of cation (metal)] + [base name of anion (nonmetal) + -ide].
+function levelTabs() {
+  return `<div class="level-tabs" role="tablist">${LEVELS.map((l, i) =>
+    `<button class="level-tab${i === levelIndex ? " is-active" : ""}" data-level="${i}" type="button" role="tab" aria-selected="${i === levelIndex}">${l.label}</button>`
+  ).join("")}</div>`;
+}
+
+// The visual concept, recreated as our own component from the course slide: a name is two blocks.
+// Type I: [metal · cation name] + [nonmetal + -ide]. Type II adds a Roman-numeral charge to the metal.
+function introTypeI() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Binary ionic · Type I metal (invariant charge)</p>
+    <p class="intro-lede">A <strong>binary</strong> compound holds just two different elements. Its name is two blocks:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">metal</span>
+        <span class="block-sub">cation name</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main">nonmetal<span class="suffix"> + <em>ide</em></span></span>
+        <span class="block-sub"><em>anion name root</em></span>
+      </div>
+    </div>
+    <p class="schema-note">No need to specify the metal's charge — these metals have just one.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="ex-f">${toSubHtml("NaCl")}</span><span class="arrow">→</span><span class="w-cation">sodium</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("KF")}</span><span class="arrow">→</span><span class="w-cation">potassium</span> <span class="w-anion">fluor<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("MgBr2")}</span><span class="arrow">→</span><span class="w-cation">magnesium</span> <span class="w-anion">brom<span class="ide">ide</span></span></div>
+    </div>
+    <div class="pt-block">
+      <p class="pt-heading">The fixed-charge metals — memorize these</p>
+      ${type1Table()}
+      <div class="pt-legend">
+        <span class="leg"><i class="sw c1"></i>1+ · group 1 + silver</span>
+        <span class="leg"><i class="sw c2"></i>2+ · group 2 + zinc</span>
+        <span class="leg"><i class="sw c3"></i>3+ · aluminum</span>
+      </div>
+      <ul class="pt-points">
+        <li><strong>group 1</strong> → always 1+</li>
+        <li><strong>group 2</strong> → always 2+</li>
+        <li><strong>aluminum</strong> → 3+</li>
+        <li>just know these two: <strong>zinc</strong> is 2+, <strong>silver</strong> is 1+ (not given by the group)</li>
+      </ul>
+    </div>
+    <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
+  </div>`;
+}
+
+function introTypeII() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Binary ionic · Type II metal (variable charge)</p>
+    <p class="intro-lede">Same two blocks — but this metal can carry more than one charge, so you must <strong>say which</strong>, with a Roman numeral.</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">metal <span class="roman">(?)</span></span>
+        <span class="block-sub">cation name + charge</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main">nonmetal<span class="suffix"> + <em>ide</em></span></span>
+        <span class="block-sub"><em>anion name root</em></span>
+      </div>
+    </div>
+    <p class="schema-note">Find the charge from the formula: balance the anion's total, then read off the metal's.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl")}</span><span class="arrow">→</span><span class="w-cation">copper</span><span class="w-roman">(I)</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl2")}</span><span class="arrow">→</span><span class="w-cation">copper</span><span class="w-roman">(II)</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2O3")}</span><span class="arrow">→</span><span class="w-cation">iron</span><span class="w-roman">(III)</span> <span class="w-anion">ox<span class="ide">ide</span></span></div>
+    </div>
+    <div class="pt-block">
+      <p class="pt-heading">The variable-charge metals — just get the idea</p>
+      ${type2Table()}
+      <ul class="pt-points">
+        <li>mostly the transition metals — they take more than one charge</li>
+        <li>the small numbers are their common oxidation states</li>
+        <li>don't memorize these — just know the charge <strong>varies</strong></li>
+        <li>so you work it out from each formula</li>
+      </ul>
+    </div>
+    <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
+  </div>`;
+}
+
 function renderIntro() {
-  root.innerHTML = `
-    <div class="intro">
-      <p class="intro-eyebrow">Binary ionic · Type I metal (invariant charge)</p>
-      <p class="intro-lede">A <strong>binary</strong> compound holds just two different elements. Its name is two blocks:</p>
-
-      <div class="schema">
-        <div class="block cation">
-          <span class="block-main">metal</span>
-          <span class="block-sub">cation name</span>
-        </div>
-        <span class="schema-plus">+</span>
-        <div class="block anion">
-          <span class="block-main">nonmetal<span class="suffix"> + <em>ide</em></span></span>
-          <span class="block-sub"><em>anion name root</em></span>
-        </div>
-      </div>
-
-      <p class="schema-note">No need to specify the metal's charge — these metals have just one.</p>
-
-      <div class="ex-maps">
-        <div class="ex-map"><span class="ex-f">${toSubHtml("NaCl")}</span><span class="arrow">→</span><span class="w-cation">sodium</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
-        <div class="ex-map"><span class="ex-f">${toSubHtml("KF")}</span><span class="arrow">→</span><span class="w-cation">potassium</span> <span class="w-anion">fluor<span class="ide">ide</span></span></div>
-        <div class="ex-map"><span class="ex-f">${toSubHtml("MgBr2")}</span><span class="arrow">→</span><span class="w-cation">magnesium</span> <span class="w-anion">brom<span class="ide">ide</span></span></div>
-      </div>
-
-      <div class="controls">
-        <button class="action primary" id="startBtn">Start — 5 to name →</button>
-      </div>
-    </div>`;
+  root.innerHTML = `${levelTabs()}${level().id === "type1" ? introTypeI() : introTypeII()}`;
+  root.querySelectorAll(".level-tab").forEach((b) =>
+    b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); renderIntro(); })
+  );
   root.querySelector("#startBtn").addEventListener("click", startRound);
 }
 
@@ -132,9 +218,9 @@ function renderPlay() {
   }
 
   root.innerHTML = `
-    <button class="intro-link" id="introBtn" type="button">↩ How Type I names work</button>
+    <button class="intro-link" id="introBtn" type="button">↩ How ${level().label} names work</button>
     <div class="formula-card">
-      <span class="card-tag">Ionic · Type I</span>
+      <span class="card-tag">Ionic · ${level().label}</span>
       <p class="formula">${toSubHtml(problem.formula)}</p>
     </div>
 
@@ -173,7 +259,7 @@ function renderPlay() {
 
 function renderDone() {
   const missedChips = missedThisRound
-    .map((s) => `<span class="chip">${toSubHtml(buildProblem(s).formula)}</span>`)
+    .map((s) => `<span class="chip">${toSubHtml(level().build(s).formula)}</span>`)
     .join("");
   const missedBlock = missedThisRound.length
     ? `<div class="missed-block">

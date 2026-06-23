@@ -29,6 +29,16 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
   border-radius: var(--radius); box-shadow: var(--shadow);
 }
 
+/* ── level tabs (Type I / Type II) ── */
+.level-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.level-tab {
+  padding: 8px 18px; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+  color: var(--accent); background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 999px; cursor: pointer;
+}
+.level-tab:hover:not(.is-active) { border-color: var(--accent); }
+.level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+
 /* ── intro: the visual schematic ── */
 .intro-eyebrow {
   margin: 0 0 6px; color: var(--plum); font-family: var(--font-display);
@@ -49,6 +59,8 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
 .block .block-main { font-family: var(--font-display); font-weight: 800; font-size: 1.6rem; line-height: 1.1; color: var(--ink); }
 .block .block-main .suffix { font-size: 0.62em; font-weight: 600; color: var(--muted); }
 .block .block-main .suffix em { font-style: italic; }
+/* the Roman-numeral charge — the new requirement for Type II; same size as "metal", accented teal */
+.block .block-main .roman { color: var(--accent-dark); }
 .block .block-sub { margin-top: 5px; font-size: 0.82rem; color: var(--muted); }
 .block .block-sub em { font-style: italic; }
 /* app-native colors (teal cation / plum anion) — our own thing, not the textbook's gold/green */
@@ -69,6 +81,23 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
 .w-cation { color: var(--accent-dark); font-weight: 700; } /* teal — maps to the cation block */
 .w-anion { color: var(--plum-dark); font-weight: 700; } /* plum — maps to the anion block */
 .w-anion .ide { color: var(--danger, #b4502f); } /* the -ide ending, warm red */
+.w-roman { color: var(--accent-dark); font-weight: 800; } /* the Roman-numeral charge (Type II) */
+
+/* ── periodic-table memory aid ── */
+.pt-block { margin: 22px 0 6px; }
+.pt-heading { margin: 0 0 10px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; }
+.ptable { display: block; width: 100%; height: auto; margin: 0 auto; }
+.pt-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 12px; }
+.leg { display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--muted); }
+.leg .sw { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid; }
+.leg .sw.c1 { background: var(--accent-soft); border-color: var(--accent); }
+.leg .sw.c2 { background: var(--plum-soft); border-color: var(--plum); }
+.leg .sw.c3 { background: var(--warning-soft); border-color: var(--warning-line); }
+.pt-note { margin: 10px auto 0; max-width: 56ch; text-align: center; color: var(--muted); font-size: 0.85rem; }
+/* point list — broken-up statements, no bullet markers */
+.pt-points { list-style: none; padding: 0; margin: 12px auto 0; max-width: 46ch; display: grid; gap: 5px; }
+.pt-points li { color: var(--muted); font-size: 0.88rem; }
+.pt-points strong { color: var(--ink); font-weight: 700; }
 
 /* ── play: formula card ── */
 .intro-link { display: inline-block; margin-bottom: 12px; padding: 0; border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 0.85rem; cursor: pointer; }
