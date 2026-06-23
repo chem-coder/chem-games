@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-type3b";
-import { LEVELS, gradeAnswer, buildRound, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-type3b";
-import { renderMetalsTable } from "./periodic-table.js?v=20260623-type3b";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-type3c";
+import { LEVELS, gradeAnswer, buildRound, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-type3c";
+import { renderMetalsTable } from "./periodic-table.js?v=20260623-type3c";
 
 const root = document.querySelector("#game");
 
@@ -171,11 +171,11 @@ function introTypeII() {
     <div class="pt-block">
       <p class="pt-heading">The variable-charge metals — just get the idea</p>
       ${type2Table()}
-      <ul class="pt-points">
-        <li>mostly the transition metals — they take more than one charge</li>
-        <li>the small numbers are their common oxidation states</li>
-        <li>don't memorize these — just know the charge <strong>varies</strong></li>
-        <li>so you work it out from each formula</li>
+      <ul class="pt-points prose">
+        <li>These are mostly transition metals, and they can take more than one charge.</li>
+        <li>The small numbers are their common oxidation states.</li>
+        <li>Don't memorize them — just know the charge <strong>varies</strong>.</li>
+        <li>So you have to work it out from each formula.</li>
       </ul>
     </div>
     <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>

@@ -98,6 +98,7 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
 .pt-points { list-style: none; padding: 0; margin: 12px auto 0; max-width: 46ch; display: grid; gap: 5px; }
 .pt-points li { color: var(--muted); font-size: 0.88rem; }
 .pt-points strong { color: var(--ink); font-weight: 700; }
+.pt-points.prose { text-align: center; } /* Type II reads like prose — centered, punctuated */
 
 /* ── play: formula card ── */
 .intro-link { display: inline-block; margin-bottom: 12px; padding: 0; border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 0.85rem; cursor: pointer; }
