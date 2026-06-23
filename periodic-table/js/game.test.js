@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { ELEMENTS, ROWS, COLS } from "../data/pt-data.js";
-import { TOTAL, BY_SYMBOL, normalizeSymbol, isCorrectSymbol, nextUnfilled, neighbor } from "./game.js";
+import { TOTAL, BY_SYMBOL, normalizeSymbol, isCorrectSymbol, nextUnfilled, neighbor, SCOPES, poolFor } from "./game.js";
 
 // ── data integrity ──
 test("the table holds all 118 elements, each well-formed and uniquely placed", () => {
@@ -45,6 +45,19 @@ test("nextUnfilled walks atomic number, skips filled, wraps, and ends at null", 
   assert.equal(nextUnfilled(allButH, 118).symbol, "H");
   // table complete → null
   assert.equal(nextUnfilled(new Set(ELEMENTS.map((e) => e.symbol)), 10), null);
+});
+
+// ── difficulty scopes ──
+test("scopes cut the table at the right period boundaries", () => {
+  assert.deepEqual(SCOPES.map((s) => s.maxZ), [18, 36, 54, 118]);
+  assert.equal(poolFor(18).length, 18); // rows 1–3
+  assert.equal(poolFor(36).length, 36); // rows 1–4
+  assert.equal(poolFor(118).length, 118);
+  assert.ok(poolFor(18).every((e) => e.z <= 18));
+  // nextUnfilled / neighbor respect the pool
+  const p3 = poolFor(18);
+  assert.equal(nextUnfilled(new Set(p3.map((e) => e.symbol)), 0, p3), null); // pool complete
+  assert.equal(neighbor(BY_SYMBOL.Cl, "right", p3).symbol, "Ar"); // stays in rows 1–3
 });
 
 // ── arrow navigation ──
