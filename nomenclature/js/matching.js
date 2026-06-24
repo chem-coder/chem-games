@@ -59,7 +59,10 @@ export function gradeName(target, input) {
 }
 
 // Grade a typed FORMULA against an assembled compound (reverse mode: name → formula).
+// `caseOnly` flags the near-miss where the answer is right except for capitalization (cucl2 vs
+// CuCl2) — the UI uses it to nudge ("fix the caps") and let the student retry without burning the card.
 export function gradeFormula(target, input) {
   const { correct, matched, alsoAccepted } = grade(target.formula.accepted, input, normalizeFormula);
-  return { correct, matched, canonical: target.formula.canonical, alsoAccepted };
+  const caseOnly = !correct && grade(target.formula.accepted, input, (s) => normalizeFormula(s).toLowerCase()).correct;
+  return { correct, matched, canonical: target.formula.canonical, alsoAccepted, caseOnly };
 }

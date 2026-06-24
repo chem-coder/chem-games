@@ -132,6 +132,18 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
   font-weight: 700; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
 }
 .formula { margin: 6px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; }
+/* reverse mode shows a NAME here, which is longer than a formula — size it down a touch */
+.formula.as-name { font-size: 1.7rem; line-height: 1.2; }
+
+/* two-up start buttons (name from formula · formula from name) */
+.controls.two-up { flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center; }
+
+/* reverse mode: capitalization near-miss nudge — informative, not an error */
+.cap-nudge {
+  margin: 8px auto 0; max-width: 34ch; text-align: center;
+  padding: 7px 12px; border-radius: var(--radius-sm);
+  background: var(--warning-soft); color: #7a5e15; font-size: 0.86rem;
+}
 
 /* ── play: typed answer ── */
 .build-label {

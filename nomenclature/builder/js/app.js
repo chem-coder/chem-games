@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-charge11";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-charge11";
-import { renderMetalsTable } from "./periodic-table.js?v=20260623-charge11";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev1";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev1";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev1";
 
 const root = document.querySelector("#game");
 
@@ -51,6 +51,8 @@ let checked = false;
 let graded = null;
 let masteredThisRound = 0;
 let cleanSolves = 0; // got it right with zero hints
+let direction = "name"; // "name" = formula→name · "formula" = name→formula (the reverse pivot)
+let capNudge = false; // reverse mode: last Check was a capitalization-only near-miss
 
 // The "how to find the charge" explainer auto-opens the first time the student lands on the
 // Type II tab, then stays collapsed (their choice to reopen). A blocked store just means it
@@ -64,7 +66,8 @@ function markChargeCardSeen() {
 }
 let missedThisRound = [];
 
-function startRound() {
+function startRound(dir = "name") {
+  direction = dir;
   queue = dealer[level().id](DEFAULT_ROUND);
   roundTotal = queue.length;
   masteredThisRound = 0;
@@ -75,17 +78,27 @@ function startRound() {
 }
 
 function loadCard() {
-  problem = level().build(queue[0]);
+  problem = level().build(queue[0], direction);
   typed = "";
   hintsShown = 0;
   checked = false;
   graded = null;
+  capNudge = false;
   render();
 }
 
 function check() {
   if (checked || !typed.trim()) return;
-  graded = gradeAnswer(problem, typed);
+  const g = gradeAnswer(problem, typed);
+  // Reverse mode: if the only thing wrong is capitalization, nudge and let them retry — don't burn
+  // the card or count it as missed. Keeps prompting until they fix the caps (or change the answer).
+  if (problem.mode === "formula" && !g.correct && g.caseOnly) {
+    capNudge = true;
+    render();
+    return;
+  }
+  capNudge = false;
+  graded = g;
   checked = true;
   if (graded.correct) {
     masteredThisRound += 1;
@@ -118,6 +131,14 @@ function levelTabs() {
   return `<div class="level-tabs" role="tablist">${LEVELS.map((l, i) =>
     `<button class="level-tab${i === levelIndex ? " is-active" : ""}" data-level="${i}" type="button" role="tab" aria-selected="${i === levelIndex}">${l.label}</button>`
   ).join("")}</div>`;
+}
+
+// Two ways to drill each level: name from formula (easier, first) or formula from name (harder).
+function startControls() {
+  return `<div class="controls two-up">
+    <button class="action primary" id="startName">Name the compound</button>
+    <button class="action" id="startFormula">Write the formula</button>
+  </div>`;
 }
 
 // The visual concept, recreated as our own component from the course slide: a name is two blocks.
@@ -158,7 +179,7 @@ function introTypeI() {
         <li>just know these two: <strong>zinc</strong> is 2+, <strong>silver</strong> is 1+ (not given by the group)</li>
       </ul>
     </div>
-    <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
+    ${startControls()}
   </div>`;
 }
 
@@ -268,7 +289,7 @@ function introTypeII() {
         <li>Don't memorize — work it out from the formula.</li>
       </ul>
     </div>
-    <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
+    ${startControls()}
   </div>`;
 }
 
@@ -299,7 +320,7 @@ function introPoly() {
       <div class="ex-map"><span class="ex-f">${toSubHtml("K3PO4")}</span><span class="arrow">→</span><span class="w-cation">potassium</span> <span class="w-anion">phosphate</span></div>
     </div>
     <p class="pt-points prose"><a class="intro-link" href="../" target="_blank">↗ Don't know the polyatomic ions cold yet? Open the Ion Trainer in another tab and power through the full deck first.</a></p>
-    <div class="controls"><button class="action primary" id="startBtn">Start — 5 to name →</button></div>
+    ${startControls()}
   </div>`;
 }
 
@@ -309,7 +330,8 @@ function renderIntro() {
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); renderIntro(); })
   );
-  root.querySelector("#startBtn").addEventListener("click", startRound);
+  root.querySelector("#startName").addEventListener("click", () => startRound("name"));
+  root.querySelector("#startFormula").addEventListener("click", () => startRound("formula"));
 }
 
 function renderPlay() {
@@ -317,9 +339,13 @@ function renderPlay() {
 
   // On a correct answer, show the canonical form (proper "metal(II)" spacing) rather than echoing
   // the student's keystrokes — the grader forgives spacing/case, but the display should model it.
+  const isFormula = problem.mode === "formula";
+  const promptHtml = isFormula ? problem.prompt : toSubHtml(problem.prompt);
+  const answerDisplay = isFormula ? toSubHtml(problem.answer) : problem.answer;
+  const typedDisplay = isFormula ? toSubHtml(typed || "—") : (typed || "—");
   const answer = checked
-    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}">${graded.correct ? problem.target.canonical : (typed || "—")}</div>`
-    : `<input class="answer-input" id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type the name…" value="${typed.replace(/"/g, "&quot;")}">`;
+    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}">${graded.correct ? answerDisplay : typedDisplay}</div>`
+    : `<input class="answer-input" id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${isFormula ? "type the formula — e.g. Fe2(SO4)3" : "type the name…"}" value="${typed.replace(/"/g, "&quot;")}">`;
 
   // Progressive hints — reveal one per click, à la the equation balancer.
   const shown = problem.hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
@@ -338,24 +364,29 @@ function renderPlay() {
     feedback = graded.correct
       ? `<p class="feedback ok">${hintsShown ? "Correct." : "Correct — no hints. 💪"} It leaves the stack.</p>`
       : `<p class="feedback no">Not quite — this one comes back around.</p>`;
-    reveal = `<p class="reveal">${toSubHtml(problem.formula)} &nbsp;=&nbsp; <strong>${problem.target.canonical}</strong></p>`;
+    reveal = `<p class="reveal">${promptHtml} &nbsp;=&nbsp; <strong>${answerDisplay}</strong></p>`;
   }
 
+  const nudge = (!checked && capNudge)
+    ? `<p class="cap-nudge">Almost — check your capitalization. Symbols are case-sensitive (<strong>Cl</strong>, not CL; <strong>Co</strong>, not CO).</p>`
+    : "";
+  const verb = isFormula ? "Built" : "Named";
   root.innerHTML = `
     <button class="intro-link" id="introBtn" type="button">↩ How ${level().label} names work</button>
     <div class="formula-card">
-      <span class="card-tag">Ionic · ${level().label}</span>
-      <p class="formula">${toSubHtml(problem.formula)}</p>
+      <span class="card-tag">Ionic · ${level().label}${isFormula ? " · name → formula" : ""}</span>
+      <p class="formula${isFormula ? " as-name" : ""}">${promptHtml}</p>
     </div>
 
-    <p class="build-label">Name this compound</p>
+    <p class="build-label">${isFormula ? "Write the formula" : "Name this compound"}</p>
     <div class="answer-row">${answer}</div>
+    ${nudge}
     ${hintBlock}
 
     ${reveal}
     ${feedback}
     <div class="controls">
-      <p class="score">Named ${masteredThisRound} of ${roundTotal} &middot; ${remaining} left</p>
+      <p class="score">${verb} ${masteredThisRound} of ${roundTotal} &middot; ${remaining} left</p>
       ${checked
         ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !graded.correct ? "Next →" : "Finish"}</button>`
         : `<button class="action primary" id="checkBtn" ${typed.trim() ? "" : "disabled"}>Check</button>`}
@@ -382,6 +413,7 @@ function renderPlay() {
 }
 
 function renderDone() {
+  const did = direction === "formula" ? "built" : "named";
   const missedChips = missedThisRound
     .map((s) => `<span class="chip">${toSubHtml(level().build(s).formula)}</span>`)
     .join("");
@@ -390,10 +422,10 @@ function renderDone() {
         <p class="missed-label">Worth another pass — you stumbled on ${missedThisRound.length}:</p>
         <div class="chips">${missedChips}</div>
       </div>`
-    : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} named with no hints. 🎉</p>`;
+    : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} ${did} with no hints. 🎉</p>`;
 
   root.innerHTML = `
-    <p class="prompt">Round done — ${roundTotal} compounds, ${cleanSolves} named hint-free.</p>
+    <p class="prompt">Round done — ${roundTotal} compounds, ${cleanSolves} ${did} hint-free.</p>
     ${missedBlock}
     <div class="controls">
       ${missedThisRound.length ? `<button class="action primary" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button>` : ""}
@@ -410,7 +442,7 @@ function renderDone() {
     mode = "play";
     loadCard();
   });
-  root.querySelector("#againBtn").addEventListener("click", startRound);
+  root.querySelector("#againBtn").addEventListener("click", () => startRound(direction));
 }
 
 render();

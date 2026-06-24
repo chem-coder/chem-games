@@ -6,10 +6,10 @@
 // name — practicing the periodic-table recall (Na → sodium) that tiles would hand them. Stuck
 // students can reveal progressive hints.
 
-import { assemble } from "../../js/naming.js?v=20260623-deal";
-import { gradeName } from "../../js/matching.js?v=20260623-deal";
-import { toRoman } from "../../js/chem.js?v=20260623-deal";
-import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260623-deal";
+import { assemble } from "../../js/naming.js?v=20260624-rev1";
+import { gradeName, gradeFormula } from "../../js/matching.js?v=20260624-rev1";
+import { toRoman } from "../../js/chem.js?v=20260624-rev1";
+import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260624-rev1";
 
 // The quizzed sets — familiar fixed-charge metals and common monoatomic anions.
 export const TYPE_I_CATIONS = ["Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag"];
@@ -26,27 +26,65 @@ export function typeOneCompounds() {
 
 // Build one problem: the formula to read, the grading target, the two name parts, and the hint
 // ladder (method → reveal the metal → reveal the anion). Deterministic.
-export function buildProblem(spec) {
-  const built = assemble({ kind: "ionic", cation: spec.cation, anion: spec.anion });
-  const cation = ELEMENTS[spec.cation];
-  const anion = MONO_ANION_BY_ID[spec.anion].names[0];
+// Each level builds in one of two DIRECTIONS:
+//   "name"    — show the formula, student types the NAME  (the original mode)
+//   "formula" — show the NAME, student types the FORMULA  (the reverse pivot)
+// Both reuse the same assemble() output; only which side is the prompt vs. the graded target flips.
+// Uniform problem shape: { mode, prompt, answer (canonical display for the reveal), target (grading
+// object), formula (display, for round-end chips), cation, anion, hints, … }.
+function problemForward(spec, built, cation, anion, hints, extra = {}) {
   return {
-    spec,
-    formula: built.formula.display, // unicode-subscripted, e.g. "MgCl₂"
-    target: built.name, // { canonical, accepted } — for the matcher
-    cation, // "magnesium"
-    anion, // "chloride"
-    hints: [
-      "Name the metal first, then the nonmetal as its root + –ide. Ionic names use no prefixes — the subscripts don't appear in the name.",
-      `The metal (${spec.cation}) is ${cation}.`,
-      `The nonmetal becomes ${anion}.`
-    ]
+    spec, mode: "name",
+    prompt: built.formula.display, answer: built.name.canonical, target: built.name,
+    formula: built.formula.display, cation, anion, hints, ...extra
+  };
+}
+function problemReverse(spec, built, cation, anion, hints, extra = {}) {
+  return {
+    spec, mode: "formula",
+    prompt: built.name.canonical, answer: built.formula.display, target: built.formula,
+    formula: built.formula.display, cation, anion, hints, ...extra
   };
 }
 
-// Grade a TYPED name against the problem's accepted forms (case/spacing-forgiving; spelling counts).
+// Reverse-mode hint ladder (name → formula). Parallel to the forward ladders: the method, then the
+// ions with their charges (the recall the student must produce), then the balance that yields it.
+function reverseHints({ cLabel, cSym, cCharge, aLabel, aSym, aCharge, display, poly, method }) {
+  const m = method || (poly
+    ? "Treat the polyatomic as one unit with its own charge. Balance it against the metal — wrap it in parentheses if you need more than one. Drop any 1; reduce."
+    : "Write each ion with its charge, then add subscripts so the charges cancel (criss-cross). Drop any 1; reduce.");
+  return [
+    m,
+    `${cap(cLabel)} → ${cSym} ${chg(cCharge)}; ${aLabel} → ${aSym} ${chg(aCharge)}.`,
+    `Balance the charges to zero → ${display}.`
+  ];
+}
+
+export function buildProblem(spec, direction = "name") {
+  const built = assemble({ kind: "ionic", cation: spec.cation, anion: spec.anion });
+  const cation = ELEMENTS[spec.cation];
+  const anionRec = MONO_ANION_BY_ID[spec.anion];
+  const anion = anionRec.names[0];
+  if (direction === "formula") {
+    return problemReverse(spec, built, cation, anion, reverseHints({
+      cLabel: cation, cSym: spec.cation, cCharge: CATION_BY_SYMBOL[spec.cation].charge,
+      aLabel: anion, aSym: anionRec.symbol, aCharge: anionRec.charge,
+      display: built.formula.display, poly: false
+    }));
+  }
+  return problemForward(spec, built, cation, anion, [
+    "Name the metal first, then the nonmetal as its root + –ide. Ionic names use no prefixes — the subscripts don't appear in the name.",
+    `The metal (${spec.cation}) is ${cation}.`,
+    `The nonmetal becomes ${anion}.`
+  ]);
+}
+
+// Grade a typed answer against the problem's accepted forms (routes by direction). Name grading is
+// case/spacing-forgiving; formula grading is case-sensitive (Co ≠ CO) with a caseOnly near-miss flag.
 export function gradeAnswer(problem, typed) {
-  return gradeName({ name: problem.target }, typed); // { correct, matched, canonical, alsoAccepted }
+  return problem.mode === "formula"
+    ? gradeFormula({ formula: problem.target }, typed)
+    : gradeName({ name: problem.target }, typed);
 }
 
 // A round is a short shuffled sample — 5 keeps it brisk (15-at-a-time was brutal).
@@ -101,26 +139,27 @@ const chg = (n) => `${Math.abs(n)}${n > 0 ? "+" : "−"}`; // always show magnit
 const isVariableCation = (sym) => !!CATION_BY_SYMBOL[sym]?.variable;
 const cationName = (sym) => POLY_CATION_BY_ID[sym]?.names?.[0] ?? ELEMENTS[sym];
 
-export function buildProblemII(spec) {
+export function buildProblemII(spec, direction = "name") {
   const built = assemble({ kind: "ionic", cation: spec.cation, cationCharge: spec.cationCharge, anion: spec.anion });
   const metal = ELEMENTS[spec.cation];
   const anionRec = MONO_ANION_BY_ID[spec.anion];
   const anion = anionRec.names[0];
+  const roman = toRoman(spec.cationCharge);
   const { cation: cCount, anion: aCount } = built.ratio;
   const totalNeg = anionRec.charge * aCount; // e.g. −3 for three bromides
-  return {
-    spec,
-    formula: built.formula.display, // e.g. "FeBr₃"
-    target: built.name, // { canonical: "iron(III) bromide", accepted }
-    cation: metal,
-    roman: toRoman(spec.cationCharge),
-    anion,
-    hints: [
-      "This metal can take more than one charge, so you have to work it out and show it as a Roman numeral. Start from the anion's total negative charge.",
-      `${cap(anion)} is ${chg(anionRec.charge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(totalNeg)} total` : ""}.`,
-      cap(`${cCount > 1 ? `${cCount} ` : ""}${metal} must total ${chg(-totalNeg)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${metal}(${toRoman(spec.cationCharge)}).`)
-    ]
-  };
+  if (direction === "formula") {
+    return problemReverse(spec, built, metal, anion, reverseHints({
+      cLabel: `${metal}(${roman})`, cSym: spec.cation, cCharge: spec.cationCharge,
+      aLabel: anion, aSym: anionRec.symbol, aCharge: anionRec.charge,
+      display: built.formula.display, poly: false,
+      method: "The Roman numeral IS the metal's charge. Pair it with the anion's charge and balance (criss-cross); drop any 1; reduce."
+    }), { roman });
+  }
+  return problemForward(spec, built, metal, anion, [
+    "This metal can take more than one charge, so you have to work it out and show it as a Roman numeral. Start from the anion's total negative charge.",
+    `${cap(anion)} is ${chg(anionRec.charge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(totalNeg)} total` : ""}.`,
+    cap(`${cCount > 1 ? `${cCount} ` : ""}${metal} must total ${chg(-totalNeg)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${metal}(${roman}).`)
+  ], { roman });
 }
 
 // ── Polyatomic ionic: a metal (Type I OR Type II) + a named polyatomic ion ───────
@@ -147,7 +186,7 @@ export function polyatomicCompounds() {
   return out;
 }
 
-export function buildProblemPoly(spec) {
+export function buildProblemPoly(spec, direction = "name") {
   const variable = isVariableCation(spec.cation);
   const built = assemble({ kind: "ionic", cation: spec.cation, cationCharge: spec.cationCharge, anion: spec.anion });
   const cation = cationName(spec.cation); // "iron", "sodium", or "ammonium"
@@ -155,6 +194,16 @@ export function buildProblemPoly(spec) {
   const anion = anionRec.names[0];
   const { cation: cCount, anion: aCount } = built.ratio;
   const total = anionRec.charge * aCount; // the polyatomic's total negative charge
+  if (direction === "formula") {
+    const cSym = POLY_CATION_BY_ID[spec.cation]?.display ?? spec.cation; // "NH₄" or "Fe"
+    const cCharge = variable ? spec.cationCharge : (CATION_BY_SYMBOL[spec.cation]?.charge ?? POLY_CATION_BY_ID[spec.cation]?.charge);
+    const cLabel = variable ? `${cation}(${toRoman(spec.cationCharge)})` : cation;
+    return problemReverse(spec, built, cation, anion, reverseHints({
+      cLabel, cSym, cCharge,
+      aLabel: anion, aSym: anionRec.display, aCharge: anionRec.charge,
+      display: built.formula.display, poly: true
+    }), variable ? { roman: toRoman(spec.cationCharge) } : {});
+  }
   const hints = variable
     ? [
         "This metal's charge can vary, so work it out from the polyatomic ion's total charge and write a Roman numeral. The polyatomic keeps its own name — it doesn't become -ide.",
@@ -166,7 +215,7 @@ export function buildProblemPoly(spec) {
         `The cation is ${cation}.`,
         `The polyatomic ion is ${anion}.`
       ];
-  return { spec, formula: built.formula.display, target: built.name, cation, anion, hints };
+  return problemForward(spec, built, cation, anion, hints, variable ? { roman: toRoman(spec.cationCharge) } : {});
 }
 
 // Polyatomic-level cations: the fixed set (incl. ammonium) plus the variable metals.

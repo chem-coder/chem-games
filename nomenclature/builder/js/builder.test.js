@@ -203,3 +203,40 @@ test("LEVELS exposes Type I, Type II, and Polyatomic with a build + compounds ea
     assert.ok(lvl.build(spec).target.canonical.length > 0);
   }
 });
+
+// ── reverse mode: name → formula ──
+test("buildProblem reverse: shows the name, grades the formula", () => {
+  const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
+  assert.equal(p.mode, "formula");
+  assert.equal(p.prompt, "magnesium chloride"); // name is the prompt now
+  assert.equal(p.answer, "MgCl₂"); // subscripted formula is the reveal
+  assert.equal(p.hints.length, 3);
+});
+
+test("reverse gradeAnswer: correct formula passes, wrong fails", () => {
+  const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
+  assert.equal(gradeAnswer(p, "MgCl2").correct, true);
+  assert.equal(gradeAnswer(p, "MgCl2").caseOnly, false);
+  assert.equal(gradeAnswer(p, "MgCl3").correct, false);
+});
+
+test("reverse gradeAnswer: caseOnly flags a capitalization-only near-miss", () => {
+  const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
+  const g = gradeAnswer(p, "mgcl2");
+  assert.equal(g.correct, false);
+  assert.equal(g.caseOnly, true); // right formula, wrong caps → nudge, not a hard miss
+});
+
+test("reverse Type II: iron(III) bromide → FeBr3 with parenthesis-free entry", () => {
+  const p = buildProblemII({ cation: "Fe", cationCharge: 3, anion: "bromide" }, "formula");
+  assert.equal(p.mode, "formula");
+  assert.equal(p.prompt, "iron(III) bromide");
+  assert.equal(gradeAnswer(p, "FeBr3").correct, true);
+});
+
+test("reverse Poly: iron(III) sulfate → Fe2(SO4)3 with parentheses", () => {
+  const p = buildProblemPoly({ cation: "Fe", cationCharge: 3, anion: "sulfate" }, "formula");
+  assert.equal(p.mode, "formula");
+  assert.equal(p.prompt, "iron(III) sulfate");
+  assert.equal(gradeAnswer(p, "Fe2(SO4)3").correct, true);
+});
