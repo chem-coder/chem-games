@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-charge10";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-charge10";
-import { renderMetalsTable } from "./periodic-table.js?v=20260623-charge10";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260623-charge11";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260623-charge11";
+import { renderMetalsTable } from "./periodic-table.js?v=20260623-charge11";
 
 const root = document.querySelector("#game");
 
@@ -229,8 +229,8 @@ function chargeCard({ variant = "full", open = false } = {}) {
         </div>
       </div>
       <div class="cc-trap">
-        <p class="cc-trap-line"><strong>Why you can't trust criss-cross alone:</strong> run backwards, it can lie</p>
-        <p class="cc-trap-line"><span class="cc-f">${toSubHtml("PbO2")}</span>: shortcut says lead is Pb<sup class="cc-q">2+</sup> — but really it is Pb<sup class="cc-q">4+</sup></p>
+        <p class="cc-trap-line"><strong>Why you can't trust criss-cross alone:</strong> run backwards, it can lie.</p>
+        <p class="cc-trap-line"><span class="cc-f">${toSubHtml("PbO2")}</span>: shortcut says lead is Pb<sup class="cc-q">2+</sup> — but really it is Pb<sup class="cc-q">4+</sup>.</p>
         <p class="cc-trap-line">Pb<sup class="cc-q">4+</sup> bonds with O<sup class="cc-q">2−</sup>. That's ${toSubHtml("Pb2O4")}! But reduce to the smallest common multiple: ${toSubHtml("Pb2O4")} becomes ${toSubHtml("PbO2")} <span class="cc-aside">(exception: ${toSubHtml("H2O2")} is a real molecule — not reduced to HO)</span>.</p>
         <p class="cc-trap-line">So in ${toSubHtml("PbO2")} the subscripts were reduced from ${toSubHtml("Pb2O4")}, <strong>hiding the charges</strong> — but</p>
         <p class="cc-trap-line cc-trap-punch">Math never slips: <strong>2 × (−2) = −4 → +4</strong></p>
