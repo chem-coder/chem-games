@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev5";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev5";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev5";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev6";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev6";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev6";
 
 const root = document.querySelector("#game");
 
@@ -55,6 +55,7 @@ let direction = "name"; // "name" = formula→name · "formula" = name→formula
 let nudge = null; // reverse near-miss message (caps or stray charge), shown without burning the card
 const NUDGE_CAPS = `Almost — check your capitalization. Symbols are case-sensitive (<strong>Cl</strong>, not CL; <strong>Co</strong>, not CO).`;
 const NUDGE_CHARGE = `Almost — a compound is <strong>neutral</strong>. The ion charges cancel out, so the formula has no <strong>+</strong> or <strong>−</strong>.`;
+const NUDGE_ROMAN = `So close — no space before the Roman numeral. Write it tight: <strong>iron(II)</strong>, not iron&nbsp;(II).`;
 
 // The "how to find the charge" explainer auto-opens the first time the student lands on the
 // Type II tab, then stays collapsed (their choice to reopen). A blocked store just means it
@@ -98,6 +99,8 @@ function check() {
     if (g.caseOnly) { nudge = NUDGE_CAPS; render(); return; }
     if (g.chargeOnly) { nudge = NUDGE_CHARGE; render(); return; }
   }
+  // Name mode: even when it would be accepted, teach the tight iron(II) form — nudge off the space.
+  if (problem.mode === "name" && g.spaceOnly) { nudge = NUDGE_ROMAN; render(); return; }
   nudge = null;
   graded = g;
   checked = true;
@@ -267,7 +270,7 @@ function introTypeII() {
     <p class="intro-lede">Same two blocks — but this metal can carry more than one charge, so you must <strong>say which</strong>, with a Roman numeral.</p>
     <div class="schema">
       <div class="block cation">
-        <span class="block-main">metal <span class="roman">(?)</span></span>
+        <span class="block-main">metal<span class="roman">(?)</span></span>
         <span class="block-sub">cation name + charge</span>
       </div>
       <span class="schema-plus">+</span>
@@ -278,9 +281,9 @@ function introTypeII() {
     </div>
     ${(() => { const first = !chargeCardSeen(); markChargeCardSeen(); return chargeCard({ variant: "full", open: first }); })()}
     <div class="ex-maps">
-      <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl")}</span><span class="arrow">→</span><span class="w-cation">copper</span><span class="w-roman">(I)</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
-      <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl2")}</span><span class="arrow">→</span><span class="w-cation">copper</span><span class="w-roman">(II)</span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
-      <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2O3")}</span><span class="arrow">→</span><span class="w-cation">iron</span><span class="w-roman">(III)</span> <span class="w-anion">ox<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl")}</span><span class="arrow">→</span><span class="w-cation">copper<span class="w-roman">(I)</span></span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("CuCl2")}</span><span class="arrow">→</span><span class="w-cation">copper<span class="w-roman">(II)</span></span> <span class="w-anion">chlor<span class="ide">ide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2O3")}</span><span class="arrow">→</span><span class="w-cation">iron<span class="w-roman">(III)</span></span> <span class="w-anion">ox<span class="ide">ide</span></span></div>
     </div>
     <div class="pt-block">
       <p class="pt-heading">The variable-charge metals</p>
@@ -304,7 +307,7 @@ function introPoly() {
     </ol>
     <div class="schema">
       <div class="block cation">
-        <span class="block-main">metal <span class="roman">(?)</span></span>
+        <span class="block-main">metal<span class="roman">(?)</span></span>
         <span class="block-sub">+ Roman numeral if Type II</span>
       </div>
       <span class="schema-plus">+</span>
@@ -317,7 +320,7 @@ function introPoly() {
     ${chargeCard({ variant: "mini", open: false })}
     <div class="ex-maps">
       <div class="ex-map"><span class="ex-f">${toSubHtml("Mg(NO3)2")}</span><span class="arrow">→</span><span class="w-cation">magnesium</span> <span class="w-anion">nitrate</span></div>
-      <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2(SO4)3")}</span><span class="arrow">→</span><span class="w-cation">iron</span><span class="w-roman">(III)</span> <span class="w-anion">sulfate</span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2(SO4)3")}</span><span class="arrow">→</span><span class="w-cation">iron<span class="w-roman">(III)</span></span> <span class="w-anion">sulfate</span></div>
       <div class="ex-map"><span class="ex-f">${toSubHtml("K3PO4")}</span><span class="arrow">→</span><span class="w-cation">potassium</span> <span class="w-anion">phosphate</span></div>
     </div>
     <p class="pt-points prose"><a class="intro-link" href="../" target="_blank">↗ Don't know the polyatomic ions cold yet? Open the Ion Trainer in another tab and power through the full deck first.</a></p>

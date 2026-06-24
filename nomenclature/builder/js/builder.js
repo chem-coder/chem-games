@@ -6,10 +6,10 @@
 // name — practicing the periodic-table recall (Na → sodium) that tiles would hand them. Stuck
 // students can reveal progressive hints.
 
-import { assemble } from "../../js/naming.js?v=20260624-rev5";
-import { gradeName, gradeFormula } from "../../js/matching.js?v=20260624-rev5";
-import { toRoman } from "../../js/chem.js?v=20260624-rev5";
-import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260624-rev5";
+import { assemble } from "../../js/naming.js?v=20260624-rev6";
+import { gradeName, gradeFormula } from "../../js/matching.js?v=20260624-rev6";
+import { toRoman } from "../../js/chem.js?v=20260624-rev6";
+import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260624-rev6";
 
 // The quizzed sets — familiar fixed-charge metals and common monoatomic anions.
 export const TYPE_I_CATIONS = ["Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag"];

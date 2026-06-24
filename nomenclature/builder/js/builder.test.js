@@ -243,6 +243,16 @@ test("reverse gradeAnswer: end-spaces + trailing junk forgiven; internal space r
   assert.equal(gradeAnswer(p, "Mg Cl2").caseOnly, false);
 });
 
+test("name mode: a space before the Roman numeral is a spaceOnly near-miss (teach iron(II))", () => {
+  const p = buildProblemII({ cation: "Fe", cationCharge: 2, anion: "sulfide" }, "name");
+  const tight = gradeAnswer(p, "iron(II) sulfide");
+  assert.equal(tight.correct, true);
+  assert.equal(tight.spaceOnly, false);
+  const spaced = gradeAnswer(p, "iron (II) sulfide");
+  assert.equal(spaced.correct, true);     // grader still forgives; the UI nudges on spaceOnly
+  assert.equal(spaced.spaceOnly, true);
+});
+
 test("reverse Type II: iron(III) bromide → FeBr3 with parenthesis-free entry", () => {
   const p = buildProblemII({ cation: "Fe", cationCharge: 3, anion: "bromide" }, "formula");
   assert.equal(p.mode, "formula");

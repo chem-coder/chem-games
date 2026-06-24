@@ -10,16 +10,17 @@ import { fromUnicodeSub } from "./chem.js";
 // Names: case-insensitive; collapse whitespace; tidy the Roman-numeral parens so "iron (III)" and
 // "iron(iii)" both match "iron(III)". Also forgive stray punctuation a student might fat-finger
 // (a trailing "\", ".", ",", "/") — only at the ends, so it never alters the chemistry.
-export function normalizeName(s) {
-  return String(s)
+export function normalizeName(s, { tidyParens = true } = {}) {
+  let out = String(s)
     .toLowerCase()
     .trim()
     .replace(/^[^a-z(]+/, "")   // strip leading junk (must start with a letter or "(")
-    .replace(/[^a-z)]+$/, "")   // strip trailing junk (must end with a letter or ")")
-    .replace(/\s*\(\s*/g, "(") // tidy space around an opening paren
-    .replace(/\s*\)/g, ")")    // …and before a closing paren, but keep the separator after it
-    .replace(/\s+/g, " ")
-    .trim();
+    .replace(/[^a-z)]+$/, "");  // strip trailing junk (must end with a letter or ")")
+  // tidyParens collapses spaces around the Roman-numeral parens (iron (II) → iron(II)). The grader
+  // forgives that by default; pass tidyParens:false to KEEP the space, so we can detect the slip
+  // and teach the tight IUPAC form (see gradeName's spaceOnly).
+  if (tidyParens) out = out.replace(/\s*\(\s*/g, "(").replace(/\s*\)/g, ")");
+  return out.replace(/\s+/g, " ").trim();
 }
 
 // Formulas: subscripts may be typed as plain digits or unicode — fold to plain digits. Strip spaces.
@@ -55,7 +56,10 @@ function grade(accepted, input, normalize) {
 // Grade a typed NAME against an assembled compound (or any { name: { canonical, accepted } }).
 export function gradeName(target, input) {
   const { correct, matched, alsoAccepted } = grade(target.name.accepted, input, normalizeName);
-  return { correct, matched, canonical: target.name.canonical, alsoAccepted };
+  // spaceOnly: the answer matches ONLY because we forgave a space around the Roman-numeral parens
+  // (iron (II) vs iron(II)). The UI uses it to nudge the tight IUPAC form instead of just accepting.
+  const spaceOnly = correct && !grade(target.name.accepted, input, (s) => normalizeName(s, { tidyParens: false })).correct;
+  return { correct, matched, canonical: target.name.canonical, alsoAccepted, spaceOnly };
 }
 
 // Grade a typed FORMULA against an assembled compound.
