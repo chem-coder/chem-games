@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev2";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev2";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev2";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev4";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev4";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev4";
 
 const root = document.querySelector("#game");
 
@@ -344,8 +344,8 @@ function renderPlay() {
   const answerDisplay = isFormula ? toSubHtml(problem.answer) : problem.answer;
   const typedDisplay = isFormula ? toSubHtml(typed || "—") : (typed || "—");
   const answer = checked
-    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}">${graded.correct ? answerDisplay : typedDisplay}</div>`
-    : `<input class="answer-input" id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${isFormula ? "type the formula — e.g. Fe2(SO4)3" : "type the name…"}" value="${typed.replace(/"/g, "&quot;")}">`;
+    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}"><span>${graded.correct ? answerDisplay : typedDisplay}</span></div>`
+    : `<input class="answer-input" id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${typed.replace(/"/g, "&quot;")}">`;
 
   // Progressive hints — reveal one per click, à la the equation balancer.
   const shown = problem.hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
