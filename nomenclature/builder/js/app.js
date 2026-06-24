@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev7";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev7";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev7";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev8";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev8";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev8";
 
 const root = document.querySelector("#game");
 
@@ -428,13 +428,17 @@ function renderDone() {
     : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} ${did} with no hints. 🎉</p>`;
 
   root.innerHTML = `
+    ${levelTabs()}
     <p class="prompt">Round done — ${roundTotal} compounds, ${cleanSolves} ${did} hint-free.</p>
     ${missedBlock}
-    <div class="controls">
-      ${missedThisRound.length ? `<button class="action primary" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button>` : ""}
-      <button class="action ${missedThisRound.length ? "ghost" : "primary"}" id="againBtn">New 5 →</button>
-    </div>`;
+    ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
+    <p class="done-next">Go again below — or switch level above.</p>
+    ${startControls()}`;
 
+  // switch level → that level's intro (pick a direction there)
+  root.querySelectorAll(".level-tab").forEach((b) =>
+    b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); mode = "intro"; render(); })
+  );
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     queue = missedThisRound.slice();
@@ -445,7 +449,9 @@ function renderDone() {
     mode = "play";
     loadCard();
   });
-  root.querySelector("#againBtn").addEventListener("click", () => startRound(direction));
+  // a fresh 5 in this level, in whichever direction they pick
+  root.querySelector("#startName").addEventListener("click", () => startRound("name"));
+  root.querySelector("#startFormula").addEventListener("click", () => startRound("formula"));
 }
 
 render();

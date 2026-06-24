@@ -138,6 +138,7 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 /* two-up start buttons (name from formula · formula from name) */
 /* two equal, centered start buttons (override .action's margin-left:auto right-align) */
 .controls.two-up { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 20px auto 0; max-width: 480px; }
+.done-next { margin: 22px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
 .controls.two-up .action { flex: 1 1 200px; margin-left: 0; min-width: 0; text-align: center; border: 1.5px solid var(--accent); }
 .controls.two-up .action.primary { background: var(--accent); color: #fff; }
 .controls.two-up .action:not(.primary) { color: var(--accent); background: transparent; }
