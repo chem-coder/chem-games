@@ -136,7 +136,12 @@ sub { font-size: 0.64em; line-height: 0; vertical-align: -0.18em; font-weight: i
 .formula.as-name { font-size: 1.7rem; line-height: 1.2; }
 
 /* two-up start buttons (name from formula · formula from name) */
-.controls.two-up { flex-direction: row; flex-wrap: wrap; gap: 10px; justify-content: center; }
+/* two equal, centered start buttons (override .action's margin-left:auto right-align) */
+.controls.two-up { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 20px auto 0; max-width: 480px; }
+.controls.two-up .action { flex: 1 1 200px; margin-left: 0; min-width: 0; text-align: center; border: 1.5px solid var(--accent); }
+.controls.two-up .action.primary { background: var(--accent); color: #fff; }
+.controls.two-up .action:not(.primary) { color: var(--accent); background: transparent; }
+.controls.two-up .action:not(.primary):hover { background: var(--accent-soft); }
 
 /* reverse mode: capitalization near-miss nudge — informative, not an error */
 .cap-nudge {
