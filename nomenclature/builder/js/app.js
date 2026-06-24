@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev6";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev6";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev6";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev7";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev7";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev7";
 
 const root = document.querySelector("#game");
 
@@ -53,9 +53,15 @@ let masteredThisRound = 0;
 let cleanSolves = 0; // got it right with zero hints
 let direction = "name"; // "name" = formula→name · "formula" = name→formula (the reverse pivot)
 let nudge = null; // reverse near-miss message (caps or stray charge), shown without burning the card
-const NUDGE_CAPS = `Almost — check your capitalization. Symbols are case-sensitive (<strong>Cl</strong>, not CL; <strong>Co</strong>, not CO).`;
-const NUDGE_CHARGE = `Almost — a compound is <strong>neutral</strong>. The ion charges cancel out, so the formula has no <strong>+</strong> or <strong>−</strong>.`;
-const NUDGE_ROMAN = `So close — no space before the Roman numeral. Write it tight: <strong>iron(II)</strong>, not iron&nbsp;(II).`;
+// Formatting near-miss messages (the chemistry is right; teach the format, let them retry).
+const NUDGE_MSG = {
+  caps: `Almost — check your capitalization. Symbols are case-sensitive (<strong>Cl</strong>, not CL; <strong>Co</strong>, not CO).`,
+  charge: `Almost — a compound is <strong>neutral</strong>. The ion charges cancel out, so the formula has no <strong>+</strong> or <strong>−</strong>.`,
+  fspace: `Almost — a formula has <strong>no spaces</strong>. Write it solid, like <strong>NaCl</strong>.`,
+  fsymbol: `Almost — drop the extra characters. A formula is just symbols and subscripts.`,
+  nspace: `So close — mind the spacing: <strong>no space</strong> before the Roman numeral, and <strong>one space</strong> between the metal and the anion, like <strong>iron(II) sulfide</strong>.`,
+  nsymbol: `So close — drop the extra characters from the name.`
+};
 
 // The "how to find the charge" explainer auto-opens the first time the student lands on the
 // Type II tab, then stays collapsed (their choice to reopen). A blocked store just means it
@@ -93,14 +99,9 @@ function loadCard() {
 function check() {
   if (checked || !typed.trim()) return;
   const g = gradeAnswer(problem, typed);
-  // Reverse mode near-misses: nudge and let them retry — don't burn the card or count it as missed.
-  // Keeps prompting until they fix the specific issue (caps, or a stray charge on a neutral compound).
-  if (problem.mode === "formula" && !g.correct) {
-    if (g.caseOnly) { nudge = NUDGE_CAPS; render(); return; }
-    if (g.chargeOnly) { nudge = NUDGE_CHARGE; render(); return; }
-  }
-  // Name mode: even when it would be accepted, teach the tight iron(II) form — nudge off the space.
-  if (problem.mode === "name" && g.spaceOnly) { nudge = NUDGE_ROMAN; render(); return; }
+  // Formatting near-miss: chemistry's right but the format is off → nudge and let them retry without
+  // burning the card or counting it as missed. Keeps prompting until they fix it.
+  if (!g.correct && g.nudge) { nudge = NUDGE_MSG[g.nudge]; render(); return; }
   nudge = null;
   graded = g;
   checked = true;

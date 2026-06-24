@@ -6,10 +6,10 @@
 // name — practicing the periodic-table recall (Na → sodium) that tiles would hand them. Stuck
 // students can reveal progressive hints.
 
-import { assemble } from "../../js/naming.js?v=20260624-rev6";
-import { gradeName, gradeFormula } from "../../js/matching.js?v=20260624-rev6";
-import { toRoman } from "../../js/chem.js?v=20260624-rev6";
-import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260624-rev6";
+import { assemble } from "../../js/naming.js?v=20260624-rev7";
+import { gradeName, gradeFormula } from "../../js/matching.js?v=20260624-rev7";
+import { toRoman } from "../../js/chem.js?v=20260624-rev7";
+import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260624-rev7";
 
 // The quizzed sets — familiar fixed-charge metals and common monoatomic anions.
 export const TYPE_I_CATIONS = ["Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag"];
@@ -82,9 +82,20 @@ export function buildProblem(spec, direction = "name") {
 // Grade a typed answer against the problem's accepted forms (routes by direction). Name grading is
 // case/spacing-forgiving; formula grading is case-sensitive (Co ≠ CO) with a caseOnly near-miss flag.
 export function gradeAnswer(problem, typed) {
-  return problem.mode === "formula"
-    ? gradeFormula({ formula: problem.target }, typed, { neutral: true }) // a compound is neutral → a stray charge is an error
-    : gradeName({ name: problem.target }, typed);
+  if (problem.mode === "formula") {
+    return gradeFormula({ formula: problem.target }, typed, { neutral: true }); // a compound is neutral → a stray charge is an error
+  }
+  // Name mode: the grader forgives caps/spacing/junk, but the unifying rule is "formatting → nudge,
+  // chemistry → wrong." If the answer is chemically right yet not perfectly formatted, override to a
+  // retry-nudge so we teach the tight form (iron(II) sulfide) instead of silently accepting it.
+  const g = gradeName({ name: problem.target }, typed);
+  if (!g.correct) return { ...g, nudge: null }; // chemistry/spelling wrong → wrong
+  const accepted = problem.target.accepted;
+  const exact = (s) => String(s).toLowerCase().trim(); // caps forgiven; spacing + symbols must be exact
+  if (accepted.some((f) => exact(f) === exact(typed))) return { ...g, nudge: null }; // perfectly formatted
+  const spaceless = (s) => String(s).toLowerCase().replace(/\s+/g, "");
+  const nudge = accepted.some((f) => spaceless(f) === spaceless(typed)) ? "nspace" : "nsymbol";
+  return { ...g, correct: false, nudge };
 }
 
 // A round is a short shuffled sample — 5 keeps it brisk (15-at-a-time was brutal).

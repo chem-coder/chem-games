@@ -53,10 +53,12 @@ test("buildProblem exposes the formula, parts, and a 3-rung hint ladder", () => 
 });
 
 // ── typed grading (case/spacing-forgiving via the shared matcher) ──
-test("gradeAnswer accepts the typed name regardless of case and spacing", () => {
+test("name grading: caps forgiven, spacing nudged, wrong chemistry wrong", () => {
   const p = buildProblem({ cation: "Mg", anion: "chloride" });
   assert.equal(gradeAnswer(p, "magnesium chloride").correct, true);
-  assert.equal(gradeAnswer(p, "  Magnesium   Chloride ").correct, true);
+  assert.equal(gradeAnswer(p, "Magnesium Chloride").correct, true);   // caps forgiven for names
+  assert.equal(gradeAnswer(p, "  magnesium chloride ").correct, true); // end-spaces trimmed
+  assert.equal(gradeAnswer(p, "magnesium   chloride").nudge, "nspace"); // extra internal spaces → nudge
   assert.equal(gradeAnswer(p, "magnesium bromide").correct, false);
   assert.equal(gradeAnswer(p, "magnesium dichloride").correct, false); // prefixes are wrong
   assert.equal(gradeAnswer(p, "").correct, false);
@@ -108,10 +110,11 @@ test("the Type II hint ladder walks the charge deduction", () => {
   assert.match(p.hints[2], /iron must total 3\+.*iron\(III\)/i); // balance → the metal's Roman numeral
 });
 
-test("Type II grading is forgiving about Roman-numeral spacing and case", () => {
+test("Type II grading: caps forgiven, Roman-numeral spacing nudged, wrong charge wrong", () => {
   const p = buildProblemII({ cation: "V", cationCharge: 5, anion: "oxide" });
   assert.equal(gradeAnswer(p, "vanadium(V) oxide").correct, true);
-  assert.equal(gradeAnswer(p, "VANADIUM (v) oxide").correct, true);
+  assert.equal(gradeAnswer(p, "VANADIUM(v) oxide").correct, true);   // caps + roman-case forgiven
+  assert.equal(gradeAnswer(p, "vanadium (V) oxide").nudge, "nspace"); // space before numeral → nudge
   assert.equal(gradeAnswer(p, "vanadium oxide").correct, false); // missing the charge
   assert.equal(gradeAnswer(p, "vanadium(IV) oxide").correct, false); // wrong charge
 });
@@ -220,37 +223,37 @@ test("reverse gradeAnswer: correct formula passes, wrong fails", () => {
   assert.equal(gradeAnswer(p, "MgCl3").correct, false);
 });
 
-test("reverse gradeAnswer: caseOnly flags a capitalization-only near-miss", () => {
+// Formatting near-miss → nudge (chemistry right, format off); chemistry wrong → wrong.
+test("reverse formula: caps near-miss → nudge 'caps'", () => {
   const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
   const g = gradeAnswer(p, "mgcl2");
   assert.equal(g.correct, false);
-  assert.equal(g.caseOnly, true); // right formula, wrong caps → nudge, not a hard miss
+  assert.equal(g.nudge, "caps");
 });
 
-test("reverse gradeAnswer: a stray charge on a neutral compound is chargeOnly (nudge, not accepted)", () => {
+test("reverse formula: a stray charge on a neutral compound → nudge 'charge'", () => {
   const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
-  const minus = gradeAnswer(p, "MgCl2-");
-  assert.equal(minus.correct, false);
-  assert.equal(minus.chargeOnly, true);
-  assert.equal(gradeAnswer(p, "MgCl2+").chargeOnly, true);
+  assert.equal(gradeAnswer(p, "MgCl2-").nudge, "charge");
+  assert.equal(gradeAnswer(p, "MgCl2+").nudge, "charge");
+  assert.equal(gradeAnswer(p, "MgCl2-").correct, false);
 });
 
-test("reverse gradeAnswer: end-spaces + trailing junk forgiven; internal space rejected", () => {
+test("reverse formula: internal space → nudge 'fspace'; trailing junk → nudge 'fsymbol'", () => {
   const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
-  assert.equal(gradeAnswer(p, "  MgCl2  ").correct, true); // ends trimmed
-  assert.equal(gradeAnswer(p, "MgCl2///").correct, true);  // fat-finger junk
-  assert.equal(gradeAnswer(p, "Mg Cl2").correct, false);   // internal space is wrong
-  assert.equal(gradeAnswer(p, "Mg Cl2").caseOnly, false);
+  assert.equal(gradeAnswer(p, "  MgCl2  ").correct, true); // ends trimmed = perfect
+  assert.equal(gradeAnswer(p, "Mg Cl2").nudge, "fspace");  // internal space (was hard-wrong)
+  assert.equal(gradeAnswer(p, "MgCl2///").nudge, "fsymbol"); // extra characters (was silently passed)
+  assert.equal(gradeAnswer(p, "MgCl3").nudge, null);       // wrong chemistry → no nudge, just wrong
+  assert.equal(gradeAnswer(p, "MgCl3").correct, false);
 });
 
-test("name mode: a space before the Roman numeral is a spaceOnly near-miss (teach iron(II))", () => {
+test("name mode: bad Roman-numeral spacing → nudge 'nspace' (teach iron(II))", () => {
   const p = buildProblemII({ cation: "Fe", cationCharge: 2, anion: "sulfide" }, "name");
-  const tight = gradeAnswer(p, "iron(II) sulfide");
-  assert.equal(tight.correct, true);
-  assert.equal(tight.spaceOnly, false);
-  const spaced = gradeAnswer(p, "iron (II) sulfide");
-  assert.equal(spaced.correct, true);     // grader still forgives; the UI nudges on spaceOnly
-  assert.equal(spaced.spaceOnly, true);
+  assert.equal(gradeAnswer(p, "iron(II) sulfide").correct, true);   // tight = perfect
+  assert.equal(gradeAnswer(p, "Iron(II) Sulfide").correct, true);   // caps forgiven for names
+  assert.equal(gradeAnswer(p, "iron (II) sulfide").nudge, "nspace");  // space before numeral
+  assert.equal(gradeAnswer(p, "iron(II)  sulfide").nudge, "nspace");  // double space between words
+  assert.equal(gradeAnswer(p, "iron(III) sulfide").nudge, null);     // wrong charge → wrong, no nudge
 });
 
 test("reverse Type II: iron(III) bromide → FeBr3 with parenthesis-free entry", () => {

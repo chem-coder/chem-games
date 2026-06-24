@@ -10,17 +10,16 @@ import { fromUnicodeSub } from "./chem.js";
 // Names: case-insensitive; collapse whitespace; tidy the Roman-numeral parens so "iron (III)" and
 // "iron(iii)" both match "iron(III)". Also forgive stray punctuation a student might fat-finger
 // (a trailing "\", ".", ",", "/") — only at the ends, so it never alters the chemistry.
-export function normalizeName(s, { tidyParens = true } = {}) {
-  let out = String(s)
+export function normalizeName(s) {
+  return String(s)
     .toLowerCase()
     .trim()
     .replace(/^[^a-z(]+/, "")   // strip leading junk (must start with a letter or "(")
-    .replace(/[^a-z)]+$/, "");  // strip trailing junk (must end with a letter or ")")
-  // tidyParens collapses spaces around the Roman-numeral parens (iron (II) → iron(II)). The grader
-  // forgives that by default; pass tidyParens:false to KEEP the space, so we can detect the slip
-  // and teach the tight IUPAC form (see gradeName's spaceOnly).
-  if (tidyParens) out = out.replace(/\s*\(\s*/g, "(").replace(/\s*\)/g, ")");
-  return out.replace(/\s+/g, " ").trim();
+    .replace(/[^a-z)]+$/, "")   // strip trailing junk (must end with a letter or ")")
+    .replace(/\s*\(\s*/g, "(") // tidy space around an opening paren
+    .replace(/\s*\)/g, ")")    // …and before a closing paren, but keep the separator after it
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 // Formulas: subscripts may be typed as plain digits or unicode — fold to plain digits. Strip spaces.
@@ -56,37 +55,39 @@ function grade(accepted, input, normalize) {
 // Grade a typed NAME against an assembled compound (or any { name: { canonical, accepted } }).
 export function gradeName(target, input) {
   const { correct, matched, alsoAccepted } = grade(target.name.accepted, input, normalizeName);
-  // spaceOnly: the answer matches ONLY because we forgave a space around the Roman-numeral parens
-  // (iron (II) vs iron(II)). The UI uses it to nudge the tight IUPAC form instead of just accepting.
-  const spaceOnly = correct && !grade(target.name.accepted, input, (s) => normalizeName(s, { tidyParens: false })).correct;
-  return { correct, matched, canonical: target.name.canonical, alsoAccepted, spaceOnly };
+  return { correct, matched, canonical: target.name.canonical, alsoAccepted };
 }
+
+const CHARGE_RUN = /[²³¹⁰⁴-⁹⁺⁻+\-−]+$/; // a trailing charge: superscript digits/signs or ASCII +/-/−
 
 // Grade a typed FORMULA against an assembled compound.
 //
 // Two contexts:
 //  - ION grading (default): a free-standing ion may legitimately carry its charge (NH₄⁺), so a
-//    trailing charge is stripped, and all whitespace is collapsed (as before).
-//  - NEUTRAL COMPOUND grading ({ neutral: true }, the Name Builder): a compound has NO net charge,
-//    so a trailing +/− is a real error, surfaced as `chargeOnly` (the UI nudges "drop the charge")
-//    rather than being silently accepted. Only leading/trailing spaces are trimmed (internal spaces
-//    are wrong); trailing fat-finger junk (/ . , \) is forgiven; case stays meaningful.
-//
-// Near-miss flags let the UI nudge instead of failing: `caseOnly` (right but wrong caps) and, in
-// neutral mode, `chargeOnly` (right but for a stray charge). Either lets the student retry.
+//    trailing charge is stripped and all whitespace collapsed (the triad trainer relies on this).
+//  - NEUTRAL COMPOUND grading ({ neutral: true }, the Name Builder): the unifying rule is
+//    "formatting → nudge, chemistry → wrong." If the chemistry (symbols, subscripts, counts,
+//    parentheses) is right but the format is off, we return correct:false plus a `nudge` category
+//    so the UI can teach and let the student retry. A stray charge is a real error here (a compound
+//    is neutral). Categories: charge / fspace (no spaces in a formula) / fsymbol (extra characters)
+//    / caps (Co≠CO). caseOnly/chargeOnly are kept for back-compat. Truly wrong → nudge:null.
 export function gradeFormula(target, input, { neutral = false } = {}) {
   const accepted = target.formula.accepted;
   const canonical = target.formula.canonical;
   if (!neutral) {
     const { correct, matched, alsoAccepted } = grade(accepted, input, normalizeFormula);
     const caseOnly = !correct && grade(accepted, input, (s) => normalizeFormula(s).toLowerCase()).correct;
-    return { correct, matched, canonical, alsoAccepted, caseOnly, chargeOnly: false };
+    return { correct, matched, canonical, alsoAccepted, caseOnly, chargeOnly: false, nudge: null };
   }
-  // neutral compound: trim ENDS only (internal spaces fail), forgive trailing junk, keep case + charge.
-  const base = (s) => fromUnicodeSub(String(s)).trim().replace(/[/.,\\]+$/, "");
-  const noCharge = (s) => base(s).replace(/[²³¹⁰⁴-⁹⁺⁻+\-−]+$/, "");
-  const { correct, matched, alsoAccepted } = grade(accepted, input, base);
-  const caseOnly = !correct && grade(accepted, input, (s) => base(s).toLowerCase()).correct;
-  const chargeOnly = !correct && !caseOnly && grade(accepted, input, noCharge).correct;
-  return { correct, matched, canonical, alsoAccepted, caseOnly, chargeOnly };
+  const sub = (s) => fromUnicodeSub(String(s));
+  const exact = (s) => sub(s).trim();                          // perfect format (case-sensitive, no extras)
+  const chem = (s) => exact(s).toLowerCase().replace(/\s+/g, "").replace(/[/.,\\]+$/, "").replace(CHARGE_RUN, ""); // pure chemistry
+  const r = grade(accepted, input, exact);
+  if (r.correct) return { ...r, canonical, caseOnly: false, chargeOnly: false, nudge: null };
+  const chemOk = accepted.some((f) => chem(f) === chem(input));
+  if (!chemOk) return { correct: false, matched: null, canonical, alsoAccepted: [], caseOnly: false, chargeOnly: false, nudge: null };
+  // chemistry is right, format is off → classify the slip (one at a time; the student fixes & retries)
+  const t = exact(input);
+  const nudge = CHARGE_RUN.test(t) ? "charge" : /\s/.test(t) ? "fspace" : /[/.,\\]+$/.test(t) ? "fsymbol" : "caps";
+  return { correct: false, matched: null, canonical, alsoAccepted: [], caseOnly: nudge === "caps", chargeOnly: nudge === "charge", nudge };
 }
