@@ -1,0 +1,80 @@
+/* Oxidation-states reference — full-page periodic table. Palette + fonts from shared/css/tokens.css. */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); line-height: 1.5;
+}
+.app-shell { width: min(1340px, 96vw); margin: 0 auto; padding: 28px 16px 64px; }
+
+/* ── header ── */
+.app-header { margin-bottom: 22px; }
+.home-link {
+  display: inline-block; margin-bottom: 14px; color: var(--accent-dark);
+  text-decoration: none; font-weight: 600; font-size: 0.9rem;
+}
+.home-link:hover { text-decoration: underline; }
+.eyebrow {
+  margin: 0 0 4px; color: var(--plum-dark); font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.app-header h1 { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 2rem; }
+.lede { margin: 0; max-width: 64ch; color: var(--ink); }
+
+/* ── periodic table ── */
+.ptable-scroll { overflow-x: auto; padding-bottom: 6px; }
+.ptable, .fstrip {
+  display: grid; gap: 4px; min-width: 940px;
+}
+.ptable { grid-template-columns: repeat(18, minmax(0, 1fr)); grid-template-rows: repeat(7, auto); }
+.fstrip {
+  grid-template-columns: repeat(14, minmax(0, 1fr));
+  /* sit under groups 3–16 to echo where the f-block belongs */
+  width: calc((100% - 4px * 17) / 18 * 14 + 4px * 13);
+  margin: 6px 0 0 calc((100% - 4px * 17) / 18 * 2 + 4px * 2);
+}
+
+.el {
+  border: 1px solid var(--line); border-radius: 7px; padding: 4px 3px 5px;
+  min-height: 58px; display: flex; flex-direction: column; align-items: center;
+  background: var(--surface);
+}
+.el .z { align-self: flex-start; font-size: 0.6rem; color: var(--muted); line-height: 1; }
+.el .sym {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.05rem;
+  line-height: 1; margin: 1px 0 3px;
+}
+.ox-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 4px; }
+.ox { font-family: var(--font-display); font-weight: 700; font-size: 0.62rem; line-height: 1.25; }
+.ox.primary { color: var(--ink); font-weight: 800; }
+.ox.common { color: #8a8273; }
+.ox.rare { color: #c4bcab; }
+.ox-none { font-family: var(--font-body); font-weight: 500; font-size: 0.58rem; color: var(--muted); font-style: italic; }
+
+/* ── category tints (muted True-Autumn hues) ── */
+.cat-alkali     { background: #efdcc2; }
+.cat-alkaline   { background: #ece2cb; }
+.cat-transition { background: #dde8e2; }
+.cat-post       { background: #e7e2d4; }
+.cat-metalloid  { background: #e6dfee; }
+.cat-nonmetal   { background: #ddeae3; }
+.cat-halogen    { background: #f5e7c4; }
+.cat-noble      { background: #ece0ea; }
+.cat-lanthanide { background: #f0e4d2; }
+.cat-actinide   { background: #efddd2; }
+
+/* ── legend ── */
+.legend { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+.leg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.leg-title { font-family: var(--font-display); font-weight: 800; font-size: 0.85rem; }
+.leg-item { display: inline-flex; align-items: center; gap: 5px; font-size: 0.82rem; color: var(--ink); }
+.leg-item .ox { font-size: 0.72rem; }
+.leg-cats { gap: 6px 13px; }
+.sw { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--line); flex: none; }
+.leg-note { margin: 2px 0 0; font-size: 0.78rem; color: var(--muted); }
+.load-error { color: var(--danger); }
+
+@media (max-width: 620px) {
+  .app-header h1 { font-size: 1.6rem; }
+  .el .sym { font-size: 0.95rem; }
+}
