@@ -227,6 +227,22 @@ test("reverse gradeAnswer: caseOnly flags a capitalization-only near-miss", () =
   assert.equal(g.caseOnly, true); // right formula, wrong caps → nudge, not a hard miss
 });
 
+test("reverse gradeAnswer: a stray charge on a neutral compound is chargeOnly (nudge, not accepted)", () => {
+  const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
+  const minus = gradeAnswer(p, "MgCl2-");
+  assert.equal(minus.correct, false);
+  assert.equal(minus.chargeOnly, true);
+  assert.equal(gradeAnswer(p, "MgCl2+").chargeOnly, true);
+});
+
+test("reverse gradeAnswer: end-spaces + trailing junk forgiven; internal space rejected", () => {
+  const p = buildProblem({ cation: "Mg", anion: "chloride" }, "formula");
+  assert.equal(gradeAnswer(p, "  MgCl2  ").correct, true); // ends trimmed
+  assert.equal(gradeAnswer(p, "MgCl2///").correct, true);  // fat-finger junk
+  assert.equal(gradeAnswer(p, "Mg Cl2").correct, false);   // internal space is wrong
+  assert.equal(gradeAnswer(p, "Mg Cl2").caseOnly, false);
+});
+
 test("reverse Type II: iron(III) bromide → FeBr3 with parenthesis-free entry", () => {
   const p = buildProblemII({ cation: "Fe", cationCharge: 3, anion: "bromide" }, "formula");
   assert.equal(p.mode, "formula");

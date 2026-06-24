@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev4";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev4";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev4";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev5";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev5";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev5";
 
 const root = document.querySelector("#game");
 
@@ -52,7 +52,9 @@ let graded = null;
 let masteredThisRound = 0;
 let cleanSolves = 0; // got it right with zero hints
 let direction = "name"; // "name" = formula→name · "formula" = name→formula (the reverse pivot)
-let capNudge = false; // reverse mode: last Check was a capitalization-only near-miss
+let nudge = null; // reverse near-miss message (caps or stray charge), shown without burning the card
+const NUDGE_CAPS = `Almost — check your capitalization. Symbols are case-sensitive (<strong>Cl</strong>, not CL; <strong>Co</strong>, not CO).`;
+const NUDGE_CHARGE = `Almost — a compound is <strong>neutral</strong>. The ion charges cancel out, so the formula has no <strong>+</strong> or <strong>−</strong>.`;
 
 // The "how to find the charge" explainer auto-opens the first time the student lands on the
 // Type II tab, then stays collapsed (their choice to reopen). A blocked store just means it
@@ -83,21 +85,20 @@ function loadCard() {
   hintsShown = 0;
   checked = false;
   graded = null;
-  capNudge = false;
+  nudge = null;
   render();
 }
 
 function check() {
   if (checked || !typed.trim()) return;
   const g = gradeAnswer(problem, typed);
-  // Reverse mode: if the only thing wrong is capitalization, nudge and let them retry — don't burn
-  // the card or count it as missed. Keeps prompting until they fix the caps (or change the answer).
-  if (problem.mode === "formula" && !g.correct && g.caseOnly) {
-    capNudge = true;
-    render();
-    return;
+  // Reverse mode near-misses: nudge and let them retry — don't burn the card or count it as missed.
+  // Keeps prompting until they fix the specific issue (caps, or a stray charge on a neutral compound).
+  if (problem.mode === "formula" && !g.correct) {
+    if (g.caseOnly) { nudge = NUDGE_CAPS; render(); return; }
+    if (g.chargeOnly) { nudge = NUDGE_CHARGE; render(); return; }
   }
-  capNudge = false;
+  nudge = null;
   graded = g;
   checked = true;
   if (graded.correct) {
@@ -367,9 +368,7 @@ function renderPlay() {
     reveal = `<p class="reveal">${promptHtml} &nbsp;=&nbsp; <strong>${answerDisplay}</strong></p>`;
   }
 
-  const nudge = (!checked && capNudge)
-    ? `<p class="cap-nudge">Almost — check your capitalization. Symbols are case-sensitive (<strong>Cl</strong>, not CL; <strong>Co</strong>, not CO).</p>`
-    : "";
+  const nudgeHtml = (!checked && nudge) ? `<p class="cap-nudge">${nudge}</p>` : "";
   const verb = isFormula ? "Built" : "Named";
   root.innerHTML = `
     <button class="intro-link" id="introBtn" type="button">↩ How ${level().label} names work</button>
@@ -380,7 +379,7 @@ function renderPlay() {
 
     <p class="build-label">${isFormula ? "Write the formula" : "Name this compound"}</p>
     <div class="answer-row">${answer}</div>
-    ${nudge}
+    ${nudgeHtml}
     ${hintBlock}
 
     ${reveal}

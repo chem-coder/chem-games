@@ -58,11 +58,31 @@ export function gradeName(target, input) {
   return { correct, matched, canonical: target.name.canonical, alsoAccepted };
 }
 
-// Grade a typed FORMULA against an assembled compound (reverse mode: name → formula).
-// `caseOnly` flags the near-miss where the answer is right except for capitalization (cucl2 vs
-// CuCl2) — the UI uses it to nudge ("fix the caps") and let the student retry without burning the card.
-export function gradeFormula(target, input) {
-  const { correct, matched, alsoAccepted } = grade(target.formula.accepted, input, normalizeFormula);
-  const caseOnly = !correct && grade(target.formula.accepted, input, (s) => normalizeFormula(s).toLowerCase()).correct;
-  return { correct, matched, canonical: target.formula.canonical, alsoAccepted, caseOnly };
+// Grade a typed FORMULA against an assembled compound.
+//
+// Two contexts:
+//  - ION grading (default): a free-standing ion may legitimately carry its charge (NH₄⁺), so a
+//    trailing charge is stripped, and all whitespace is collapsed (as before).
+//  - NEUTRAL COMPOUND grading ({ neutral: true }, the Name Builder): a compound has NO net charge,
+//    so a trailing +/− is a real error, surfaced as `chargeOnly` (the UI nudges "drop the charge")
+//    rather than being silently accepted. Only leading/trailing spaces are trimmed (internal spaces
+//    are wrong); trailing fat-finger junk (/ . , \) is forgiven; case stays meaningful.
+//
+// Near-miss flags let the UI nudge instead of failing: `caseOnly` (right but wrong caps) and, in
+// neutral mode, `chargeOnly` (right but for a stray charge). Either lets the student retry.
+export function gradeFormula(target, input, { neutral = false } = {}) {
+  const accepted = target.formula.accepted;
+  const canonical = target.formula.canonical;
+  if (!neutral) {
+    const { correct, matched, alsoAccepted } = grade(accepted, input, normalizeFormula);
+    const caseOnly = !correct && grade(accepted, input, (s) => normalizeFormula(s).toLowerCase()).correct;
+    return { correct, matched, canonical, alsoAccepted, caseOnly, chargeOnly: false };
+  }
+  // neutral compound: trim ENDS only (internal spaces fail), forgive trailing junk, keep case + charge.
+  const base = (s) => fromUnicodeSub(String(s)).trim().replace(/[/.,\\]+$/, "");
+  const noCharge = (s) => base(s).replace(/[²³¹⁰⁴-⁹⁺⁻+\-−]+$/, "");
+  const { correct, matched, alsoAccepted } = grade(accepted, input, base);
+  const caseOnly = !correct && grade(accepted, input, (s) => base(s).toLowerCase()).correct;
+  const chargeOnly = !correct && !caseOnly && grade(accepted, input, noCharge).correct;
+  return { correct, matched, canonical, alsoAccepted, caseOnly, chargeOnly };
 }
