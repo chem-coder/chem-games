@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev8";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev8";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev8";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev9";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev9";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev9";
 
 const root = document.querySelector("#game");
 
@@ -139,10 +139,13 @@ function levelTabs() {
 }
 
 // Two ways to drill each level: name from formula (easier, first) or formula from name (harder).
-function startControls() {
+// `activeDir` gets the filled/primary style — on intros that's "name" (the recommended start); on
+// the done screen it's the direction just played, so the highlight reflects what you did.
+function startControls(activeDir = "name") {
+  const cls = (d) => `action${d === activeDir ? " primary" : ""}`;
   return `<div class="controls two-up">
-    <button class="action primary" id="startName">Name the compound</button>
-    <button class="action" id="startFormula">Write the formula</button>
+    <button class="${cls("name")}" id="startName">Name the compound</button>
+    <button class="${cls("formula")}" id="startFormula">Write the formula</button>
   </div>`;
 }
 
@@ -433,7 +436,7 @@ function renderDone() {
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
     <p class="done-next">Go again below — or switch level above.</p>
-    ${startControls()}`;
+    ${startControls(direction)}`;
 
   // switch level → that level's intro (pick a direction there)
   root.querySelectorAll(".level-tab").forEach((b) =>
