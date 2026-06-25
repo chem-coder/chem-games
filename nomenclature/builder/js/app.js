@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev9";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev9";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev9";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev10";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev10";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev10";
 
 const root = document.querySelector("#game");
 

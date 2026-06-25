@@ -36,14 +36,14 @@ export const CATIONS = [
   { symbol: "Al", charge: 3 }, { symbol: "Ga", charge: 3 }, { symbol: "In", charge: 3 },
   { symbol: "Sc", charge: 3 }, { symbol: "Y", charge: 3 },
   { symbol: "Zn", charge: 2 }, { symbol: "Cd", charge: 2 }, { symbol: "Ag", charge: 1 },
-  { symbol: "Ni", charge: 2 }, // course treats nickel as fixed Ni²⁺ (no Roman numeral)
-  // Variable charge → Roman numeral, deduced
+  // Variable charge → Roman numeral, deduced (rule: any metal with >1 oxidation state in the reference PT)
   { symbol: "Fe", variable: true, states: [2, 3] },
   { symbol: "Cu", variable: true, states: [1, 2] },
   { symbol: "Cr", variable: true, states: [2, 3, 6] },
   { symbol: "V", variable: true, states: [2, 3, 4, 5] },
   { symbol: "Mn", variable: true, states: [2, 3, 4, 7] },
   { symbol: "Co", variable: true, states: [2, 3] },
+  { symbol: "Ni", variable: true, states: [2, 3] }, // +2 common, +3 — gets the numeral per the rule
   { symbol: "Sn", variable: true, states: [2, 4] },
   { symbol: "Pb", variable: true, states: [2, 4] },
   { symbol: "Au", variable: true, states: [1, 3] },

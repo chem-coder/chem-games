@@ -130,7 +130,7 @@ export function isWellFormedTypeOneName(name) {
 // ── Type II: variable-charge metals → the charge becomes a Roman numeral ─────────
 // Same typed-name mechanic, but now the student must DEDUCE the metal's charge from the formula
 // (reverse criss-cross) and write it as a Roman numeral. The hint ladder walks that deduction.
-export const TYPE_II_CATIONS = ["Fe", "Cu", "Cr", "V", "Mn", "Co", "Sn", "Pb", "Au", "Hg"];
+export const TYPE_II_CATIONS = ["Fe", "Cu", "Cr", "V", "Mn", "Co", "Ni", "Sn", "Pb", "Au", "Hg"];
 
 // Each variable metal in each of its course charges × a monoatomic anion.
 export function typeTwoCompounds() {
@@ -177,7 +177,7 @@ export function buildProblemII(spec, direction = "name") {
 // The student must first decide whether the metal is fixed or variable (→ Roman numeral), then
 // name the polyatomic ion, which keeps its own name (it does NOT become -ide).
 // Fixed-charge cations for the polyatomic level — common metals plus nickel and the ammonium ion.
-export const POLY_FIXED_CATIONS = ["Li", "Na", "K", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag", "Ni", "ammonium"];
+export const POLY_FIXED_CATIONS = ["Li", "Na", "K", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag", "ammonium"];
 // A rich, interesting anion set — the common ones plus the oxyanion families, dichromate, oxalate,
 // cyanide, thiosulfate, bicarbonate, and the iodate/periodate pair.
 export const POLY_ANION_IDS = [

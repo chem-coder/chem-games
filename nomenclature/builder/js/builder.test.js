@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import {
   typeOneCompounds, buildProblem, gradeAnswer, buildRound, requeue,
@@ -268,4 +269,23 @@ test("reverse Poly: iron(III) sulfate → Fe2(SO4)3 with parentheses", () => {
   assert.equal(p.mode, "formula");
   assert.equal(p.prompt, "iron(III) sulfate");
   assert.equal(gradeAnswer(p, "Fe2(SO4)3").correct, true);
+});
+
+// ── consistency guards (so an orphan cation or a misclassified metal can't slip in again) ──
+test("no orphan cations: every cation used in any level is taught in an intro table", () => {
+  const used = new Set([...typeOneCompounds(), ...typeTwoCompounds(), ...polyatomicCompounds()].map((c) => c.cation));
+  const taught = new Set([...Object.keys(FIXED_CHARGES), ...Object.keys(VARIABLE_STATES), "ammonium"]);
+  const orphans = [...used].filter((c) => !taught.has(c));
+  assert.deepEqual(orphans, [], `orphan cations (used but not on any taught list): ${orphans.join(", ")}`);
+});
+
+test("Roman-numeral rule: fixed ⇔ exactly one positive oxidation state in the reference PT", () => {
+  const ref = JSON.parse(readFileSync(new URL("../../../shared/data/periodic-elements.json", import.meta.url)));
+  const positives = Object.fromEntries(ref.map((e) => [e.symbol, e.states.map((s) => s.ox).filter((x) => x > 0)]));
+  for (const sym of Object.keys(FIXED_CHARGES)) {
+    assert.equal(positives[sym]?.length, 1, `${sym} is FIXED (no numeral) but the reference PT lists ${positives[sym]} — it should get a numeral`);
+  }
+  for (const sym of Object.keys(VARIABLE_STATES)) {
+    assert.ok(positives[sym]?.length > 1, `${sym} is VARIABLE (numeral) but the reference PT lists only ${positives[sym]}`);
+  }
 });
