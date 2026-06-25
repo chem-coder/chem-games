@@ -271,12 +271,51 @@ export function buildProblemAcid(spec, direction = "name") {
   ]);
 }
 
+// ── Covalent (molecular): two nonmetals, named by COUNTING atoms with Greek prefixes ─────────────
+// Rules: first element drops mono-; second always takes a prefix and ends in –ide; vowel elision
+// (mono-oxide → monoxide, penta-oxide → pentoxide). assembleCovalent already names these (oracle-tested).
+const COV_PREFIX = ["", "mono", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca"];
+const cov = (s1, n1, s2, n2) => ({ parts: [[s1, n1], [s2, n2]] });
+export const COVALENT_COMPOUNDS = [
+  cov("C", 1, "O", 1), cov("C", 1, "O", 2),                       // carbon mon/dioxide
+  cov("N", 1, "O", 1), cov("N", 1, "O", 2),                       // nitrogen mon/dioxide
+  cov("N", 2, "O", 1), cov("N", 2, "O", 3), cov("N", 2, "O", 4), cov("N", 2, "O", 5), // dinitrogen …oxide
+  cov("S", 1, "O", 2), cov("S", 1, "O", 3),                       // sulfur di/trioxide
+  cov("P", 1, "Cl", 3), cov("P", 1, "Cl", 5),                     // phosphorus tri/pentachloride
+  cov("P", 4, "O", 6), cov("P", 4, "O", 10),                      // tetraphosphorus hex/decoxide
+  cov("S", 1, "F", 6), cov("C", 1, "Cl", 4),                      // sulfur hexafluoride, carbon tetrachloride
+  cov("N", 1, "Cl", 3), cov("C", 1, "S", 2)                       // nitrogen trichloride, carbon disulfide
+];
+export function covalentCompounds() {
+  return COVALENT_COMPOUNDS;
+}
+
+export function buildProblemCovalent(spec, direction = "name") {
+  const built = assemble({ kind: "covalent", parts: spec.parts });
+  const [[s1, n1], [s2, n2]] = spec.parts;
+  const e1 = ELEMENTS[s1], e2 = ELEMENTS[s2];
+  if (direction === "formula") {
+    return problemReverse(spec, built, e1, e2, [
+      "The prefixes ARE the subscripts: mono 1, di 2, tri 3, tetra 4, penta 5, hexa 6… (no prefix on the first element means 1). Read each back into a count.",
+      `${cap(built.name.canonical)} → ${s1} ${n1}, ${s2} ${n2}.`,
+      `→ ${built.formula.display}.`
+    ]);
+  }
+  return problemForward(spec, built, e1, e2, [
+    "Two nonmetals → count each atom and use a Greek prefix. The first element drops mono-; the second always takes a prefix and ends in –ide.",
+    `${cap(e1)}: ${n1}${n1 > 1 ? ` (${COV_PREFIX[n1]}-)` : ""}. ${cap(e2)}: ${n2} (${COV_PREFIX[n2]}-).`,
+    `→ ${built.name.canonical}.`
+  ]);
+}
+
 // `cations`/`anions` feed the dealer (gameplay variety); `compounds` is the full set (integrity tests).
+// `deck` = a precomputed list of full specs (covalent), dealt directly.
 export const LEVELS = [
   { id: "type1", label: "Type I", tagline: "fixed-charge metals", cations: TYPE_I_CATIONS, anions: TYPE_I_ANIONS, compounds: typeOneCompounds, build: buildProblem },
   { id: "type2", label: "Type II", tagline: "variable charge → Roman numeral", cations: TYPE_II_CATIONS, anions: TYPE_I_ANIONS, compounds: typeTwoCompounds, build: buildProblemII },
   { id: "poly", label: "Polyatomic", tagline: "metal (I or II) + a polyatomic ion", cations: POLY_CATIONS, anions: POLY_ANION_IDS, compounds: polyatomicCompounds, build: buildProblemPoly },
-  { id: "acid", label: "Acids", tagline: "H⁺ + an anion → name off the ending", cations: [], anions: ACID_ANIONS, compounds: acidCompounds, build: buildProblemAcid }
+  { id: "acid", label: "Acids", tagline: "H⁺ + an anion → name off the ending", cations: [], anions: ACID_ANIONS, compounds: acidCompounds, build: buildProblemAcid },
+  { id: "cov", label: "Covalent", tagline: "two nonmetals → Greek prefixes", deck: COVALENT_COMPOUNDS, compounds: covalentCompounds, build: buildProblemCovalent }
 ];
 
 // ── Dealing a varied round ───────────────────────────────────────────────────────
@@ -303,6 +342,21 @@ function specFor(cation, anion, rng) {
 // A stateful dealer for a level: cation and anion bags persist across rounds (true cycling), and a
 // round's cards are kept distinct in both slots. makeDealer(level) → deal(n, rng) → specs[].
 export function makeDealer(level) {
+  // Deck levels (covalent): cards are full specs from a fixed list — deal distinct ones.
+  if (level.deck) {
+    const drawCard = makeBag(level.deck);
+    return function deal(n = DEFAULT_ROUND, rng = Math.random) {
+      const cards = [];
+      const used = new Set();
+      for (let i = 0; i < n; i += 1) {
+        let c = drawCard(rng);
+        for (let g = 0; used.has(c) && g < level.deck.length; g += 1) c = drawCard(rng);
+        used.add(c);
+        cards.push(c);
+      }
+      return cards;
+    };
+  }
   const drawAnion = makeBag(level.anions);
   // Anion-only levels (acids): the "compound" is just H⁺ + an anion, so deal distinct anions.
   if (!level.cations || level.cations.length === 0) {

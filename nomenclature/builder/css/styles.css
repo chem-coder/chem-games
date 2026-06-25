@@ -99,6 +99,15 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 .at-rule strong { color: var(--accent-dark); }
 .at-exf { padding-left: 16px; font-family: var(--font-display); font-weight: 700; color: var(--muted); } /* example formula */
 .at-exn { color: var(--muted); font-size: 0.95rem; } /* example name */
+/* ── covalent: the Greek-prefix reference ── */
+.prefix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; margin: 14px 0 18px; }
+.prefix-grid span {
+  padding: 6px 4px; text-align: center; font-size: 0.86rem; color: var(--muted);
+  background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
+.prefix-grid strong { color: var(--accent-dark); font-family: var(--font-display); }
+@media (max-width: 480px) { .prefix-grid { grid-template-columns: repeat(2, 1fr); } }
+
 .acid-note { margin: 0 0 8px; text-align: center; color: var(--ink); font-size: 0.92rem; }
 .acid-mnemonic { margin: 0 0 16px; text-align: center; color: var(--accent-dark); font-family: var(--font-display); font-weight: 700; }
 @media (max-width: 560px) {

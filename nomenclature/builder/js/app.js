@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev12";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev12";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev12";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev13";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev13";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev13";
 
 const root = document.querySelector("#game");
 
@@ -349,11 +349,40 @@ function introAcid() {
   </div>`;
 }
 
+// Covalent (molecular): two nonmetals, named by counting atoms with Greek prefixes.
+function introCovalent() {
+  const prefixes = ["mono", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca"];
+  return `<div class="intro">
+    <p class="intro-eyebrow">Covalent · two nonmetals</p>
+    <p class="intro-lede">Two nonmetals share electrons. Name them by <strong>counting atoms</strong> with Greek prefixes.</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">prefix + element</span>
+        <span class="block-sub">first element — drop <em>mono-</em></span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main">prefix + element<span class="suffix"> + <em>ide</em></span></span>
+        <span class="block-sub">always takes a prefix</span>
+      </div>
+    </div>
+    <p class="schema-note">Drop a doubled vowel: mono-oxide → <strong>monoxide</strong>, penta-oxide → <strong>pentoxide</strong>.</p>
+    <div class="prefix-grid">${prefixes.map((p, i) => `<span><strong>${p}</strong> ${i + 1}</span>`).join("")}</div>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="ex-f">${toSubHtml("CO")}</span><span class="arrow">→</span><span class="w-cation">carbon</span> <span class="w-anion">mon<span class="ide">oxide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("CO2")}</span><span class="arrow">→</span><span class="w-cation">carbon</span> <span class="w-anion">di<span class="ide">oxide</span></span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("N2O4")}</span><span class="arrow">→</span><span class="w-cation">dinitrogen</span> <span class="w-anion">tetr<span class="ide">oxide</span></span></div>
+    </div>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
   const body = level().id === "type1" ? introTypeI()
     : level().id === "type2" ? introTypeII()
     : level().id === "poly" ? introPoly()
-    : introAcid();
+    : level().id === "acid" ? introAcid()
+    : introCovalent();
   root.innerHTML = `${levelTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); renderIntro(); })

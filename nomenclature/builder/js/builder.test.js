@@ -9,6 +9,7 @@ import {
   FIXED_CHARGES, VARIABLE_STATES,
   polyatomicCompounds, buildProblemPoly, POLY_ANION_IDS,
   ACID_ANIONS, acidCompounds, buildProblemAcid,
+  COVALENT_COMPOUNDS, covalentCompounds, buildProblemCovalent,
   makeDealer, CATION_BY_SYMBOL
 } from "./builder.js";
 import { MONO_ANION_BY_ID, POLY_ANION_BY_ID } from "../../data/ions.js";
@@ -201,8 +202,8 @@ test("a variable metal is dealt ONE oxidation state (so 4-state metals aren't ov
   }
 });
 
-test("LEVELS exposes Type I, Type II, Polyatomic, and Acids with a build + compounds each", () => {
-  assert.deepEqual(LEVELS.map((l) => l.id), ["type1", "type2", "poly", "acid"]);
+test("LEVELS exposes all five rungs (ionic I/II, polyatomic, acids, covalent) with a build + compounds each", () => {
+  assert.deepEqual(LEVELS.map((l) => l.id), ["type1", "type2", "poly", "acid", "cov"]);
   for (const lvl of LEVELS) {
     assert.ok(typeof lvl.build === "function" && typeof lvl.compounds === "function");
     const spec = lvl.compounds()[0];
@@ -339,4 +340,36 @@ test("acid level is the 4th level and deals distinct anion-only cards", () => {
   assert.equal(cards.length, 5);
   assert.equal(new Set(cards.map((c) => c.anion)).size, 5, "5 distinct acids");
   assert.ok(cards.every((c) => !("cation" in c)), "acid cards carry no cation");
+});
+
+// ── Covalent: two nonmetals, Greek prefixes ──
+test("covalent naming: prefixes count atoms, first drops mono-, vowel elision applies", () => {
+  const byFormula = Object.fromEntries(COVALENT_COMPOUNDS.map((s) => {
+    const p = buildProblemCovalent(s);
+    return [p.prompt, p.answer];
+  }));
+  assert.equal(byFormula["CO"], "carbon monoxide");          // first element drops mono-, mono+oxide elides
+  assert.equal(byFormula["CO₂"], "carbon dioxide");
+  assert.equal(byFormula["N₂O₄"], "dinitrogen tetroxide");   // tetra+oxide → tetroxide
+  assert.equal(byFormula["N₂O₅"], "dinitrogen pentoxide");
+  assert.equal(byFormula["P₄O₁₀"], "tetraphosphorus decoxide");
+  assert.equal(byFormula["SF₆"], "sulfur hexafluoride");
+});
+
+test("covalent reverse: name → formula, neutral-molecule grading", () => {
+  const p = buildProblemCovalent(COVALENT_COMPOUNDS.find((s) => s.parts[0][0] === "N" && s.parts[0][1] === 2 && s.parts[1][1] === 4), "formula");
+  assert.equal(p.mode, "formula");
+  assert.equal(p.prompt, "dinitrogen tetroxide");
+  assert.equal(gradeAnswer(p, "N2O4").correct, true);
+  assert.equal(gradeAnswer(p, "NO2").correct, false); // wrong counts → wrong
+});
+
+test("covalent level is the 5th level and deals distinct molecular cards from its deck", () => {
+  const cov = LEVELS.find((l) => l.id === "cov");
+  assert.ok(cov && cov.deck && cov.deck.length === COVALENT_COMPOUNDS.length);
+  const deal = makeDealer(cov);
+  const cards = deal(5, seq([0.1, 0.4, 0.7, 0.2, 0.9]));
+  assert.equal(cards.length, 5);
+  assert.equal(new Set(cards).size, 5, "5 distinct molecules");
+  assert.ok(cards.every((c) => Array.isArray(c.parts)), "deck cards carry parts");
 });
