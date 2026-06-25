@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev11";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev11";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev11";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev12";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev12";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev12";
 
 const root = document.querySelector("#game");
 
@@ -339,9 +339,9 @@ function introAcid() {
     <p class="intro-eyebrow">Acids · H⁺ + an anion</p>
     <p class="intro-lede">An <strong>acid</strong> is H⁺ joined to an anion. Name it from the anion's <strong>ending</strong>.</p>
     <div class="acid-tree">
-      <span class="at-end">–ide</span><span class="at-arrow">→</span><span class="at-rule"><strong>hydro</strong>-root-<strong>ic</strong> acid</span><span class="at-ex">${toSubHtml("HCl")} → hydrochloric acid</span>
-      <span class="at-end">–ate</span><span class="at-arrow">→</span><span class="at-rule">root-<strong>ic</strong> acid</span><span class="at-ex">${toSubHtml("HNO3")} → nitric acid</span>
-      <span class="at-end">–ite</span><span class="at-arrow">→</span><span class="at-rule">root-<strong>ous</strong> acid</span><span class="at-ex">${toSubHtml("HNO2")} → nitrous acid</span>
+      <div class="at-row"><span class="at-end">–ide</span><span class="at-arrow">→</span><span class="at-rule"><strong>hydro</strong>-root-<strong>ic</strong> acid</span><span class="at-exf">${toSubHtml("HCl")}</span><span class="at-arrow">→</span><span class="at-exn">hydrochloric acid</span></div>
+      <div class="at-row"><span class="at-end">–ate</span><span class="at-arrow">→</span><span class="at-rule">root-<strong>ic</strong> acid</span><span class="at-exf">${toSubHtml("HNO3")}</span><span class="at-arrow">→</span><span class="at-exn">nitric acid</span></div>
+      <div class="at-row"><span class="at-end">–ite</span><span class="at-arrow">→</span><span class="at-rule">root-<strong>ous</strong> acid</span><span class="at-exf">${toSubHtml("HNO2")}</span><span class="at-arrow">→</span><span class="at-exn">nitrous acid</span></div>
     </div>
     <p class="acid-note"><strong>hypo-</strong> and <strong>per-</strong> ride along: hypochlorite → hypochlorous acid, perchlorate → perchloric acid.</p>
     <p class="acid-mnemonic">Remember: <strong>-ate → -ic</strong>, <strong>-ite → -ous</strong>.</p>
