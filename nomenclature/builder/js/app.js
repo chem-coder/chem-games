@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev13";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev13";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev13";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev14";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev14";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev14";
 
 const root = document.querySelector("#game");
 
@@ -303,16 +303,16 @@ function introTypeII() {
 
 function introPoly() {
   return `<div class="intro">
-    <p class="intro-eyebrow">Ionic · metal + polyatomic ion</p>
+    <p class="intro-eyebrow">Ionic · metal (or ammonium) + polyatomic ion</p>
     <p class="ps-lead">Now the anion is a <strong>polyatomic ion</strong>.</p>
     <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-text">Is the metal <strong>Type I</strong> or <strong>Type II</strong>?</span></li>
-      <li><span class="step-num">2</span><span class="step-text">Name the <strong>polyatomic</strong> — it keeps its own name.</span></li>
+      <li><span class="step-num">1</span><span class="step-text">Is the cation a metal (<strong>Type I</strong> / <strong>Type II</strong>) or <strong>ammonium</strong>?</span></li>
+      <li><span class="step-num">2</span><span class="step-text">Name the <strong>polyatomic ion</strong> — it keeps its own name.</span></li>
     </ol>
     <div class="schema">
       <div class="block cation">
         <span class="block-main">metal<span class="roman">(?)</span></span>
-        <span class="block-sub">+ Roman numeral if Type II</span>
+        <span class="block-sub">or ammonium NH<sub>4</sub><sup class="cc-q">+</sup></span>
       </div>
       <span class="schema-plus">+</span>
       <div class="block anion">
@@ -320,12 +320,13 @@ function introPoly() {
         <span class="block-sub">its own name — not <em>-ide</em></span>
       </div>
     </div>
-    <p class="schema-note">Type I metal → no numeral. Type II metal → balance the polyatomic's charge, then add a Roman numeral.</p>
+    <p class="schema-note">Type I metal or ammonium → no numeral. Type II metal → balance the polyatomic's charge, then add a Roman numeral.</p>
     ${chargeCard({ variant: "mini", open: false })}
     <div class="ex-maps">
       <div class="ex-map"><span class="ex-f">${toSubHtml("Mg(NO3)2")}</span><span class="arrow">→</span><span class="w-cation">magnesium</span> <span class="w-anion">nitrate</span></div>
       <div class="ex-map"><span class="ex-f">${toSubHtml("Fe2(SO4)3")}</span><span class="arrow">→</span><span class="w-cation">iron<span class="w-roman">(III)</span></span> <span class="w-anion">sulfate</span></div>
       <div class="ex-map"><span class="ex-f">${toSubHtml("K3PO4")}</span><span class="arrow">→</span><span class="w-cation">potassium</span> <span class="w-anion">phosphate</span></div>
+      <div class="ex-map"><span class="ex-f">${toSubHtml("(NH4)2SO4")}</span><span class="arrow">→</span><span class="w-cation">ammonium</span> <span class="w-anion">sulfate</span></div>
     </div>
     <p class="pt-points prose"><a class="intro-link" href="../" target="_blank">↗ Don't know the polyatomic ions cold yet? Open the Ion Trainer in another tab and power through the full deck first.</a></p>
     ${startControls()}
