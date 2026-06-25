@@ -8,8 +8,10 @@ import {
   typeTwoCompounds, buildProblemII, TYPE_II_CATIONS, LEVELS,
   FIXED_CHARGES, VARIABLE_STATES,
   polyatomicCompounds, buildProblemPoly, POLY_ANION_IDS,
+  ACID_ANIONS, acidCompounds, buildProblemAcid,
   makeDealer, CATION_BY_SYMBOL
 } from "./builder.js";
+import { MONO_ANION_BY_ID, POLY_ANION_BY_ID } from "../../data/ions.js";
 
 function seq(values) {
   let i = 0;
@@ -199,8 +201,8 @@ test("a variable metal is dealt ONE oxidation state (so 4-state metals aren't ov
   }
 });
 
-test("LEVELS exposes Type I, Type II, and Polyatomic with a build + compounds each", () => {
-  assert.deepEqual(LEVELS.map((l) => l.id), ["type1", "type2", "poly"]);
+test("LEVELS exposes Type I, Type II, Polyatomic, and Acids with a build + compounds each", () => {
+  assert.deepEqual(LEVELS.map((l) => l.id), ["type1", "type2", "poly", "acid"]);
   for (const lvl of LEVELS) {
     assert.ok(typeof lvl.build === "function" && typeof lvl.compounds === "function");
     const spec = lvl.compounds()[0];
@@ -288,4 +290,53 @@ test("Roman-numeral rule: fixed ⇔ exactly one positive oxidation state in the 
   for (const sym of Object.keys(VARIABLE_STATES)) {
     assert.ok(positives[sym]?.length > 1, `${sym} is VARIABLE (numeral) but the reference PT lists only ${positives[sym]}`);
   }
+});
+
+// ── Acids: H⁺ + an anion, named off the ending ──
+test("acidCompounds covers the core acid anions, all with an acidStem", () => {
+  const specs = acidCompounds();
+  assert.equal(specs.length, ACID_ANIONS.length);
+  for (const { anion } of specs) {
+    const rec = MONO_ANION_BY_ID[anion] ?? POLY_ANION_BY_ID[anion];
+    assert.ok(rec?.acidStem, `${anion} needs an acidStem to form an acid`);
+  }
+});
+
+test("acid naming: -ide → hydro…ic, -ate → …ic, -ite → …ous (with hypo-/per-)", () => {
+  const expect = {
+    chloride: ["HCl", "hydrochloric acid"],
+    sulfide: ["H₂S", "hydrosulfuric acid"],
+    nitrate: ["HNO₃", "nitric acid"],
+    nitrite: ["HNO₂", "nitrous acid"],
+    sulfate: ["H₂SO₄", "sulfuric acid"],
+    sulfite: ["H₂SO₃", "sulfurous acid"],
+    hypochlorite: ["HClO", "hypochlorous acid"],
+    perchlorate: ["HClO₄", "perchloric acid"],
+    phosphate: ["H₃PO₄", "phosphoric acid"]
+  };
+  for (const [anion, [formula, name]] of Object.entries(expect)) {
+    const p = buildProblemAcid({ anion });
+    assert.equal(p.prompt, formula, `${anion} formula`);
+    assert.equal(p.answer, name, `${anion} name`);
+    assert.equal(p.hints.length, 3);
+  }
+});
+
+test("acid reverse mode: name → formula, graded as a neutral molecule", () => {
+  const p = buildProblemAcid({ anion: "nitrate" }, "formula");
+  assert.equal(p.mode, "formula");
+  assert.equal(p.prompt, "nitric acid");
+  assert.equal(gradeAnswer(p, "HNO3").correct, true);
+  assert.equal(gradeAnswer(p, "hno3").nudge, "caps");  // case-sensitive, nudge
+  assert.equal(gradeAnswer(p, "HNO2").correct, false); // wrong anion (nitrite) → wrong
+});
+
+test("acid level is the 4th level and deals distinct anion-only cards", () => {
+  const acid = LEVELS.find((l) => l.id === "acid");
+  assert.ok(acid, "there is an 'acid' level");
+  const deal = makeDealer(acid);
+  const cards = deal(5, seq([0.1, 0.5, 0.9, 0.3, 0.7]));
+  assert.equal(cards.length, 5);
+  assert.equal(new Set(cards.map((c) => c.anion)).size, 5, "5 distinct acids");
+  assert.ok(cards.every((c) => !("cation" in c)), "acid cards carry no cation");
 });

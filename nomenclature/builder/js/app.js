@@ -1,8 +1,8 @@
 // Type I ionic Name Builder — DOM layer. Pure logic lives in builder.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev10";
-import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev10";
-import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev10";
+import { toSubHtml, formatCharge } from "../../js/chem.js?v=20260624-rev11";
+import { LEVELS, makeDealer, gradeAnswer, requeue, DEFAULT_ROUND, FIXED_CHARGES, VARIABLE_STATES } from "./builder.js?v=20260624-rev11";
+import { renderMetalsTable } from "./periodic-table.js?v=20260624-rev11";
 
 const root = document.querySelector("#game");
 
@@ -332,8 +332,28 @@ function introPoly() {
   </div>`;
 }
 
+// Acids: H⁺ + an anion, named off the anion's ending. The decision tree is the skill — three rules,
+// columns vertically aligned so the ending → rule → example reads straight down.
+function introAcid() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Acids · H⁺ + an anion</p>
+    <p class="intro-lede">An <strong>acid</strong> is H⁺ joined to an anion. Name it from the anion's <strong>ending</strong>.</p>
+    <div class="acid-tree">
+      <span class="at-end">–ide</span><span class="at-arrow">→</span><span class="at-rule"><strong>hydro</strong>-root-<strong>ic</strong> acid</span><span class="at-ex">${toSubHtml("HCl")} → hydrochloric acid</span>
+      <span class="at-end">–ate</span><span class="at-arrow">→</span><span class="at-rule">root-<strong>ic</strong> acid</span><span class="at-ex">${toSubHtml("HNO3")} → nitric acid</span>
+      <span class="at-end">–ite</span><span class="at-arrow">→</span><span class="at-rule">root-<strong>ous</strong> acid</span><span class="at-ex">${toSubHtml("HNO2")} → nitrous acid</span>
+    </div>
+    <p class="acid-note"><strong>hypo-</strong> and <strong>per-</strong> ride along: hypochlorite → hypochlorous acid, perchlorate → perchloric acid.</p>
+    <p class="acid-mnemonic">Remember: <strong>-ate → -ic</strong>, <strong>-ite → -ous</strong>.</p>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
-  const body = level().id === "type1" ? introTypeI() : level().id === "type2" ? introTypeII() : introPoly();
+  const body = level().id === "type1" ? introTypeI()
+    : level().id === "type2" ? introTypeII()
+    : level().id === "poly" ? introPoly()
+    : introAcid();
   root.innerHTML = `${levelTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); renderIntro(); })

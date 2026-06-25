@@ -85,6 +85,25 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 
 .schema-note { margin: 0 0 16px; text-align: center; color: var(--muted); font-size: 0.92rem; }
 
+/* ── acids: the decision tree, columns aligned straight down (ending → rule → example) ── */
+.acid-tree {
+  display: grid; grid-template-columns: max-content max-content max-content 1fr;
+  gap: 10px 14px; align-items: baseline;
+  margin: 16px 0; padding: 14px 18px;
+  background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
+.at-end { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--plum-dark); }
+.at-arrow { color: var(--muted); }
+.at-rule { font-family: var(--font-display); font-weight: 600; color: var(--ink); }
+.at-rule strong { color: var(--accent-dark); }
+.at-ex { font-size: 0.9rem; color: var(--muted); }
+.acid-note { margin: 0 0 8px; text-align: center; color: var(--ink); font-size: 0.92rem; }
+.acid-mnemonic { margin: 0 0 16px; text-align: center; color: var(--accent-dark); font-family: var(--font-display); font-weight: 700; }
+@media (max-width: 540px) {
+  .acid-tree { grid-template-columns: max-content max-content 1fr; }
+  .acid-tree .at-ex { grid-column: 1 / -1; padding-left: 8px; } /* example wraps under on narrow */
+}
+
 .ex-maps { display: grid; gap: 8px; justify-content: center; }
 .ex-map {
   display: flex; align-items: baseline; gap: 10px;

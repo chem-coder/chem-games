@@ -233,11 +233,50 @@ export function buildProblemPoly(spec, direction = "name") {
 export const POLY_CATIONS = [...POLY_FIXED_CATIONS, ...TYPE_II_CATIONS];
 
 // The builder's levels: one typed-name + hint + 5-per-round mechanic, different content & intro.
+// ── Acids: H⁺ + an anion, named off the anion's ending ───────────────────────────
+// The skill is a decision tree on the anion's suffix:
+//   –ide → hydro-(stem)-ic acid · –ate → (stem)-ic acid · –ite → (stem)-ous acid  (hypo-/per- ride along).
+// Core set: the binary acids + the common oxyacids (the WS8 acid block).
+export const ACID_ANIONS = [
+  "chloride", "fluoride", "bromide", "iodide", "cyanide", "sulfide",
+  "nitrate", "nitrite", "sulfate", "sulfite", "carbonate", "phosphate", "acetate", "oxalate",
+  "chlorate", "perchlorate", "hypochlorite", "chlorite"
+];
+export function acidCompounds() {
+  return ACID_ANIONS.map((anion) => ({ anion }));
+}
+const acidAnionRec = (id) => MONO_ANION_BY_ID[id] ?? POLY_ANION_BY_ID[id];
+
+export function buildProblemAcid(spec, direction = "name") {
+  const built = assemble({ kind: "acid", anion: spec.anion });
+  const rec = acidAnionRec(spec.anion);
+  const anionName = rec.names[0];
+  const ending = anionName.endsWith("ide") ? "ide" : anionName.endsWith("ate") ? "ate" : "ite";
+  const sym = rec.display ?? rec.symbol;          // "NO₃" or "Cl"
+  const n = Math.abs(rec.charge);                  // how many H balance the anion
+  const ruleResult = ending === "ide" ? `hydro-(${rec.acidStem})-ic acid`
+    : ending === "ate" ? `(${rec.acidStem})-ic acid`
+    : `(${rec.acidStem})-ous acid`;
+  if (direction === "formula") {
+    return problemReverse(spec, built, "hydrogen", anionName, [
+      "Work backwards from the ending: hydro-…-ic → an –ide anion, …-ic → –ate, …-ous → –ite. Then add H to balance the anion's charge.",
+      `${cap(built.name.canonical)} → the ${anionName} ion (${sym}, ${chg(rec.charge)}).`,
+      `Add ${n === 1 ? "one H" : `${n} H`} to balance ${chg(rec.charge)} → ${built.formula.display}.`
+    ]);
+  }
+  return problemForward(spec, built, "hydrogen", anionName, [
+    "Find the anion, then read its ending: –ide → hydro-…-ic acid, –ate → …-ic acid, –ite → …-ous acid.",
+    `The anion is ${anionName}, ending in –${ending}.`,
+    `–${ending} → ${ruleResult} → ${built.name.canonical}.`
+  ]);
+}
+
 // `cations`/`anions` feed the dealer (gameplay variety); `compounds` is the full set (integrity tests).
 export const LEVELS = [
   { id: "type1", label: "Type I", tagline: "fixed-charge metals", cations: TYPE_I_CATIONS, anions: TYPE_I_ANIONS, compounds: typeOneCompounds, build: buildProblem },
   { id: "type2", label: "Type II", tagline: "variable charge → Roman numeral", cations: TYPE_II_CATIONS, anions: TYPE_I_ANIONS, compounds: typeTwoCompounds, build: buildProblemII },
-  { id: "poly", label: "Polyatomic", tagline: "metal (I or II) + a polyatomic ion", cations: POLY_CATIONS, anions: POLY_ANION_IDS, compounds: polyatomicCompounds, build: buildProblemPoly }
+  { id: "poly", label: "Polyatomic", tagline: "metal (I or II) + a polyatomic ion", cations: POLY_CATIONS, anions: POLY_ANION_IDS, compounds: polyatomicCompounds, build: buildProblemPoly },
+  { id: "acid", label: "Acids", tagline: "H⁺ + an anion → name off the ending", cations: [], anions: ACID_ANIONS, compounds: acidCompounds, build: buildProblemAcid }
 ];
 
 // ── Dealing a varied round ───────────────────────────────────────────────────────
@@ -264,8 +303,22 @@ function specFor(cation, anion, rng) {
 // A stateful dealer for a level: cation and anion bags persist across rounds (true cycling), and a
 // round's cards are kept distinct in both slots. makeDealer(level) → deal(n, rng) → specs[].
 export function makeDealer(level) {
-  const drawCation = makeBag(level.cations);
   const drawAnion = makeBag(level.anions);
+  // Anion-only levels (acids): the "compound" is just H⁺ + an anion, so deal distinct anions.
+  if (!level.cations || level.cations.length === 0) {
+    return function deal(n = DEFAULT_ROUND, rng = Math.random) {
+      const cards = [];
+      const usedA = new Set();
+      for (let i = 0; i < n; i += 1) {
+        let a = drawAnion(rng);
+        for (let g = 0; usedA.has(a) && g < level.anions.length; g += 1) a = drawAnion(rng);
+        usedA.add(a);
+        cards.push({ anion: a });
+      }
+      return cards;
+    };
+  }
+  const drawCation = makeBag(level.cations);
   return function deal(n = DEFAULT_ROUND, rng = Math.random) {
     const cards = [];
     const usedC = new Set();
