@@ -204,6 +204,26 @@
       font-size: 0.85rem;
     }
 
+    .card.featured {
+      position: relative;
+      border: 2px solid var(--blue);
+      background: #eaf2ef;
+    }
+
+    .card.featured h2 {
+      padding-right: 22px;
+    }
+
+    .card.featured::after {
+      content: "★";
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      color: var(--blue);
+      font-size: 1.05rem;
+      line-height: 1;
+    }
+
     .footer-note {
       margin-top: 24px;
       color: var(--muted);
@@ -266,7 +286,7 @@
         </div>
       </a>
 
-      <a class="card" href="nomenclature/builder/">
+      <a class="card featured" href="nomenclature/builder/">
         <h2>Chemical Nomenclature</h2>
         <p>Name any compound — ionic (Type I &amp; II), polyatomic, acids, and molecular (Greek prefixes) — or work backward from the name to the formula. Five levels, both directions, progressive hints.</p>
         <div class="tag-row">
