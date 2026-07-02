@@ -274,6 +274,26 @@ test("reverse Poly: iron(III) sulfate → Fe2(SO4)3 with parentheses", () => {
   assert.equal(gradeAnswer(p, "Fe2(SO4)3").correct, true);
 });
 
+// ── mercury(I): the diatomic exception gets its own, non-contradictory hint ladder ──
+test("mercury(I) deals the Hg₂ pair and grades it, at both Type II and Polyatomic levels", () => {
+  // forward (formula → name): the ladder explains the pair, then lands on mercury(I)
+  const fwd = buildProblemII({ cation: "Hg", cationCharge: 1, anion: "chloride" });
+  assert.equal(fwd.formula, "Hg₂Cl₂");
+  assert.match(fwd.hints[0], /bonded pair/i);
+  assert.match(fwd.hints[2], /mercury\(I\)/);
+  assert.equal(gradeAnswer(fwd, "mercury(I) chloride").correct, true);
+
+  // reverse (name → formula): the pair balances 2+, not a lone 1+ — and the formula needs Hg₂
+  const rev = buildProblemPoly({ cation: "Hg", cationCharge: 1, anion: "nitrate" }, "formula");
+  assert.equal(rev.prompt, "mercury(I) nitrate");
+  assert.match(rev.hints[1], /Hg₂ 2\+/);
+  assert.equal(gradeAnswer(rev, "Hg2(NO3)2").correct, true);
+  assert.equal(gradeAnswer(rev, "HgNO3").correct, false);  // the naive monatomic answer is wrong
+
+  // mercury(II) is still an ordinary monatomic cation
+  assert.equal(buildProblemII({ cation: "Hg", cationCharge: 2, anion: "chloride" }).formula, "HgCl₂");
+});
+
 // ── consistency guards (so an orphan cation or a misclassified metal can't slip in again) ──
 test("no orphan cations: every cation used in any level is taught in an intro table", () => {
   const used = new Set([...typeOneCompounds(), ...typeTwoCompounds(), ...polyatomicCompounds()].map((c) => c.cation));

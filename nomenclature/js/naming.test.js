@@ -76,6 +76,11 @@ const FIXTURES = [
   { spec: { kind: "ionic", cation: "V", cationCharge: 5, anion: "nitride" }, formula: "V3N5", name: "vanadium(V) nitride" },
   { spec: { kind: "ionic", cation: "Zn", anion: "phosphide" }, formula: "Zn3P2", name: "zinc phosphide" },
 
+  // mercury(I) — the diatomic Hg₂²⁺ exception (oxidation state I, but balances as a 2+ pair)
+  { spec: { kind: "ionic", cation: "Hg", cationCharge: 1, anion: "chloride" }, formula: "Hg2Cl2", name: "mercury(I) chloride" },
+  { spec: { kind: "ionic", cation: "Hg", cationCharge: 1, anion: "fluoride" }, formula: "Hg2F2", name: "mercury(I) fluoride" },
+  { spec: { kind: "ionic", cation: "Hg", cationCharge: 2, anion: "chloride" }, formula: "HgCl2", name: "mercury(II) chloride" },
+
   // III/IV — polyatomics (with type II where present)
   { spec: { kind: "ionic", cation: "Fe", cationCharge: 2, anion: "phosphate" }, formula: "Fe3(PO4)2", name: "iron(II) phosphate" },
   { spec: { kind: "ionic", cation: "Fe", cationCharge: 2, anion: "chromate" }, formula: "FeCrO4", name: "iron(II) chromate" },
@@ -141,6 +146,18 @@ for (const fx of FIXTURES) {
     );
   });
 }
+
+// ── mercury(I): the diatomic Hg₂²⁺ exception ───────────────────────────────────
+test("mercury(I) is modeled as the pair Hg₂²⁺ — balances 2+, formula carries Hg₂, numeral stays I", () => {
+  const cl = assemble({ kind: "ionic", cation: "Hg", cationCharge: 1, anion: "chloride" });
+  assert.equal(cl.formula.canonical, "Hg2Cl2");           // not HgCl
+  assert.equal(cl.name.canonical, "mercury(I) chloride");
+  assert.equal(assemble({ kind: "ionic", cation: "Hg", cationCharge: 1, anion: "nitrate" }).formula.canonical, "Hg2(NO3)2");
+  assert.equal(assemble({ kind: "ionic", cation: "Hg", cationCharge: 1, anion: "phosphate" }).formula.canonical, "(Hg2)3(PO4)2"); // pair parenthesised when >1
+  assert.equal(assemble({ kind: "ionic", cation: "Hg", cationCharge: 2, anion: "chloride" }).formula.canonical, "HgCl2"); // Hg(II) unchanged
+  assert.equal(gradeFormula(cl, "Hg2Cl2").correct, true);
+  assert.equal(gradeFormula(cl, "HgCl").correct, false);  // the naive monatomic answer is wrong
+});
 
 // ── the accepted-set payoff: multi-spelling ions grade correctly ───────────────
 test("acetate is accepted in all three formula spellings (the thing regex couldn't do)", () => {

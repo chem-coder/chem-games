@@ -52,6 +52,13 @@ function resolveCation(spec) {
   }
   const metal = CATION_BY_SYMBOL[spec.cation];
   if (!metal) throw new Error(`unknown cation: ${spec.cation}`);
+  // Mercury(I) and its kind travel as a diatomic ion (Hg₂²⁺): the Roman numeral is the per-atom
+  // oxidation state (I), but charge-balancing uses the PAIR's charge (2+) and the formula carries the
+  // pair (Hg₂). Model it as a poly-style unit so criss-cross and parenthesising both come out right.
+  if (metal.dimer && spec.cationCharge === metal.dimer.state) {
+    const { state, charge, formula } = metal.dimer;
+    return { charge, nameForms: [`${ELEMENTS[spec.cation]}(${toRoman(state)})`], formulaForms: [formula], isPoly: true };
+  }
   const charge = metal.variable ? spec.cationCharge : metal.charge;
   if (charge == null) throw new Error(`${spec.cation} needs a cationCharge (variable metal)`);
   const base = ELEMENTS[spec.cation];

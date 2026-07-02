@@ -47,7 +47,7 @@ export const CATIONS = [
   { symbol: "Sn", variable: true, states: [2, 4] },
   { symbol: "Pb", variable: true, states: [2, 4] },
   { symbol: "Au", variable: true, states: [1, 3] },
-  { symbol: "Hg", variable: true, states: [1, 2] },
+  { symbol: "Hg", variable: true, states: [1, 2], dimer: { state: 1, charge: 2, formula: "Hg2", display: "Hg₂" } }, // mercury(I) = the diatomic Hg₂²⁺
   { symbol: "Pt", variable: true, states: [2, 4] },
   { symbol: "Sb", variable: true, states: [3, 5] }
 ];

@@ -6,10 +6,10 @@
 // name — practicing the periodic-table recall (Na → sodium) that tiles would hand them. Stuck
 // students can reveal progressive hints.
 
-import { assemble } from "../../js/naming.js?v=20260624-rev7";
-import { gradeName, gradeFormula } from "../../js/matching.js?v=20260624-rev7";
-import { toRoman } from "../../js/chem.js?v=20260624-rev7";
-import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js?v=20260624-rev7";
+import { assemble } from "../../js/naming.js";
+import { gradeName, gradeFormula } from "../../js/matching.js";
+import { toRoman } from "../../js/chem.js";
+import { ELEMENTS, CATION_BY_SYMBOL, MONO_ANION_BY_ID, POLY_ANION_BY_ID, POLY_CATION_BY_ID } from "../../data/ions.js";
 
 // The quizzed sets — familiar fixed-charge metals and common monoatomic anions.
 export const TYPE_I_CATIONS = ["Li", "Na", "K", "Rb", "Cs", "Mg", "Ca", "Sr", "Ba", "Al", "Zn", "Ag"];
@@ -150,6 +150,29 @@ const chg = (n) => `${Math.abs(n)}${n > 0 ? "+" : "−"}`; // always show magnit
 const isVariableCation = (sym) => !!CATION_BY_SYMBOL[sym]?.variable;
 const cationName = (sym) => POLY_CATION_BY_ID[sym]?.names?.[0] ?? ELEMENTS[sym];
 
+// ── Mercury(I)-style diatomic cations (Hg₂²⁺) ───────────────────────────────────
+// They balance as a 2+ PAIR but read +1 per atom (the numeral), so the generic monatomic ladders
+// would contradict themselves ("Hg 1+" beside a formula that needs Hg₂). Detect the dimer (a cation
+// whose record carries a `dimer` at this oxidation state) and give it its own ladder both directions.
+const dimerOf = (spec) => {
+  const d = CATION_BY_SYMBOL[spec.cation]?.dimer;
+  return d && spec.cationCharge === d.state ? d : null;
+};
+function dimerForwardHints({ dimer, metal, roman, anion, anionCharge, aCount, totalNeg, keepsName }) {
+  return [
+    `${cap(metal)}(${roman}) is the exception: it travels as a bonded pair, ${dimer.display} — ${chg(dimer.charge)} as a unit, but ${chg(dimer.state)} on each atom (that's the Roman numeral).${keepsName ? " The polyatomic ion keeps its own name." : ""}`,
+    `${cap(anion)} is ${chg(anionCharge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(totalNeg)} total` : ""}.`,
+    `The ${dimer.display} pair must total ${chg(-totalNeg)}, so each ${metal} is ${chg(dimer.state)} → ${metal}(${roman})${keepsName ? `, and the anion is ${anion}` : ""}.`
+  ];
+}
+function dimerReverseHints({ dimer, metal, roman, anionLabel, aSym, aCharge, display, poly }) {
+  return [
+    `${cap(metal)}(${roman}) is the exception: not a lone ion but the bonded pair ${dimer.display} (${chg(dimer.charge)} as a unit). ${poly ? "Treat the polyatomic as one unit and balance it against that pair." : "Balance the anion against that pair."}`,
+    `${cap(metal)}(${roman}) → ${dimer.display} ${chg(dimer.charge)}; ${anionLabel} → ${aSym} ${chg(aCharge)}.`,
+    `Balance the charges to zero → ${display}.`
+  ];
+}
+
 export function buildProblemII(spec, direction = "name") {
   const built = assemble({ kind: "ionic", cation: spec.cation, cationCharge: spec.cationCharge, anion: spec.anion });
   const metal = ELEMENTS[spec.cation];
@@ -158,19 +181,26 @@ export function buildProblemII(spec, direction = "name") {
   const roman = toRoman(spec.cationCharge);
   const { cation: cCount, anion: aCount } = built.ratio;
   const totalNeg = anionRec.charge * aCount; // e.g. −3 for three bromides
+  const dimer = dimerOf(spec);
   if (direction === "formula") {
-    return problemReverse(spec, built, metal, anion, reverseHints({
-      cLabel: `${metal}(${roman})`, cSym: spec.cation, cCharge: spec.cationCharge,
-      aLabel: anion, aSym: anionRec.symbol, aCharge: anionRec.charge,
-      display: built.formula.display, poly: false,
-      method: "The Roman numeral IS the metal's charge. Pair it with the anion's charge and balance (criss-cross); drop any 1; reduce."
-    }), { roman });
+    const hints = dimer
+      ? dimerReverseHints({ dimer, metal, roman, anionLabel: anion, aSym: anionRec.symbol, aCharge: anionRec.charge, display: built.formula.display, poly: false })
+      : reverseHints({
+          cLabel: `${metal}(${roman})`, cSym: spec.cation, cCharge: spec.cationCharge,
+          aLabel: anion, aSym: anionRec.symbol, aCharge: anionRec.charge,
+          display: built.formula.display, poly: false,
+          method: "The Roman numeral IS the metal's charge. Pair it with the anion's charge and balance (criss-cross); drop any 1; reduce."
+        });
+    return problemReverse(spec, built, metal, anion, hints, { roman });
   }
-  return problemForward(spec, built, metal, anion, [
-    "This metal can take more than one charge, so you have to work it out and show it as a Roman numeral. Start from the anion's total negative charge.",
-    `${cap(anion)} is ${chg(anionRec.charge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(totalNeg)} total` : ""}.`,
-    cap(`${cCount > 1 ? `${cCount} ` : ""}${metal} must total ${chg(-totalNeg)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${metal}(${roman}).`)
-  ], { roman });
+  const hints = dimer
+    ? dimerForwardHints({ dimer, metal, roman, anion, anionCharge: anionRec.charge, aCount, totalNeg, keepsName: false })
+    : [
+        "This metal can take more than one charge, so you have to work it out and show it as a Roman numeral. Start from the anion's total negative charge.",
+        `${cap(anion)} is ${chg(anionRec.charge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(totalNeg)} total` : ""}.`,
+        cap(`${cCount > 1 ? `${cCount} ` : ""}${metal} must total ${chg(-totalNeg)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${metal}(${roman}).`)
+      ];
+  return problemForward(spec, built, metal, anion, hints, { roman });
 }
 
 // ── Polyatomic ionic: a metal (Type I OR Type II) + a named polyatomic ion ───────
@@ -205,28 +235,35 @@ export function buildProblemPoly(spec, direction = "name") {
   const anion = anionRec.names[0];
   const { cation: cCount, anion: aCount } = built.ratio;
   const total = anionRec.charge * aCount; // the polyatomic's total negative charge
+  const dimer = dimerOf(spec);
+  const roman = variable ? toRoman(spec.cationCharge) : null;
   if (direction === "formula") {
     const cSym = POLY_CATION_BY_ID[spec.cation]?.display ?? spec.cation; // "NH₄" or "Fe"
     const cCharge = variable ? spec.cationCharge : (CATION_BY_SYMBOL[spec.cation]?.charge ?? POLY_CATION_BY_ID[spec.cation]?.charge);
-    const cLabel = variable ? `${cation}(${toRoman(spec.cationCharge)})` : cation;
-    return problemReverse(spec, built, cation, anion, reverseHints({
-      cLabel, cSym, cCharge,
-      aLabel: anion, aSym: anionRec.display, aCharge: anionRec.charge,
-      display: built.formula.display, poly: true
-    }), variable ? { roman: toRoman(spec.cationCharge) } : {});
+    const cLabel = variable ? `${cation}(${roman})` : cation;
+    const hints = dimer
+      ? dimerReverseHints({ dimer, metal: cation, roman, anionLabel: anion, aSym: anionRec.display, aCharge: anionRec.charge, display: built.formula.display, poly: true })
+      : reverseHints({
+          cLabel, cSym, cCharge,
+          aLabel: anion, aSym: anionRec.display, aCharge: anionRec.charge,
+          display: built.formula.display, poly: true
+        });
+    return problemReverse(spec, built, cation, anion, hints, variable ? { roman } : {});
   }
-  const hints = variable
+  const hints = dimer
+    ? dimerForwardHints({ dimer, metal: cation, roman, anion, anionCharge: anionRec.charge, aCount, totalNeg: total, keepsName: true })
+    : variable
     ? [
         "This metal's charge can vary, so work it out from the polyatomic ion's total charge and write a Roman numeral. The polyatomic keeps its own name — it doesn't become -ide.",
         `${cap(anion)} is ${chg(anionRec.charge)}${aCount > 1 ? `, and there are ${aCount} → ${chg(total)} total` : ""}.`,
-        cap(`${cCount > 1 ? `${cCount} ` : ""}${cation} must total ${chg(-total)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${cation}(${toRoman(spec.cationCharge)}), and the anion is ${anion}.`)
+        cap(`${cCount > 1 ? `${cCount} ` : ""}${cation} must total ${chg(-total)}, so ${cCount > 1 ? "each is" : "it's"} ${chg(spec.cationCharge)} → ${cation}(${roman}), and the anion is ${anion}.`)
       ]
     : [
         "Name the cation, then the polyatomic ion — keep its own name (not -ide), and this cation needs no charge.",
         `The cation is ${cation}.`,
         `The polyatomic ion is ${anion}.`
       ];
-  return problemForward(spec, built, cation, anion, hints, variable ? { roman: toRoman(spec.cationCharge) } : {});
+  return problemForward(spec, built, cation, anion, hints, variable ? { roman } : {});
 }
 
 // Polyatomic-level cations: the fixed set (incl. ammonium) plus the variable metals.

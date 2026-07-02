@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../shared/css/tokens.css">
-  <link rel="stylesheet" href="css/styles.css?v=20260622-parents">
+  <link rel="stylesheet" href="css/styles.css?v=20260625-hg">
 </head>
 <body>
   <main class="app-shell">
@@ -24,6 +24,22 @@
     <section id="game" class="game" aria-live="polite"></section>
   </main>
 
-  <script type="module" src="js/app.js?v=20260622-parents"></script>
+  <!-- Cache-busting lives HERE, in ONE place per game. Every JS module resolves through this map to
+       its ?v= URL, so the .js files stay version-free (no cross-file drift — the bug this replaced).
+       Bump the token on each deploy: one find-replace of the date-tag in this file. Keys are
+       document-relative, so it works on any base path (localhost or GitHub Pages /chem-games/). -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/triad.js":       "./js/triad.js?v=20260625-hg",
+      "./js/chem.js":        "./js/chem.js?v=20260625-hg",
+      "./js/matching.js":    "./js/matching.js?v=20260625-hg",
+      "./js/storage.js":     "./js/storage.js?v=20260625-hg",
+      "./data/ion-decks.js": "./data/ion-decks.js?v=20260625-hg",
+      "./data/ions.js":      "./data/ions.js?v=20260625-hg"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260625-hg"></script>
 </body>
 </html>

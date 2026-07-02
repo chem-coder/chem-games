@@ -1,10 +1,10 @@
 // Polyatomic Ion Trainer — DOM layer. Pure stack + grading live in triad.js; this wires it to the
 // screen. Version-tag internal imports so one release bump busts the whole module graph in cache.
-import { buildRound, requeue, isComplete, gradeTriad, DEFAULT_ROUND } from "./triad.js?v=20260622-parents";
-import { toSubHtml, formatCharge } from "./chem.js?v=20260622-parents";
-import { ION_DECKS, deckIons, studyColumns } from "../data/ion-decks.js?v=20260622-parents";
-import { normalizeFormula } from "./matching.js?v=20260622-parents";
-import { loadStats, saveStats, resetStats, recordMastery, masteredCount } from "./storage.js?v=20260622-parents";
+import { buildRound, requeue, isComplete, gradeTriad, DEFAULT_ROUND } from "./triad.js";
+import { toSubHtml, formatCharge } from "./chem.js";
+import { ION_DECKS, deckIons, studyColumns } from "../data/ion-decks.js";
+import { normalizeFormula } from "./matching.js";
+import { loadStats, saveStats, resetStats, recordMastery, masteredCount } from "./storage.js";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
