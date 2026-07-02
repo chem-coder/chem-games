@@ -33,9 +33,11 @@ body {
 .mode-tab:hover:not(.is-active), .qdir-choice:hover:not(.is-active) { border-color: var(--accent); }
 .mode-tab.is-active, .qdir-choice.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
 
-/* ── scope (difficulty) tabs ── */
-.scope-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 16px; }
-.scope-label { color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.74rem; letter-spacing: 0.04em; text-transform: uppercase; margin-right: 4px; }
+/* ── scope (difficulty / family) tabs ── */
+.scope-groups { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.scope-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.scope-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.scope-label { flex: 0 0 8.5em; color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.74rem; letter-spacing: 0.04em; text-transform: uppercase; }
 .scope-tab {
   padding: 5px 13px; font-family: var(--font-display); font-weight: 700; font-size: 0.82rem;
   color: var(--plum-dark); background: var(--surface); border: 1.5px solid var(--line);
@@ -91,6 +93,7 @@ body {
 .pt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .count { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; }
 .count span { color: var(--muted); font-weight: 600; font-size: 1.1rem; }
+.scope-caption { display: block; margin-bottom: 2px; color: var(--plum); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
 .pt-actions { display: flex; gap: 8px; }
 .btn {
   padding: 8px 16px; font-family: var(--font-display); font-weight: 700; font-size: 0.9rem;
@@ -137,6 +140,12 @@ body {
 /* revealed (gave up) — shown but visibly not earned */
 .cell.revealed { cursor: default; background: var(--surface); }
 .cell.revealed .sym { color: var(--muted); font-weight: 600; font-style: italic; }
+
+/* ghosted context — cells outside the chosen family: dimmed, not interactive, but any you've
+   already earned elsewhere still show their symbol so your whole-table progress stays visible */
+.cell.context { cursor: default; pointer-events: none; background: var(--surface); border-color: var(--line); opacity: 0.4; }
+.cell.context .z { color: var(--muted); }
+.cell.context .sym { color: var(--muted); font-weight: 700; }
 
 /* the cell being typed into */
 .cell.active {

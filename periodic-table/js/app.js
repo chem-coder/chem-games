@@ -1,16 +1,17 @@
 // Periodic Table Memorizer — DOM layer for both modes. Pure logic lives in game.js (fill) and
 // quiz.js (symbol↔name). One page, a mode toggle up top; both share pt-data.js.
-import { ELEMENTS } from "../data/pt-data.js?v=20260623-pt4";
-import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, poolFor } from "./game.js?v=20260623-pt4";
-import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260623-pt4";
+import { ELEMENTS } from "../data/pt-data.js?v=20260702-pt5";
+import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260702-pt5";
+import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260702-pt5";
 
 const root = document.querySelector("#game");
 const elByZ = (z) => ELEMENTS[z - 1];
 const esc = (s) => String(s).replace(/"/g, "&quot;");
 
 let mode = "fill"; // "fill" | "quiz"
-let scopeIndex = 0; // 0 = Rows 1–3 (beginner) … 3 = Whole table
-const pool = () => poolFor(SCOPES[scopeIndex].maxZ);
+let scopeIndex = 0; // index into SCOPES; 0 = Rows 1–3 (beginner)
+const scope = () => SCOPES[scopeIndex];
+const pool = () => poolForScope(scope());
 
 // ── Fill-the-table state ──
 let earned = new Set();
@@ -102,7 +103,7 @@ root.addEventListener("click", (e) => {
   const mt = e.target.closest(".mode-tab"); if (mt) return setMode(mt.dataset.mode);
   const st = e.target.closest(".scope-tab"); if (st) return setScope(Number(st.dataset.scope));
   if (mode === "fill") {
-    const c = e.target.closest(".cell"); if (c) return activate(Number(c.dataset.z));
+    const c = e.target.closest(".cell"); if (c && !c.classList.contains("context")) return activate(Number(c.dataset.z));
     if (e.target.closest("#revealBtn")) return reveal();
     if (e.target.closest("#resetBtn")) return reset();
   } else {
@@ -120,22 +121,38 @@ function modeTabs() {
 }
 
 function scopeTabs() {
-  const tab = (s, i) => `<button class="scope-tab${i === scopeIndex ? " is-active" : ""}" data-scope="${i}" type="button">${s.label}</button>`;
-  return `<div class="scope-tabs"><span class="scope-label">How much?</span>${SCOPES.map(tab).join("")}</div>`;
+  const tab = (s) => {
+    const i = SCOPES.indexOf(s);
+    return `<button class="scope-tab${i === scopeIndex ? " is-active" : ""}" data-scope="${i}" type="button">${s.label}</button>`;
+  };
+  const row = (g) => {
+    const inGroup = SCOPES.filter((s) => s.group === g.id);
+    if (!inGroup.length) return "";
+    return `<div class="scope-row"><span class="scope-label">${g.label}</span><div class="scope-tabs">${inGroup.map(tab).join("")}</div></div>`;
+  };
+  return `<div class="scope-groups">${SCOPE_GROUPS.map(row).join("")}</div>`;
 }
 
-function cellHtml(el) {
+function cellHtml(el, live = true) {
   const isEarned = earned.has(el.symbol);
+  const pos = `grid-row:${el.row + 1};grid-column:${el.col + 1}`;
+  const fblock = el.row >= 8 ? " fblock" : "";
+  // Out-of-family context cell: dimmed, not interactive. Shows its symbol only if already earned
+  // elsewhere, so the player still sees the rest of their filled-in table while focused on a family.
+  if (!live) {
+    const main = isEarned ? `<span class="sym">${el.symbol}</span>` : "";
+    return `<div class="cell context type-${el.type}${fblock}" style="${pos}" title="${el.name}"><span class="z">${el.z}</span>${main}</div>`;
+  }
   const show = isEarned || revealed;
   const isActive = activeZ === el.z;
   let cls = `cell type-${el.type}`;
   if (isEarned) cls += " earned"; else if (revealed) cls += " revealed";
   if (isActive) cls += " active";
-  if (el.row >= 8) cls += " fblock";
+  cls += fblock;
   let main = "";
   if (show) main = `<span class="sym">${el.symbol}</span>`;
   else if (isActive) main = `<span class="sym typing">${buffer}<i class="caret"></i></span>`;
-  return `<div class="${cls}" data-z="${el.z}" style="grid-row:${el.row + 1};grid-column:${el.col + 1}" title="${el.name}"><span class="z">${el.z}</span>${main}</div>`;
+  return `<div class="${cls}" data-z="${el.z}" style="${pos}" title="${el.name}"><span class="z">${el.z}</span>${main}</div>`;
 }
 
 function fillView() {
@@ -144,23 +161,31 @@ function fillView() {
   const target = poolEls.length;
   const got = [...earned].filter((s) => poolSyms.has(s)).length;
   const done = got === target;
+  const family = isFamilyScope(scope());
+  const caption = family ? `<span class="scope-caption">${scope().label}</span>` : "";
   const status = done
     ? `<p class="pt-status ok">🎉 Complete — all ${target}! ${misses ? `(${misses} miss${misses === 1 ? "" : "es"})` : "flawless."}</p>`
     : revealed
       ? `<p class="pt-status">Revealed. You'd earned <strong>${got}</strong> of ${target}. Reset to try again.</p>`
       : activeZ != null
         ? `<p class="pt-status">Filling in <strong>#${activeZ}</strong> — type the symbol, then Enter or an arrow key. (Esc to cancel.)</p>`
-        : `<p class="pt-status">Click a square (or press an arrow key to start), type its symbol.</p>`;
+        : family
+          ? `<p class="pt-status">Fill the <strong>${scope().label.toLowerCase()}</strong> — the lit squares. Click one (or press an arrow key), type its symbol.</p>`
+          : `<p class="pt-status">Click a square (or press an arrow key to start), type its symbol.</p>`;
+  // Family scopes ghost the whole table for context; period scopes show just the in-scope prefix.
+  const cells = family
+    ? ELEMENTS.map((el) => cellHtml(el, poolSyms.has(el.symbol))).join("")
+    : poolEls.map((el) => cellHtml(el, true)).join("");
   return `
     <div class="pt-head">
-      <p class="count"><strong>${got}</strong> <span>/ ${target}</span></p>
+      <p class="count">${caption}<strong>${got}</strong> <span>/ ${target}</span></p>
       <div class="pt-actions">
         <button class="btn ghost" id="revealBtn" type="button" ${done ? "disabled" : ""}>Reveal all</button>
         <button class="btn ghost" id="resetBtn" type="button">Reset</button>
       </div>
     </div>
     ${status}
-    <div class="ptwrap"><div class="ptgrid">${poolEls.map(cellHtml).join("")}</div></div>`;
+    <div class="ptwrap"><div class="ptgrid">${cells}</div></div>`;
 }
 
 function dirTabs() {
