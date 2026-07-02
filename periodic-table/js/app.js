@@ -1,8 +1,8 @@
 // Periodic Table Memorizer — DOM layer for both modes. Pure logic lives in game.js (fill) and
 // quiz.js (symbol↔name). One page, a mode toggle up top; both share pt-data.js.
-import { ELEMENTS } from "../data/pt-data.js?v=20260702-pt5";
-import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260702-pt5";
-import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260702-pt5";
+import { ELEMENTS } from "../data/pt-data.js?v=20260702-pt6";
+import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260702-pt6";
+import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260702-pt6";
 
 const root = document.querySelector("#game");
 const elByZ = (z) => ELEMENTS[z - 1];
@@ -83,6 +83,8 @@ function setScope(i) {
   if (i === scopeIndex) return;
   scopeIndex = i;
   activeZ = null; buffer = "";
+  revealed = false; // a new bubble starts un-revealed: cells you earned persist, but any answers
+                    // you only peeked at (Reveal all) go back to empty. Reset alone clears earned.
   if (mode === "quiz") startQuiz(); // fresh round in the new scope
   else render(); // fill keeps earned progress; just re-scope the board
 }
