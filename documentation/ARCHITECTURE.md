@@ -161,7 +161,7 @@ These run outside the browser (Node) and gate new content. They are test infrast
 - **Safe to publish:** `_teaching-materials/` is gitignored and untracked; nothing private is committed.
 - **Sharing with Malcolm:** send the Pages URL; it works on phone, tablet, and laptop with no install.
 - **Later, optional:** point a custom domain at Pages (~$12/yr) if a branded URL is wanted. Netlify/Vercel are alternatives if we ever want preview deploys, but Pages is the least-friction first step.
-- Retire the manual `?v=YYYYMMDD` cache-busting query strings once there is any deploy step.
+- **Cache-busting (current approach).** Each game's HTML carries an **import map** that remaps every local module to a `?v=<date-tag>` URL. The `.js` files keep clean, version-free relative imports; the version lives *only* in that one HTML file, so a single find-replace of the date-tag busts the whole module graph on deploy. Import-map keys are **document-relative** (`../js/chem.js`, not `/nomenclature/...`), so it works at any base path — localhost or Pages `/chem-games/`. This replaced scattered per-import `?v=` tags, which had drifted out of sync across files (`rev7` / `rev14` / `parents`) and silently shipped a stale `ions.js`/`chem.js` to `naming.js`. Adopted in `nomenclature/` (both games) and `oxidation-state-trainer/`; the older games still use inline `?v=` tags and can convert later.
 
 ---
 
@@ -171,5 +171,6 @@ These run outside the browser (Node) and gate new content. They are test infrast
 - One game = one folder with the §2 module layout.
 - Shared assets live under `shared/`, imported with relative paths.
 - Storage keys: `chem-games:<game-id>`.
+- Cache-busting: one **import map** per game HTML is the only place the `?v=` version lives; bump the date-tag there on deploy (§6).
 - New chemistry content is validated by `tools/` checks before it ships.
 - All project writing stays in Markdown (per `PROJECT_RULES.md`).

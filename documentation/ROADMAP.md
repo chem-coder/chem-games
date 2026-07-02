@@ -15,14 +15,56 @@ This is a living plan. Phases are sequenced by dependency, not locked dates. Com
 
 ## New lanes (2026-06-21) — ordered
 
-1. **Acid/Base Sorter** *(building now)* — flashcard classification drill; timely (Malcolm
-   started A&B today) and it previews nomenclature. Spec: `ACID_BASE_SORTER_DESIGN.md`.
-2. **Nomenclature** *(next)* — progressive naming ladder from Dalia's 100-question worksheet;
-   existing `chem-nomenclature/` prototypes + ion databases to draw on. Spec:
-   `NOMENCLATURE_DESIGN.md`.
+> **Update 2026-06-25.** Lanes 1 & 2 are **shipped.** Acid/Base Sorter is live + polished. The
+> Nomenclature lane became **Chemical Nomenclature** (`nomenclature/builder/`) — a full 5-rung,
+> both-directions naming game (Type I/II, Polyatomic incl. ammonium, Acids, Covalent) plus the
+> Polyatomic-Ion Trainer and the first **reference page** (`reference/oxidation-states/`). See the
+> "Build status" section in `NOMENCLATURE_DESIGN.md`. Remaining queue lead: Conversion Builder
+> expansion (below) and the stoichiometry rungs (Phases 1–3) for Malcolm/IMAT.
+
+1. **Acid/Base Sorter** *(shipped)* — flashcard classification drill. Spec: `ACID_BASE_SORTER_DESIGN.md`.
+2. **Nomenclature → Chemical Nomenclature** *(shipped, ladder complete)* — progressive naming game,
+   both directions, 5 rungs + reference page. Spec + build status: `NOMENCLATURE_DESIGN.md`.
 3. **Conversion Builder expansion** — everyday-objects deck first (DA with objects before
    compounds), then masses/molar masses by growing the grid a column. Spec:
    `CONVERSION_BUILDER_DESIGN.md` §8b.
+
+---
+
+## Next up (2026-06-25) — the four lanes Dalia picked, ordered
+
+Dalia wants all four built. **#1 first** (quickest, and clears a recurring offer).
+
+> **Update 2026-06-26.** Lanes **#1 and #2 are done.** The worksheet audit ran (WS8 KEY rendered from
+> its handwritten overlays + diffed against the engine; discrepancies reported, Dalia fixed her
+> sources). Two engine improvements fell out of it: **mercury(I) is now modeled as the diatomic Hg₂²⁺**
+> (was generating HgCl instead of Hg₂Cl₂), and the **cache-busting was rebuilt as per-game import maps**
+> (the scattered `?v=` tags had drifted and shipped stale modules — see `ARCHITECTURE.md` §6). Lane #2,
+> the **Oxidation-State Trainer**, shipped at `oxidation-state-trainer/`: sum-to-charge method, now
+> **four rungs** — elements & ions → molecules → polyatomic ions (Mn in MnO₄⁻ = +7) → **half-reactions**
+> (electron bookkeeping, OIL RIG: count the electrons + classify oxidation/reduction — the real redox
+> on-ramp Dalia asked for). Typed answers, progressive hint ladders, a sign-placement nudge, a
+> scratch-pad, oracle-tested content (~52 tests). Remaining: **#3 tidy the library**, **#4 Stoichiometry
+> World**.
+
+1. **Worksheet audit** *(do first · audit-only · do NOT edit the worksheets)* — run the CHEM 101
+   Nomenclature worksheet KEYs (`_teaching-materials/CHEM 101 Nomenclature/`: **WS 8 KEY** ~120
+   formula↔name pairs, the **Basics-100** assignment + key, **WS 6 Making Compounds** KEY) through the
+   shipped engine (`nomenclature/js/naming.js` `assemble()` + the builder's `build*` fns) and report
+   **every** mismatch/typo so **Dalia** fixes the source herself. The engine + reference PT + IUPAC
+   rules are the rigorous source; the worksheet KEY is a *reference, not gospel*. Known issues already
+   found: `(NH₄)₂Cr₂O₇` typo, the yttrium-chlorate item, CN⁻ mislabelled "cyanate" (→ cyanide),
+   "nickel sulfide" shorthand (→ nickel(II)). Read the PDFs with poppler (`pdftotext -layout`).
+2. **Oxidation-state trainer** — standalone redox on-ramp: find the oxidation state of an atom inside
+   a polyatomic (Mn = +7 in MnO₄⁻). Reuses the polyatomic ions already drilled. **Skill B — NOT a
+   nomenclature rung.** Memory: `oxidation-state-trainer`, `charge-deduction-teaching`.
+3. **Tidy the library** — group the home-page cards into flat sections (Nomenclature / Stoichiometry /
+   Reference / …). No gating, no hub — library-first.
+4. **Stoichiometry World (Malcolm / IMAT)** — Dalia's standing *primary* goal: Phases 1–3 below
+   (mole ratios → mass stoichiometry → limiting reagent + yield). The biggest lane; pick up after the
+   quick wins. Spec: `STOICHIOMETRY_WORLD.md`.
+
+Order after #1 is flexible.
 
 ---
 

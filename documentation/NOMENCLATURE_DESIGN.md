@@ -10,6 +10,37 @@ in `chem-nomenclature/databases/*.json`.
 
 ---
 
+## Build status — 2026-06-25: SHIPPED (ladder complete)
+
+The "not yet started" framing above is historical. The game is **built and live** at
+`nomenclature/builder/`, titled **Chemical Nomenclature** (renamed from "Ionic Name Builder" once it
+grew past ionic). It's the standard-module clean build — imports the shared ion data; did NOT extend
+`chem-nomenclature/v4`.
+
+**All 5 rungs shipped, both directions** (formula→name AND name→formula, two buttons per tab):
+Type I (fixed-charge metals) · Type II (variable → Roman numeral, deduced by charge balance) ·
+Polyatomic (metal **or ammonium** + a polyatomic ion) · Acids (H⁺ + anion, named off the ending:
+–ide→hydro-…-ic / –ate→…-ic / –ite→…-ous) · Covalent (two nonmetals, Greek prefixes, vowel elision).
+Plus a separate first **reference page**: `reference/oxidation-states/` — full PT of every element's
+oxidation states shaded by commonness (data: `shared/data/periodic-elements.json`).
+
+**Key decisions this build:**
+- **Grading: "formatting → nudge, chemistry → wrong."** Caps / spacing / stray-charge-on-a-neutral-
+  compound / extra-symbols are retry *nudges* (don't burn the card, teach the fix); wrong symbols /
+  subscripts / counts / parentheses / spelling are marked *wrong*. Accepted-set membership, never regex.
+- **Roman-numeral RULE:** any metal with >1 oxidation state in the reference PT gets a numeral
+  (so nickel → **nickel(II)**). Two guard tests enforce it: no orphan cations + fixed ⇔ single state.
+- The engine (`naming.js` assemble*, `matching.js`) already named acids & covalent (oracle-tested),
+  so each rung was mostly builder + UI. **LEVELS-driven** — tabs / dealer / done-screen auto-pick up
+  any new rung. ~346 tests green (`nomenclature/builder/js/builder.test.js` + engine suites).
+- The worksheets are human-made and contain real typos/mislabels — treat the engine + reference PT +
+  IUPAC rules as the rigorous source; the worksheet KEY is a reference, not gospel.
+
+**Possible next:** an **oxidation-state trainer** (Skill B — find Mn = +7 in MnO₄⁻; reuses the
+polyatomic ions already drilled; the on-ramp to redox) — a SEPARATE game, NOT a nomenclature rung.
+
+---
+
 ## 1. Source material
 
 - Dalia added the source worksheets to `_teaching-materials/CHEM 101 Nomenclature/` (gitignored,
