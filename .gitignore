@@ -12,6 +12,7 @@ Desktop.ini
 # Editor and IDE folders
 .vscode/
 .idea/
+.obsidian/
 
 # Local environment files
 .env
