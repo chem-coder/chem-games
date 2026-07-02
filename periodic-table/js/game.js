@@ -6,17 +6,53 @@ import { ELEMENTS } from "../data/pt-data.js";
 export const TOTAL = ELEMENTS.length; // 118
 export const BY_SYMBOL = Object.fromEntries(ELEMENTS.map((e) => [e.symbol, e]));
 
-// Difficulty scopes — start beginners on the first rows. Each "row" is a period; the atomic-number
-// cutoff is the end of that period (18 = end of row 3, 36 = row 4, …). poolFor returns the in-scope
-// elements (a z-sorted prefix of the table).
+// Scopes — the "what to fill" chooser. Two flavours:
+//   • period scopes cut the table at a period boundary (18 = end of row 3, 36 = row 4, …).
+//   • family scopes pick every element of one subtype (all the halogens, all the noble gases, …).
+// Each scope carries a `group` so the UI can lay them out in rows. poolForScope turns any scope
+// into its z-sorted list of in-play elements; the fill board, quiz, counter and navigation all
+// run off that pool, so they work the same either way.
 export const SCOPES = [
-  { id: "r3", label: "Rows 1–3", maxZ: 18 },
-  { id: "r4", label: "Rows 1–4", maxZ: 36 },
-  { id: "r5", label: "Rows 1–5", maxZ: 54 },
-  { id: "all", label: "Whole table", maxZ: 118 }
+  // By period — a z-sorted prefix of the table.
+  { id: "r3", label: "Rows 1–3", group: "period", maxZ: 18 },
+  { id: "r4", label: "Rows 1–4", group: "period", maxZ: 36 },
+  { id: "r5", label: "Rows 1–5", group: "period", maxZ: 54 },
+  { id: "all", label: "Whole table", group: "period", maxZ: 118 },
+  // By family — every element sharing a subtype.
+  { id: "alkali", label: "Alkali metals", group: "family", subtype: "alkali metal" },
+  { id: "alkaline-earth", label: "Alkaline earth metals", group: "family", subtype: "alkaline earth metal" },
+  { id: "transition", label: "Transition metals", group: "family", subtype: "transition metal" },
+  { id: "metalloid", label: "Metalloids", group: "family", subtype: "metalloid" },
+  { id: "reactive-nonmetal", label: "Reactive nonmetals", group: "family", subtype: "reactive nonmetal" },
+  { id: "halogen", label: "Halogens", group: "family", subtype: "halogen" },
+  { id: "noble-gas", label: "Noble gases", group: "family", subtype: "noble gas" },
+  // Harder families.
+  { id: "post-transition", label: "Post-transition metals", group: "advanced", subtype: "post-transition metal" },
+  { id: "lanthanide", label: "Lanthanides", group: "advanced", subtype: "lanthanide" },
+  { id: "actinide", label: "Actinides", group: "advanced", subtype: "actinide" }
 ];
+
+// The button-row headings, in display order. A group with no matching scopes is skipped by the UI.
+export const SCOPE_GROUPS = [
+  { id: "period", label: "By period" },
+  { id: "family", label: "By family" },
+  { id: "advanced", label: "Harder families" }
+];
+
 export function poolFor(maxZ) {
   return ELEMENTS.filter((e) => e.z <= maxZ);
+}
+
+// The in-play elements for any scope, z-sorted (ELEMENTS is z-sorted and filter preserves order,
+// so nextUnfilled's wrap and neighbor's grid walk stay correct on a scattered family pool too).
+export function poolForScope(scope) {
+  if (scope.subtype) return ELEMENTS.filter((e) => e.subtype === scope.subtype);
+  return poolFor(scope.maxZ);
+}
+
+// A family scope frames itself against the whole table (ghosted context); a period scope doesn't.
+export function isFamilyScope(scope) {
+  return Boolean(scope.subtype);
 }
 
 // Element symbols are Title-case (Fe, Cl, H). Accept any case the student types.
