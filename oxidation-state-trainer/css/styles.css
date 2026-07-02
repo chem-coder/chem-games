@@ -1,0 +1,203 @@
+/* Oxidation-State Trainer. Links shared tokens first, then this. Reuses the Name Builder's
+   component vocabulary so the two games feel like one family. */
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.5; }
+.app-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+
+/* House rule: subscripts ≥50% size, slightly lowered — never the tiny default. */
+sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: inherit; }
+
+/* ── header ── */
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow {
+  margin: 18px 0 4px; color: var(--plum); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.app-header h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 52ch; }
+
+/* ── card surface ── */
+.game {
+  margin-top: 22px; padding: 24px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+/* ── tier tabs ── */
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.level-tab {
+  padding: 8px 18px; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+  color: var(--accent); background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 999px; cursor: pointer;
+}
+.level-tab:hover:not(.is-active) { border-color: var(--accent); }
+.level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+
+/* ── intro ── */
+.intro-eyebrow { margin: 0 0 6px; color: var(--plum); font-family: var(--font-display); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.04em; }
+.intro-lede { margin: 0 0 18px; font-size: 1.08rem; }
+
+/* numbered steps — green-circle list (house style). Two flex children per <li>. */
+.steps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; font-size: 1.05rem; }
+.steps li { display: flex; align-items: flex-start; gap: 10px; }
+.step-num {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.55em; height: 1.55em; border-radius: 50%;
+  background: var(--accent); color: #fff; font-family: var(--font-display); font-weight: 800; font-size: 0.82em;
+}
+.step-text { line-height: 1.55; }
+.muted-ex { display: block; margin-top: 2px; color: var(--muted); font-size: 0.9rem; }
+
+/* separate-line monatomic-ion examples (tier 1, step 2) */
+.ion-egs { display: grid; gap: 3px; margin-top: 6px; color: var(--muted); font-size: 0.92rem; }
+.ion-egs span { font-family: var(--font-display); font-weight: 600; }
+
+/* warm-up marker (tier 1) */
+.warmup-note { display: inline-block; margin: 0 0 12px; padding: 4px 12px; border-radius: 999px; background: var(--surface-soft); border: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; font-weight: 600; }
+
+/* "elements travel as molecules" recognition block (tier 1) */
+.elem-molecules { margin: 4px 0 18px; padding: 14px 16px; background: var(--warning-soft); border: 1px solid var(--warning-line); border-radius: var(--radius-sm); }
+.em-lead { margin: 0 0 12px; font-size: 0.96rem; line-height: 1.5; }
+.em-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 10px; }
+.em-tag { flex: none; min-width: 11.5em; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.em-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.em-chip { padding: 4px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--ink); }
+.em-foot { margin: 2px 0 0; font-size: 0.9rem; color: var(--ink); }
+@media (max-width: 480px) { .em-tag { min-width: 0; width: 100%; } }
+
+/* sign-convention callout — the +7 vs 2− teaching point */
+.sign-note {
+  margin: 4px 0 18px; padding: 12px 16px;
+  background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius-sm);
+}
+.sign-note-h { margin: 0 0 4px; font-family: var(--font-display); font-weight: 800; font-size: 0.9rem; color: var(--accent-dark); }
+.sign-note p:last-child { margin: 0; font-size: 0.95rem; }
+.ox-eg { font-family: var(--font-display); font-weight: 800; color: var(--ink); }
+
+/* "know these on sight" chips */
+.ox-known-lead { margin: 0 0 8px; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.ox-known { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.ox-chip {
+  padding: 6px 13px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: 999px;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.18rem; color: var(--ink);
+}
+.ox-chip.wide { font-size: 1rem; }
+/* the charge as a prominent superscript (not the tiny default) */
+.ox-chip-charge { font-size: 0.62em; font-weight: 800; vertical-align: 0.5em; margin-left: 1px; color: var(--accent-dark); }
+.ox-known-note { margin: 0 0 18px; color: var(--muted); font-size: 0.86rem; line-height: 1.45; }
+
+/* worked example box */
+.ox-worked { margin: 2px 0 18px; padding: 14px 16px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.ox-worked-h { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: var(--ink); }
+.ox-worked .steps { margin: 0; font-size: 0.98rem; }
+/* explicit x-equation walkthrough (ions tier) */
+.we-line { margin: 0 0 8px; }
+.we-list { margin: 0 0 10px; padding-left: 1.2em; display: grid; gap: 3px; font-size: 0.96rem; color: var(--ink); }
+.we-eq { margin: 2px 0; text-align: center; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--accent-dark); }
+.we-concl { margin: 8px 0 0; font-size: 0.98rem; }
+
+/* the nomenclature-link teaser (chlorine ladder) */
+.ladder-teaser {
+  margin: 6px 0 18px; padding: 11px 15px; font-size: 0.95rem; line-height: 1.5;
+  color: var(--plum-dark); background: var(--plum-soft); border: 1px solid var(--plum); border-radius: var(--radius-sm);
+}
+.ladder-teaser strong { color: var(--plum-dark); }
+.ladder-teaser.done { margin-top: 14px; }
+
+/* ── half-reactions tier ── */
+.hr-arrow { color: var(--muted); margin: 0 0.18em; font-weight: 600; }
+.hr-card .formula { font-size: 2.2rem; }
+/* OIL RIG callout */
+.oilrig { margin: 2px 0 16px; padding: 12px 16px; text-align: center; background: var(--plum-soft); border: 1px solid var(--plum); border-radius: var(--radius-sm); }
+.oilrig-h { margin: 0 0 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; letter-spacing: 0.14em; color: var(--plum-dark); }
+.oilrig p:last-child { margin: 0; color: var(--ink); }
+.oilrig-sub { color: var(--muted); font-size: 0.9em; }
+/* the inline oxidation/reduction tag on the example equations */
+.hr-tag { margin-left: 10px; padding: 2px 9px; border-radius: 999px; font-family: var(--font-body); font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; vertical-align: middle; white-space: nowrap; }
+.hr-tag.ox { background: var(--accent-soft); color: var(--accent-dark); }
+.hr-tag.red { background: var(--plum-soft); color: var(--plum-dark); }
+/* play: electron count + direction toggle */
+.hr-inputs { display: grid; gap: 14px; justify-items: center; }
+.hr-elabel { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--ink); }
+.hr-enum { width: 92px; min-height: 56px; font-size: 1.7rem; text-align: center; }
+.hr-dir { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.hr-dir-btn { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 20px; cursor: pointer; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-family: var(--font-display); font-weight: 700; font-size: 1rem; color: var(--ink); }
+.hr-dir-btn span { font-family: var(--font-body); font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.hr-dir-btn:hover:not(.sel) { border-color: var(--accent); }
+.hr-dir-btn.sel { background: var(--accent); border-color: var(--accent-dark); color: #fff; }
+.hr-dir-btn.sel span { color: rgba(255, 255, 255, 0.82); }
+
+/* ── play: formula card ── */
+.intro-link { display: inline-block; margin-bottom: 12px; padding: 0; border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+.intro-link:hover { text-decoration: underline; }
+.formula-card { position: relative; text-align: center; padding: 22px 16px 18px; margin-bottom: 18px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius); }
+.card-tag { position: absolute; top: 10px; left: 14px; color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.formula { margin: 6px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; line-height: 1.15; }
+
+/* the highlighted target atom — a teal chip that says "find THIS one" */
+.ox-target { padding: 0 0.14em; border-radius: 7px; background: var(--accent); color: #fff; }
+/* the formula's charge superscript (sign-LAST, ion convention) */
+.ox-charge { font-size: 0.5em; font-weight: 800; vertical-align: 0.7em; margin-left: 1px; color: var(--muted); }
+.ox-ask { margin: 12px 0 0; color: var(--muted); font-size: 1rem; }
+.ox-target-name { font-family: var(--font-display); font-weight: 800; color: var(--accent-dark); }
+
+/* ── play: typed answer ── */
+.build-label { margin: 0 0 8px; text-align: center; color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.answer-row { display: flex; justify-content: center; }
+.answer-input, .answer-built {
+  width: min(280px, 100%); min-height: 56px; padding: 12px 18px; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; color: var(--ink);
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+}
+.answer-input::placeholder { color: var(--muted); font-weight: 600; font-size: 1.1rem; }
+.answer-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.answer-built { display: inline-flex; align-items: center; justify-content: center; }
+.answer-built.ok { background: var(--success-soft); border-color: var(--success-vivid); color: var(--success); }
+.answer-built.no { background: var(--danger-soft); border-color: var(--danger-line); color: var(--danger); }
+
+/* ── play: hints ── */
+.hints { margin-top: 14px; text-align: center; }
+.hint-list { list-style: none; margin: 0 auto 10px; padding: 0; max-width: 52ch; display: grid; gap: 6px; }
+.hint-list li { padding: 8px 14px; text-align: left; background: var(--warning-soft); border: 1px solid var(--warning-line); border-radius: var(--radius-sm); font-size: 0.92rem; line-height: 1.5; }
+.hint-list li strong { color: var(--ink); }
+.hint-btn { padding: 7px 16px; cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 0.9rem; color: var(--plum-dark); background: var(--plum-soft); border: 1.5px solid var(--plum); border-radius: 999px; }
+.hint-btn:hover { background: #e3d2e0; }
+
+/* sign-placement nudge (right number, charge written sign-last) — informative, not an error */
+.ox-nudge { margin: 10px auto 0; max-width: 42ch; text-align: center; padding: 8px 13px; border-radius: var(--radius-sm); background: var(--warning-soft); color: #7a5e15; font-size: 0.9rem; line-height: 1.45; }
+.ox-nudge strong { color: #6b4d15; }
+
+/* scratch space (calculating tiers) — ephemeral working room, never saved or graded */
+.scratch { margin: 14px 0 4px; }
+.scratch-label { margin: 0 0 5px; color: var(--muted); font-size: 0.82rem; }
+.scratch-pad { width: 100%; min-height: 2.6rem; padding: 8px 11px; color: var(--ink); background: var(--surface-soft); border: 1px dashed var(--line); border-radius: var(--radius-sm); font: inherit; font-size: 0.95rem; line-height: 1.4; resize: vertical; }
+.scratch-pad:focus { border-style: solid; border-color: var(--accent); outline: 3px solid rgba(30, 114, 104, 0.16); }
+.scratch-pad::placeholder { color: var(--muted); }
+
+/* ── feedback / reveal ── */
+.reveal { margin: 18px 0 2px; text-align: center; font-family: var(--font-display); font-size: 1.3rem; }
+.feedback { margin: 6px 0; text-align: center; font-weight: 600; min-height: 1.4em; }
+.feedback.ok { color: var(--success); }
+.feedback.no { color: var(--danger); }
+
+/* ── controls ── */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.controls.two-up { justify-content: center; margin: 20px auto 0; }
+.score { margin: 0; color: var(--muted); font-size: 0.88rem; }
+.action { margin-left: auto; padding: 12px 22px; font-family: var(--font-display); font-weight: 700; font-size: 1rem; cursor: pointer; border: 0; border-radius: var(--radius-sm); }
+.controls.two-up .action { margin-left: 0; }
+.action.primary { color: #fff; background: var(--accent); }
+.action.primary:hover { background: var(--accent-dark); }
+.action.primary:disabled { background: var(--line); color: var(--muted); cursor: default; }
+.action.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
+.action.ghost:hover { background: var(--accent-soft); }
+
+/* ── done ── */
+.prompt { margin: 0 0 10px; font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; }
+.done-next { margin: 22px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+.missed-block { margin: 8px 0 4px; }
+.missed-label { margin: 0 0 8px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 6px 12px; font-family: var(--font-display); font-weight: 700; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.chip .ox-target { padding: 0 0.1em; border-radius: 5px; }

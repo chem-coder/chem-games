@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oxidation-State Trainer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260625-hg">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Home</a>
+      <p class="eyebrow">Redox &middot; Oxidation States</p>
+      <h1>Oxidation-State Trainer</h1>
+      <p class="lede">Find the oxidation state of the highlighted atom.</p>
+    </header>
+
+    <section id="game" class="game" aria-live="polite"></section>
+  </main>
+
+  <!-- Cache-busting lives HERE, in ONE place. Every JS module resolves through this map to its ?v=
+       URL, so the .js files stay version-free (no cross-file drift). Bump the token on each deploy:
+       one find-replace of the date-tag in this file. Keys are document-relative → any base path. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/oxidation.js": "./js/oxidation.js?v=20260625-hg",
+      "./js/content.js":   "./js/content.js?v=20260625-hg"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260625-hg"></script>
+</body>
+</html>
