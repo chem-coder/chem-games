@@ -1,8 +1,8 @@
 // Periodic Table Memorizer — DOM layer for both modes. Pure logic lives in game.js (fill) and
 // quiz.js (symbol↔name). One page, a mode toggle up top; both share pt-data.js.
-import { ELEMENTS } from "../data/pt-data.js?v=20260702-pt6";
-import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260702-pt6";
-import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260702-pt6";
+import { ELEMENTS } from "../data/pt-data.js?v=20260702-pt7";
+import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260702-pt7";
+import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260702-pt7";
 
 const root = document.querySelector("#game");
 const elByZ = (z) => ELEMENTS[z - 1];
@@ -143,7 +143,7 @@ function cellHtml(el, live = true) {
   // elsewhere, so the player still sees the rest of their filled-in table while focused on a family.
   if (!live) {
     const main = isEarned ? `<span class="sym">${el.symbol}</span>` : "";
-    return `<div class="cell context type-${el.type}${fblock}" style="${pos}" title="${el.name}"><span class="z">${el.z}</span>${main}</div>`;
+    return `<div class="cell context type-${el.type}${fblock}" style="${pos}"><span class="z">${el.z}</span>${main}</div>`;
   }
   const show = isEarned || revealed;
   const isActive = activeZ === el.z;
@@ -154,7 +154,7 @@ function cellHtml(el, live = true) {
   let main = "";
   if (show) main = `<span class="sym">${el.symbol}</span>`;
   else if (isActive) main = `<span class="sym typing">${buffer}<i class="caret"></i></span>`;
-  return `<div class="${cls}" data-z="${el.z}" style="${pos}" title="${el.name}"><span class="z">${el.z}</span>${main}</div>`;
+  return `<div class="${cls}" data-z="${el.z}" style="${pos}"><span class="z">${el.z}</span>${main}</div>`;
 }
 
 function fillView() {
