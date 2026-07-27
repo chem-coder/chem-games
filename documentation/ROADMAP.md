@@ -4,6 +4,24 @@ Created: 2026-06-20. A phased plan for the next few weeks, ordered to match the 
 
 This is a living plan. Phases are sequenced by dependency, not locked dates. Companion docs: `STOICHIOMETRY_WORLD.md` (design), `ARCHITECTURE.md` (conventions).
 
+> ## ⚠️ SUPERSEDED 2026-07-27 — read `PRODUCT_STRATEGY.md` first
+>
+> The project's goal changed from "a web learning library for one tutoring student" to **"a commercial
+> indie chemistry puzzle game on Steam."** `PRODUCT_STRATEGY.md` is now the north-star doc and wins
+> wherever it disagrees with this file.
+>
+> **What that means for this roadmap:**
+> - **Phases 1–3 (mole ratios → mass stoichiometry → limiting reagent & percent yield) are DEMOTED,
+>   not deleted.** They existed to serve Malcolm's IMAT prep; that tutoring lane went quiet. All the
+>   built stoichiometry work (Conversion Conveyor, Conversion Builder, Ratio Factory, the IMAT app)
+>   **stays in the repo and stays on the web**, and becomes a future module/DLC inside product #1.
+> - **Phase 4 (launch to Malcolm) is closed** — GitHub Pages shipped; the goal no longer applies.
+> - **The active target is the Nomenclature bundle** (Nomenclature spine + Periodic Table +
+>   Polyatomic Ions + Oxidation States), a mobile-first free web demo, and an Electron/Steam build.
+>   Current sequence: `PRODUCT_STRATEGY.md` §11.
+>
+> The historical record below is kept intact — it documents how the shipped games came to be.
+
 > **Update 2026-06-21.** Shipped since this was written: shared tokens + engine (`shared/`),
 > Conversion Conveyor, **Conversion Builder (Tier A)**, and the **GitHub Pages launch is DONE** —
 > the hub is live at https://chem-coder.github.io/chem-games/ and Malcolm is using it (he asked

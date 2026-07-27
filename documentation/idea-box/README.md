@@ -13,6 +13,19 @@ After review, durable decisions should be copied into `../GAME_IDEAS_NOTEBOOK.md
 
 # **Chem Games / Steam Context Document**
 
+> **Corrections (added 2026-07-27).** Two factual notes before reading — the document below is a
+> conversation transcript, not a verified technical assessment.
+>
+> 1. **There is no Vue in this project.** The repo is vanilla HTML/CSS/JS with **no `package.json`,
+>    no bundler, and no build step** — ten self-contained games. This makes Electron packaging
+>    *easier* than described below (Electron just loads static files), but it also means there is no
+>    app shell yet — no title screen, save system, settings, or audio. **That shell, not the Electron
+>    wrap, is the real work.** See `../PRODUCT_STRATEGY.md` §3.
+> 2. **"Norman glacier"** is a garbled transcription of **"nomenclature."**
+>
+> Decisions taken from this document now live in **`../PRODUCT_STRATEGY.md`**, which is the
+> north-star doc. This file is preserved as the raw source context.
+
 ## **Project Overview**
 
 Dalia is developing a chemistry education game project currently referred to as **Chem Games**. One of the strongest existing prototypes is the chemistry nomenclature game, sometimes referred to informally as the “Norman glacier” project.

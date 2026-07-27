@@ -4,16 +4,18 @@ This folder is for internal project documentation: goals, decisions, implementat
 
 ## Active Internal Docs
 
+- `PRODUCT_STRATEGY.md` - **START HERE. The north-star doc (2026-07-27).** The shift from web learning library to a commercial indie chemistry puzzle game on Steam: first product scope (the Nomenclature bundle), the three-shells-one-codebase rule, free-vs-paid line, the mobile audit, go-to-market, and the current sequence. Supersedes `ROADMAP.md` wherever they disagree.
 - `PROJECT_REVIEW.md` - current project inventory, goals, documentation status, database plan, and working process.
 - `Chem_Games_Project_Brief.md` - high-level product brief for the IMAT chemistry / stoichiometry trainer direction.
 - `ARCHITECTURE.md` - durable technical-decisions blueprint: standard game module pattern, light shared foundation, shared content spine, chemistry-correctness safety net, and deploy. Fills the slot earlier reserved for `TECHNICAL_DECISIONS.md`.
 - `STOICHIOMETRY_WORLD.md` - product and engine design for connecting Ratio Factory + the balancer into one stoichiometry track (everyday ratios → mole ratios → mass → limiting reagent → percent yield).
-- `ROADMAP.md` - phased near-term plan for building and launching the Stoichiometry World.
+- `ROADMAP.md` - phased plan for building and launching the Stoichiometry World. **Superseded 2026-07-27** by `PRODUCT_STRATEGY.md`; its stoichiometry phases are demoted (not deleted). Kept as the historical record of how the shipped games came to be.
 - `CONVERSION_BUILDER_DESIGN.md` - spec for the next-gen "build the dimensional-analysis grid from tiles" game that upgrades the Conversion Conveyor (teaches the given-over-1 step learners miss; challenge-and-discovery design).
 - `IDEA_BACKLOG.md` - organized product and learning-game ideas migrated from the old `.docx` backlog.
 - `GAME_IDEAS_NOTEBOOK.md` - active brainstorming notebook for new game concepts and lookup tools before they become formal specs.
 - `idea-box/README.md` - landing zone for raw idea docs and summaries before they are processed into the notebook.
 - `idea-box/stoichiometry_game_ideas_summary.md` - raw source summary for the Ratio Factory / stoichiometry game direction.
+- `idea-box/competitive-research-notes.md` - worksheet to fill in while playing the reference titles (`while True: learn()`, `Turing Complete`) and reviewing chemistry visualizations, so research yields decisions.
 - `reaction-mining/README.md` - workflow for extracting reaction candidates from teaching materials.
 - `reaction-mining/TODO.md` - editable checklist for the reaction mining project.
 - `reaction-mining/SOURCE_INVENTORY.md` - source priority and extraction status.
