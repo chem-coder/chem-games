@@ -15,6 +15,7 @@ This folder is for internal project documentation: goals, decisions, implementat
 - `GAME_IDEAS_NOTEBOOK.md` - active brainstorming notebook for new game concepts and lookup tools before they become formal specs.
 - `idea-box/README.md` - landing zone for raw idea docs and summaries before they are processed into the notebook.
 - `idea-box/stoichiometry_game_ideas_summary.md` - raw source summary for the Ratio Factory / stoichiometry game direction.
+- `idea-box/handoff-periodic-table-touch.md` - ready-to-paste prompt for a fresh session: make Periodic Table fill mode playable on a phone (confirmed diagnosis + the traps that sink the fix).
 - `idea-box/competitive-research-notes.md` - worksheet to fill in while playing the reference titles (`while True: learn()`, `Turing Complete`) and reviewing chemistry visualizations, so research yields decisions.
 - `reaction-mining/README.md` - workflow for extracting reaction candidates from teaching materials.
 - `reaction-mining/TODO.md` - editable checklist for the reaction mining project.
