@@ -106,12 +106,21 @@ body {
 .pt-status.ok { color: var(--success); font-weight: 600; }
 
 /* ── the grid ── */
+/* fill mode's typing field: invisible but real, so phones can focus it and open the soft
+   keyboard. Never display:none / zero-size (unfocusable on iOS); 16px+ font or iOS zooms. */
+.fill-input {
+  position: fixed; top: 0; left: 0; width: 48px; height: 32px;
+  opacity: 0; pointer-events: none; border: 0; padding: 0; font-size: 16px;
+}
 .ptwrap { overflow-x: auto; padding-bottom: 6px; }
 .ptgrid {
   display: grid;
   grid-template-columns: repeat(18, 1fr);
   gap: 3px;
   min-width: 760px; /* keeps cells legible; scrolls on narrow screens */
+}
+@media (pointer: coarse) {
+  .ptgrid { min-width: 844px; } /* (844 − 17 gaps × 3px) / 18 ≈ 44px cells — the touch-target minimum */
 }
 .cell {
   position: relative;

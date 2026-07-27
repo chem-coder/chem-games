@@ -1,12 +1,14 @@
 // Periodic Table Memorizer — DOM layer for both modes. Pure logic lives in game.js (fill) and
 // quiz.js (symbol↔name). One page, a mode toggle up top; both share pt-data.js.
-import { ELEMENTS } from "../data/pt-data.js?v=20260702-pt7";
-import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260702-pt7";
-import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260702-pt7";
+import { ELEMENTS } from "../data/pt-data.js?v=20260727-pt8";
+import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260727-pt8";
+import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260727-pt8";
 
 const root = document.querySelector("#game");
+const fillInput = document.querySelector("#fillInput"); // fill mode's real field — see index.html
 const elByZ = (z) => ELEMENTS[z - 1];
 const esc = (s) => String(s).replace(/"/g, "&quot;");
+const TOUCH = matchMedia("(pointer: coarse)").matches; // phrasing only; input works either way
 
 let mode = "fill"; // "fill" | "quiz"
 let scopeIndex = 0; // index into SCOPES; 0 = Rows 1–3 (beginner)
@@ -20,9 +22,15 @@ let activeZ = null;
 let buffer = "";
 let misses = 0;
 
+// buffer and the input's value must never diverge — both typing paths route through here.
+const setBuffer = (v) => { buffer = v; fillInput.value = v; };
+// Focus must run synchronously inside the tap/keydown call stack, or mobile Safari
+// silently refuses to open the keyboard. preventScroll: the input is fixed-position.
+const focusFill = () => fillInput.focus({ preventScroll: true });
+
 function activate(z) {
   if (revealed || earned.has(elByZ(z).symbol)) return;
-  activeZ = z; buffer = ""; render();
+  activeZ = z; setBuffer(""); focusFill(); render();
 }
 function submit() {
   if (activeZ == null) return;
@@ -30,23 +38,26 @@ function submit() {
   if (isCorrectSymbol(el, buffer)) {
     earned.add(el.symbol);
     const next = nextUnfilled(earned, el.z, pool());
-    activeZ = next ? next.z : null; buffer = ""; render();
+    activeZ = next ? next.z : null; setBuffer("");
+    if (!next) fillInput.blur(); // scope complete — let the phone keyboard close
+    render();
   } else {
-    misses += 1; buffer = ""; render();
+    misses += 1; setBuffer(""); render();
     root.querySelector(".cell.active")?.classList.add("shake");
   }
 }
 function arrow(dir) {
-  if (activeZ == null) { const s = nextUnfilled(earned, 0, pool()); if (s) { activeZ = s.z; buffer = ""; render(); } return; }
+  if (activeZ == null) { const s = nextUnfilled(earned, 0, pool()); if (s) { activeZ = s.z; setBuffer(""); focusFill(); render(); } return; }
   const el = elByZ(activeZ);
   if (isCorrectSymbol(el, buffer)) earned.add(el.symbol); // correct + arrow → counts
-  buffer = "";
+  setBuffer("");
   const nb = neighbor(el, dir, pool());
   if (nb) activeZ = nb.z;
   render();
 }
-function reveal() { revealed = true; activeZ = null; buffer = ""; render(); }
-function reset() { earned = new Set(); revealed = false; activeZ = null; buffer = ""; misses = 0; render(); }
+function cancelFill() { activeZ = null; setBuffer(""); fillInput.blur(); render(); }
+function reveal() { revealed = true; activeZ = null; setBuffer(""); fillInput.blur(); render(); }
+function reset() { earned = new Set(); revealed = false; activeZ = null; setBuffer(""); misses = 0; fillInput.blur(); render(); }
 
 // ── Quiz state ──
 let qDir = "toName"; // "toName" (symbol → name) | "toSymbol" (name → symbol)
@@ -82,7 +93,7 @@ function setMode(m) {
 function setScope(i) {
   if (i === scopeIndex) return;
   scopeIndex = i;
-  activeZ = null; buffer = "";
+  activeZ = null; setBuffer(""); fillInput.blur();
   revealed = false; // a new bubble starts un-revealed: cells you earned persist, but any answers
                     // you only peeked at (Reveal all) go back to empty. Reset alone clears earned.
   if (mode === "quiz") startQuiz(); // fresh round in the new scope
@@ -90,15 +101,34 @@ function setScope(i) {
 }
 
 // ── input handling ──
+// Typing lands in fillInput whenever a cell is active (activate() focuses it). Its "input"
+// event is the source of truth for text; the document listener below only covers keys
+// pressed while it isn't focused, and skips its bubbled events so nothing runs twice.
 const ARROWS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
+fillInput.addEventListener("input", () => {
+  if (mode !== "fill" || activeZ == null) { fillInput.value = ""; return; }
+  setBuffer(fillInput.value.replace(/[^a-zA-Z]/g, "").slice(0, 3));
+  render();
+});
+fillInput.addEventListener("beforeinput", (e) => {
+  // some mobile keyboards send Go/Enter as insertLineBreak instead of a keydown
+  if (mode === "fill" && e.inputType === "insertLineBreak") { e.preventDefault(); submit(); }
+});
+fillInput.addEventListener("keydown", (e) => {
+  if (mode !== "fill") return;
+  if (e.key in ARROWS) { e.preventDefault(); return arrow(ARROWS[e.key]); }
+  if (e.key === "Enter") { e.preventDefault(); submit(); }
+  else if (e.key === "Escape") { e.preventDefault(); cancelFill(); }
+  // letters/Backspace: native editing, synced by the "input" listener above
+});
 document.addEventListener("keydown", (e) => {
-  if (mode !== "fill") return; // quiz uses a real <input>; the grid keys are fill-only
+  if (mode !== "fill" || e.target === fillInput) return; // quiz has its own input; fillInput events already handled
   if (e.key in ARROWS) { e.preventDefault(); return arrow(ARROWS[e.key]); }
   if (activeZ == null) return;
   if (e.key === "Enter") { e.preventDefault(); submit(); }
-  else if (e.key === "Backspace") { e.preventDefault(); buffer = buffer.slice(0, -1); render(); }
-  else if (e.key === "Escape") { e.preventDefault(); activeZ = null; buffer = ""; render(); }
-  else if (/^[a-zA-Z]$/.test(e.key) && buffer.length < 3) { e.preventDefault(); buffer += e.key; render(); }
+  else if (e.key === "Backspace") { e.preventDefault(); setBuffer(buffer.slice(0, -1)); render(); }
+  else if (e.key === "Escape") { e.preventDefault(); cancelFill(); }
+  else if (/^[a-zA-Z]$/.test(e.key) && buffer.length < 3) { e.preventDefault(); setBuffer(buffer + e.key); render(); }
 });
 
 root.addEventListener("click", (e) => {
@@ -170,10 +200,10 @@ function fillView() {
     : revealed
       ? `<p class="pt-status">Revealed. You'd earned <strong>${got}</strong> of ${target}. Reset to try again.</p>`
       : activeZ != null
-        ? `<p class="pt-status">Filling in <strong>#${activeZ}</strong> — type the symbol, then Enter or an arrow key. (Esc to cancel.)</p>`
+        ? `<p class="pt-status">Filling in <strong>#${activeZ}</strong> — ${TOUCH ? "type the symbol, then tap Go." : "type the symbol, then Enter or an arrow key. (Esc to cancel.)"}</p>`
         : family
-          ? `<p class="pt-status">Fill the <strong>${scope().label.toLowerCase()}</strong> — the lit squares. Click one (or press an arrow key), type its symbol.</p>`
-          : `<p class="pt-status">Click a square (or press an arrow key to start), type its symbol.</p>`;
+          ? `<p class="pt-status">Fill the <strong>${scope().label.toLowerCase()}</strong> — the lit squares. ${TOUCH ? "Tap one and type its symbol." : "Click one (or press an arrow key), type its symbol."}</p>`
+          : `<p class="pt-status">${TOUCH ? "Tap a square and type its symbol." : "Click a square (or press an arrow key to start), type its symbol."}</p>`;
   // Family scopes ghost the whole table for context; period scopes show just the in-scope prefix.
   const cells = family
     ? ELEMENTS.map((el) => cellHtml(el, poolSyms.has(el.symbol))).join("")
@@ -233,6 +263,10 @@ function quizView() {
 
 function render() {
   root.innerHTML = modeTabs() + scopeTabs() + (mode === "fill" ? fillView() : quizView());
+  if (mode === "fill" && activeZ != null) {
+    // the board is wider than a phone screen; keep the square being filled on-screen
+    root.querySelector(".cell.active")?.scrollIntoView({ block: "nearest", inline: "center" });
+  }
   if (mode === "quiz") {
     const inp = root.querySelector("#quizInput");
     if (inp) {
