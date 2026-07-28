@@ -1,8 +1,8 @@
 // Periodic Table Memorizer — DOM layer for both modes. Pure logic lives in game.js (fill) and
 // quiz.js (symbol↔name). One page, a mode toggle up top; both share pt-data.js.
-import { ELEMENTS } from "../data/pt-data.js?v=20260727-pt8";
-import { isCorrectSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260727-pt8";
-import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260727-pt8";
+import { ELEMENTS } from "../data/pt-data.js?v=20260728-pt9";
+import { isCorrectSymbol, normalizeSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260728-pt9";
+import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260728-pt9";
 
 const root = document.querySelector("#game");
 const fillInput = document.querySelector("#fillInput"); // fill mode's real field — see index.html
@@ -23,7 +23,9 @@ let buffer = "";
 let misses = 0;
 
 // buffer and the input's value must never diverge — both typing paths route through here.
-const setBuffer = (v) => { buffer = v; fillInput.value = v; };
+// Title-case as they type (fe → Fe) so phone keyboards never need the shift key; grading
+// already accepts any case, so this changes display only.
+const setBuffer = (v) => { buffer = normalizeSymbol(v); fillInput.value = buffer; };
 // Focus must run synchronously inside the tap/keydown call stack, or mobile Safari
 // silently refuses to open the keyboard. preventScroll: the input is fixed-position.
 const focusFill = () => fillInput.focus({ preventScroll: true });

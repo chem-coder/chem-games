@@ -23,11 +23,13 @@
     <!-- Fill mode's real text field. Lives OUTSIDE #game: render() rebuilds that section's
          innerHTML on every keystroke, and recreating the input would close the phone
          keyboard after each letter. -->
+    <!-- autocapitalize="none": the app title-cases the symbol itself (setBuffer), so the
+         phone keyboard stays in plain lowercase instead of fighting the player's shift key. -->
     <input id="fillInput" class="fill-input" type="text" autocomplete="off"
-           autocapitalize="characters" spellcheck="false" enterkeyhint="go"
+           autocapitalize="none" spellcheck="false" enterkeyhint="go"
            maxlength="3" tabindex="-1" aria-label="Element symbol">
   </main>
 
-  <script type="module" src="js/app.js?v=20260727-pt8"></script>
+  <script type="module" src="js/app.js?v=20260728-pt9"></script>
 </body>
 </html>
