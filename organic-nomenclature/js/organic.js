@@ -102,6 +102,29 @@ export function buildProblemCondensed(spec, direction = "name") {
   };
 }
 
+// Build direction: the prompt is the NAME, the answer is a structure assembled on the
+// lab canvas. Grading happens against the built graph (chem.js gradeAlkaneBuild), so
+// there is no accepted-string set here — just the target n and the hint ladder.
+export function buildProblemStructure(spec) {
+  const a = ALKANE_BY_N[spec.n];
+  return {
+    spec,
+    mode: "build",
+    prompt: a.name,
+    answer: a.name,
+    n: a.n,
+    formula: a.formula,
+    condensed: a.condensed,
+    hints: [
+      "The name tells you everything: the root is the carbon count (meth‑ 1 … dec‑ 10), and –ane means every bond stays single.",
+      `${a.root}‑ = ${a.n} carbon${a.n === 1 ? "" : "s"} → drag ${a.n === 1 ? "one carbon out — that's the whole molecule" : `${a.n} carbons out and chain them in a row`}.`,
+      a.n === 1
+        ? "One lone carbon — its four hydrogens are already riding along."
+        : `${a.n} carbons, ${a.n - 1} single bonds, no branches — the hydrogens sort themselves out (${2 * a.n + 2} of them).`
+    ]
+  };
+}
+
 // The ladder. Same deck both rungs — what changes is the spelling the student reads.
 export const LEVELS = [
   { id: "molecular", label: "Molecular formulas", build: buildProblem },

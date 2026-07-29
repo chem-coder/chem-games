@@ -96,6 +96,9 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 .controls.two-up { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 20px auto 0; max-width: 480px; }
 .controls.two-up .action { flex: 1 1 200px; margin-left: 0; min-width: 0; text-align: center; border: 1.5px solid var(--accent); }
 .controls.two-up .action.primary { background: var(--accent); color: #fff; }
+/* build direction — plum sibling so the two doors read as different skills */
+.controls.two-up .action.primary.alt { background: var(--plum); border-color: var(--plum-dark); }
+.controls.two-up .action.primary.alt:hover { background: var(--plum-dark); }
 /* name → formula isn't built yet — same stripes the hub uses for not-yet-real cards */
 .controls.two-up .action.stripes {
   color: var(--muted); cursor: default; border: 1.5px solid var(--line);
@@ -125,6 +128,15 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 /* condensed chains run long (decane is ten groups) — size down; <wbr> marks the group-boundary
    break points, so no overflow-wrap needed (it could split a symbol from its subscript) */
 .formula.as-chain { font-size: clamp(1.2rem, 4.5vw, 1.9rem); line-height: 1.35; }
+
+/* build direction: the prompt is the NAME; the answer is assembled on the lab canvas */
+.build-target { margin: 6px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; }
+.lab-canvas {
+  display: block; width: 100%; height: 480px; margin-top: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line); border-radius: 14px;
+  touch-action: none;   /* the canvas owns the finger — no scroll fights on phones */
+}
 
 /* ── play: typed answer ── */
 .build-label {

@@ -1,0 +1,65 @@
+/* Molecule Builder prototype — links shared tokens first, then this.
+   Page chrome mirrors the organic-nomenclature game so it reads as the same family. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+.app-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+
+/* House rule: formula subscripts render at ≥50% size, slightly lowered. */
+sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: inherit; }
+
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow {
+  margin: 18px 0 4px; color: var(--plum); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.app-header h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 52ch; }
+
+.game {
+  margin-top: 22px; padding: 24px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+/* House numbered-steps pattern: green circled numbers, absolutely positioned
+   (never flex the whole line — punctuation drifts). */
+.steps { list-style: none; counter-reset: step; margin: 0 0 18px; padding: 0; }
+.steps li {
+  counter-increment: step; position: relative;
+  padding: 3px 0 3px 38px; margin: 6px 0; font-size: 0.95rem;
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute; left: 0; top: 4px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--success-vivid); color: #fff;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+  text-align: center; line-height: 24px;
+}
+
+#lab {
+  display: block; width: 100%; height: 560px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line); border-radius: 14px;
+  touch-action: none;   /* the canvas owns the finger — no scroll fights on phones */
+}
+
+.lab-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+#readout { margin: 0; font-size: 1.02rem; color: var(--muted); }
+#readout strong { color: var(--ink); font-family: var(--font-display); font-size: 1.12rem; }
+
+.action.ghost {
+  padding: 9px 20px; font-family: var(--font-display); font-weight: 700; font-size: 0.92rem;
+  color: var(--accent); background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 999px; cursor: pointer;
+}
+.action.ghost:hover { border-color: var(--accent); }
+
+.proto-note { margin-top: 16px; font-size: 0.88rem; color: var(--muted); }

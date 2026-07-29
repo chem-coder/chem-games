@@ -1,17 +1,22 @@
-// Organic Nomenclature — DOM layer. Pure logic lives in organic.js; this wires it to the
-// screen. Same rhythm as the inorganic builder: intro → 5-card round → done, typed answers,
-// progressive hints, missed cards rotate back.
-import { toSubHtml, toChainHtml, ALKANES, LEVELS, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND } from "./organic.js";
+// Organic Nomenclature — DOM layer. Pure logic lives in organic.js (naming) and chem.js
+// (structure grading); the lab canvas comes from lab.js. Same rhythm as the inorganic
+// builder: intro → 5-card round → done, progressive hints, missed cards rotate back.
+// Two directions per rung: formula → name (typed) and name → structure (built on canvas).
+import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildProblemStructure, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND } from "./organic.js";
+import { gradeAlkaneBuild } from "./chem.js";
+import { createLab } from "./lab.js";
 
 const root = document.querySelector("#game");
 
-// One dealer per rung — separate bags, so each rung cycles its whole deck before any repeat.
-const dealers = Object.fromEntries(LEVELS.map((l) => [l.id, makeDealer()]));
+// One dealer per rung + one for the build direction (shared across rungs — building
+// propane is the same skill whichever spelling tab you came from).
+const dealers = { molecular: makeDealer(), condensed: makeDealer(), build: makeDealer() };
 
 let levelIndex = 0; // 0 = molecular, 1 = condensed
 const level = () => LEVELS[levelIndex];
 
 let mode = "intro"; // "intro" | "play" | "done"
+let direction = "name"; // "name" | "build"
 let queue = [];
 let roundTotal = 0;
 let problem = null;
@@ -22,9 +27,15 @@ let graded = null;
 let masteredThisRound = 0;
 let cleanSolves = 0;
 let missedThisRound = [];
+let lab = null; // live canvas instance, build direction only
 
-function startRound() {
-  queue = dealers[level().id](DEFAULT_ROUND);
+function killLab() {
+  if (lab) { lab.destroy(); lab = null; }
+}
+
+function startRound(dir) {
+  direction = dir;
+  queue = dealers[dir === "build" ? "build" : level().id](DEFAULT_ROUND);
   roundTotal = queue.length;
   masteredThisRound = 0;
   cleanSolves = 0;
@@ -34,7 +45,7 @@ function startRound() {
 }
 
 function loadCard() {
-  problem = level().build(queue[0]);
+  problem = direction === "build" ? buildProblemStructure(queue[0]) : level().build(queue[0]);
   typed = "";
   hintsShown = 0;
   checked = false;
@@ -43,8 +54,15 @@ function loadCard() {
 }
 
 function check() {
-  if (checked || !typed.trim()) return;
-  graded = gradeAnswer(problem, typed);
+  if (checked) return;
+  if (direction === "build") {
+    if (!lab || lab.atoms().length === 0) return;
+    graded = { correct: gradeAlkaneBuild(lab.atoms(), lab.bonds(), problem.n).ok };
+    lab.setLocked(true);
+  } else {
+    if (!typed.trim()) return;
+    graded = gradeAnswer(problem, typed);
+  }
   checked = true;
   if (graded.correct) {
     masteredThisRound += 1;
@@ -52,12 +70,14 @@ function check() {
   } else {
     missedThisRound.push(problem.spec);
   }
-  render();
+  if (direction === "build") updateBuildAfterCheck();
+  else render();
 }
 
 function showHint() {
   if (hintsShown < problem.hints.length) hintsShown += 1;
-  render();
+  if (direction === "build") updateBuildHints();
+  else render();
 }
 
 function next() {
@@ -68,9 +88,11 @@ function next() {
 
 // ── rendering ──
 function render() {
+  killLab();
   if (mode === "intro") return renderIntro();
   if (mode === "done") return renderDone();
-  renderPlay();
+  if (direction === "build") return renderPlayBuild();
+  renderPlayName();
 }
 
 function levelTabs() {
@@ -79,24 +101,23 @@ function levelTabs() {
   ).join("")}</div>`;
 }
 
-// Tabs switch to that rung's intro — wired on every screen that shows them.
 function wireTabs() {
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); mode = "intro"; render(); })
   );
 }
 
-// Formula → name is the live direction. Name → formula is deliberately a striped
-// placeholder: how organic formulas should be *written* (typed? built by drag-and-drop?)
-// is still an open design question — don't ship a guess.
+// Both directions are live: type the name, or build the structure on the lab canvas.
 function startControls() {
   return `<div class="controls two-up">
     <button class="action primary" id="startName">Name the alkane</button>
-    <button class="action stripes" disabled aria-disabled="true">
-      Write the formula
-      <span class="stripes-note">under construction</span>
-    </button>
+    <button class="action primary alt" id="startBuild">Build the molecule</button>
   </div>`;
+}
+
+function wireStartControls() {
+  root.querySelector("#startName").addEventListener("click", () => startRound("name"));
+  root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
 }
 
 function introMolecular() {
@@ -163,10 +184,11 @@ function renderIntro() {
   const body = level().id === "molecular" ? introMolecular() : introCondensed();
   root.innerHTML = `${levelTabs()}${body}`;
   wireTabs();
-  root.querySelector("#startName").addEventListener("click", startRound);
+  wireStartControls();
 }
 
-function renderPlay() {
+// ── play: formula → name (typed) ──
+function renderPlayName() {
   const remaining = queue.length;
   const condensed = level().id === "condensed";
   const promptHtml = condensed ? toChainHtml(problem.prompt) : toSubHtml(problem.prompt);
@@ -233,20 +255,92 @@ function renderPlay() {
   if (nextBtn) { nextBtn.addEventListener("click", next); nextBtn.focus(); }
 }
 
+// ── play: name → structure (built on the lab canvas) ──
+// This screen renders ONCE per card and then patches sub-areas: a full re-render
+// would destroy the canvas — and the student's half-built molecule with it.
+function renderPlayBuild() {
+  root.innerHTML = `
+    <button class="intro-link" id="introBtn" type="button">↩ How alkane names work</button>
+    <div class="formula-card">
+      <span class="card-tag">Organic · Alkanes · build it</span>
+      <p class="build-target">${problem.prompt}</p>
+    </div>
+
+    <p class="build-label">Build this molecule</p>
+    <canvas class="lab-canvas" id="labCanvas"></canvas>
+    <div id="hintArea"></div>
+    <div id="verdictArea"></div>
+    <div class="controls">
+      <p class="score" id="scoreLine"></p>
+      <button class="action primary" id="checkBtn" disabled>Check</button>
+    </div>`;
+
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  root.querySelector("#checkBtn").addEventListener("click", check);
+  updateBuildHints();
+  updateScoreLine();
+
+  lab = createLab(root.querySelector("#labCanvas"), {
+    onChange() {
+      const btn = root.querySelector("#checkBtn");
+      if (btn && !checked) btn.disabled = lab.atoms().length === 0;
+    }
+  });
+}
+
+function updateScoreLine() {
+  root.querySelector("#scoreLine").textContent = `Built ${masteredThisRound} of ${roundTotal} · ${queue.length} left`;
+}
+
+function updateBuildHints() {
+  const area = root.querySelector("#hintArea");
+  if (!area || checked) return;
+  const shown = problem.hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
+  area.innerHTML = `<div class="hints">
+      ${hintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
+      ${hintsShown < problem.hints.length
+        ? `<button class="hint-btn" id="hintBtn" type="button">${hintsShown ? "Another hint" : "Need a hint?"}</button>`
+        : ""}
+    </div>`;
+  const hintBtn = area.querySelector("#hintBtn");
+  if (hintBtn) hintBtn.addEventListener("click", showHint);
+}
+
+function updateBuildAfterCheck() {
+  root.querySelector("#hintArea").innerHTML = "";
+  const feedback = graded.correct
+    ? `<p class="feedback ok">${hintsShown ? "Correct." : "Built clean — no hints. 💪"} It leaves the stack.</p>`
+    : `<p class="feedback no">Not quite — this one comes back around.</p>`;
+  // reveal after Check in both outcomes, matching the typed direction — the structure
+  // itself stays unrevealed, so a missed card still takes real work when it returns
+  const reveal = `<p class="reveal"><strong>${problem.answer}</strong> &nbsp;=&nbsp; ${toSubHtml(problem.formula)} &nbsp;·&nbsp; ${toChainHtml(problem.condensed)}</p>`;
+  root.querySelector("#verdictArea").innerHTML = `${reveal}${feedback}`;
+  const controls = root.querySelector(".controls");
+  controls.innerHTML = `
+    <p class="score" id="scoreLine"></p>
+    <button class="action primary" id="nextBtn">${queue.length > 1 || !graded.correct ? "Next →" : "Finish"}</button>`;
+  updateScoreLine();
+  const nextBtn = root.querySelector("#nextBtn");
+  nextBtn.addEventListener("click", next);
+  nextBtn.focus();
+}
+
+// ── done ──
 function renderDone() {
+  const verb = direction === "build" ? "Built" : "Named";
   const missedChips = missedThisRound
-    .map((s) => `<span class="chip">${toSubHtml(level().build(s).formula)}</span>`)
+    .map((s) => `<span class="chip">${direction === "build" ? buildProblemStructure(s).answer : toSubHtml(level().build(s).formula)}</span>`)
     .join("");
   const missedBlock = missedThisRound.length
     ? `<div class="missed-block">
         <p class="missed-label">Worth another pass — you stumbled on ${missedThisRound.length}:</p>
         <div class="chips">${missedChips}</div>
       </div>`
-    : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} named with no hints. 🎉</p>`;
+    : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} ${verb.toLowerCase()} with no hints. 🎉</p>`;
 
   root.innerHTML = `
     ${levelTabs()}
-    <p class="prompt">Round done — ${roundTotal} alkanes, ${cleanSolves} named hint-free.</p>
+    <p class="prompt">Round done — ${roundTotal} alkanes, ${cleanSolves} ${verb.toLowerCase()} hint-free.</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
     <p class="done-next">Two rounds cover the whole ladder, methane through decane.</p>
@@ -263,7 +357,10 @@ function renderDone() {
     mode = "play";
     loadCard();
   });
-  root.querySelector("#startName").addEventListener("click", startRound);
+  wireStartControls();
 }
 
 render();
+
+// Debug handle for headless verification — not part of the game surface.
+window.__game = { get lab() { return lab; }, get problem() { return problem; }, check, next };

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Molecule Builder — Prototype Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/builder.css?v=20260729c">
+</head>
+<body>
+  <div class="app-shell">
+    <a class="home-link" href="../">&larr; Organic Nomenclature</a>
+    <header class="app-header">
+      <p class="eyebrow">Organic &middot; Prototype lab</p>
+      <h1>Molecule Builder</h1>
+      <p class="lede">Drag-and-drop molecule building with self-balancing hydrogens. A sandbox for the future name&nbsp;&rarr;&nbsp;structure direction — nothing is graded here yet.</p>
+    </header>
+
+    <section class="game">
+      <ol class="steps">
+        <li>Drag a carbon out of the tray — it arrives saturated, four hydrogens riding its rim.</li>
+        <li>Bring two carbons close and a bond snaps in; each carbon sheds a hydrogen to pay for it.</li>
+        <li>Click a bond to cycle single &rarr; double &rarr; triple &rarr; gone. Hydrogens re-balance instantly.</li>
+        <li>Drop an atom back on the tray to remove it.</li>
+      </ol>
+      <canvas id="lab"></canvas>
+      <div class="lab-footer">
+        <p id="readout"></p>
+        <button class="action ghost" id="resetBtn" type="button">Clear the canvas</button>
+      </div>
+      <p class="proto-note">Prototype — mechanics only. The real rung will prompt a name (&ldquo;build propene&rdquo;), hide the formula readout, and grade the built structure on Check.</p>
+    </section>
+  </div>
+  <script type="module" src="js/sim.js?v=20260729c"></script>
+</body>
+</html>
