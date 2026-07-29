@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organic Nomenclature</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260729b">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Home</a>
+      <p class="eyebrow">Organic &middot; its own ladder</p>
+      <h1>Organic Nomenclature</h1>
+      <p class="lede">Read a formula → name the molecule. The straight-chain alkanes, in both spellings: molecular and condensed.</p>
+    </header>
+
+    <section id="game" class="game" aria-live="polite"></section>
+  </main>
+
+  <!-- Cache-busting lives HERE, in ONE place per game (house pattern — see nomenclature/builder).
+       Every JS module resolves through this map to its ?v= URL, so the .js files stay version-free.
+       Bump the token on each deploy: one find-replace of the date-tag in this file. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/organic.js": "./js/organic.js?v=20260729b"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260729b"></script>
+</body>
+</html>
