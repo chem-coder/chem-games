@@ -30,7 +30,8 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 }
 
 /* ── level tabs (Type I / Type II) ── */
-.level-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+/* wrap: five rungs don't fit one row on a phone — without this, Acids/Covalent are unreachable */
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .level-tab {
   padding: 8px 18px; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
   color: var(--accent); background: var(--surface); border: 1.5px solid var(--line);
