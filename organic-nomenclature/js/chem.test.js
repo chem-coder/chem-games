@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { VALENCE, bondSum, hydrogenCount, canBond, nextOrder, componentFormulas, gradeAlkaneBuild, gradeChainBuild } from "./chem.js";
+import {
+  VALENCE, bondSum, hydrogenCount, canBond, nextOrder, componentFormulas,
+  gradeAlkaneBuild, gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild
+} from "./chem.js";
 
 const C = (id) => ({ id, el: "C" });
 
@@ -107,4 +110,66 @@ test("gradeChainBuild: the special bond must sit in the named slot", () => {
   assert.equal(gradeChainBuild(chain(4).atoms, chain(4).bonds, target(4, 1, 2)).reason, "bond-order-or-position");
   // ethyne: the two-carbon chain leaves one slot
   assert.ok(gradeChainBuild(chain(2).atoms, chainWith(2, [3]).bonds, target(2, 1, 3)).ok);
+});
+
+// ── rung 4: branched skeletons via tree isomorphism ──
+const tree = (n, edges) => ({
+  atoms: Array.from({ length: n }, (_, i) => C(i + 1)),
+  bonds: edges.map(([a, b]) => ({ a, b, order: 1 }))
+});
+
+test("gradeBranchedBuild: shape matters, drawing order does not", () => {
+  // 2-methylbutane built "forwards": chain 1-2-3-4, methyl 5 on carbon 2
+  const fwd = tree(5, [[1, 2], [2, 3], [3, 4], [2, 5]]);
+  assert.ok(gradeBranchedBuild(fwd.atoms, fwd.bonds, { m: 4, methyls: [2] }).ok);
+  // same molecule built mirrored (methyl on THEIR carbon 3) and in scrambled id order
+  const mirrored = tree(5, [[4, 1], [1, 3], [3, 5], [3, 2]]);
+  assert.ok(gradeBranchedBuild(mirrored.atoms, mirrored.bonds, { m: 4, methyls: [2] }).ok);
+  // straight pentane is the wrong isomer for 2-methylbutane
+  const straight = tree(5, [[1, 2], [2, 3], [3, 4], [4, 5]]);
+  assert.equal(gradeBranchedBuild(straight.atoms, straight.bonds, { m: 4, methyls: [2] }).reason, "wrong-skeleton");
+  // neopentane (2,2-dimethylpropane) vs 2-methylbutane: same C5H12, different tree
+  const neo = tree(5, [[1, 2], [2, 3], [2, 4], [2, 5]]);
+  assert.equal(gradeBranchedBuild(neo.atoms, neo.bonds, { m: 4, methyls: [2] }).reason, "wrong-skeleton");
+  assert.ok(gradeBranchedBuild(neo.atoms, neo.bonds, { m: 3, methyls: [2, 2] }).ok);
+  // 2,3-dimethylbutane
+  const dm = tree(6, [[1, 2], [2, 3], [3, 4], [2, 5], [3, 6]]);
+  assert.ok(gradeBranchedBuild(dm.atoms, dm.bonds, { m: 4, methyls: [2, 3] }).ok);
+  assert.equal(gradeBranchedBuild(dm.atoms, dm.bonds, { m: 4, methyls: [2, 2] }).reason, "wrong-skeleton");
+});
+
+// ── rung 5: alcohols ──
+const withO = (n, edges, oTo) => {
+  const atoms = [...Array.from({ length: n }, (_, i) => C(i + 1)), { id: 99, el: "O" }];
+  return { atoms, bonds: [...edges.map(([a, b]) => ({ a, b, order: 1 })), { a: oTo, b: 99, order: 1 }] };
+};
+
+test("gradeAlcoholBuild: one O on the named carbon, either end counts", () => {
+  // propan-1-ol: O on an end carbon
+  const p1 = withO(3, [[1, 2], [2, 3]], 1);
+  assert.ok(gradeAlcoholBuild(p1.atoms, p1.bonds, { n: 3, oh: 1 }).ok);
+  // ...and the same build read from the other end
+  const p1b = withO(3, [[1, 2], [2, 3]], 3);
+  assert.ok(gradeAlcoholBuild(p1b.atoms, p1b.bonds, { n: 3, oh: 1 }).ok);
+  // propan-2-ol: O on the middle carbon
+  const p2 = withO(3, [[1, 2], [2, 3]], 2);
+  assert.ok(gradeAlcoholBuild(p2.atoms, p2.bonds, { n: 3, oh: 2 }).ok);
+  assert.equal(gradeAlcoholBuild(p2.atoms, p2.bonds, { n: 3, oh: 1 }).reason, "oh-position");
+  // methanol
+  const m = withO(1, [], 1);
+  assert.ok(gradeAlcoholBuild(m.atoms, m.bonds, { n: 1, oh: 1 }).ok);
+  // dimethyl ether: O spliced INTO the chain is not an alcohol
+  const ether = { atoms: [C(1), C(2), { id: 99, el: "O" }], bonds: [{ a: 1, b: 99, order: 1 }, { a: 99, b: 2, order: 1 }] };
+  assert.equal(gradeAlcoholBuild(ether.atoms, ether.bonds, { n: 2, oh: 1 }).reason, "ether");
+  // C=O is a carbonyl, not a hydroxyl
+  const carbonyl = { atoms: [C(1), { id: 99, el: "O" }], bonds: [{ a: 1, b: 99, order: 2 }] };
+  assert.equal(gradeAlcoholBuild(carbonyl.atoms, carbonyl.bonds, { n: 1, oh: 1 }).reason, "multiple-bond");
+  // no oxygen at all
+  assert.equal(gradeAlcoholBuild(chain(3).atoms, chain(3).bonds, { n: 3, oh: 1 }).reason, "oxygen-count");
+});
+
+test("componentFormulas counts oxygen (and a lone O reads as water)", () => {
+  const p2 = withO(3, [[1, 2], [2, 3]], 2);
+  assert.deepEqual(componentFormulas(p2.atoms, p2.bonds), ["C3H8O"]);
+  assert.deepEqual(componentFormulas([{ id: 1, el: "O" }], []), ["H2O"]);
 });

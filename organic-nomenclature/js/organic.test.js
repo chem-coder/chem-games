@@ -5,7 +5,10 @@ import {
   ALKANES, ALKANE_BY_N, ROOTS, alkaneFormula, condensedFormula, toSubHtml, toChainHtml,
   buildProblem, buildProblemCondensed, LEVELS, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND,
   distinctSlots, unsaturatedName, unsaturatedFormula, unsaturatedCondensed,
-  ENE_SPECS, YNE_SPECS, buildProblemUnsaturated, makeUnsaturatedDealer
+  ENE_SPECS, YNE_SPECS, buildProblemUnsaturated, makeUnsaturatedDealer,
+  BRANCHED_SPECS, branchedName, branchedFormula, branchedCondensed, makeBranchedDealer,
+  ALCOHOL_SPECS, alcoholName, alcoholFormula, alcoholCondensed, makeAlcoholDealer,
+  buildAnyStructure
 } from "./organic.js";
 
 // ── the deck: ten alkanes, CnH2n+2, root + -ane ─────────────────────────────────
@@ -80,11 +83,12 @@ test("condensed problems prompt with the chain and grade the same names", () => 
   assert.ok(!gradeAnswer(p, "propane").correct);
 });
 
-test("the ladder: molecular, condensed, then build-only alkenes & alkynes", () => {
-  assert.deepEqual(LEVELS.map((l) => l.id), ["molecular", "condensed", "unsaturated"]);
+test("the ladder: two typed rungs, then three build-only rungs", () => {
+  assert.deepEqual(LEVELS.map((l) => l.id), ["molecular", "condensed", "unsaturated", "branched", "alcohols"]);
   assert.equal(LEVELS[0].build({ n: 6 }).prompt, "C6H14");
   assert.equal(LEVELS[1].build({ n: 6 }).prompt, "CH3CH2CH2CH2CH2CH3");
-  assert.ok(LEVELS[2].buildOnly, "no formula→name direction for enes/ynes");
+  assert.ok(LEVELS.slice(2).every((l) => l.buildOnly), "rungs 3–5 have no formula→name direction");
+  assert.deepEqual(LEVELS[4].trayElements, ["C", "O"], "alcohols put oxygen in the tray");
 });
 
 // ── rung 3: alkenes & alkynes ───────────────────────────────────────────────────
@@ -124,6 +128,66 @@ test("unsaturated problems: name prompt, 3 hints, locant spelled out", () => {
   assert.equal(p.mode, "build");
   assert.equal(p.hints.length, 3);
   assert.match(p.hints[1], /between C‑2 and C‑3/);
+});
+
+// ── rung 4: branching ───────────────────────────────────────────────────────────
+test("branched specs are exactly the valid IUPAC names", () => {
+  const names = BRANCHED_SPECS.map(branchedName);
+  assert.equal(BRANCHED_SPECS.length, 22);
+  assert.ok(names.includes("2-methylpropane"));
+  assert.ok(names.includes("2,2-dimethylpropane"));
+  assert.ok(names.includes("3-methylpentane"));
+  assert.ok(names.includes("2,3-dimethylbutane"));
+  assert.ok(!names.includes("3-methylbutane"), "would be 2-methylbutane from the other end");
+  assert.ok(!names.includes("3,3-dimethylbutane"), "would be 2,2- from the other end");
+  assert.ok(!names.includes("1-methylpropane"), "a branch on C-1 just lengthens the chain");
+  // total carbons stay buildable
+  assert.ok(BRANCHED_SPECS.every((s) => s.m + s.methyls.length <= 8));
+});
+
+test("branched names, formulas, condensed spellings", () => {
+  assert.equal(branchedName({ m: 4, methyls: [2] }), "2-methylbutane");
+  assert.equal(branchedFormula({ m: 4, methyls: [2] }), "C5H12");
+  assert.equal(branchedCondensed({ m: 4, methyls: [2] }), "CH3CH(CH3)CH2CH3");
+  assert.equal(branchedCondensed({ m: 3, methyls: [2, 2] }), "CH3C(CH3)2CH3");
+  assert.equal(branchedCondensed({ m: 4, methyls: [2, 3] }), "CH3CH(CH3)CH(CH3)CH3");
+});
+
+// ── rung 5: alcohols ────────────────────────────────────────────────────────────
+test("alcohol names: locant only from three carbons up", () => {
+  assert.equal(alcoholName({ n: 1, oh: 1 }), "methanol");
+  assert.equal(alcoholName({ n: 2, oh: 1 }), "ethanol");
+  assert.equal(alcoholName({ n: 3, oh: 2 }), "propan-2-ol");
+  assert.equal(alcoholName({ n: 6, oh: 3 }), "hexan-3-ol");
+  assert.equal(ALCOHOL_SPECS.length, 12);
+  assert.ok(!ALCOHOL_SPECS.some((s) => s.oh > Math.ceil(s.n / 2)), "no butan-3-ol");
+});
+
+test("alcohol formulas and condensed spellings", () => {
+  assert.equal(alcoholFormula({ n: 1, oh: 1 }), "CH4O");
+  assert.equal(alcoholFormula({ n: 3, oh: 2 }), "C3H8O");
+  assert.equal(alcoholCondensed({ n: 1, oh: 1 }), "CH3OH");
+  assert.equal(alcoholCondensed({ n: 3, oh: 1 }), "CH3CH2CH2OH");
+  assert.equal(alcoholCondensed({ n: 3, oh: 2 }), "CH3CH(OH)CH3");
+  assert.equal(alcoholCondensed({ n: 4, oh: 2 }), "CH3CH2CH(OH)CH3");
+});
+
+test("buildAnyStructure routes every spec shape to the right problem", () => {
+  assert.equal(buildAnyStructure({ n: 4 }).prompt, "butane");
+  assert.equal(buildAnyStructure({ n: 4, slot: 2, order: 3 }).prompt, "but-2-yne");
+  assert.equal(buildAnyStructure({ m: 4, methyls: [2] }).prompt, "2-methylbutane");
+  assert.equal(buildAnyStructure({ n: 3, oh: 2 }).prompt, "propan-2-ol");
+});
+
+test("rung 4/5 dealers: five distinct cards per round", () => {
+  for (const [make, name] of [[makeBranchedDealer, branchedName], [makeAlcoholDealer, alcoholName]]) {
+    const deal = make();
+    for (let r = 0; r < 6; r++) {
+      const cards = deal();
+      assert.equal(cards.length, 5);
+      assert.equal(new Set(cards.map(name)).size, 5, "no repeats within a round");
+    }
+  }
 });
 
 test("rung-3 dealer recipe: 1 alkane + 2 alkenes + 2 alkynes, shuffled", () => {

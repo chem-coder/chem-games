@@ -2,8 +2,8 @@
 // (structure grading); the lab canvas comes from lab.js. Same rhythm as the inorganic
 // builder: intro → 5-card round → done, progressive hints, missed cards rotate back.
 // Two directions per rung: formula → name (typed) and name → structure (built on canvas).
-import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeUnsaturatedDealer, requeue, DEFAULT_ROUND } from "./organic.js";
-import { gradeChainBuild } from "./chem.js";
+import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeUnsaturatedDealer, makeBranchedDealer, makeAlcoholDealer, requeue, DEFAULT_ROUND } from "./organic.js";
+import { gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild } from "./chem.js";
 import { createLab } from "./lab.js";
 
 const root = document.querySelector("#game");
@@ -12,7 +12,11 @@ const root = document.querySelector("#game");
 // building propane is the same skill whichever spelling tab you came from). The
 // alkenes & alkynes rung deals its own fixed recipe: 1 alkane + 2 enes + 2 ynes.
 const dealers = { molecular: makeDealer(), condensed: makeDealer(), build: makeDealer() };
-const dealUnsaturated = makeUnsaturatedDealer();
+const buildDealers = {
+  unsaturated: makeUnsaturatedDealer(),
+  branched: makeBranchedDealer(),
+  alcohols: makeAlcoholDealer()
+};
 
 let levelIndex = 0; // 0 = molecular, 1 = condensed
 const level = () => LEVELS[levelIndex];
@@ -38,7 +42,7 @@ function killLab() {
 function startRound(dir) {
   direction = level().buildOnly ? "build" : dir;
   queue = level().buildOnly
-    ? dealUnsaturated()
+    ? buildDealers[level().id]()
     : dealers[direction === "build" ? "build" : level().id](DEFAULT_ROUND);
   roundTotal = queue.length;
   masteredThisRound = 0;
@@ -61,8 +65,14 @@ function check() {
   if (checked) return;
   if (direction === "build") {
     if (!lab || lab.atoms().length === 0) return;
-    const special = problem.spec.order ? { slot: problem.spec.slot, order: problem.spec.order } : null;
-    graded = { correct: gradeChainBuild(lab.atoms(), lab.bonds(), { n: problem.n, special }).ok };
+    const s = problem.spec;
+    const result = s.methyls ? gradeBranchedBuild(lab.atoms(), lab.bonds(), s)
+      : s.oh ? gradeAlcoholBuild(lab.atoms(), lab.bonds(), s)
+      : gradeChainBuild(lab.atoms(), lab.bonds(), {
+          n: problem.n,
+          special: s.order ? { slot: s.slot, order: s.order } : null
+        });
+    graded = { correct: result.ok };
     lab.setLocked(true);
   } else {
     if (!typed.trim()) return;
@@ -223,11 +233,75 @@ function introUnsaturated() {
   </div>`;
 }
 
+function introBranched() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Branching · build only</p>
+    <p class="intro-lede">Chains aren't always straight. A branch is a <strong>substituent</strong> — named up front, hung on a numbered carbon:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">2-methyl</span>
+        <span class="block-sub">a one-carbon branch, riding chain carbon 2</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main">butane</span>
+        <span class="block-sub">the parent — the longest chain</span>
+      </div>
+    </div>
+    <p class="schema-note">Read names <strong>back to front</strong>: find the parent chain, build it straight, then hang the branches on their numbers.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">2-methyl</span><span class="w-ane">propane</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH(CH3)CH3")}</span></div>
+      <div class="ex-map"><span class="w-root">2,2-dimethyl</span><span class="w-ane">propane</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3C(CH3)2CH3")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li><strong>di‑</strong> = two identical branches, and every branch gets its own number — <strong>2,2‑</strong> means both on the same carbon.</li>
+      <li>Lowest numbers win: there is no 3‑methylbutane — count from the other end and it's <strong>2‑methylbutane</strong>. One molecule, one name.</li>
+      <li>Isomers strike again: pentane, 2‑methylbutane, and 2,2‑dimethylpropane are all ${toSubHtml("C5H12")}. The formula can't name them — the <strong>skeleton</strong> does. So here, you build.</li>
+      <li>On the canvas: build the parent chain, then drag an extra carbon onto a mid-chain carbon to hang a branch.</li>
+    </ul>
+    ${startControls()}
+  </div>`;
+}
+
+function introAlcohols() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Alcohols · build only</p>
+    <p class="intro-lede">The first family beyond hydrocarbons — <strong>oxygen joins the tray</strong>:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">propan</span>
+        <span class="block-sub">the carbon chain you already know</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main"><em class="suffix-ane">-2-ol</em></span>
+        <span class="block-sub">an –OH (hydroxyl) group on carbon 2</span>
+      </div>
+    </div>
+    <p class="schema-note">Oxygen takes <strong>two bonds</strong>: one to the chain — and it keeps one hydrogen. That pair is the hydroxyl.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">methan</span><span class="w-ane">ol</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3OH")}</span></div>
+      <div class="ex-map"><span class="w-root">propan-2-</span><span class="w-ane">ol</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH(OH)CH3")}</span></div>
+      <div class="ex-map"><span class="w-root">butan-1-</span><span class="w-ane">ol</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH2CH2CH2OH")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li>An alcohol is its alkane plus one O: C<sub>n</sub>H<sub>2n+2</sub>O. Methanol and ethanol need no locant — from propan‑1‑ol on, the number picks the carbon.</li>
+      <li>On the canvas: build the chain first, then drag an <strong>O</strong> from the tray onto the right carbon. Watch it arrive as ${toSubHtml("H2O")} and settle to one H once it bonds.</li>
+    </ul>
+    ${startControls()}
+  </div>`;
+}
+
+const INTROS = {
+  molecular: introMolecular,
+  condensed: introCondensed,
+  unsaturated: introUnsaturated,
+  branched: introBranched,
+  alcohols: introAlcohols
+};
+
 function renderIntro() {
-  const body = level().id === "molecular" ? introMolecular()
-    : level().id === "condensed" ? introCondensed()
-    : introUnsaturated();
-  root.innerHTML = `${levelTabs()}${body}`;
+  root.innerHTML = `${levelTabs()}${INTROS[level().id]()}`;
   wireTabs();
   wireStartControls();
 }
@@ -307,7 +381,7 @@ function renderPlayBuild() {
   root.innerHTML = `
     <button class="intro-link" id="introBtn" type="button">↩ How ${level().buildOnly ? "these names" : "alkane names"} work</button>
     <div class="formula-card">
-      <span class="card-tag">Organic · ${level().buildOnly ? "Alkenes &amp; alkynes" : "Alkanes"} · build it</span>
+      <span class="card-tag">Organic · ${level().buildOnly ? level().label.replace("&", "&amp;") : "Alkanes"} · build it</span>
       <p class="build-target">${problem.prompt}</p>
     </div>
 
@@ -326,6 +400,7 @@ function renderPlayBuild() {
   updateScoreLine();
 
   lab = createLab(root.querySelector("#labCanvas"), {
+    elements: level().trayElements || ["C"],
     onChange() {
       const btn = root.querySelector("#checkBtn");
       if (btn && !checked) btn.disabled = lab.atoms().length === 0;
@@ -389,9 +464,11 @@ function renderDone() {
     <p class="prompt">Round done — ${roundTotal} ${noun}, ${cleanSolves} ${verb.toLowerCase()} hint-free.</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
-    <p class="done-next">${level().buildOnly
-      ? "Every round mixes one alkane, two alkenes, two alkynes — fifty molecules in the rotation."
-      : "Two rounds cover the whole ladder, methane through decane."}</p>
+    <p class="done-next">${{
+      unsaturated: "Every round mixes one alkane, two alkenes, two alkynes — fifty molecules in the rotation.",
+      branched: "Twenty-two branched skeletons in the rotation, methylpropane through the dimethylhexanes.",
+      alcohols: "Twelve alcohols in the rotation, methanol through hexan-3-ol."
+    }[level().id] || "Two rounds cover the whole ladder, methane through decane."}</p>
     ${startControls()}`;
 
   wireTabs();

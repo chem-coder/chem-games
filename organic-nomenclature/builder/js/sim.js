@@ -6,6 +6,7 @@ import { createLab } from "../../js/lab.js";
 const readout = document.querySelector("#readout");
 
 const lab = createLab(document.querySelector("#lab"), {
+  elements: ["C", "O"],   // the sandbox gets the full tray
   onChange() {
     const fs = lab.formulas();
     readout.innerHTML = fs.length

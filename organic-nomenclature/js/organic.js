@@ -194,9 +194,142 @@ export function buildProblemUnsaturated(spec) {
   };
 }
 
-// Any build-direction spec → its problem. Alkane specs are {n}; unsaturated add {slot, order}.
+// ── rung 4: branched alkanes — build-only, methyl branches ──────────────────────
+// Specs are {m: parent length, methyls: [locants]}. Only names that are THE correct
+// IUPAC name are dealt: branches never sit on chain ends (that would lengthen the
+// parent), and locant sets already read lowest-from-the-correct-end. Methyl-only for
+// now — ethyl branches drag in the longest-chain tie rules; a later rung's problem.
+export const BRANCHED_SPECS = [];
+for (let m = 3; m <= 7; m++) {
+  for (let p = 2; p <= Math.floor((m + 1) / 2); p++) BRANCHED_SPECS.push({ m, methyls: [p] });
+}
+for (let m = 3; m <= 6; m++) {
+  for (let p = 2; p <= m - 1; p++) {
+    for (let q = p; q <= m - 1; q++) {
+      const mirror = [m + 1 - q, m + 1 - p];
+      if (p < mirror[0] || (p === mirror[0] && q <= mirror[1])) BRANCHED_SPECS.push({ m, methyls: [p, q] });
+    }
+  }
+}
+
+const MULTIPLIER = ["", "", "di", "tri"];
+
+export function branchedName(spec) {
+  return `${spec.methyls.join(",")}-${MULTIPLIER[spec.methyls.length]}methyl${ALKANE_BY_N[spec.m].name}`;
+}
+
+// C n H 2n+2 — branches don't change saturation.
+export function branchedFormula(spec) {
+  return alkaneFormula(spec.m + spec.methyls.length);
+}
+
+// CH3CH(CH3)CH2CH3 style: branches ride their chain carbon in parentheses.
+export function branchedCondensed(spec) {
+  const onCarbon = Array(spec.m + 1).fill(0);
+  spec.methyls.forEach((p) => { onCarbon[p] += 1; });
+  let s = "";
+  for (let c = 1; c <= spec.m; c++) {
+    const spent = (c > 1 ? 1 : 0) + (c < spec.m ? 1 : 0) + onCarbon[c];
+    const h = 4 - spent;
+    s += `C${h === 0 ? "" : h === 1 ? "H" : `H${h}`}`;
+    if (onCarbon[c]) s += `(CH3)${onCarbon[c] > 1 ? onCarbon[c] : ""}`;
+  }
+  return s;
+}
+
+export function buildProblemBranched(spec) {
+  const name = branchedName(spec);
+  const parent = ALKANE_BY_N[spec.m];
+  const k = spec.methyls.length;
+  const where = k === 1
+    ? `carbon ${spec.methyls[0]}`
+    : spec.methyls[0] === spec.methyls[1]
+      ? `carbon ${spec.methyls[0]} — both of them`
+      : `carbons ${spec.methyls.join(" and ")}`;
+  return {
+    spec,
+    mode: "build",
+    prompt: name,
+    answer: name,
+    n: spec.m + k,
+    formula: branchedFormula(spec),
+    condensed: branchedCondensed(spec),
+    hints: [
+      `Read it back to front: the parent chain is named last — ${parent.name} means ${spec.m} in a row. methyl = a one-carbon branch${k > 1 ? `, and ${MULTIPLIER[k]}- means ${k} of them` : ""}.`,
+      `Build the straight ${spec.m}-chain first, then hang ${k === 1 ? "a carbon" : "the extra carbons"} off ${where} (count from the end that keeps the numbers small).`,
+      `${spec.m} in the chain + ${k} hanging off = ${spec.m + k} carbons total. The hydrogens re-balance as each branch attaches.`
+    ]
+  };
+}
+
+export function makeBranchedDealer() {
+  const bag = makeBagDealer(BRANCHED_SPECS, (s) => branchedName(s));
+  return (rng = Math.random) => bag(DEFAULT_ROUND, rng);
+}
+
+// ── rung 5: alcohols — build-only, oxygen joins the tray ────────────────────────
+// Specs are {n: chain carbons, oh: locant}, straight chains only, one hydroxyl.
+export const ALCOHOL_SPECS = [];
+for (let n = 1; n <= 6; n++) {
+  for (let oh = 1; oh <= Math.ceil(n / 2); oh++) ALCOHOL_SPECS.push({ n, oh });
+}
+
+export function alcoholName(spec) {
+  const a = ALKANE_BY_N[spec.n];
+  return spec.n <= 2 ? `${a.root}anol` : `${a.root}an-${spec.oh}-ol`;
+}
+
+export function alcoholFormula(spec) {
+  return `C${spec.n > 1 ? spec.n : ""}H${2 * spec.n + 2}O`;
+}
+
+// OH written on its carbon: CH3CH2CH2OH, CH3CH(OH)CH3. The O is placed so a terminal
+// hydroxyl lands at the right-hand end, the way the spelling is usually met.
+export function alcoholCondensed(spec) {
+  const ohAt = spec.n + 1 - spec.oh;
+  let s = "";
+  for (let c = 1; c <= spec.n; c++) {
+    const spent = (c > 1 ? 1 : 0) + (c < spec.n ? 1 : 0) + (c === ohAt ? 1 : 0);
+    const h = 4 - spent;
+    const core = `C${h === 0 ? "" : h === 1 ? "H" : `H${h}`}`;
+    s += c === ohAt ? (c === spec.n ? `${core}OH` : `${core}(OH)`) : core;
+  }
+  return s;
+}
+
+export function buildProblemAlcohol(spec) {
+  const name = alcoholName(spec);
+  const a = ALKANE_BY_N[spec.n];
+  return {
+    spec,
+    mode: "build",
+    prompt: name,
+    answer: name,
+    n: spec.n,
+    formula: alcoholFormula(spec),
+    condensed: alcoholCondensed(spec),
+    hints: [
+      `‑ol means an –OH (hydroxyl) group. The rest is an alkane you already know: ${a.root}‑ = ${spec.n} carbon${spec.n === 1 ? "" : "s"}, all single bonds.`,
+      spec.n <= 2
+        ? `With ${spec.n === 1 ? "one carbon" : "two carbons"} every position is the same — the OH needs no number.`
+        : `The ${spec.oh} says the OH sits on carbon ${spec.oh} (count from the end that gives the small number).`,
+      `Build the ${spec.n}-chain, then drag an oxygen from the tray onto carbon ${spec.oh}. Oxygen takes two bonds — one to the chain, and it keeps one hydrogen. That's the hydroxyl.`
+    ]
+  };
+}
+
+export function makeAlcoholDealer() {
+  const bag = makeBagDealer(ALCOHOL_SPECS, (s) => alcoholName(s));
+  return (rng = Math.random) => bag(DEFAULT_ROUND, rng);
+}
+
+// Any build-direction spec → its problem. Alkane specs are {n}; unsaturated add
+// {slot, order}; branched are {m, methyls}; alcohols are {n, oh}.
 export function buildAnyStructure(spec) {
-  return spec.order ? buildProblemUnsaturated(spec) : buildProblemStructure(spec);
+  if (spec.methyls) return buildProblemBranched(spec);
+  if (spec.order) return buildProblemUnsaturated(spec);
+  if (spec.oh) return buildProblemAlcohol(spec);
+  return buildProblemStructure(spec);
 }
 
 // The rung-3 round recipe is fixed: 1 alkane + 2 alkenes + 2 alkynes, shuffled.
@@ -220,12 +353,35 @@ export function makeUnsaturatedDealer() {
   return (rng = Math.random) => shuffle([...anes(1, rng), ...enes(2, rng), ...ynes(2, rng)], rng);
 }
 
+// Shuffle-bag dealer over arbitrary specs, deduped within a round by key.
+function makeBagDealer(items, keyFn) {
+  let pile = [];
+  return function deal(k = DEFAULT_ROUND, rng = Math.random) {
+    const cards = [];
+    const used = new Set();
+    for (let i = 0; i < k; i++) {
+      if (pile.length === 0) pile = shuffle(items, rng);
+      let card = pile.pop();
+      for (let g = 0; used.has(keyFn(card)) && g < items.length; g++) {
+        if (pile.length === 0) pile = shuffle(items, rng);
+        card = pile.pop();
+      }
+      used.add(keyFn(card));
+      cards.push({ ...card });
+    }
+    return cards;
+  };
+}
+
 // The ladder. Rungs 1–2 share the alkane deck — what changes is the spelling the
-// student reads. Rung 3 is build-only (see the ruling above).
+// student reads. Rungs 3–5 are build-only (see the ruling above). The alcohols rung
+// puts oxygen in the tray.
 export const LEVELS = [
   { id: "molecular", label: "Molecular formulas", build: buildProblem },
   { id: "condensed", label: "Condensed formulas", build: buildProblemCondensed },
-  { id: "unsaturated", label: "Alkenes & alkynes", buildOnly: true }
+  { id: "unsaturated", label: "Alkenes & alkynes", buildOnly: true },
+  { id: "branched", label: "Branching", buildOnly: true },
+  { id: "alcohols", label: "Alcohols", buildOnly: true, trayElements: ["C", "O"] }
 ];
 
 // ── grading ─────────────────────────────────────────────────────────────────────

@@ -91,6 +91,101 @@ export function gradeAlkaneBuild(atoms, bonds, n) {
   return gradeChainBuild(atoms, bonds, { n });
 }
 
+// ── rung 4: branched alkanes ────────────────────────────────────────────────────
+// A branched target is a TREE SHAPE, not a numbered chain — the student may build it
+// mirrored, rotated, or drawn any way at all. So we compare canonical forms (AHU tree
+// canonization) instead of trying to re-derive IUPAC numbering from the drawing.
+function canonTree(ids, neighborsOf) {
+  // strip leaves until 1–2 centers remain
+  let alive = new Set(ids);
+  let degree = new Map(ids.map((id) => [id, neighborsOf(id).length]));
+  while (alive.size > 2) {
+    const leaves = [...alive].filter((id) => degree.get(id) <= 1);
+    for (const leaf of leaves) {
+      alive.delete(leaf);
+      for (const nb of neighborsOf(leaf)) {
+        if (alive.has(nb)) degree.set(nb, degree.get(nb) - 1);
+      }
+    }
+  }
+  const canon = (v, parent) => {
+    const kids = neighborsOf(v).filter((c) => c !== parent).map((c) => canon(c, v)).sort();
+    return `(${kids.join("")})`;
+  };
+  const centers = [...alive];
+  return centers.map((c) => canon(c, centers.length === 2 ? centers[(centers.indexOf(c) + 1) % 2] : null))
+    .sort()
+    .join("|");
+}
+
+function neighborsFromBonds(bonds) {
+  const adj = new Map();
+  const add = (a, b) => { if (!adj.has(a)) adj.set(a, []); adj.get(a).push(b); };
+  for (const b of bonds) { add(b.a, b.b); add(b.b, b.a); }
+  return (id) => adj.get(id) || [];
+}
+
+// target: {m: parent-chain length, methyls: [locants]} — e.g. 2-methylbutane = {m:4, methyls:[2]}
+export function gradeBranchedBuild(atoms, bonds, target) {
+  const n = target.m + target.methyls.length;
+  if (atoms.length === 0) return { ok: false, reason: "empty" };
+  if (atoms.some((a) => a.el !== "C")) return { ok: false, reason: "non-carbon" };
+  if (atoms.length !== n) return { ok: false, reason: "carbon-count" };
+  if (componentCount(atoms, bonds) > 1) return { ok: false, reason: "disconnected" };
+  if (bonds.length !== n - 1) return { ok: false, reason: "ring" };
+  if (bonds.some((b) => b.order !== 1)) return { ok: false, reason: "multiple-bond" };
+
+  // build the target tree: chain 1..m, then a methyl node hung on each locant
+  const tBonds = [];
+  for (let i = 1; i < target.m; i++) tBonds.push({ a: i, b: i + 1 });
+  target.methyls.forEach((p, i) => tBonds.push({ a: p, b: target.m + 1 + i }));
+  const tIds = Array.from({ length: n }, (_, i) => i + 1);
+
+  const same = canonTree(atoms.map((a) => a.id), neighborsFromBonds(bonds))
+    === canonTree(tIds, neighborsFromBonds(tBonds));
+  return same ? { ok: true } : { ok: false, reason: "wrong-skeleton" };
+}
+
+// ── rung 5: alcohols ────────────────────────────────────────────────────────────
+// target: {n: chain carbons, oh: locant} — a straight C-chain, all single bonds, with
+// ONE oxygen hanging off carbon `oh` (counted from either end). The oxygen keeps a
+// hydrogen by valence — that's the hydroxyl, and the canvas does it automatically.
+export function gradeAlcoholBuild(atoms, bonds, target) {
+  const { n, oh } = target;
+  if (atoms.length === 0) return { ok: false, reason: "empty" };
+  if (atoms.some((a) => a.el !== "C" && a.el !== "O")) return { ok: false, reason: "wrong-element" };
+  const os = atoms.filter((a) => a.el === "O");
+  const cs = atoms.filter((a) => a.el === "C");
+  if (os.length !== 1) return { ok: false, reason: "oxygen-count" };
+  if (cs.length !== n) return { ok: false, reason: "carbon-count" };
+  if (componentCount(atoms, bonds) > 1) return { ok: false, reason: "disconnected" };
+  if (bonds.length !== n) return { ok: false, reason: "ring" };  // n+1 atoms, tree
+  if (bonds.some((b) => b.order !== 1)) return { ok: false, reason: "multiple-bond" };
+
+  const o = os[0];
+  const neighbors = neighborsFromBonds(bonds);
+  const oNbs = neighbors(o.id);
+  if (oNbs.length !== 1) return { ok: false, reason: "ether" };  // O inside the chain
+
+  // the carbons alone must form a straight chain
+  const cBonds = bonds.filter((b) => b.a !== o.id && b.b !== o.id);
+  const chain = gradeChainBuild(cs, cBonds, { n });
+  if (!chain.ok) return chain;
+
+  // walk the chain to find which position holds the O — either end may count
+  if (n === 1) return oh === 1 ? { ok: true } : { ok: false, reason: "oh-position" };
+  const cNbs = neighborsFromBonds(cBonds);
+  let cur = cs.find((a) => cNbs(a.id).length === 1).id;
+  let prev = null;
+  for (let pos = 1; pos <= n; pos++) {
+    if (cur === oNbs[0] && (pos === oh || pos === n + 1 - oh)) return { ok: true };
+    const nxt = cNbs(cur).find((x) => x !== prev);
+    prev = cur;
+    cur = nxt;
+  }
+  return { ok: false, reason: "oh-position" };
+}
+
 function componentCount(atoms, bonds) {
   const seen = new Set();
   let comps = 0;
@@ -132,7 +227,11 @@ export function componentFormulas(atoms, bonds) {
     }
     const nC = comp.filter((x) => x.el === "C").length;
     const nH = comp.reduce((s, x) => s + hydrogenCount(x, bonds), 0);
-    out.push(`${nC ? `C${nC > 1 ? nC : ""}` : ""}${nH ? `H${nH > 1 ? nH : ""}` : ""}`);
+    // Hill order: C, then H, then everything else alphabetically (a lone O reads "H2O")
+    const rest = [...new Set(comp.map((x) => x.el).filter((el) => el !== "C"))].sort()
+      .map((el) => { const k = comp.filter((x) => x.el === el).length; return `${el}${k > 1 ? k : ""}`; })
+      .join("");
+    out.push(`${nC ? `C${nC > 1 ? nC : ""}` : ""}${nH ? `H${nH > 1 ? nH : ""}` : ""}${rest}`);
   }
   return out;
 }

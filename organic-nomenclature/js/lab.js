@@ -15,7 +15,14 @@ const FALL_V = 95;         // falling H speed, px/s — brisker than snow
 const TRAY_H = 92;
 const INK = "#2d2a23", LINE = "#8d8474";
 
-export function createLab(canvas, { onChange = () => {} } = {}) {
+// Ball styling per element. Oxygen wears the True-Autumn brick red (chemistry's
+// conventional red, warmed to the house palette); its letter goes light for contrast.
+const ELEMENT_STYLE = {
+  C: { fill: "#beb5a2", stroke: LINE, text: INK, label: "Carbon" },
+  O: { fill: "#b4502f", stroke: "#8a3c22", text: "#fff7ef", label: "Oxygen" }
+};
+
+export function createLab(canvas, { onChange = () => {}, elements = ["C"] } = {}) {
   const ctx = canvas.getContext("2d");
 
   let atoms = [];            // {id, el, x, y, hs: [{angle, vel, phase}]}
@@ -66,8 +73,8 @@ export function createLab(canvas, { onChange = () => {} } = {}) {
       });
   }
 
-  function spawnAtom(x, y) {
-    const atom = { id: nextId++, el: "C", x, y, hs: [] };
+  function spawnAtom(x, y, el = "C") {
+    const atom = { id: nextId++, el, x, y, hs: [] };
     atoms.push(atom);
     syncH(atom);
     return atom;
@@ -151,7 +158,9 @@ export function createLab(canvas, { onChange = () => {} } = {}) {
     const bond = bondAt(x, y);
     if (bond) { bondHit = bond; return; }
     if (inTray(x, y)) {
-      const a = spawnAtom(x, y);
+      const t = trayRect();
+      const section = Math.min(elements.length - 1, Math.floor(((x - t.x) / t.w) * elements.length));
+      const a = spawnAtom(x, y, elements[section]);
       drag = { id: a.id, dx: 0, dy: 0 };
       onChange();
     }
@@ -246,34 +255,46 @@ export function createLab(canvas, { onChange = () => {} } = {}) {
     // falling hydrogens sway like brisk snowflakes
     for (const p of falling) drawH(p.x + Math.sin(t * 2.1 + p.phase) * 9, p.y, 0.9);
 
-    // atoms: hydrogens first (tucked behind), carbon ball on top
+    // atoms: hydrogens first (tucked behind), heavy-atom ball on top
     for (const atom of atoms) {
       for (const h of atom.hs) {
         const a = h.angle + Math.sin(t * 1.6 + h.phase) * 0.055;  // the alive wobble
         drawH(atom.x + Math.cos(a) * H_ORBIT, atom.y + Math.sin(a) * H_ORBIT);
       }
+      const st = ELEMENT_STYLE[atom.el];
       ctx.beginPath(); ctx.arc(atom.x, atom.y, R_C, 0, Math.PI * 2);
-      ctx.fillStyle = "#beb5a2"; ctx.fill();
-      ctx.lineWidth = 2; ctx.strokeStyle = LINE; ctx.stroke();
-      ctx.fillStyle = INK; ctx.font = "700 17px Outfit, sans-serif";
-      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("C", atom.x, atom.y + 1);
+      ctx.fillStyle = st.fill; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = st.stroke; ctx.stroke();
+      ctx.fillStyle = st.text; ctx.font = "700 17px Outfit, sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(atom.el, atom.x, atom.y + 1);
     }
 
-    // tray: supply and bin in one
+    // tray: supply and bin in one, one section per element
     const tr = trayRect();
     ctx.beginPath(); ctx.roundRect(tr.x, tr.y, tr.w, tr.h, 14);
     ctx.fillStyle = "#efe8d8"; ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = "#e5dbc9"; ctx.stroke();
-    const cx = tr.x + tr.w / 2, cy = tr.y + tr.h / 2 - 6;
-    for (const o of [-34, 0, 34]) {
-      ctx.beginPath(); ctx.arc(cx + o, cy, R_C * 0.78, 0, Math.PI * 2);
-      ctx.fillStyle = "#beb5a2"; ctx.fill();
-      ctx.lineWidth = 1.5; ctx.strokeStyle = LINE; ctx.stroke();
-      ctx.fillStyle = INK; ctx.font = "700 14px Outfit, sans-serif";
-      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("C", cx + o, cy + 1);
-    }
-    ctx.fillStyle = "#897f6d"; ctx.font = "600 12px Lexend, sans-serif";
-    ctx.fillText("Carbon — drag one out · drop one back to remove it", cx, tr.y + tr.h - 16);
+    const secW = tr.w / elements.length;
+    elements.forEach((el, i) => {
+      const st = ELEMENT_STYLE[el];
+      const cx = tr.x + secW * i + secW / 2, cy = tr.y + tr.h / 2 - 6;
+      if (i > 0) {
+        ctx.beginPath(); ctx.moveTo(tr.x + secW * i, tr.y + 10); ctx.lineTo(tr.x + secW * i, tr.y + tr.h - 10);
+        ctx.lineWidth = 1; ctx.strokeStyle = "#e5dbc9"; ctx.stroke();
+      }
+      for (const o of elements.length > 1 ? [-20, 20] : [-34, 0, 34]) {
+        ctx.beginPath(); ctx.arc(cx + o, cy, R_C * 0.78, 0, Math.PI * 2);
+        ctx.fillStyle = st.fill; ctx.fill();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = st.stroke; ctx.stroke();
+        ctx.fillStyle = st.text; ctx.font = "700 14px Outfit, sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(el, cx + o, cy + 1);
+      }
+      ctx.fillStyle = "#897f6d"; ctx.font = "600 12px Lexend, sans-serif";
+      ctx.fillText(st.label, cx, tr.y + tr.h - 16);
+    });
+    ctx.fillStyle = "#b0a691"; ctx.font = "600 10px Lexend, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("drag one out · drop one back to remove it", tr.x + tr.w / 2, tr.y + 12);
   }
 
   // ── loop ──
