@@ -2,15 +2,17 @@
 // (structure grading); the lab canvas comes from lab.js. Same rhythm as the inorganic
 // builder: intro → 5-card round → done, progressive hints, missed cards rotate back.
 // Two directions per rung: formula → name (typed) and name → structure (built on canvas).
-import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildProblemStructure, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND } from "./organic.js";
-import { gradeAlkaneBuild } from "./chem.js";
+import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeUnsaturatedDealer, requeue, DEFAULT_ROUND } from "./organic.js";
+import { gradeChainBuild } from "./chem.js";
 import { createLab } from "./lab.js";
 
 const root = document.querySelector("#game");
 
-// One dealer per rung + one for the build direction (shared across rungs — building
-// propane is the same skill whichever spelling tab you came from).
+// One dealer per rung + one for the build direction (shared across the alkane rungs —
+// building propane is the same skill whichever spelling tab you came from). The
+// alkenes & alkynes rung deals its own fixed recipe: 1 alkane + 2 enes + 2 ynes.
 const dealers = { molecular: makeDealer(), condensed: makeDealer(), build: makeDealer() };
+const dealUnsaturated = makeUnsaturatedDealer();
 
 let levelIndex = 0; // 0 = molecular, 1 = condensed
 const level = () => LEVELS[levelIndex];
@@ -34,8 +36,10 @@ function killLab() {
 }
 
 function startRound(dir) {
-  direction = dir;
-  queue = dealers[dir === "build" ? "build" : level().id](DEFAULT_ROUND);
+  direction = level().buildOnly ? "build" : dir;
+  queue = level().buildOnly
+    ? dealUnsaturated()
+    : dealers[direction === "build" ? "build" : level().id](DEFAULT_ROUND);
   roundTotal = queue.length;
   masteredThisRound = 0;
   cleanSolves = 0;
@@ -45,7 +49,7 @@ function startRound(dir) {
 }
 
 function loadCard() {
-  problem = direction === "build" ? buildProblemStructure(queue[0]) : level().build(queue[0]);
+  problem = direction === "build" ? buildAnyStructure(queue[0]) : level().build(queue[0]);
   typed = "";
   hintsShown = 0;
   checked = false;
@@ -57,7 +61,8 @@ function check() {
   if (checked) return;
   if (direction === "build") {
     if (!lab || lab.atoms().length === 0) return;
-    graded = { correct: gradeAlkaneBuild(lab.atoms(), lab.bonds(), problem.n).ok };
+    const special = problem.spec.order ? { slot: problem.spec.slot, order: problem.spec.order } : null;
+    graded = { correct: gradeChainBuild(lab.atoms(), lab.bonds(), { n: problem.n, special }).ok };
     lab.setLocked(true);
   } else {
     if (!typed.trim()) return;
@@ -107,8 +112,14 @@ function wireTabs() {
   );
 }
 
-// Both directions are live: type the name, or build the structure on the lab canvas.
+// Alkane rungs offer both directions; the alkenes & alkynes rung is build-only —
+// a bare formula can't name these molecules, so there is nothing to type toward.
 function startControls() {
+  if (level().buildOnly) {
+    return `<div class="controls two-up">
+      <button class="action primary alt" id="startBuild">Build the molecule</button>
+    </div>`;
+  }
   return `<div class="controls two-up">
     <button class="action primary" id="startName">Name the alkane</button>
     <button class="action primary alt" id="startBuild">Build the molecule</button>
@@ -116,7 +127,8 @@ function startControls() {
 }
 
 function wireStartControls() {
-  root.querySelector("#startName").addEventListener("click", () => startRound("name"));
+  const nameBtn = root.querySelector("#startName");
+  if (nameBtn) nameBtn.addEventListener("click", () => startRound("name"));
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
 }
 
@@ -180,8 +192,41 @@ function introCondensed() {
   </div>`;
 }
 
+function introUnsaturated() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Alkenes &amp; alkynes · build only</p>
+    <p class="intro-lede">Two new families. The suffix changes — and picks up a new job: saying <strong>where</strong> the bond is.</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">root</span>
+        <span class="block-sub">how many carbons</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main"><em class="suffix-ane">ene</em> / <em class="suffix-ane">yne</em></span>
+        <span class="block-sub">one double bond / one triple bond</span>
+      </div>
+    </div>
+    <p class="schema-note">From four carbons up, a number names the bond's parking spot: <strong>but‑1‑ene</strong> has its double bond between C‑1 and C‑2, <strong>but‑2‑ene</strong> between C‑2 and C‑3.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">eth</span><span class="w-ane">ene</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH2=CH2")}</span></div>
+      <div class="ex-map"><span class="w-root">but-2-</span><span class="w-ane">ene</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH=CHCH3")}</span></div>
+      <div class="ex-map"><span class="w-root">but-1-</span><span class="w-ane">yne</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH≡CCH2CH3")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li>Hydrogens keep the books: alkenes are C<sub>n</sub>H<sub>2n</sub>, alkynes C<sub>n</sub>H<sub>2n−2</sub> — a double bond costs two H's, a triple costs four.</li>
+      <li>Why is there no formula&nbsp;→&nbsp;name here? Because ${toSubHtml("C4H8")} refuses to say where the bond sits — but‑1‑ene and but‑2‑ene are <strong>both</strong> ${toSubHtml("C4H8")}. Only the structure knows. So here, you build.</li>
+      <li>On the canvas: chain the carbons single-bonded first, then <strong>click a bond</strong> to cycle it single → double → triple.</li>
+    </ul>
+    <p class="pt-note">Every round mixes it up: one alkane, two alkenes, two alkynes — read the suffix before you build.</p>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
-  const body = level().id === "molecular" ? introMolecular() : introCondensed();
+  const body = level().id === "molecular" ? introMolecular()
+    : level().id === "condensed" ? introCondensed()
+    : introUnsaturated();
   root.innerHTML = `${levelTabs()}${body}`;
   wireTabs();
   wireStartControls();
@@ -260,9 +305,9 @@ function renderPlayName() {
 // would destroy the canvas — and the student's half-built molecule with it.
 function renderPlayBuild() {
   root.innerHTML = `
-    <button class="intro-link" id="introBtn" type="button">↩ How alkane names work</button>
+    <button class="intro-link" id="introBtn" type="button">↩ How ${level().buildOnly ? "these names" : "alkane names"} work</button>
     <div class="formula-card">
-      <span class="card-tag">Organic · Alkanes · build it</span>
+      <span class="card-tag">Organic · ${level().buildOnly ? "Alkenes &amp; alkynes" : "Alkanes"} · build it</span>
       <p class="build-target">${problem.prompt}</p>
     </div>
 
@@ -328,8 +373,9 @@ function updateBuildAfterCheck() {
 // ── done ──
 function renderDone() {
   const verb = direction === "build" ? "Built" : "Named";
+  const noun = level().buildOnly ? "molecules" : "alkanes";
   const missedChips = missedThisRound
-    .map((s) => `<span class="chip">${direction === "build" ? buildProblemStructure(s).answer : toSubHtml(level().build(s).formula)}</span>`)
+    .map((s) => `<span class="chip">${direction === "build" ? buildAnyStructure(s).answer : toSubHtml(level().build(s).formula)}</span>`)
     .join("");
   const missedBlock = missedThisRound.length
     ? `<div class="missed-block">
@@ -340,10 +386,12 @@ function renderDone() {
 
   root.innerHTML = `
     ${levelTabs()}
-    <p class="prompt">Round done — ${roundTotal} alkanes, ${cleanSolves} ${verb.toLowerCase()} hint-free.</p>
+    <p class="prompt">Round done — ${roundTotal} ${noun}, ${cleanSolves} ${verb.toLowerCase()} hint-free.</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
-    <p class="done-next">Two rounds cover the whole ladder, methane through decane.</p>
+    <p class="done-next">${level().buildOnly
+      ? "Every round mixes one alkane, two alkenes, two alkynes — fifty molecules in the rotation."
+      : "Two rounds cover the whole ladder, methane through decane."}</p>
     ${startControls()}`;
 
   wireTabs();

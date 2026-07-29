@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { VALENCE, bondSum, hydrogenCount, canBond, nextOrder, componentFormulas, gradeAlkaneBuild } from "./chem.js";
+import { VALENCE, bondSum, hydrogenCount, canBond, nextOrder, componentFormulas, gradeAlkaneBuild, gradeChainBuild } from "./chem.js";
 
 const C = (id) => ({ id, el: "C" });
 
@@ -82,4 +82,29 @@ test("gradeAlkaneBuild rejects wrong or sloppy structures with the right reason"
   // isobutane: central carbon bonded to three others
   const iso = { atoms: chain(4).atoms, bonds: [1, 3, 4].map((x) => ({ a: 2, b: x, order: 1 })) };
   assert.equal(r(iso.atoms, iso.bonds, 4), "branched");
+});
+
+// ── chains with one double/triple bond in a named slot ──
+const chainWith = (n, orders) => ({
+  atoms: chain(n).atoms,
+  bonds: orders.map((o, i) => ({ a: i + 1, b: i + 2, order: o }))
+});
+
+test("gradeChainBuild: the special bond must sit in the named slot", () => {
+  const target = (n, slot, order) => ({ n, special: { slot, order } });
+  // but-2-ene: double bond in the middle
+  assert.ok(gradeChainBuild(chain(4).atoms, chainWith(4, [1, 2, 1]).bonds, target(4, 2, 2)).ok);
+  // but-1-ene built "backwards" — bond at the far end — is still but-1-ene
+  assert.ok(gradeChainBuild(chain(4).atoms, chainWith(4, [2, 1, 1]).bonds, target(4, 1, 2)).ok);
+  assert.ok(gradeChainBuild(chain(4).atoms, chainWith(4, [1, 1, 2]).bonds, target(4, 1, 2)).ok);
+  // wrong slot: middle bond when but-1-ene was asked
+  assert.equal(gradeChainBuild(chain(4).atoms, chainWith(4, [1, 2, 1]).bonds, target(4, 1, 2)).reason, "bond-order-or-position");
+  // right slot, wrong order: triple where a double was named
+  assert.equal(gradeChainBuild(chain(4).atoms, chainWith(4, [3, 1, 1]).bonds, target(4, 1, 2)).reason, "bond-order-or-position");
+  // two double bonds is a diene, not an -ene
+  assert.equal(gradeChainBuild(chain(4).atoms, chainWith(4, [2, 2, 1]).bonds, target(4, 1, 2)).reason, "bond-order-or-position");
+  // a plain alkane chain fails an -ene target
+  assert.equal(gradeChainBuild(chain(4).atoms, chain(4).bonds, target(4, 1, 2)).reason, "bond-order-or-position");
+  // ethyne: the two-carbon chain leaves one slot
+  assert.ok(gradeChainBuild(chain(2).atoms, chainWith(2, [3]).bonds, target(2, 1, 3)).ok);
 });

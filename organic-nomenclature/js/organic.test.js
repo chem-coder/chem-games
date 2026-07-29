@@ -3,7 +3,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   ALKANES, ALKANE_BY_N, ROOTS, alkaneFormula, condensedFormula, toSubHtml, toChainHtml,
-  buildProblem, buildProblemCondensed, LEVELS, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND
+  buildProblem, buildProblemCondensed, LEVELS, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND,
+  distinctSlots, unsaturatedName, unsaturatedFormula, unsaturatedCondensed,
+  ENE_SPECS, YNE_SPECS, buildProblemUnsaturated, makeUnsaturatedDealer
 } from "./organic.js";
 
 // ── the deck: ten alkanes, CnH2n+2, root + -ane ─────────────────────────────────
@@ -78,10 +80,61 @@ test("condensed problems prompt with the chain and grade the same names", () => 
   assert.ok(!gradeAnswer(p, "propane").correct);
 });
 
-test("the ladder: molecular then condensed, same deck", () => {
-  assert.deepEqual(LEVELS.map((l) => l.id), ["molecular", "condensed"]);
+test("the ladder: molecular, condensed, then build-only alkenes & alkynes", () => {
+  assert.deepEqual(LEVELS.map((l) => l.id), ["molecular", "condensed", "unsaturated"]);
   assert.equal(LEVELS[0].build({ n: 6 }).prompt, "C6H14");
   assert.equal(LEVELS[1].build({ n: 6 }).prompt, "CH3CH2CH2CH2CH2CH3");
+  assert.ok(LEVELS[2].buildOnly, "no formula→name direction for enes/ynes");
+});
+
+// ── rung 3: alkenes & alkynes ───────────────────────────────────────────────────
+test("unsaturated names: locant only when the chain leaves a choice", () => {
+  assert.equal(unsaturatedName({ n: 2, slot: 1, order: 2 }), "ethene");
+  assert.equal(unsaturatedName({ n: 3, slot: 1, order: 3 }), "propyne");
+  assert.equal(unsaturatedName({ n: 4, slot: 1, order: 2 }), "but-1-ene");
+  assert.equal(unsaturatedName({ n: 4, slot: 2, order: 3 }), "but-2-yne");
+  assert.equal(unsaturatedName({ n: 6, slot: 3, order: 2 }), "hex-3-ene");
+});
+
+test("symmetry caps the slots: no pent-3-ene, 25 specs per family", () => {
+  assert.equal(distinctSlots(5), 2);   // pent-3-ene is pent-2-ene from the other end
+  assert.equal(distinctSlots(10), 5);
+  assert.equal(ENE_SPECS.length, 25);
+  assert.equal(YNE_SPECS.length, 25);
+  assert.ok(ENE_SPECS.every((s) => s.slot <= distinctSlots(s.n) && s.order === 2));
+  assert.ok(YNE_SPECS.every((s) => s.order === 3));
+});
+
+test("unsaturated formulas: a double bond costs 2 H, a triple costs 4", () => {
+  assert.equal(unsaturatedFormula({ n: 4, slot: 1, order: 2 }), "C4H8");
+  assert.equal(unsaturatedFormula({ n: 4, slot: 2, order: 3 }), "C4H6");
+});
+
+test("condensed spellings draw the bond in", () => {
+  assert.equal(unsaturatedCondensed({ n: 2, slot: 1, order: 2 }), "CH2=CH2");
+  assert.equal(unsaturatedCondensed({ n: 2, slot: 1, order: 3 }), "CH≡CH");
+  assert.equal(unsaturatedCondensed({ n: 4, slot: 1, order: 2 }), "CH2=CHCH2CH3");
+  assert.equal(unsaturatedCondensed({ n: 4, slot: 2, order: 3 }), "CH3C≡CCH3");
+  assert.equal(unsaturatedCondensed({ n: 3, slot: 1, order: 2 }), "CH2=CHCH3");
+});
+
+test("unsaturated problems: name prompt, 3 hints, locant spelled out", () => {
+  const p = buildProblemUnsaturated({ n: 5, slot: 2, order: 2 });
+  assert.equal(p.prompt, "pent-2-ene");
+  assert.equal(p.mode, "build");
+  assert.equal(p.hints.length, 3);
+  assert.match(p.hints[1], /between C‑2 and C‑3/);
+});
+
+test("rung-3 dealer recipe: 1 alkane + 2 alkenes + 2 alkynes, shuffled", () => {
+  const deal = makeUnsaturatedDealer();
+  for (let round = 0; round < 12; round++) {
+    const cards = deal();
+    assert.equal(cards.length, 5);
+    assert.equal(cards.filter((c) => !c.order).length, 1, "one alkane");
+    assert.equal(cards.filter((c) => c.order === 2).length, 2, "two alkenes");
+    assert.equal(cards.filter((c) => c.order === 3).length, 2, "two alkynes");
+  }
 });
 
 // ── grading: accepted set, case/space-forgiving, chemistry-strict ───────────────
