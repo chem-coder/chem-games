@@ -2,8 +2,8 @@
 // (structure grading); the lab canvas comes from lab.js. Same rhythm as the inorganic
 // builder: intro → 5-card round → done, progressive hints, missed cards rotate back.
 // Two directions per rung: formula → name (typed) and name → structure (built on canvas).
-import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeUnsaturatedDealer, makeBranchedDealer, makeAlcoholDealer, requeue, DEFAULT_ROUND } from "./organic.js";
-import { gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild } from "./chem.js";
+import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeUnsaturatedDealer, makeBranchedDealer, makeAlcoholDealer, makeCarbonylDealer, makeEtherDealer, makeAcidEsterDealer, makeNitrogenDealer, requeue, DEFAULT_ROUND } from "./organic.js";
+import { gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild, gradeIsomorphic } from "./chem.js";
 import { createLab } from "./lab.js";
 
 const root = document.querySelector("#game");
@@ -15,7 +15,11 @@ const dealers = { molecular: makeDealer(), condensed: makeDealer(), build: makeD
 const buildDealers = {
   unsaturated: makeUnsaturatedDealer(),
   branched: makeBranchedDealer(),
-  alcohols: makeAlcoholDealer()
+  alcohols: makeAlcoholDealer(),
+  carbonyls: makeCarbonylDealer(),
+  ethers: makeEtherDealer(),
+  acids: makeAcidEsterDealer(),
+  nitrogen: makeNitrogenDealer()
 };
 
 let levelIndex = 0; // 0 = molecular, 1 = condensed
@@ -66,7 +70,8 @@ function check() {
   if (direction === "build") {
     if (!lab || lab.atoms().length === 0) return;
     const s = problem.spec;
-    const result = s.methyls ? gradeBranchedBuild(lab.atoms(), lab.bonds(), s)
+    const result = problem.target ? gradeIsomorphic(lab.atoms(), lab.bonds(), problem.target, problem.allowed)
+      : s.methyls ? gradeBranchedBuild(lab.atoms(), lab.bonds(), s)
       : s.oh ? gradeAlcoholBuild(lab.atoms(), lab.bonds(), s)
       : gradeChainBuild(lab.atoms(), lab.bonds(), {
           n: problem.n,
@@ -292,12 +297,131 @@ function introAlcohols() {
   </div>`;
 }
 
+function introCarbonyls() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Aldehydes &amp; ketones · build only</p>
+    <p class="intro-lede">One group, two families. The <strong>carbonyl</strong> — a C=O — and everything hangs on WHERE it sits:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main"><em class="suffix-ane">-al</em></span>
+        <span class="block-sub">C=O on an END carbon — aldehyde</span>
+      </div>
+      <span class="schema-plus">vs</span>
+      <div class="block anion">
+        <span class="block-main"><em class="suffix-ane">-one</em></span>
+        <span class="block-sub">C=O on an INSIDE carbon — ketone</span>
+      </div>
+    </div>
+    <p class="schema-note">Aldehydes never need a locant (the end IS carbon 1); ketones name theirs: <strong>pentan‑2‑one</strong> vs <strong>pentan‑3‑one</strong>.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">propan</span><span class="w-ane">al</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH2CHO")}</span></div>
+      <div class="ex-map"><span class="w-root">propan-2-</span><span class="w-ane">one</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3COCH3")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li>Same formula, different molecule: propanal and propan‑2‑one are both ${toSubHtml("C3H6O")} — the position decides. So here, you build.</li>
+      <li>On the canvas: bond an O to the right carbon, then <strong>click the bond</strong> to make it double. Watch the hydrogens: an aldehyde's carbonyl carbon keeps one H, a ketone's keeps none.</li>
+    </ul>
+    ${startControls()}
+  </div>`;
+}
+
+function introEthers() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Ethers · build only</p>
+    <p class="intro-lede">An ether is an oxygen <strong>bridge</strong> — C–O–C, carbon chains on both sides:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main">methoxy</span>
+        <span class="block-sub">the shorter chain + its O, named first</span>
+      </div>
+      <span class="schema-plus">+</span>
+      <div class="block anion">
+        <span class="block-main">ethane</span>
+        <span class="block-sub">the longer chain — the parent</span>
+      </div>
+    </div>
+    <p class="schema-note">From propane up, a locant says which carbon holds the bridge: <strong>1‑methoxypropane</strong> vs <strong>2‑methoxypropane</strong>.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">methoxy</span><span class="w-ane">ethane</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3OCH2CH3")}</span></div>
+      <div class="ex-map"><span class="w-root">2-methoxy</span><span class="w-ane">propane</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH(OCH3)CH3")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li>Watch the isomer trap: ethanol and methoxymethane are both ${toSubHtml("C2H6O")} — OH on a chain vs O between chains. Different families, different chemistry.</li>
+      <li>You'll meet the old names too: methoxymethane = <strong>dimethyl ether</strong>, ethoxyethane = <strong>diethyl ether</strong> — the reveal shows both.</li>
+      <li>On the canvas: build both chains, then drop an O between them. Bridged both ways, the O keeps <strong>zero</strong> hydrogens.</li>
+    </ul>
+    ${startControls()}
+  </div>`;
+}
+
+function introAcids() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Acids &amp; esters · build only</p>
+    <p class="intro-lede">The carboxyl group is a double feature on one end carbon — and esters are its handshake with an alcohol:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main"><em class="suffix-ane">-oic acid</em></span>
+        <span class="block-sub">C=O and –OH on the same end carbon</span>
+      </div>
+      <span class="schema-plus">→</span>
+      <div class="block anion">
+        <span class="block-main"><em class="suffix-ane">-oate</em></span>
+        <span class="block-sub">the OH's hydrogen swapped for a chain — an ester</span>
+      </div>
+    </div>
+    <p class="schema-note">Ester names read alkyl-first: <strong>methyl ethanoate</strong> = ethanoic acid's frame, a methyl where the acid's H used to be.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">ethanoic</span><span class="w-ane">&nbsp;acid</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3COOH")}</span></div>
+      <div class="ex-map"><span class="w-root">methyl ethan</span><span class="w-ane">oate</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3COOCH3")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li>The isomer trap again: ethanoic acid and methyl methanoate are both ${toSubHtml("C2H4O2")}. Only the structure knows which is which.</li>
+      <li>On the canvas: the end carbon takes TWO oxygens — click one C–O bond to double it, leave the other single. For an ester, keep growing the chain off the single O.</li>
+      <li>Hydrogen tells: an acid's single O keeps one H; an ester's bridge O keeps none.</li>
+    </ul>
+    ${startControls()}
+  </div>`;
+}
+
+function introNitrogen() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Amines &amp; amides · build only</p>
+    <p class="intro-lede">Nitrogen joins the tray — <strong>three bonds</strong>, teal ball, and two families:</p>
+    <div class="schema">
+      <div class="block cation">
+        <span class="block-main"><em class="suffix-ane">-amine</em></span>
+        <span class="block-sub">N on the chain — it keeps two H's (–NH&#8322;)</span>
+      </div>
+      <span class="schema-plus">vs</span>
+      <div class="block anion">
+        <span class="block-main"><em class="suffix-ane">-amide</em></span>
+        <span class="block-sub">C=O <strong>and</strong> N on the same end carbon</span>
+      </div>
+    </div>
+    <p class="schema-note">Amines take locants like alcohols do: <strong>propan‑1‑amine</strong> vs <strong>propan‑2‑amine</strong>. Amides don't — their group owns carbon 1.</p>
+    <div class="ex-maps">
+      <div class="ex-map"><span class="w-root">methan</span><span class="w-ane">amine</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3NH2")}</span></div>
+      <div class="ex-map"><span class="w-root">propan-2-</span><span class="w-ane">amine</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CH(NH2)CH3")}</span></div>
+      <div class="ex-map"><span class="w-root">ethan</span><span class="w-ane">amide</span><span class="arrow">→</span><span class="ex-f">${toSubHtml("CH3CONH2")}</span></div>
+    </div>
+    <ul class="pt-points">
+      <li>The valence ladder in one tray: C wants 4 bonds, N wants 3, O wants 2 — count the hydrogens each ball keeps.</li>
+      <li>An amide is the acid family with N standing in: C=O plus –NH&#8322; on one carbon. Build it like an acid, then swap the story.</li>
+    </ul>
+    ${startControls()}
+  </div>`;
+}
+
 const INTROS = {
   molecular: introMolecular,
   condensed: introCondensed,
   unsaturated: introUnsaturated,
   branched: introBranched,
-  alcohols: introAlcohols
+  alcohols: introAlcohols,
+  carbonyls: introCarbonyls,
+  ethers: introEthers,
+  acids: introAcids,
+  nitrogen: introNitrogen
 };
 
 function renderIntro() {
@@ -467,7 +591,11 @@ function renderDone() {
     <p class="done-next">${{
       unsaturated: "Every round mixes one alkane, two alkenes, two alkynes — fifty molecules in the rotation.",
       branched: "Twenty-two branched skeletons in the rotation, methylpropane through the dimethylhexanes.",
-      alcohols: "Twelve alcohols in the rotation, methanol through hexan-3-ol."
+      alcohols: "Twelve alcohols in the rotation, methanol through hexan-3-ol.",
+      carbonyls: "Every round deals two aldehydes and three ketones — the skill is end vs inside.",
+      ethers: "Six bridges in the rotation, dimethyl ether to 1-ethoxypropane.",
+      acids: "Every round deals two acids and three esters — watch which oxygen keeps its hydrogen.",
+      nitrogen: "Every round deals three amines and two amides — nitrogen two ways."
     }[level().id] || "Two rounds cover the whole ladder, methane through decane."}</p>
     ${startControls()}`;
 

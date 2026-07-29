@@ -2,7 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   VALENCE, bondSum, hydrogenCount, canBond, nextOrder, componentFormulas,
-  gradeAlkaneBuild, gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild
+  gradeAlkaneBuild, gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild,
+  canonMolecule, gradeIsomorphic
 } from "./chem.js";
 
 const C = (id) => ({ id, el: "C" });
@@ -166,6 +167,31 @@ test("gradeAlcoholBuild: one O on the named carbon, either end counts", () => {
   assert.equal(gradeAlcoholBuild(carbonyl.atoms, carbonyl.bonds, { n: 1, oh: 1 }).reason, "multiple-bond");
   // no oxygen at all
   assert.equal(gradeAlcoholBuild(chain(3).atoms, chain(3).bonds, { n: 3, oh: 1 }).reason, "oxygen-count");
+});
+
+// ── labeled-graph isomorphism for the functional-group rungs ──
+test("gradeIsomorphic separates constitutional isomers", () => {
+  // ethanol and methoxymethane are both C2H6O — structure must decide
+  const ethanol = { atoms: [C(1), C(2), { id: 3, el: "O" }], bonds: [{ a: 1, b: 2, order: 1 }, { a: 2, b: 3, order: 1 }] };
+  const ether = { atoms: [C(1), C(2), { id: 3, el: "O" }], bonds: [{ a: 1, b: 3, order: 1 }, { a: 3, b: 2, order: 1 }] };
+  assert.equal(gradeIsomorphic(ethanol.atoms, ethanol.bonds, ether, ["C", "O"]).reason, "wrong-structure");
+  assert.ok(gradeIsomorphic(ether.atoms, ether.bonds, ether, ["C", "O"]).ok);
+  // same molecule drawn with scrambled ids still matches
+  const etherScrambled = { atoms: [{ id: 7, el: "O" }, C(9), C(4)], bonds: [{ a: 9, b: 7, order: 1 }, { a: 7, b: 4, order: 1 }] };
+  assert.ok(gradeIsomorphic(etherScrambled.atoms, etherScrambled.bonds, ether, ["C", "O"]).ok);
+  // ethanoic acid and methyl methanoate are both C2H4O2
+  const acid = { atoms: [C(1), C(2), { id: 3, el: "O" }, { id: 4, el: "O" }], bonds: [{ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 2 }, { a: 1, b: 4, order: 1 }] };
+  const ester = { atoms: [C(1), C(2), { id: 3, el: "O" }, { id: 4, el: "O" }], bonds: [{ a: 1, b: 3, order: 2 }, { a: 1, b: 4, order: 1 }, { a: 4, b: 2, order: 1 }] };
+  assert.equal(canonMolecule(acid.atoms, acid.bonds) === canonMolecule(ester.atoms, ester.bonds), false);
+  assert.equal(gradeIsomorphic(ester.atoms, ester.bonds, acid, ["C", "O"]).reason, "wrong-structure");
+  // bond order is part of identity: single C–O is not the carbonyl C=O
+  const single = { atoms: [C(1), { id: 2, el: "O" }], bonds: [{ a: 1, b: 2, order: 1 }] };
+  const dbl = { atoms: [C(1), { id: 2, el: "O" }], bonds: [{ a: 1, b: 2, order: 2 }] };
+  assert.equal(gradeIsomorphic(single.atoms, single.bonds, dbl, ["C", "O"]).reason, "wrong-structure");
+  // wrong element and wrong count fail before structure
+  const amine = { atoms: [C(1), { id: 2, el: "N" }], bonds: [{ a: 1, b: 2, order: 1 }] };
+  assert.equal(gradeIsomorphic(amine.atoms, amine.bonds, dbl, ["C", "O"]).reason, "wrong-element");
+  assert.equal(gradeIsomorphic([C(1)], [], dbl, ["C", "O"]).reason, "atom-count");
 });
 
 test("componentFormulas counts oxygen (and a lone O reads as water)", () => {

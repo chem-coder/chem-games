@@ -19,7 +19,8 @@ const INK = "#2d2a23", LINE = "#8d8474";
 // conventional red, warmed to the house palette); its letter goes light for contrast.
 const ELEMENT_STYLE = {
   C: { fill: "#beb5a2", stroke: LINE, text: INK, label: "Carbon" },
-  O: { fill: "#b4502f", stroke: "#8a3c22", text: "#fff7ef", label: "Oxygen" }
+  O: { fill: "#b4502f", stroke: "#8a3c22", text: "#fff7ef", label: "Oxygen" },
+  N: { fill: "#1e7268", stroke: "#134f48", text: "#eef6f2", label: "Nitrogen" }
 };
 
 export function createLab(canvas, { onChange = () => {}, elements = ["C"] } = {}) {

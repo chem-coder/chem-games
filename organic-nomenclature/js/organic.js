@@ -323,9 +323,196 @@ export function makeAlcoholDealer() {
   return (rng = Math.random) => bag(DEFAULT_ROUND, rng);
 }
 
+// ── rungs 6–9: functional groups ────────────────────────────────────────────────
+// Each spec carries an explicit `kind` and becomes a target GRAPH (elements + bond
+// orders); grading is isomorphism against that graph (chem.js gradeIsomorphic).
+// Chains stay modest (≤6 C) — the skill is the functional group, not endurance.
+
+// tiny graph builder for targets
+function makeGraph() {
+  let id = 0;
+  const atoms = [], bonds = [];
+  return {
+    add(el) { atoms.push({ id: ++id, el }); return id; },
+    bond(a, b, order = 1) { bonds.push({ a, b, order }); },
+    chain(n) { const ids = []; for (let i = 0; i < n; i++) { ids.push(this.add("C")); if (i) this.bond(ids[i - 1], ids[i]); } return ids; },
+    out() { return { atoms, bonds }; }
+  };
+}
+
+const fmtC = (c) => `C${c > 1 ? c : ""}`;
+const chainStr = (n, tail) => (n === 1 ? `H${tail}` : `CH3${"CH2".repeat(n - 2)}${tail}`);
+const alkylStr = (m) => (m === 1 ? "CH3" : `${"CH2".repeat(m - 1)}CH3`);
+
+export const FAMILIES = {
+  aldehyde: {
+    name: (s) => `${ALKANE_BY_N[s.n].root}anal`,
+    formula: (s) => `${fmtC(s.n)}H${2 * s.n}O`,
+    condensed: (s) => chainStr(s.n, "CHO"),
+    graph(s) { const g = makeGraph(); const c = g.chain(s.n); g.bond(c[0], g.add("O"), 2); return g.out(); },
+    hints: (s) => [
+      "‑al means a carbonyl (C=O) on an END carbon — that's what makes an aldehyde. No locant needed: it's always carbon 1.",
+      `${ALKANE_BY_N[s.n].root}‑ = ${s.n} carbon${s.n === 1 ? "" : "s"}. Build the chain, then bond an O to an end carbon.`,
+      "Click the C–O bond once to make it double. The carbonyl carbon keeps its H — that H is the aldehyde's signature."
+    ]
+  },
+  ketone: {
+    name: (s) => `${ALKANE_BY_N[s.n].root}an-${s.slot}-one`,
+    formula: (s) => `${fmtC(s.n)}H${2 * s.n}O`,
+    condensed: (s) => `CH3${"CH2".repeat(s.n - s.slot - 1)}CO${"CH2".repeat(s.slot - 2)}CH3`,
+    graph(s) { const g = makeGraph(); const c = g.chain(s.n); g.bond(c[s.slot - 1], g.add("O"), 2); return g.out(); },
+    hints: (s) => [
+      "‑one is also a carbonyl (C=O) — but on an INSIDE carbon. That's the whole aldehyde/ketone difference: end vs middle.",
+      `${ALKANE_BY_N[s.n].root}‑ = ${s.n} carbons, and the ${s.slot} parks the C=O on carbon ${s.slot}.`,
+      `Build the ${s.n}-chain, bond an O to carbon ${s.slot}, click the bond to make it double. No H survives on a ketone's carbonyl carbon.`
+    ]
+  },
+  ether: {
+    name: (s) => `${s.n >= 3 ? `${s.at}-` : ""}${ALKANE_BY_N[s.alkoxy].root}oxy${ALKANE_BY_N[s.n].name}`,
+    formula: (s) => `${fmtC(s.alkoxy + s.n)}H${2 * (s.alkoxy + s.n) + 2}O`,
+    condensed: (s) => s.at === 1
+      ? `${s.alkoxy === 1 ? "CH3" : "CH3CH2"}O${s.n === 1 ? "CH3" : `CH2${"CH2".repeat(s.n - 2)}CH3`}`
+      : `CH3CH(O${s.alkoxy === 1 ? "CH3" : "CH2CH3"})CH3`,
+    graph(s) {
+      const g = makeGraph();
+      const left = g.chain(s.alkoxy), o = g.add("O"), right = g.chain(s.n);
+      g.bond(left[0], o); g.bond(o, right[s.at - 1]);
+      return g.out();
+    },
+    hints: (s) => [
+      "An ether is an oxygen BRIDGE: C–O–C, chains on both sides. The ‑oxy half is the shorter chain, named first.",
+      `${ALKANE_BY_N[s.alkoxy].root}oxy = ${s.alkoxy} carbon${s.alkoxy === 1 ? "" : "s"} on one side of the O; ${ALKANE_BY_N[s.n].name} = ${s.n} on the other${s.n >= 3 ? `, with the O on carbon ${s.at}` : ""}.`,
+      "Build both chains, then drop an O between them — it bonds to each side and the bridge closes. The O keeps no hydrogens: both its bonds are spent."
+    ]
+  },
+  acid: {
+    name: (s) => `${ALKANE_BY_N[s.n].root}anoic acid`,
+    formula: (s) => `${fmtC(s.n)}H${2 * s.n}O2`,
+    condensed: (s) => chainStr(s.n, "COOH"),
+    graph(s) { const g = makeGraph(); const c = g.chain(s.n); g.bond(c[0], g.add("O"), 2); g.bond(c[0], g.add("O")); return g.out(); },
+    hints: (s) => [
+      "‑oic acid is a DOUBLE feature on one end carbon: a C=O and an –OH, together. That pair is the carboxyl group, COOH.",
+      `${ALKANE_BY_N[s.n].root}‑ = ${s.n} carbon${s.n === 1 ? "" : "s"}. Build the chain, then give the end carbon TWO oxygens.`,
+      "One O stays single-bonded (it keeps an H — the acid's OH); click the other C–O bond to make it double. End carbon: two O's, no H left on it" + (s.n === 1 ? " except methanoic acid's one" : "") + "."
+    ]
+  },
+  ester: {
+    name: (s) => `${["", "methyl", "ethyl", "propyl"][s.alkyl]} ${ALKANE_BY_N[s.acyl].root}anoate`,
+    formula: (s) => `${fmtC(s.acyl + s.alkyl)}H${2 * (s.acyl + s.alkyl)}O2`,
+    condensed: (s) => chainStr(s.acyl, "COO") + alkylStr(s.alkyl),
+    graph(s) {
+      const g = makeGraph();
+      const acyl = g.chain(s.acyl);
+      g.bond(acyl[0], g.add("O"), 2);
+      const bridge = g.add("O");
+      g.bond(acyl[0], bridge);
+      const alkyl = g.chain(s.alkyl);
+      g.bond(bridge, alkyl[0]);
+      return g.out();
+    },
+    hints: (s) => [
+      "An ester is an acid whose –OH hydrogen was replaced by a carbon chain: C(=O)–O–C. Named alkyl first, then the acid part as ‑oate.",
+      `${["", "methyl", "ethyl", "propyl"][s.alkyl]} = ${s.alkyl} carbon${s.alkyl === 1 ? "" : "s"} on the far side of the bridge O; ${ALKANE_BY_N[s.acyl].root}anoate = the ${s.acyl}-carbon acid part, C=O included.`,
+      "Build the acid part first (chain + double-bonded O + single-bonded O), then grow the alkyl chain off the single O. That O ends up with no H — both bonds spent."
+    ]
+  },
+  amine: {
+    name: (s) => (s.n <= 2 ? `${ALKANE_BY_N[s.n].root}anamine` : `${ALKANE_BY_N[s.n].root}an-${s.at}-amine`),
+    formula: (s) => `${fmtC(s.n)}H${2 * s.n + 3}N`,
+    condensed: (s) => {
+      const at = s.n + 1 - s.at;
+      let out = "";
+      for (let c = 1; c <= s.n; c++) {
+        const spent = (c > 1 ? 1 : 0) + (c < s.n ? 1 : 0) + (c === at ? 1 : 0);
+        const h = 4 - spent;
+        const core = `C${h === 0 ? "" : h === 1 ? "H" : `H${h}`}`;
+        out += c === at ? (c === s.n ? `${core}NH2` : `${core}(NH2)`) : core;
+      }
+      return out;
+    },
+    graph(s) { const g = makeGraph(); const c = g.chain(s.n); g.bond(c[s.at - 1], g.add("N")); return g.out(); },
+    hints: (s) => [
+      "‑amine means a nitrogen hanging off the chain. Nitrogen takes THREE bonds: one to the chain, and it keeps two hydrogens — that's the –NH2 group.",
+      s.n <= 2
+        ? `${ALKANE_BY_N[s.n].root}‑ = ${s.n} carbon${s.n === 1 ? "" : "s"} — every position is the same, so no locant.`
+        : `${ALKANE_BY_N[s.n].root}‑ = ${s.n} carbons, N on carbon ${s.at} (count from the end with the small number).`,
+      `Build the chain, then drag an N from the tray onto carbon ${s.at}. Watch it settle to two hydrogens.`
+    ]
+  },
+  amide: {
+    name: (s) => `${ALKANE_BY_N[s.n].root}anamide`,
+    formula: (s) => `${fmtC(s.n)}H${2 * s.n + 1}NO`,
+    condensed: (s) => chainStr(s.n, "CONH2"),
+    graph(s) { const g = makeGraph(); const c = g.chain(s.n); g.bond(c[0], g.add("O"), 2); g.bond(c[0], g.add("N")); return g.out(); },
+    hints: (s) => [
+      "‑amide is the acid's cousin: same end-carbon C=O, but the –OH is swapped for –NH2. Carbonyl plus nitrogen, same carbon.",
+      `${ALKANE_BY_N[s.n].root}‑ = ${s.n} carbon${s.n === 1 ? "" : "s"}. End carbon gets an O (clicked to double) AND an N (left single).`,
+      "The N keeps its two hydrogens; the double-bonded O keeps none. C=O + NH2 on one carbon — that's the amide group."
+    ]
+  }
+};
+
+export const ALDEHYDE_SPECS = Array.from({ length: 6 }, (_, i) => ({ kind: "aldehyde", n: i + 1 }));
+export const KETONE_SPECS = [];
+for (let n = 3; n <= 6; n++) for (let slot = 2; slot <= Math.ceil(n / 2); slot++) KETONE_SPECS.push({ kind: "ketone", n, slot });
+export const ETHER_SPECS = [
+  { kind: "ether", alkoxy: 1, n: 1, at: 1 }, { kind: "ether", alkoxy: 1, n: 2, at: 1 },
+  { kind: "ether", alkoxy: 2, n: 2, at: 1 }, { kind: "ether", alkoxy: 1, n: 3, at: 1 },
+  { kind: "ether", alkoxy: 1, n: 3, at: 2 }, { kind: "ether", alkoxy: 2, n: 3, at: 1 }
+];
+export const ACID_SPECS = Array.from({ length: 6 }, (_, i) => ({ kind: "acid", n: i + 1 }));
+export const ESTER_SPECS = [];
+for (let acyl = 1; acyl <= 3; acyl++) for (let alkyl = 1; alkyl <= 3; alkyl++) ESTER_SPECS.push({ kind: "ester", acyl, alkyl });
+export const AMINE_SPECS = [];
+for (let n = 1; n <= 4; n++) for (let at = 1; at <= Math.ceil(n / 2); at++) AMINE_SPECS.push({ kind: "amine", n, at });
+export const AMIDE_SPECS = Array.from({ length: 4 }, (_, i) => ({ kind: "amide", n: i + 1 }));
+
+// Ethers everyone meets under trivial names — shown alongside the reveal.
+export const ETHER_COMMON = {
+  methoxymethane: "dimethyl ether",
+  methoxyethane: "ethyl methyl ether",
+  ethoxyethane: "diethyl ether"
+};
+
+export function buildProblemFamily(spec) {
+  const fam = FAMILIES[spec.kind];
+  const name = fam.name(spec);
+  return {
+    spec,
+    mode: "build",
+    prompt: name,
+    answer: ETHER_COMMON[name] ? `${name} (${ETHER_COMMON[name]})` : name,
+    formula: fam.formula(spec),
+    condensed: fam.condensed(spec),
+    target: fam.graph(spec),
+    allowed: spec.kind === "amine" ? ["C", "N"] : spec.kind === "amide" ? ["C", "N", "O"] : ["C", "O"],
+    hints: fam.hints(spec)
+  };
+}
+
+// Round recipes per functional-group tab.
+export function makeCarbonylDealer() {
+  const ald = makeBag(ALDEHYDE_SPECS), ket = makeBag(KETONE_SPECS);
+  return (rng = Math.random) => shuffle([...ald(2, rng), ...ket(3, rng)], rng);
+}
+export function makeEtherDealer() {
+  const bag = makeBagDealer(ETHER_SPECS, (s) => FAMILIES.ether.name(s));
+  return (rng = Math.random) => bag(DEFAULT_ROUND, rng);
+}
+export function makeAcidEsterDealer() {
+  const acid = makeBag(ACID_SPECS), ester = makeBag(ESTER_SPECS);
+  return (rng = Math.random) => shuffle([...acid(2, rng), ...ester(3, rng)], rng);
+}
+export function makeNitrogenDealer() {
+  const amine = makeBag(AMINE_SPECS), amide = makeBag(AMIDE_SPECS);
+  return (rng = Math.random) => shuffle([...amine(3, rng), ...amide(2, rng)], rng);
+}
+
 // Any build-direction spec → its problem. Alkane specs are {n}; unsaturated add
-// {slot, order}; branched are {m, methyls}; alcohols are {n, oh}.
+// {slot, order}; branched are {m, methyls}; alcohols are {n, oh}; functional-group
+// specs carry an explicit `kind`.
 export function buildAnyStructure(spec) {
+  if (spec.kind) return buildProblemFamily(spec);
   if (spec.methyls) return buildProblemBranched(spec);
   if (spec.order) return buildProblemUnsaturated(spec);
   if (spec.oh) return buildProblemAlcohol(spec);
@@ -381,7 +568,11 @@ export const LEVELS = [
   { id: "condensed", label: "Condensed formulas", build: buildProblemCondensed },
   { id: "unsaturated", label: "Alkenes & alkynes", buildOnly: true },
   { id: "branched", label: "Branching", buildOnly: true },
-  { id: "alcohols", label: "Alcohols", buildOnly: true, trayElements: ["C", "O"] }
+  { id: "alcohols", label: "Alcohols", buildOnly: true, trayElements: ["C", "O"] },
+  { id: "carbonyls", label: "Aldehydes & ketones", buildOnly: true, trayElements: ["C", "O"] },
+  { id: "ethers", label: "Ethers", buildOnly: true, trayElements: ["C", "O"] },
+  { id: "acids", label: "Acids & esters", buildOnly: true, trayElements: ["C", "O"] },
+  { id: "nitrogen", label: "Amines & amides", buildOnly: true, trayElements: ["C", "N", "O"] }
 ];
 
 // ── grading ─────────────────────────────────────────────────────────────────────

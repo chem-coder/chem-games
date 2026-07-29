@@ -8,8 +8,12 @@ import {
   ENE_SPECS, YNE_SPECS, buildProblemUnsaturated, makeUnsaturatedDealer,
   BRANCHED_SPECS, branchedName, branchedFormula, branchedCondensed, makeBranchedDealer,
   ALCOHOL_SPECS, alcoholName, alcoholFormula, alcoholCondensed, makeAlcoholDealer,
-  buildAnyStructure
+  buildAnyStructure,
+  FAMILIES, ALDEHYDE_SPECS, KETONE_SPECS, ETHER_SPECS, ACID_SPECS, ESTER_SPECS,
+  AMINE_SPECS, AMIDE_SPECS, buildProblemFamily,
+  makeCarbonylDealer, makeEtherDealer, makeAcidEsterDealer, makeNitrogenDealer
 } from "./organic.js";
+import { componentFormulas } from "./chem.js";
 
 // ── the deck: ten alkanes, CnH2n+2, root + -ane ─────────────────────────────────
 test("deck holds exactly C1..C10 with CnH2n+2 formulas", () => {
@@ -83,12 +87,16 @@ test("condensed problems prompt with the chain and grade the same names", () => 
   assert.ok(!gradeAnswer(p, "propane").correct);
 });
 
-test("the ladder: two typed rungs, then three build-only rungs", () => {
-  assert.deepEqual(LEVELS.map((l) => l.id), ["molecular", "condensed", "unsaturated", "branched", "alcohols"]);
+test("the ladder: two typed rungs, then seven build-only rungs", () => {
+  assert.deepEqual(
+    LEVELS.map((l) => l.id),
+    ["molecular", "condensed", "unsaturated", "branched", "alcohols", "carbonyls", "ethers", "acids", "nitrogen"]
+  );
   assert.equal(LEVELS[0].build({ n: 6 }).prompt, "C6H14");
   assert.equal(LEVELS[1].build({ n: 6 }).prompt, "CH3CH2CH2CH2CH2CH3");
-  assert.ok(LEVELS.slice(2).every((l) => l.buildOnly), "rungs 3–5 have no formula→name direction");
+  assert.ok(LEVELS.slice(2).every((l) => l.buildOnly), "everything past the alkane spellings is build-only");
   assert.deepEqual(LEVELS[4].trayElements, ["C", "O"], "alcohols put oxygen in the tray");
+  assert.deepEqual(LEVELS[8].trayElements, ["C", "N", "O"], "amines & amides add nitrogen");
 });
 
 // ── rung 3: alkenes & alkynes ───────────────────────────────────────────────────
@@ -188,6 +196,74 @@ test("rung 4/5 dealers: five distinct cards per round", () => {
       assert.equal(new Set(cards.map(name)).size, 5, "no repeats within a round");
     }
   }
+});
+
+// ── rungs 6–9: functional groups ────────────────────────────────────────────────
+const ALL_FAMILY_SPECS = [
+  ...ALDEHYDE_SPECS, ...KETONE_SPECS, ...ETHER_SPECS,
+  ...ACID_SPECS, ...ESTER_SPECS, ...AMINE_SPECS, ...AMIDE_SPECS
+];
+
+test("every family target graph reproduces its own molecular formula", () => {
+  // the deepest consistency check we have: the graph's derived hydrogens must
+  // agree with the family's CnHmX arithmetic, for all 43 specs
+  for (const spec of ALL_FAMILY_SPECS) {
+    const p = buildProblemFamily(spec);
+    assert.deepEqual(componentFormulas(p.target.atoms, p.target.bonds), [p.formula], p.prompt);
+  }
+});
+
+test("functional-group names", () => {
+  assert.equal(FAMILIES.aldehyde.name({ n: 2 }), "ethanal");
+  assert.equal(FAMILIES.ketone.name({ n: 3, slot: 2 }), "propan-2-one");
+  assert.equal(FAMILIES.ketone.name({ n: 6, slot: 3 }), "hexan-3-one");
+  assert.equal(FAMILIES.ether.name({ alkoxy: 1, n: 1, at: 1 }), "methoxymethane");
+  assert.equal(FAMILIES.ether.name({ alkoxy: 1, n: 3, at: 2 }), "2-methoxypropane");
+  assert.equal(FAMILIES.acid.name({ n: 1 }), "methanoic acid");
+  assert.equal(FAMILIES.ester.name({ acyl: 2, alkyl: 1 }), "methyl ethanoate");
+  assert.equal(FAMILIES.amine.name({ n: 1, at: 1 }), "methanamine");
+  assert.equal(FAMILIES.amine.name({ n: 3, at: 2 }), "propan-2-amine");
+  assert.equal(FAMILIES.amide.name({ n: 2 }), "ethanamide");
+});
+
+test("functional-group condensed spellings", () => {
+  assert.equal(FAMILIES.aldehyde.condensed({ n: 1 }), "HCHO");
+  assert.equal(FAMILIES.aldehyde.condensed({ n: 3 }), "CH3CH2CHO");
+  assert.equal(FAMILIES.ketone.condensed({ n: 3, slot: 2 }), "CH3COCH3");
+  assert.equal(FAMILIES.ketone.condensed({ n: 6, slot: 3 }), "CH3CH2CH2COCH2CH3");
+  assert.equal(FAMILIES.ether.condensed({ alkoxy: 1, n: 2, at: 1 }), "CH3OCH2CH3");
+  assert.equal(FAMILIES.ether.condensed({ alkoxy: 1, n: 3, at: 2 }), "CH3CH(OCH3)CH3");
+  assert.equal(FAMILIES.acid.condensed({ n: 1 }), "HCOOH");
+  assert.equal(FAMILIES.acid.condensed({ n: 3 }), "CH3CH2COOH");
+  assert.equal(FAMILIES.ester.condensed({ acyl: 2, alkyl: 1 }), "CH3COOCH3");
+  assert.equal(FAMILIES.ester.condensed({ acyl: 1, alkyl: 2 }), "HCOOCH2CH3");
+  assert.equal(FAMILIES.amine.condensed({ n: 1, at: 1 }), "CH3NH2");
+  assert.equal(FAMILIES.amine.condensed({ n: 3, at: 2 }), "CH3CH(NH2)CH3");
+  assert.equal(FAMILIES.amide.condensed({ n: 2 }), "CH3CONH2");
+});
+
+test("ether reveals carry the trivial name", () => {
+  assert.equal(buildProblemFamily({ kind: "ether", alkoxy: 1, n: 1, at: 1 }).answer, "methoxymethane (dimethyl ether)");
+  assert.equal(buildProblemFamily({ kind: "ether", alkoxy: 1, n: 3, at: 2 }).answer, "2-methoxypropane");
+});
+
+test("functional-group dealer recipes", () => {
+  const recipes = [
+    [makeCarbonylDealer, (c) => [c.filter((s) => s.kind === "aldehyde").length, c.filter((s) => s.kind === "ketone").length], [2, 3]],
+    [makeAcidEsterDealer, (c) => [c.filter((s) => s.kind === "acid").length, c.filter((s) => s.kind === "ester").length], [2, 3]],
+    [makeNitrogenDealer, (c) => [c.filter((s) => s.kind === "amine").length, c.filter((s) => s.kind === "amide").length], [3, 2]]
+  ];
+  for (const [make, split, want] of recipes) {
+    const deal = make();
+    for (let r = 0; r < 8; r++) {
+      const cards = deal();
+      assert.equal(cards.length, 5);
+      assert.deepEqual(split(cards), want);
+    }
+  }
+  const ethers = makeEtherDealer()();
+  assert.equal(ethers.length, 5);
+  assert.equal(new Set(ethers.map((s) => FAMILIES.ether.name(s))).size, 5);
 });
 
 test("rung-3 dealer recipe: 1 alkane + 2 alkenes + 2 alkynes, shuffled", () => {

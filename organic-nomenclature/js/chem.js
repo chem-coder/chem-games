@@ -146,6 +146,53 @@ export function gradeBranchedBuild(atoms, bonds, target) {
   return same ? { ok: true } : { ok: false, reason: "wrong-skeleton" };
 }
 
+// ── rungs 6+: functional groups via labeled-graph isomorphism ───────────────────
+// Aldehydes, ketones, ethers, esters, acids, amines, amides are all "build this
+// exact molecule". One canonical form settles them all: AHU tree canonization with
+// ELEMENTS on the nodes and BOND ORDERS on the edges. Any drawing of the right
+// molecule matches; any isomer (ethanol vs methoxymethane!) does not.
+export function canonMolecule(atoms, bonds) {
+  const el = Object.fromEntries(atoms.map((a) => [a.id, a.el]));
+  const nbs = new Map(atoms.map((a) => [a.id, []]));
+  for (const b of bonds) {
+    nbs.get(b.a).push({ to: b.b, order: b.order });
+    nbs.get(b.b).push({ to: b.a, order: b.order });
+  }
+  let alive = new Set(atoms.map((a) => a.id));
+  const deg = new Map(atoms.map((a) => [a.id, nbs.get(a.id).length]));
+  while (alive.size > 2) {
+    const leaves = [...alive].filter((id) => deg.get(id) <= 1);
+    for (const leaf of leaves) {
+      alive.delete(leaf);
+      for (const e of nbs.get(leaf)) if (alive.has(e.to)) deg.set(e.to, deg.get(e.to) - 1);
+    }
+  }
+  const canon = (v, parent) => {
+    const kids = nbs.get(v).filter((e) => e.to !== parent).map((e) => `${e.order}${canon(e.to, v)}`).sort();
+    return `${el[v]}(${kids.join("")})`;
+  };
+  const centers = [...alive];
+  if (centers.length === 1) return canon(centers[0], null);
+  const [a, b] = centers;
+  const mid = bonds.find((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a));
+  return `${mid.order}:${[canon(a, b), canon(b, a)].sort().join("|")}`;
+}
+
+export function gradeIsomorphic(atoms, bonds, target, allowed) {
+  if (atoms.length === 0) return { ok: false, reason: "empty" };
+  if (atoms.some((a) => !allowed.includes(a.el))) return { ok: false, reason: "wrong-element" };
+  for (const el of new Set([...atoms, ...target.atoms].map((a) => a.el))) {
+    if (atoms.filter((a) => a.el === el).length !== target.atoms.filter((a) => a.el === el).length) {
+      return { ok: false, reason: "atom-count" };
+    }
+  }
+  if (componentCount(atoms, bonds) > 1) return { ok: false, reason: "disconnected" };
+  if (bonds.length !== atoms.length - 1) return { ok: false, reason: "ring" };
+  return canonMolecule(atoms, bonds) === canonMolecule(target.atoms, target.bonds)
+    ? { ok: true }
+    : { ok: false, reason: "wrong-structure" };
+}
+
 // ── rung 5: alcohols ────────────────────────────────────────────────────────────
 // target: {n: chain carbons, oh: locant} — a straight C-chain, all single bonds, with
 // ONE oxygen hanging off carbon `oh` (counted from either end). The oxygen keeps a
