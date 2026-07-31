@@ -521,23 +521,56 @@ export function buildAnyStructure(spec) {
 
 // The rung-3 round recipe is fixed: 1 alkane + 2 alkenes + 2 alkynes, shuffled.
 // Each category cycles its own shuffle-bag so the whole family gets seen over time.
-function makeBag(items) {
+// A draw can straddle the pile's reshuffle boundary — dedupe within each call so a
+// round never sees the same card twice.
+function makeBag(items, keyFn = JSON.stringify) {
   let pile = [];
   return function drawFrom(k, rng = Math.random) {
     const out = [];
+    const used = new Set();
     for (let i = 0; i < k; i++) {
       if (pile.length === 0) pile = shuffle(items, rng);
-      out.push({ ...pile.pop() });
+      let card = pile.pop();
+      for (let g = 0; used.has(keyFn(card)) && g < items.length; g++) {
+        if (pile.length === 0) pile = shuffle(items, rng);
+        card = pile.pop();
+      }
+      used.add(keyFn(card));
+      out.push({ ...card });
     }
     return out;
   };
 }
 
+// Dalia's playtest ruling (2026-07-31): dragging ten carbons is fine ONCE — a round
+// that deals decane, heptane, decane is a slog. Build rounds use the "boss card"
+// recipe: four short molecules (≤6 C) + exactly one long drag (7–10 C).
+const LONG_FROM = 7;
+
+export function makeAlkaneBuildDealer() {
+  const short = makeBag(ALKANES.filter((a) => a.n < LONG_FROM).map((a) => ({ n: a.n })));
+  const long = makeBag(ALKANES.filter((a) => a.n >= LONG_FROM).map((a) => ({ n: a.n })));
+  return (n = DEFAULT_ROUND, rng = Math.random) => shuffle([...short(4, rng), ...long(1, rng)], rng);
+}
+
 export function makeUnsaturatedDealer() {
-  const anes = makeBag(ALKANES.map((a) => ({ n: a.n })));
-  const enes = makeBag(ENE_SPECS);
-  const ynes = makeBag(YNE_SPECS);
-  return (rng = Math.random) => shuffle([...anes(1, rng), ...enes(2, rng), ...ynes(2, rng)], rng);
+  const bags = {
+    ane: [makeBag(ALKANES.filter((a) => a.n < LONG_FROM).map((a) => ({ n: a.n }))),
+          makeBag(ALKANES.filter((a) => a.n >= LONG_FROM).map((a) => ({ n: a.n })))],
+    ene: [makeBag(ENE_SPECS.filter((s) => s.n < LONG_FROM)), makeBag(ENE_SPECS.filter((s) => s.n >= LONG_FROM))],
+    yne: [makeBag(YNE_SPECS.filter((s) => s.n < LONG_FROM)), makeBag(YNE_SPECS.filter((s) => s.n >= LONG_FROM))]
+  };
+  const counts = { ane: 1, ene: 2, yne: 2 };
+  const bossPool = ["ane", "ene", "ene", "yne", "yne"]; // boss category, proportional to counts
+  return (rng = Math.random) => {
+    const boss = bossPool[Math.floor(rng() * bossPool.length)];
+    const cards = [];
+    for (const [cat, k] of Object.entries(counts)) {
+      const nLong = cat === boss ? 1 : 0;
+      cards.push(...bags[cat][1](nLong, rng), ...bags[cat][0](k - nLong, rng));
+    }
+    return shuffle(cards, rng);
+  };
 }
 
 // Shuffle-bag dealer over arbitrary specs, deduped within a round by key.

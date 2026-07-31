@@ -2,16 +2,16 @@
 // (structure grading); the lab canvas comes from lab.js. Same rhythm as the inorganic
 // builder: intro → 5-card round → done, progressive hints, missed cards rotate back.
 // Two directions per rung: formula → name (typed) and name → structure (built on canvas).
-import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeUnsaturatedDealer, makeBranchedDealer, makeAlcoholDealer, makeCarbonylDealer, makeEtherDealer, makeAcidEsterDealer, makeNitrogenDealer, requeue, DEFAULT_ROUND } from "./organic.js";
+import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeAlkaneBuildDealer, makeUnsaturatedDealer, makeBranchedDealer, makeAlcoholDealer, makeCarbonylDealer, makeEtherDealer, makeAcidEsterDealer, makeNitrogenDealer, requeue, DEFAULT_ROUND } from "./organic.js";
 import { gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild, gradeIsomorphic } from "./chem.js";
 import { createLab } from "./lab.js";
 
 const root = document.querySelector("#game");
 
 // One dealer per rung + one for the build direction (shared across the alkane rungs —
-// building propane is the same skill whichever spelling tab you came from). The
-// alkenes & alkynes rung deals its own fixed recipe: 1 alkane + 2 enes + 2 ynes.
-const dealers = { molecular: makeDealer(), condensed: makeDealer(), build: makeDealer() };
+// building propane is the same skill whichever spelling tab you came from). Build
+// rounds use the boss-card recipe: four short molecules + one long drag.
+const dealers = { molecular: makeDealer(), condensed: makeDealer(), build: makeAlkaneBuildDealer() };
 const buildDealers = {
   unsaturated: makeUnsaturatedDealer(),
   branched: makeBranchedDealer(),

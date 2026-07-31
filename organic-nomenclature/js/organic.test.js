@@ -5,7 +5,7 @@ import {
   ALKANES, ALKANE_BY_N, ROOTS, alkaneFormula, condensedFormula, toSubHtml, toChainHtml,
   buildProblem, buildProblemCondensed, LEVELS, gradeAnswer, makeDealer, requeue, DEFAULT_ROUND,
   distinctSlots, unsaturatedName, unsaturatedFormula, unsaturatedCondensed,
-  ENE_SPECS, YNE_SPECS, buildProblemUnsaturated, makeUnsaturatedDealer,
+  ENE_SPECS, YNE_SPECS, buildProblemUnsaturated, makeUnsaturatedDealer, makeAlkaneBuildDealer,
   BRANCHED_SPECS, branchedName, branchedFormula, branchedCondensed, makeBranchedDealer,
   ALCOHOL_SPECS, alcoholName, alcoholFormula, alcoholCondensed, makeAlcoholDealer,
   buildAnyStructure,
@@ -266,14 +266,26 @@ test("functional-group dealer recipes", () => {
   assert.equal(new Set(ethers.map((s) => FAMILIES.ether.name(s))).size, 5);
 });
 
-test("rung-3 dealer recipe: 1 alkane + 2 alkenes + 2 alkynes, shuffled", () => {
+test("rung-3 dealer recipe: 1 alkane + 2 alkenes + 2 alkynes, exactly one long drag", () => {
   const deal = makeUnsaturatedDealer();
-  for (let round = 0; round < 12; round++) {
+  for (let round = 0; round < 20; round++) {
     const cards = deal();
     assert.equal(cards.length, 5);
     assert.equal(cards.filter((c) => !c.order).length, 1, "one alkane");
     assert.equal(cards.filter((c) => c.order === 2).length, 2, "two alkenes");
     assert.equal(cards.filter((c) => c.order === 3).length, 2, "two alkynes");
+    assert.equal(cards.filter((c) => c.n >= 7).length, 1, "exactly one boss card per round");
+  }
+});
+
+test("alkane build rounds: four short builds + one long drag (no decane pile-ups)", () => {
+  const deal = makeAlkaneBuildDealer();
+  for (let round = 0; round < 20; round++) {
+    const cards = deal();
+    assert.equal(cards.length, 5);
+    assert.equal(cards.filter((c) => c.n >= 7).length, 1, "exactly one boss card");
+    assert.equal(cards.filter((c) => c.n <= 6).length, 4, "four short builds");
+    assert.equal(new Set(cards.map((c) => c.n)).size, 5, "no repeats within a round");
   }
 });
 
