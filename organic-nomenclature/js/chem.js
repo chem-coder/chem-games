@@ -178,6 +178,18 @@ export function canonMolecule(atoms, bonds) {
   return `${mid.order}:${[canon(a, b), canon(b, a)].sort().join("|")}`;
 }
 
+// Explicit H atoms (the reactions game's placeable hydrogen tokens) fold back into the
+// implicit count before grading: delete the H nodes, and the valence slot each one held
+// is re-derived as an implicit H. A single-bonded explicit H is therefore structurally
+// identical to an implicit one — which is the whole point of the token.
+export function stripExplicitH(atoms, bonds) {
+  const hIds = new Set(atoms.filter((a) => a.el === "H").map((a) => a.id));
+  return {
+    atoms: atoms.filter((a) => !hIds.has(a.id)),
+    bonds: bonds.filter((b) => !hIds.has(b.a) && !hIds.has(b.b))
+  };
+}
+
 export function gradeIsomorphic(atoms, bonds, target, allowed) {
   if (atoms.length === 0) return { ok: false, reason: "empty" };
   if (atoms.some((a) => !allowed.includes(a.el))) return { ok: false, reason: "wrong-element" };

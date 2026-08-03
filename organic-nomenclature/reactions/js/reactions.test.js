@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { REACTIONS, REACTION_INFO, hintsFor, makeReactionDealer } from "./reactions.js";
-import { componentFormulas, gradeIsomorphic, VALENCE } from "../../js/chem.js";
+import { REACTIONS, REACTION_INFO, hintsFor, makeReactionDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
+import { componentFormulas, gradeIsomorphic, stripExplicitH, VALENCE } from "../../js/chem.js";
 
 test("halogens exist in the valence table", () => {
   assert.equal(VALENCE.Cl, 1);
@@ -65,6 +65,58 @@ test("hints: three rungs, reaction-specific middle, product last", () => {
     assert.match(hints[0], /double bond OPENS/);
     assert.equal(hints[1], REACTION_INFO[card.type].hint);
     assert.ok(hints[2].includes(card.targets[0].name));
+  }
+});
+
+test("every card carries a reactant graph with exactly one double bond", () => {
+  for (const card of REACTIONS) {
+    const m = card.reactant.mol;
+    assert.ok(m, card.id);
+    assert.equal(componentFormulas(m.atoms, m.bonds).length, 1, card.id);
+    assert.equal(m.bonds.filter((b) => b.order === 2).length, 1, `${card.id}: one C=C`);
+    const reactantC = (card.reactant.condensed.match(/C/g) || []).length;
+    assert.equal(m.atoms.length, reactantC, `${card.id}: reactant carbon count`);
+  }
+});
+
+test("explicit-H counts match what each reagent delivers, and H is in the tray when needed", () => {
+  const want = { hydrogenation: 2, halogenation: 0, hydrohalogenation: 1, hydration: 1 };
+  for (const card of REACTIONS) {
+    assert.equal(card.explicitH, want[card.type], card.id);
+    assert.equal(card.elements.includes("H"), card.explicitH > 0, `${card.id}: tray H iff H is delivered`);
+  }
+});
+
+test("stripExplicitH folds placed hydrogens back into the implicit count", () => {
+  // ethane with both delivered H's placed explicitly = plain ethane after the fold
+  const atoms = [{ id: 1, el: "C" }, { id: 2, el: "C" }, { id: 3, el: "H" }, { id: 4, el: "H" }];
+  const bonds = [{ a: 1, b: 2, order: 1 }, { a: 1, b: 3, order: 1 }, { a: 2, b: 4, order: 1 }];
+  const s = stripExplicitH(atoms, bonds);
+  assert.equal(s.atoms.length, 2);
+  assert.deepEqual(componentFormulas(s.atoms, s.bonds), ["C2H6"]);
+  const ethane = REACTIONS.find((c) => c.id === "h2-ethene").targets[0].mol;
+  assert.ok(gradeIsomorphic(s.atoms, s.bonds, ethane, ["C"]).ok);
+});
+
+test("markovnikov quiz cards: two distinct options, exactly one major, a why for each", () => {
+  assert.ok(MK_CARDS.length >= 5);
+  for (const card of MK_CARDS) {
+    assert.equal(card.options.length, 2, card.id);
+    assert.equal(card.options.filter((o) => o.major).length, 1, `${card.id}: exactly one major`);
+    assert.notEqual(card.options[0].name, card.options[1].name, card.id);
+    assert.ok(card.why.length > 20, `${card.id}: explanation present`);
+    // spot-check the chemistry: the major is never the 1-substituted product
+    const major = card.options.find((o) => o.major);
+    assert.ok(!/^1-/.test(major.name), `${card.id}: Markovnikov never puts X/OH on C-1 here`);
+  }
+});
+
+test("markovnikov dealer: 5 cards, no duplicates", () => {
+  const deal = makeMarkovnikovDealer();
+  for (let r = 0; r < 8; r++) {
+    const cards = deal();
+    assert.equal(cards.length, 5);
+    assert.equal(new Set(cards.map((c) => c.id)).size, 5);
   }
 });
 

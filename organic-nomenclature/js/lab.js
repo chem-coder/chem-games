@@ -22,20 +22,30 @@ const ELEMENT_STYLE = {
   O: { fill: "#b4502f", stroke: "#8a3c22", text: "#fff7ef", label: "Oxygen" },
   N: { fill: "#1e7268", stroke: "#134f48", text: "#eef6f2", label: "Nitrogen" },
   Cl: { fill: "#356b45", stroke: "#274f33", text: "#eaf3ec", label: "Chlorine" },
-  Br: { fill: "#6b4d68", stroke: "#523a50", text: "#f2ecf1", label: "Bromine" }
+  Br: { fill: "#6b4d68", stroke: "#523a50", text: "#f2ecf1", label: "Bromine" },
+  // explicit hydrogen — a placeable token for the reactions game, where the delivered H
+  // IS the teaching. Styled like the implicit H's so it reads as the same species.
+  H: { fill: "#f7f3ea", stroke: "#b9ac94", text: "#6e6553", label: "Hydrogen" }
 };
 
 // Two input modes, NEVER mixed within one game (Dalia's rule, 2026-07-31):
 //   "drag"  — atoms are dragged out of the tray (the charm, for shorter molecules)
 //   "click" — the tray is a palette; tapping the canvas drops the selected element
 //             (the fast hand, for long molecules and advanced rungs)
-export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag" } = {}) {
+// additionMode (reactions game): when a new atom bonds to a carbon holding a multiple
+// bond, that bond automatically drops one order — addition spends the π bond — and the
+// FAR carbon gets an open seat: a pulsing dashed stub instead of a silent implicit H.
+// The student must put something there. (Dalia's spec, 2026-08-03: "needs to be bonded
+// to something".) Chemistry bonus: the attacked carbon keeps all its hydrogens, which
+// is what really happens in addition.
+export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag", additionMode = false } = {}) {
   const ctx = canvas.getContext("2d");
   let activeEl = elements[0];
 
   let atoms = [];            // {id, el, x, y, hs: [{angle, vel, phase}]}
   let bonds = [];            // {a, b, order}
   let falling = [];          // {x, y, phase}
+  let openSlots = new Map(); // atomId → freed seats awaiting a bond (additionMode)
   let nextId = 1;
   let drag = null;
   let bondHit = null;
@@ -47,7 +57,10 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
 
   // ── hydrogen bookkeeping: sync the visual H's to the derived count ──
   function syncH(atom, { fall = false, towardAngle = null } = {}) {
-    const target = hydrogenCount(atom, bonds);
+    // an explicit H token IS a hydrogen — it never grows implicit ones of its own;
+    // an open seat is reserved and must NOT be filled by an implicit H
+    const reserved = openSlots.get(atom.id) || 0;
+    const target = atom.el === "H" ? 0 : Math.max(0, hydrogenCount(atom, bonds) - reserved);
     while (atom.hs.length > target) {
       let idx = 0;
       if (towardAngle !== null) {  // the H's displaced by the new bond are the ones that drop
@@ -94,6 +107,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       .map((b) => byId()[b.a === atom.id ? b.b : b.a]);
     bonds = bonds.filter((b) => b.a !== atom.id && b.b !== atom.id);
     atoms = atoms.filter((a) => a !== atom);
+    openSlots.delete(atom.id);
     partners.forEach((p) => syncH(p));   // instant H restore
     onChange();
   }
@@ -103,9 +117,31 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       if (other === dragged) continue;
       const d = Math.hypot(other.x - dragged.x, other.y - dragged.y);
       if (d < SNAP && canBond(dragged, other, bonds)) {
+        // additionMode: an arrival on a multiple-bond carbon ATTACKS the π bond —
+        // it drops one order and the far carbon is left with an open seat
+        let attacked = false;
+        if (additionMode) {
+          const multi = bonds.find((b) => (b.a === other.id || b.b === other.id) && b.order > 1);
+          if (multi) {
+            multi.order -= 1;
+            const farId = multi.a === other.id ? multi.b : multi.a;
+            openSlots.set(farId, (openSlots.get(farId) || 0) + 1);
+            const far = byId()[farId];
+            if (far) syncH(far);
+            attacked = true;
+          }
+        }
         bonds.push({ a: dragged.id, b: other.id, order: 1 });
-        syncH(dragged, { fall: true, towardAngle: Math.atan2(other.y - dragged.y, other.x - dragged.x) });
-        syncH(other, { fall: true, towardAngle: Math.atan2(dragged.y - other.y, dragged.x - other.x) });
+        // consume an open seat if this arrival is the one filling it
+        if (openSlots.get(other.id)) {
+          const left = openSlots.get(other.id) - 1;
+          if (left > 0) openSlots.set(other.id, left); else openSlots.delete(other.id);
+        }
+        // an arriving explicit H takes an implicit H's seat — a silent swap, not a shed;
+        // a π-bond attack also sheds nothing (addition keeps every hydrogen)
+        const silent = attacked || dragged.el === "H" || other.el === "H";
+        syncH(dragged, { fall: !silent, towardAngle: Math.atan2(other.y - dragged.y, other.x - dragged.x) });
+        syncH(other, { fall: !silent, towardAngle: Math.atan2(dragged.y - other.y, dragged.x - other.x) });
         onChange();
       }
     }
@@ -278,11 +314,35 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         const a = h.angle + Math.sin(t * 1.6 + h.phase) * 0.055;  // the alive wobble
         drawH(atom.x + Math.cos(a) * H_ORBIT, atom.y + Math.sin(a) * H_ORBIT);
       }
+      // open seat: a pulsing dashed stub pointing away from the bonds — "bond me"
+      if (openSlots.get(atom.id)) {
+        const dirs = bondAngles(atom);
+        const away = dirs.length
+          ? Math.atan2(-dirs.reduce((s, a2) => s + Math.sin(a2), 0), -dirs.reduce((s, a2) => s + Math.cos(a2), 0))
+          : -Math.PI / 2;
+        const pulse = 0.45 + 0.4 * Math.sin(t * 3.2);
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        ctx.setLineDash([5, 4]);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#b4502f";
+        ctx.beginPath();
+        ctx.moveTo(atom.x + Math.cos(away) * (R_C + 2), atom.y + Math.sin(away) * (R_C + 2));
+        ctx.lineTo(atom.x + Math.cos(away) * (R_C + 22), atom.y + Math.sin(away) * (R_C + 22));
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(atom.x, atom.y, R_C + 5, 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
       const st = ELEMENT_STYLE[atom.el];
-      ctx.beginPath(); ctx.arc(atom.x, atom.y, R_C, 0, Math.PI * 2);
+      const radius = atom.el === "H" ? R_H + 2 : R_C;
+      ctx.beginPath(); ctx.arc(atom.x, atom.y, radius, 0, Math.PI * 2);
       ctx.fillStyle = st.fill; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = st.stroke; ctx.stroke();
-      ctx.fillStyle = st.text; ctx.font = "700 17px Outfit, sans-serif";
+      ctx.fillStyle = st.text; ctx.font = `700 ${atom.el === "H" ? 12 : 17}px Outfit, sans-serif`;
       ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(atom.el, atom.x, atom.y + 1);
     }
 
@@ -345,8 +405,9 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     bonds: () => bonds,
     falling: () => falling,
     formulas: () => componentFormulas(atoms, bonds),
-    reset() { atoms = []; bonds = []; falling = []; drag = null; bondHit = null; onChange(); },
+    reset() { atoms = []; bonds = []; falling = []; openSlots.clear(); drag = null; bondHit = null; onChange(); },
     setLocked(v) { locked = v; if (v) { drag = null; bondHit = null; } },
+    openSlotCount() { let s = 0; for (const v of openSlots.values()) s += v; return s; },
     resize,
     // deterministic stepper for headless testing (rAF is throttled in driven browsers)
     tick(frames = 1, dt = 1 / 60) {

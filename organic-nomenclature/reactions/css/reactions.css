@@ -112,6 +112,52 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 .action.primary.alt { background: var(--plum); border-color: var(--plum-dark); }
 .action.primary.alt:hover { background: var(--plum-dark); }
 
+/* nudges — formative "where am I?" feedback, outside the grading */
+.nudge {
+  margin: 12px 0 0; padding: 10px 14px; text-align: center;
+  background: var(--warning-soft); border: 1px solid var(--warning-line);
+  border-radius: 10px; font-size: 0.95rem;
+}
+
+/* regio note — the Markovnikov teaching moment, loud enough to see */
+.regio-note {
+  margin: 10px auto 0; padding: 10px 14px; max-width: 56ch; text-align: center;
+  background: var(--plum-soft); border-radius: 10px; font-size: 0.95rem;
+}
+
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.action.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
+.action.ghost:hover { background: var(--accent-soft); }
+
+/* Markovnikov teach block on the intro */
+.mk-teach {
+  margin-top: 18px; padding: 16px 18px;
+  background: var(--plum-soft); border-radius: 14px;
+}
+.mk-teach h3 { margin: 0 0 8px; font-family: var(--font-display); font-size: 1.1rem; }
+.mk-teach p { margin: 8px 0 0; font-size: 0.97rem; }
+.mk-worked { padding: 10px 12px; background: var(--surface); border-radius: 10px; }
+
+/* Markovnikov quiz options */
+.mk-options { display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+.mk-option {
+  flex: 1 1 240px; padding: 18px 16px; cursor: pointer; text-align: center;
+  background: var(--surface-soft); border: 2px solid var(--line); border-radius: 14px;
+  font-family: var(--font-body); position: relative;
+}
+.mk-option:hover:not(:disabled) { border-color: var(--accent); }
+.mk-option.is-picked { border-color: var(--accent); background: var(--accent-soft); }
+.mk-option:disabled { cursor: default; }
+.mk-option.is-major { border-color: var(--success-vivid); background: var(--success-vivid-soft); }
+.mk-option.is-minor { opacity: 0.75; }
+.mk-formula { display: block; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; }
+.mk-name { display: block; margin-top: 6px; color: var(--muted); font-size: 0.95rem; }
+.mk-verdict {
+  display: block; margin-top: 8px; font-family: var(--font-display); font-weight: 700;
+  font-size: 0.8rem; letter-spacing: 0.08em;
+}
+.mk-option.is-major .mk-verdict { color: var(--success); }
+
 /* done */
 .prompt { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
 .missed-block { margin-top: 10px; }
