@@ -23,6 +23,19 @@ const dealers = {
   mk: makeMarkovnikovDealer()
 };
 
+// The ladder (Dalia's spec, 2026-08-04): one compact study sheet per topic, one button
+// to that topic's quiz, and the done screen leads to the next topic — same oval-bookmark
+// pattern as the Nomenclature games. Tabs are free-roaming; the order is the suggestion.
+const TOPICS = [
+  { id: "build", label: "Addition" },
+  { id: "elim", label: "Elimination" },
+  { id: "sub", label: "Substitution" },
+  { id: "carb", label: "Carbonyls" },
+  { id: "mk", label: "Major or minor?" }
+];
+let topicIndex = 0;
+const topic = () => TOPICS[topicIndex];
+
 let mode = "intro";       // "intro" | "play" | "mk" | "done"
 let quiz = "build";       // which quiz the round (and done screen) belongs to
 let phase = "reactants";  // per build card: "reactants" (auto-H, auto-recognized) | "product"
@@ -93,17 +106,40 @@ function reactantsBuilt() {
   return true;
 }
 
-function enterProductPhase() {
+// Recognition LOCKS the bench and raises a real popup; the student must click
+// Continue before the workspace opens back up (Dalia: without the explicit action
+// the transition read as a freeze).
+function onReactantsRecognized() {
+  phase = "recognized";
+  lab.setLocked(true);
+  const modal = root.querySelector("#phaseModal");
+  if (modal) {
+    const task = card.noReaction
+      ? `what happens when it meets ${toSubHtml(card.reagent)}?`
+      : `predict the ${card.targets && card.targets.length > 1 && !card.targets[0].even ? "<strong>major</strong> product" : "product"}`;
+    modal.innerHTML = `<div class="phase-modal">
+        <p class="phase-modal-title">✓ The reactant${card.phase1Mols.length > 1 ? "s look" : " looks"} good!</p>
+        <p class="phase-modal-sub">Next up: ${task}</p>
+        <button class="action primary" id="continueBtn" type="button">Continue → perform the reaction</button>
+      </div>`;
+    modal.querySelector("#continueBtn").addEventListener("click", continueToProducts);
+    modal.querySelector("#continueBtn").focus();
+  }
+}
+
+function continueToProducts() {
+  const modal = root.querySelector("#phaseModal");
+  if (modal) modal.innerHTML = "";
   phase = "product";
-  lab.explicitizeHydrogens();   // every H becomes a real atom — the student's to move
+  lab.explicitizeHydrogens();   // every H becomes a real atom, bond lines showing
   lab.setAutoH(false);
   lab.setAdditionMode(true);    // bonds that must break, break
-  const pop = root.querySelector("#phasePop");
-  if (pop) pop.innerHTML = `<p class="phase-pop">✓ Nice — the reactant${card.phase1Mols.length > 1 ? "s are" : " is"} built! Now: <strong>${card.noReaction ? "what happens when it meets " + card.reagent + "?" : "build the " + (card.targets && card.targets.length > 1 && !card.targets[0].even ? "MAJOR product" : "product") + " of the reaction"}</strong>. Hydrogens are frozen — every move is yours.</p>`;
+  lab.setLocked(false);
   const label = root.querySelector("#buildLabel");
   if (label) label.textContent = "Step 2 · perform the reaction";
   const btn = root.querySelector("#checkBtn");
   if (btn && !checked) btn.disabled = false;
+  nudge("Hydrogens are frozen into real atoms now — every move is yours.");
 }
 
 function next() {
@@ -256,63 +292,100 @@ function introRows(types) {
   }).join("");
 }
 
-function renderIntro() {
-  root.innerHTML = `<div class="intro">
-    <p class="intro-eyebrow">Reactions · addition · elimination · substitution · carbonyls</p>
-    <p class="intro-lede"><strong>Addition</strong>: the C=C double bond opens, and each of its two carbons picks up one new piece.</p>
-    <table class="rxn-table">
-      <thead><tr><th>Reaction</th><th>adds…</th><th>giving…</th></tr></thead>
-      <tbody>${introRows(ADDITION_TYPES)}</tbody>
-    </table>
-    <p class="intro-lede"><strong>Elimination</strong> is addition run backwards: two neighbor carbons each lose a piece, and the freed valences close into a C=C.</p>
-    <table class="rxn-table">
-      <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
-      <tbody>${introRows(ELIMINATION_TYPES)}</tbody>
-    </table>
-    <p class="intro-lede"><strong>Substitution</strong> swaps one passenger for another on the same carbon — no bond orders change at all.</p>
-    <table class="rxn-table">
-      <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
-      <tbody>${introRows(SUBSTITUTION_TYPES)}</tbody>
-    </table>
-    <p class="intro-lede"><strong>Carbonyl chemistry</strong> — alcohols oxidize, acids and alcohols condense into esters, and esters split back apart.</p>
-    <table class="rxn-table">
-      <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
-      <tbody>${introRows(CARBONYL_TYPES)}</tbody>
-    </table>
-    <ul class="pt-points">
-      <li>In every family, the carbon skeleton <strong>never changes</strong>.</li>
-      <li>The exam's favorite trap: <strong>KOH concentrated + heat eliminates</strong> (→ alkene), <strong>KOH aqueous substitutes</strong> (→ alcohol). Same reagent — the <em>conditions</em> are part of the answer.</li>
-      <li>You build the <strong>product</strong>: many players build the reactant first, check it, then make it react — the <em>Check my reactant</em> button is there for exactly that. In elimination, removing the OH or X and closing the double bond IS the reaction.</li>
-      <li>In addition, the reagent's own hydrogen arrives in the tray: <strong>place it</strong>. Where the H goes is half the chemistry.</li>
-      <li>Or build the reagent <strong>whole</strong> — assemble H–Br and touch it to the double bond: it <strong>splits across it</strong>, one piece bonding, the other floating free for the blinking carbon.</li>
-    </ul>
+function topicTabs() {
+  return `<div class="level-tabs" role="tablist">${TOPICS.map((t, i) =>
+    `<button class="level-tab${i === topicIndex ? " is-active" : ""}" data-i="${i}" type="button" role="tab" aria-selected="${i === topicIndex}">${t.label}</button>`
+  ).join("")}</div>`;
+}
 
+function wireTabs() {
+  root.querySelectorAll(".level-tab").forEach((b) =>
+    b.addEventListener("click", () => { topicIndex = Number(b.dataset.i); mode = "intro"; render(); }));
+}
+
+function rxnTable(types, midHeader) {
+  return `<table class="rxn-table">
+      <thead><tr><th>Reaction</th><th>${midHeader}</th><th>giving…</th></tr></thead>
+      <tbody>${introRows(types)}</tbody>
+    </table>`;
+}
+
+const TWO_PHASE_NOTE = `<li>Every question runs in <strong>two steps</strong>: first <em>build the reactants</em> — the game notices when they're right — then <em>perform the reaction</em>. In step 2 the hydrogens freeze into real atoms and every move is yours; bonds that must break, break by themselves.</li>`;
+
+// One compact study sheet per topic — only the rules THIS quiz needs.
+const SHEETS = {
+  build: () => `
+    <p class="intro-eyebrow">Reactions · topic 1 of 5 · addition</p>
+    <p class="intro-lede"><strong>Addition</strong>: the C=C double bond opens, and each of its two carbons picks up one new piece.</p>
+    ${rxnTable(ADDITION_TYPES, "adds…")}
+    <ul class="pt-points">
+      <li>The carbon skeleton <strong>never changes</strong> — addition only spends the double bond.</li>
+      ${TWO_PHASE_NOTE}
+      <li>Try dragging the intact reagent — the whole H–Br — onto the double bond: it <strong>splits across it</strong>, one piece bonding, the other floating free for the blinking carbon.</li>
+    </ul>
     <div class="mk-teach">
       <h3>Markovnikov's rule — addition's major</h3>
       <p>When H–Br or H–OH adds to an <strong>unsymmetric</strong> alkene, two products are possible — and they are not equally likely.</p>
-      <p class="mk-worked">${toSubHtml("CH2=CHCH3")} + ${toSubHtml("HBr")}: &nbsp;C-1 of the double bond holds <strong>two</strong> H's, C-2 holds <strong>one</strong>. The new H joins the carbon that already has more — <em>the rich get richer</em> — so H goes to C-1 and the Br takes C-2: <strong>2-bromopropane</strong> is the <strong>major</strong> product. 1-bromopropane still forms, as the <strong>minor</strong>.</p>
-      <p>Count the hydrogens on the two double-bond carbons; the H joins the richer one, the X or OH takes the poorer one. That's the whole rule.</p>
+      <p class="mk-worked">${toSubHtml("CH2=CHCH3")} + ${toSubHtml("HBr")}: &nbsp;C-1 of the double bond holds <strong>two</strong> H's, C-2 holds <strong>one</strong>. The new H joins the carbon that already has more — <em>the rich get richer</em> — so the Br takes C-2: <strong>2-bromopropane</strong> is the <strong>major</strong>. 1-bromopropane still forms, as the minor. Both count here.</p>
+    </div>
+    <div class="controls two-up"><button class="action primary alt" id="startTopic">Start: addition</button></div>`,
+
+  elim: () => `
+    <p class="intro-eyebrow">Reactions · topic 2 of 5 · elimination</p>
+    <p class="intro-lede"><strong>Elimination</strong> is addition run backwards: two neighbor carbons each lose a piece, and the freed valences close into a C=C.</p>
+    ${rxnTable(ELIMINATION_TYPES, "the molecule…")}
+    <ul class="pt-points">
+      ${TWO_PHASE_NOTE}
+      <li>In step 2 you perform it by hand: drag the leaving group (OH or X) to the tray, take <strong>one H off a neighbor carbon</strong>, then click that C–C bond double. The bond will refuse to close until both seats are free — valence keeps you honest.</li>
+    </ul>
+    <div class="mk-teach">
       <h3>Zaitsev's rule — elimination's major</h3>
-      <p>When the double bond could form on <strong>either side</strong> of the leaving group, the <strong>more substituted</strong> alkene — the internal one, with more carbon neighbors on its C=C — is the major. Butan-2-ol dehydrates mostly to <strong>but-2-ene</strong>, only a little to but-1-ene.</p>
+      <p>When the double bond could form on <strong>either side</strong> of the leaving group, the <strong>more substituted</strong> alkene — the internal one — is the major. Butan-2-ol dehydrates mostly to <strong>but-2-ene</strong>, only a little to but-1-ene. Which H you remove <em>is</em> the choice.</p>
+    </div>
+    <div class="controls two-up"><button class="action primary alt" id="startTopic">Start: elimination</button></div>`,
+
+  sub: () => `
+    <p class="intro-eyebrow">Reactions · topic 3 of 5 · substitution</p>
+    <p class="intro-lede"><strong>Substitution</strong> swaps one passenger for another on the same carbon — no bond orders change at all.</p>
+    ${rxnTable(SUBSTITUTION_TYPES, "the molecule…")}
+    <ul class="pt-points">
+      ${TWO_PHASE_NOTE}
+      <li>The exam's favorite trap: <strong>KOH concentrated + heat eliminates</strong> (→ alkene), <strong>KOH aqueous substitutes</strong> (→ alcohol). Same reagent — the <em>conditions</em> are part of the answer.</li>
+    </ul>
+    <div class="controls two-up"><button class="action primary alt" id="startTopic">Start: substitution</button></div>`,
+
+  carb: () => `
+    <p class="intro-eyebrow">Reactions · topic 4 of 5 · carbonyl chemistry</p>
+    <p class="intro-lede">Alcohols oxidize, acids and alcohols condense into esters, and esters split back apart.</p>
+    ${rxnTable(CARBONYL_TYPES, "the molecule…")}
+    <div class="mk-teach">
       <h3>Oxidation &amp; the 1° / 2° / 3° ladder — including "no reaction"</h3>
       <p>Before oxidizing an alcohol, classify it: <strong>count the carbons attached to the OH-carbon</strong>.</p>
-      <p class="mk-worked"><strong>1 carbon → primary</strong> → [O] gives the <strong>aldehyde</strong> — and with excess oxidant under reflux, it runs on to the <strong>carboxylic acid</strong>. &nbsp;·&nbsp; <strong>2 → secondary</strong> → a <strong>ketone</strong>, full stop. &nbsp;·&nbsp; <strong>3 → tertiary</strong> → <strong>NO REACTION</strong>: oxidation must pull an H off the OH-carbon itself, and a tertiary carbon has none to give.</p>
+      <p class="mk-worked"><strong>1 → primary</strong> → aldehyde, and with excess oxidant under reflux, the <strong>acid</strong>. &nbsp;·&nbsp; <strong>2 → secondary</strong> → a <strong>ketone</strong>, full stop. &nbsp;·&nbsp; <strong>3 → tertiary</strong> → <strong>NO REACTION</strong>: oxidation must pull an H off the OH-carbon itself, and a tertiary carbon has none.</p>
       <p>That last case is a real exam answer, so it's a real button here: when nothing happens, press <strong>No reaction</strong>. Pressing it when a reaction <em>does</em> exist counts as wrong — deciding <em>whether</em> is part of the skill.</p>
     </div>
+    <ul class="pt-points">
+      ${TWO_PHASE_NOTE}
+      <li>Saponification gives <strong>two</strong> products — build both, side by side.</li>
+    </ul>
+    <div class="controls two-up"><button class="action primary alt" id="startTopic">Start: carbonyls</button></div>`,
 
-    <div class="controls two-up">
-      <button class="action primary alt" id="startBuild">Build: addition</button>
-      <button class="action primary alt" id="startElim">Build: elimination</button>
-      <button class="action primary alt" id="startSub">Build: substitution</button>
-      <button class="action primary alt" id="startCarb">Build: carbonyls</button>
-      <button class="action primary" id="startMk">Major or minor? · quiz</button>
+  mk: () => `
+    <p class="intro-eyebrow">Reactions · topic 5 of 5 · the major-product quiz</p>
+    <p class="intro-lede">Every reaction that can give two products has a favorite. This quiz is pure judgment: the reaction and both products are shown — <strong>pick the major</strong>.</p>
+    <div class="mk-teach">
+      <h3>The two rules, side by side</h3>
+      <p><strong>Markovnikov (addition):</strong> count the H's on the two double-bond carbons — the new H joins the richer one, the X or OH takes the poorer one.</p>
+      <p><strong>Zaitsev (elimination):</strong> when the double bond could form on either side of the leaving group, the more substituted — internal — alkene wins.</p>
+      <p>Both rules are the same instinct: <em>count the neighbors.</em></p>
     </div>
-  </div>`;
-  root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
-  root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
-  root.querySelector("#startSub").addEventListener("click", () => startRound("sub"));
-  root.querySelector("#startCarb").addEventListener("click", () => startRound("carb"));
-  root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
+    <div class="controls two-up"><button class="action primary" id="startTopic">Start the quiz</button></div>`
+};
+
+function renderIntro() {
+  root.innerHTML = `${topicTabs()}<div class="intro">${SHEETS[topic().id]()}</div>`;
+  wireTabs();
+  root.querySelector("#startTopic").addEventListener("click", () => startRound(topic().id));
 }
 
 function renderPlay() {
@@ -324,8 +397,10 @@ function renderPlay() {
     </div>
 
     <p class="build-label" id="buildLabel">Step 1 · build the reactant${card.phase1Mols.length > 1 ? "s" : ""} — the game will notice</p>
-    <canvas class="lab-canvas" id="labCanvas"></canvas>
-    <div id="phasePop"></div>
+    <div class="lab-wrap">
+      <canvas class="lab-canvas" id="labCanvas"></canvas>
+      <div id="phaseModal"></div>
+    </div>
     <div id="nudgeArea"></div>
     <div id="hintArea"></div>
     <div id="verdictArea"></div>
@@ -350,7 +425,7 @@ function renderPlay() {
     elements: card.elements,
     additionMode: false,   // phase 1 is the familiar nomenclature engine; phase 2 flips it on
     onChange() {
-      if (!checked && phase === "reactants" && reactantsBuilt()) enterProductPhase();
+      if (!checked && phase === "reactants" && reactantsBuilt()) onReactantsRecognized();
       const btn = root.querySelector("#checkBtn");
       if (btn && !checked) btn.disabled = phase !== "product" || lab.atoms().length === 0;
     }
@@ -362,9 +437,10 @@ function resetQuestion() {
   lab.reset();
   lab.setAutoH(true);
   lab.setAdditionMode(false);
+  lab.setLocked(false);
   phase = "reactants";
-  const pop = root.querySelector("#phasePop");
-  if (pop) pop.innerHTML = "";
+  const modal = root.querySelector("#phaseModal");
+  if (modal) modal.innerHTML = "";
   const label = root.querySelector("#buildLabel");
   if (label) label.textContent = `Step 1 · build the reactant${card.phase1Mols.length > 1 ? "s" : ""} — the game will notice`;
 }
@@ -497,7 +573,11 @@ function renderDone() {
       </div>`
     : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} solved with no hints. 🎉</p>`;
 
+  // Progression (Dalia's ladder): the primary action moves to the NEXT topic's sheet;
+  // replaying this topic is the ghost. Tabs stay free-roaming above.
+  const isLast = topicIndex === TOPICS.length - 1;
   root.innerHTML = `
+    ${topicTabs()}
     <p class="prompt">Round done — ${roundTotal} ${quiz === "mk" ? "Markovnikov calls" : "reactions"}, ${cleanSolves} solved ${quiz === "mk" ? "first try" : "hint-free"}.</p>
     ${missedBlock}
     <p class="done-next">${{
@@ -508,17 +588,18 @@ function renderDone() {
       build: "Every round covers all four additions: H2, X2, HX, and water."
     }[quiz]}</p>
     <div class="controls two-up">
-      <button class="action primary alt" id="startBuild">Build: addition</button>
-      <button class="action primary alt" id="startElim">Build: elimination</button>
-      <button class="action primary alt" id="startSub">Build: substitution</button>
-      <button class="action primary alt" id="startCarb">Build: carbonyls</button>
-      <button class="action primary" id="startMk">Major or minor? · quiz</button>
+      <button class="action ghost" id="againBtn">Again: ${topic().label}</button>
+      ${isLast
+        ? `<button class="action primary" id="nextTopicBtn">Back to the top: ${TOPICS[0].label} →</button>`
+        : `<button class="action primary" id="nextTopicBtn">Next topic: ${TOPICS[topicIndex + 1].label} →</button>`}
     </div>`;
-  root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
-  root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
-  root.querySelector("#startSub").addEventListener("click", () => startRound("sub"));
-  root.querySelector("#startCarb").addEventListener("click", () => startRound("carb"));
-  root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
+  wireTabs();
+  root.querySelector("#againBtn").addEventListener("click", () => startRound(topic().id));
+  root.querySelector("#nextTopicBtn").addEventListener("click", () => {
+    topicIndex = isLast ? 0 : topicIndex + 1;
+    mode = "intro";
+    render();
+  });
 }
 
 render();

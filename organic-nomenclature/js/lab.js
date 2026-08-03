@@ -495,11 +495,14 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           }
           chosen.push(best);
         }
+        // pushed clear of the carbon so the C–H bond LINE is visible — when building,
+        // hydrogens float tucked-in; when reacting, you see the chemical bonds
+        const reach = R_C + R_H + 16;
         for (const angle of chosen) {
           const hAtom = {
             id: nextId++, el: "H",
-            x: atom.x + Math.cos(angle) * (H_ORBIT + 6),
-            y: atom.y + Math.sin(angle) * (H_ORBIT + 6),
+            x: atom.x + Math.cos(angle) * reach,
+            y: atom.y + Math.sin(angle) * reach,
             hs: []
           };
           atoms.push(hAtom);

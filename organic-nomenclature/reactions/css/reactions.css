@@ -28,6 +28,29 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
   border-radius: var(--radius); box-shadow: var(--shadow);
 }
 
+/* topic tabs — the oval bookmarks, same pattern as the Nomenclature games */
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.level-tab {
+  padding: 8px 18px; font-family: var(--font-display); font-weight: 700; font-size: 0.95rem;
+  color: var(--accent); background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 999px; cursor: pointer;
+}
+.level-tab:hover:not(.is-active) { border-color: var(--accent); }
+.level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+
+/* the recognition popup: bench locks until the student clicks Continue */
+.lab-wrap { position: relative; }
+#phaseModal:not(:empty) { position: absolute; inset: 0; }
+.phase-modal {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 24px; text-align: center;
+  background: rgba(255, 253, 248, 0.92); border-radius: 14px; border: 1.5px solid var(--success-line);
+  animation: phase-pop-in 0.35s ease-out;
+}
+.phase-modal-title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--success); }
+.phase-modal-sub { margin: 0 0 8px; font-size: 1.02rem; }
+
 /* intro */
 .intro-eyebrow {
   margin: 0 0 6px; color: var(--plum); font-family: var(--font-display);
