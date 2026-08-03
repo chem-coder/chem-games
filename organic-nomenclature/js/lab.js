@@ -38,7 +38,13 @@ const ELEMENT_STYLE = {
 // The student must put something there. (Dalia's spec, 2026-08-03: "needs to be bonded
 // to something".) Chemistry bonus: the attacked carbon keeps all its hydrogens, which
 // is what really happens in addition.
-export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag", additionMode = false } = {}) {
+export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag", additionMode = false, atomScale = 1 } = {}) {
+  // Per-instance atom sizing (Dalia, 2026-08-04): the reactions bench runs smaller
+  // atoms so there is room to aim a dropped OH at ONE carbon; the naming builder
+  // keeps the full-size chunky look.
+  const RC = R_C * atomScale;
+  const RH = R_H * atomScale;
+  const ORBIT = RC + RH - 7;
   const ctx = canvas.getContext("2d");
   let activeEl = elements[0];
   let additionOn = additionMode;
@@ -79,8 +85,8 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       const [h] = atom.hs.splice(idx, 1);
       if (fall) {
         falling.push({
-          x: atom.x + Math.cos(h.angle) * H_ORBIT,
-          y: atom.y + Math.sin(h.angle) * H_ORBIT,
+          x: atom.x + Math.cos(h.angle) * ORBIT,
+          y: atom.y + Math.sin(h.angle) * ORBIT,
           phase: Math.random() * Math.PI * 2
         });
       }
@@ -233,7 +239,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   function atomAt(x, y) {
     for (let i = atoms.length - 1; i >= 0; i--) {
       // hydrogens are small — their hit circle must match, or they steal bond clicks
-      const hitR = atoms[i].el === "H" ? R_H + 5 : R_C + 4;
+      const hitR = atoms[i].el === "H" ? RH + 5 : RC + 4;
       if (Math.hypot(atoms[i].x - x, atoms[i].y - y) < hitR) return atoms[i];
     }
     return null;
@@ -350,16 +356,16 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
 
   function stepFalling(dt) {
     for (const p of falling) { p.y += FALL_V * dt; }
-    falling = falling.filter((p) => p.y < H + R_H);
+    falling = falling.filter((p) => p.y < H + RH);
   }
 
   // ── drawing ──
   function drawH(x, y, alpha = 1) {
     ctx.globalAlpha = alpha;
-    ctx.beginPath(); ctx.arc(x, y, R_H, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(x, y, RH, 0, Math.PI * 2);
     ctx.fillStyle = "#f7f3ea"; ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = "#b9ac94"; ctx.stroke();
-    ctx.fillStyle = "#6e6553"; ctx.font = "600 11px Lexend, sans-serif";
+    ctx.fillStyle = "#6e6553"; ctx.font = `600 ${Math.max(8, Math.round(11 * atomScale))}px Lexend, sans-serif`;
     ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("H", x, y + 0.5);
     ctx.globalAlpha = 1;
   }
@@ -389,7 +395,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     for (const atom of atoms) {
       for (const h of atom.hs) {
         const a = h.angle + Math.sin(t * 1.6 + h.phase) * 0.055;  // the alive wobble
-        drawH(atom.x + Math.cos(a) * H_ORBIT, atom.y + Math.sin(a) * H_ORBIT);
+        drawH(atom.x + Math.cos(a) * ORBIT, atom.y + Math.sin(a) * ORBIT);
       }
       // open seat: a pulsing dashed stub pointing away from the bonds — "bond me"
       if (slotsFor(atom.id)) {
@@ -404,22 +410,22 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         ctx.lineWidth = 3;
         ctx.strokeStyle = "#b4502f";
         ctx.beginPath();
-        ctx.moveTo(atom.x + Math.cos(away) * (R_C + 2), atom.y + Math.sin(away) * (R_C + 2));
-        ctx.lineTo(atom.x + Math.cos(away) * (R_C + 22), atom.y + Math.sin(away) * (R_C + 22));
+        ctx.moveTo(atom.x + Math.cos(away) * (RC + 2), atom.y + Math.sin(away) * (RC + 2));
+        ctx.lineTo(atom.x + Math.cos(away) * (RC + 22), atom.y + Math.sin(away) * (RC + 22));
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.beginPath();
-        ctx.arc(atom.x, atom.y, R_C + 5, 0, Math.PI * 2);
+        ctx.arc(atom.x, atom.y, RC + 5, 0, Math.PI * 2);
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
       }
       const st = ELEMENT_STYLE[atom.el];
-      const radius = atom.el === "H" ? R_H + 2 : R_C;
+      const radius = atom.el === "H" ? RH + 2 : RC;
       ctx.beginPath(); ctx.arc(atom.x, atom.y, radius, 0, Math.PI * 2);
       ctx.fillStyle = st.fill; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = st.stroke; ctx.stroke();
-      ctx.fillStyle = st.text; ctx.font = `700 ${atom.el === "H" ? 12 : 17}px Outfit, sans-serif`;
+      ctx.fillStyle = st.text; ctx.font = `700 ${Math.max(9, Math.round((atom.el === "H" ? 12 : 17) * atomScale))}px Outfit, sans-serif`;
       ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(atom.el, atom.x, atom.y + 1);
     }
 
@@ -442,7 +448,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         ctx.lineWidth = 1; ctx.strokeStyle = "#e5dbc9"; ctx.stroke();
       }
       for (const o of elements.length > 1 ? [-20, 20] : [-34, 0, 34]) {
-        ctx.beginPath(); ctx.arc(cx + o, cy, R_C * 0.78, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(cx + o, cy, RC * 0.78, 0, Math.PI * 2);
         ctx.fillStyle = st.fill; ctx.fill();
         ctx.lineWidth = 1.5; ctx.strokeStyle = st.stroke; ctx.stroke();
         ctx.fillStyle = st.text; ctx.font = "700 14px Outfit, sans-serif";
@@ -495,8 +501,11 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     // tray. Runs on the reactants at recognition time.
     normalizeLayout() {
       const comps = splitComponents(atoms, bonds);
-      const L = 62;                 // uniform heavy-atom bond length
-      const ZX = L * Math.cos(Math.PI / 6), ZY = L * Math.sin(Math.PI / 6);
+      // Long bonds and a flat zigzag (~135° interior — deliberately unscientific,
+      // Dalia's spec): with short bonds, a dropped OH lands inside TWO carbons' snap
+      // radii at once and bridges them. Room to aim beats textbook angles.
+      const L = 124;                // uniform heavy-atom bond length
+      const ZX = L * Math.cos(Math.PI / 8), ZY = L * Math.sin(Math.PI / 8);
       const laid = [];
       const nbsOf = (id) => bonds
         .filter((b) => b.a === id || b.b === id)
@@ -537,13 +546,13 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
             let flip = (i % 2 === 0) ? -1 : 1;
             for (const nb of heavyNbs(id)) {
               if (inChain.has(nb) || pos2.has(nb)) continue;
-              pos2.set(nb, { x: pos2.get(id).x, y: pos2.get(id).y + flip * L * 0.92 });
+              pos2.set(nb, { x: pos2.get(id).x, y: pos2.get(id).y + flip * L * 0.8 });
               // anything deeper (branch of a branch) walks straight outward
               let prev2 = id, cur2 = nb, depth = 2;
               for (;;) {
                 const next = heavyNbs(cur2).find((x) => x !== prev2 && !pos2.has(x));
                 if (!next) break;
-                pos2.set(next, { x: pos2.get(id).x, y: pos2.get(id).y + flip * L * 0.92 * depth });
+                pos2.set(next, { x: pos2.get(id).x, y: pos2.get(id).y + flip * L * 0.8 * depth });
                 prev2 = cur2; cur2 = next; depth += 1;
               }
               flip = -flip;
@@ -551,7 +560,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           }
         }
         // explicit H leaves: gap-spread around their heavy atom at uniform reach
-        const reach = R_C + R_H + 16;
+        const reach = RC + RH + 16;
         for (const a of comp.atoms) {
           if (a.el === "H" || !pos2.has(a.id)) continue;
           const hKids = nbsOf(a.id).filter((id2) => comp.atoms.find((x) => x.id === id2)?.el === "H");
@@ -584,16 +593,28 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
           minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
         }
-        laid.push({ pos2, w: maxX - minX + 2 * R_C, h: maxY - minY + 2 * R_C, minX, minY });
+        laid.push({ pos2, w: maxX - minX + 2 * RC, h: maxY - minY + 2 * RC, minX, minY });
       }
-      // arrange components side by side, centered in the space above the tray
+      // arrange components side by side, centered in the space above the tray;
+      // if the long-bond layout overflows the bench, scale it down uniformly
       const gap = 54;
-      const totalW = laid.reduce((s, l2) => s + l2.w, 0) + gap * (laid.length - 1);
+      let totalW = laid.reduce((s, l2) => s + l2.w, 0) + gap * (laid.length - 1);
+      if (totalW > W - 30) {
+        const s = (W - 30 - gap * (laid.length - 1)) / (totalW - gap * (laid.length - 1));
+        for (const l2 of laid) {
+          for (const p of l2.pos2.values()) { p.x *= s; p.y *= s; }
+          l2.w = (l2.w - 2 * RC) * s + 2 * RC;
+          l2.h = (l2.h - 2 * RC) * s + 2 * RC;
+          l2.minX *= s;
+          l2.minY *= s;
+        }
+        totalW = laid.reduce((s2, l2) => s2 + l2.w, 0) + gap * (laid.length - 1);
+      }
       const regionH = H - TRAY_H - 14;
       let cursor = Math.max(20, (W - totalW) / 2);
       for (const l2 of laid) {
-        const ox = cursor - l2.minX + R_C;
-        const oy = (regionH - l2.h) / 2 - l2.minY + R_C;
+        const ox = cursor - l2.minX + RC;
+        const oy = (regionH - l2.h) / 2 - l2.minY + RC;
         for (const [id, p] of l2.pos2) {
           const atom = byId()[id];
           if (atom) { atom.x = p.x + ox; atom.y = p.y + oy; }
@@ -626,7 +647,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         }
         // pushed clear of the carbon so the C–H bond LINE is visible — when building,
         // hydrogens float tucked-in; when reacting, you see the chemical bonds
-        const reach = R_C + R_H + 16;
+        const reach = RC + RH + 16;
         for (const angle of chosen) {
           const hAtom = {
             id: nextId++, el: "H",

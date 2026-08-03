@@ -429,6 +429,7 @@ function renderPlay() {
 
   lab = createLab(root.querySelector("#labCanvas"), {
     elements: card.elements,
+    atomScale: 0.72,       // smaller atoms on the reactions bench — room to aim
     additionMode: false,   // phase 1 is the familiar nomenclature engine; phase 2 flips it on
     onChange() {
       if (!checked && phase === "reactants" && reactantsBuilt()) onReactantsRecognized();
