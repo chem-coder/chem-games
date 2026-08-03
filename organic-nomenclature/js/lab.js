@@ -4,7 +4,7 @@
 //   · every carbon arrives saturated — 4 H's riding its rim, alive, sliding to spread out
 //   · bonding sheds the paid hydrogens with a slow fall (a little faster than snowflakes)
 //   · cycling a bond's order re-balances H's INSTANTLY — no animation
-import { hydrogenCount, canBond, nextOrder, componentFormulas } from "./chem.js";
+import { hydrogenCount, canBond, nextOrder, componentFormulas, splitComponents } from "./chem.js";
 
 // ── tuning ──
 const R_C = 26;            // carbon radius, px
@@ -288,7 +288,20 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     if (drag) {
       const atom = byId()[drag.id];
       if (!atom) { drag = null; return; }
-      atom.x = x + drag.dx; atom.y = y + drag.dy;
+      const dx = (x + drag.dx) - atom.x;
+      const dy = (y + drag.dy) - atom.y;
+      atom.x += dx; atom.y += dy;
+      // phase 2 (explicit-H world): hydrogens RIDE their heavy atom — dragging the O
+      // of a water brings its H's along. Dragging an H alone still pulls just the H,
+      // so elimination's pluck-an-H-off gesture is untouched.
+      if (atom.el !== "H") {
+        for (const b of bonds) {
+          const otherId = b.a === atom.id ? b.b : b.b === atom.id ? b.a : null;
+          if (otherId === null) continue;
+          const other = byId()[otherId];
+          if (other && other.el === "H") { other.x += dx; other.y += dy; }
+        }
+      }
       tryBond(atom);
     } else {
       canvas.style.cursor = atomAt(x, y) ? "grab" : bondAt(x, y) ? "pointer" : "default";
@@ -302,6 +315,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       const atom = byId()[drag.id];
       if (atom && inTray(x, y)) removeAtom(atom);  // tray is also the bin
       drag = null;
+      onChange();   // a released drag is a settled state — recognition may look now
     } else if (bondHit && bondHit === bondAt(x, y)) {
       cycleBond(bondHit);
     }
@@ -473,6 +487,121 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     openSlotCount() { return openSlots.length; },
     setAutoH(v) { autoH = v; },
     setAdditionMode(v) { additionOn = v; },
+    isDragging() { return Boolean(drag); },
+    // atoms must clear this line to count as "out of the inventory"
+    stagingLine() { return H - TRAY_H - 14 - 30; },
+    // The prettifier (Dalia's spec, 2026-08-04): the student CREATES the structure,
+    // the computer DRAWS it — zigzag chain, uniform bond lengths, centered above the
+    // tray. Runs on the reactants at recognition time.
+    normalizeLayout() {
+      const comps = splitComponents(atoms, bonds);
+      const L = 62;                 // uniform heavy-atom bond length
+      const ZX = L * Math.cos(Math.PI / 6), ZY = L * Math.sin(Math.PI / 6);
+      const laid = [];
+      const nbsOf = (id) => bonds
+        .filter((b) => b.a === id || b.b === id)
+        .map((b) => (b.a === id ? b.b : b.a));
+      for (const comp of comps) {
+        const heavy = comp.atoms.filter((a) => a.el !== "H");
+        const heavyIds = new Set(heavy.map((a) => a.id));
+        const pos2 = new Map();
+        if (heavy.length === 0) {
+          comp.atoms.forEach((a, i) => pos2.set(a.id, { x: i * 40, y: 0 }));
+        } else {
+          // tree diameter by double sweep = the backbone chain
+          const heavyNbs = (id) => nbsOf(id).filter((x) => heavyIds.has(x));
+          const far = (start) => {
+            const dist = new Map([[start, 0]]);
+            const prev = new Map([[start, null]]);
+            const q = [start];
+            let best = start;
+            while (q.length) {
+              const cur = q.shift();
+              if (dist.get(cur) > dist.get(best)) best = cur;
+              for (const nb of heavyNbs(cur)) {
+                if (!dist.has(nb)) { dist.set(nb, dist.get(cur) + 1); prev.set(nb, cur); q.push(nb); }
+              }
+            }
+            return { best, prev };
+          };
+          const a1 = far(heavy[0].id).best;
+          const sweep = far(a1);
+          const chain = [];
+          for (let cur = sweep.best; cur !== null; cur = sweep.prev.get(cur)) chain.push(cur);
+          // zigzag backbone
+          chain.forEach((id, i) => pos2.set(id, { x: i * ZX, y: (i % 2) * ZY }));
+          // substituent heavy atoms hang off their chain carbon, opposite the bend
+          const inChain = new Set(chain);
+          for (const id of chain) {
+            const i = chain.indexOf(id);
+            let flip = (i % 2 === 0) ? -1 : 1;
+            for (const nb of heavyNbs(id)) {
+              if (inChain.has(nb) || pos2.has(nb)) continue;
+              pos2.set(nb, { x: pos2.get(id).x, y: pos2.get(id).y + flip * L * 0.92 });
+              // anything deeper (branch of a branch) walks straight outward
+              let prev2 = id, cur2 = nb, depth = 2;
+              for (;;) {
+                const next = heavyNbs(cur2).find((x) => x !== prev2 && !pos2.has(x));
+                if (!next) break;
+                pos2.set(next, { x: pos2.get(id).x, y: pos2.get(id).y + flip * L * 0.92 * depth });
+                prev2 = cur2; cur2 = next; depth += 1;
+              }
+              flip = -flip;
+            }
+          }
+        }
+        // explicit H leaves: gap-spread around their heavy atom at uniform reach
+        const reach = R_C + R_H + 16;
+        for (const a of comp.atoms) {
+          if (a.el === "H" || !pos2.has(a.id)) continue;
+          const hKids = nbsOf(a.id).filter((id2) => comp.atoms.find((x) => x.id === id2)?.el === "H");
+          if (!hKids.length) continue;
+          const dirs = nbsOf(a.id)
+            .filter((id2) => pos2.has(id2))
+            .map((id2) => Math.atan2(pos2.get(id2).y - pos2.get(a.id).y, pos2.get(id2).x - pos2.get(a.id).x));
+          const candidates = Array.from({ length: 16 }, (_, i2) => (i2 / 16) * Math.PI * 2);
+          const chosen = [];
+          for (let j = 0; j < hKids.length; j++) {
+            let best = 0, bestScore = -1;
+            for (const cand of candidates) {
+              const clearance = Math.min(
+                ...dirs.map((d2) => Math.abs(wrap(cand - d2))),
+                ...chosen.map((d2) => Math.abs(wrap(cand - d2))),
+                Math.PI
+              );
+              if (clearance > bestScore) { bestScore = clearance; best = cand; }
+            }
+            chosen.push(best);
+            pos2.set(hKids[j], {
+              x: pos2.get(a.id).x + Math.cos(best) * reach,
+              y: pos2.get(a.id).y + Math.sin(best) * reach
+            });
+          }
+        }
+        // bbox for this component
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (const p of pos2.values()) {
+          minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+          minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+        }
+        laid.push({ pos2, w: maxX - minX + 2 * R_C, h: maxY - minY + 2 * R_C, minX, minY });
+      }
+      // arrange components side by side, centered in the space above the tray
+      const gap = 54;
+      const totalW = laid.reduce((s, l2) => s + l2.w, 0) + gap * (laid.length - 1);
+      const regionH = H - TRAY_H - 14;
+      let cursor = Math.max(20, (W - totalW) / 2);
+      for (const l2 of laid) {
+        const ox = cursor - l2.minX + R_C;
+        const oy = (regionH - l2.h) / 2 - l2.minY + R_C;
+        for (const [id, p] of l2.pos2) {
+          const atom = byId()[id];
+          if (atom) { atom.x = p.x + ox; atom.y = p.y + oy; }
+        }
+        cursor += l2.w + gap;
+      }
+      onChange();
+    },
     // Phase-2 conversion: every implicit H becomes a real, draggable H atom. Placement
     // is recomputed into the GAPS between bonds — never on a bond axis, where an H
     // would sit on top of the C–C line and steal every bond click.

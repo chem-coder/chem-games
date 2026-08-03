@@ -95,7 +95,12 @@ function molMatches(comp, mol) {
 }
 
 function reactantsBuilt() {
-  const comps = splitComponents(lab.atoms(), lab.bonds());
+  // never mid-drag, and every atom must have cleared the inventory zone — otherwise
+  // a reagent barely out of the tray triggers the popup before the student has moved
+  if (lab.isDragging()) return false;
+  const all = lab.atoms();
+  if (all.length === 0 || all.some((a) => a.y > lab.stagingLine())) return false;
+  const comps = splitComponents(all, lab.bonds());
   if (comps.length !== card.phase1Mols.length) return false;
   const used = new Set();
   for (const mol of card.phase1Mols) {
@@ -111,6 +116,7 @@ function reactantsBuilt() {
 // the transition read as a freeze).
 function onReactantsRecognized() {
   phase = "recognized";
+  lab.normalizeLayout();   // the student creates the structure; the computer draws it pretty
   lab.setLocked(true);
   const modal = root.querySelector("#phaseModal");
   if (modal) {
