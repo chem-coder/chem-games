@@ -264,44 +264,45 @@ export const SUBSTITUTIONS = [
   })
 ];
 
+// Recipe dealer over typed card groups. A draw can straddle a pile's reshuffle
+// boundary, so every draw dedupes against the cards already dealt this round —
+// the same guard makeBag learned in the naming game.
+function makeRecipeDealer(recipe) {  // recipe: [{cards, count}]
+  const piles = recipe.map(() => []);
+  return function deal(rng = Math.random) {
+    const dealt = [];
+    const used = new Set();
+    recipe.forEach(({ cards, count }, i) => {
+      for (let k = 0; k < count; k++) {
+        if (piles[i].length === 0) piles[i] = [...cards].sort(() => rng() - 0.5);
+        let card = piles[i].pop();
+        for (let g = 0; used.has(card.id) && g < cards.length; g++) {
+          if (piles[i].length === 0) piles[i] = [...cards].sort(() => rng() - 0.5);
+          card = piles[i].pop();
+        }
+        used.add(card.id);
+        dealt.push(card);
+      }
+    });
+    return dealt.sort(() => rng() - 0.5);
+  };
+}
+
 // Round of 5: 2 alkane halogenations + 1 alcohol→halide + 2 hydrolyses.
 export function makeSubstitutionDealer() {
-  const groups = {
-    halog: SUBSTITUTIONS.filter((c) => c.type === "subHalogenation"),
-    suboh: SUBSTITUTIONS.filter((c) => c.type === "subAlcohol"),
-    hydrol: SUBSTITUTIONS.filter((c) => c.type === "hydrolysis")
-  };
-  const piles = { halog: [], suboh: [], hydrol: [] };
-  const draw = (key, rng) => {
-    if (piles[key].length === 0) piles[key] = [...groups[key]].sort(() => rng() - 0.5);
-    return piles[key].pop();
-  };
-  return function deal(rng = Math.random) {
-    const cards = [
-      draw("halog", rng), draw("halog", rng),
-      draw("suboh", rng),
-      draw("hydrol", rng), draw("hydrol", rng)
-    ];
-    return cards.sort(() => rng() - 0.5);
-  };
+  return makeRecipeDealer([
+    { cards: SUBSTITUTIONS.filter((c) => c.type === "subHalogenation"), count: 2 },
+    { cards: SUBSTITUTIONS.filter((c) => c.type === "subAlcohol"), count: 1 },
+    { cards: SUBSTITUTIONS.filter((c) => c.type === "hydrolysis"), count: 2 }
+  ]);
 }
 
 // Round of 5: 3 dehydrations + 2 dehydrohalogenations.
 export function makeEliminationDealer() {
-  const dehyd = ELIMINATIONS.filter((c) => c.type === "dehydration");
-  const dhx = ELIMINATIONS.filter((c) => c.type === "dehydrohalogenation");
-  const piles = { dehyd: [], dhx: [] };
-  const draw = (key, source, rng) => {
-    if (piles[key].length === 0) piles[key] = [...source].sort(() => rng() - 0.5);
-    return piles[key].pop();
-  };
-  return function deal(rng = Math.random) {
-    const cards = [
-      draw("dehyd", dehyd, rng), draw("dehyd", dehyd, rng), draw("dehyd", dehyd, rng),
-      draw("dhx", dhx, rng), draw("dhx", dhx, rng)
-    ];
-    return cards.sort(() => rng() - 0.5);
-  };
+  return makeRecipeDealer([
+    { cards: ELIMINATIONS.filter((c) => c.type === "dehydration"), count: 3 },
+    { cards: ELIMINATIONS.filter((c) => c.type === "dehydrohalogenation"), count: 2 }
+  ]);
 }
 
 // What each reaction type teaches — feeds the hint ladder and the intro table.
