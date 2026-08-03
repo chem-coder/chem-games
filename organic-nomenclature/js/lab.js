@@ -306,19 +306,32 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       const dx = (x + drag.dx) - atom.x;
       const dy = (y + drag.dy) - atom.y;
       atom.x += dx; atom.y += dy;
-      // phase 2 (explicit-H world): hydrogens RIDE their heavy atom — dragging the O
-      // of a water brings its H's along. Dragging an H bonded to a CARBON still pulls
-      // just the H (elimination's pluck), but an H bonded only to another H drags the
-      // whole H–H molecule — small molecules move as one.
-      for (const b of bonds) {
-        const otherId = b.a === atom.id ? b.b : b.b === atom.id ? b.a : null;
-        if (otherId === null) continue;
-        const other = byId()[otherId];
-        if (other && other.el === "H" && (atom.el !== "H" || other !== atom)) {
-          if (atom.el !== "H" || bonds.every((b2) => {
-            const nb = b2.a === atom.id ? b2.b : b2.b === atom.id ? b2.a : null;
-            return nb === null || byId()[nb]?.el === "H";
-          })) { other.x += dx; other.y += dy; }
+      // Riding rules (Dalia, 2026-08-04): a CARBON-FREE molecule — H2, Cl2, H–Br,
+      // water — is a reagent and moves as ONE piece, grabbed by any of its atoms.
+      // Carbon-containing molecules keep the working hands: dragging a heavy atom
+      // carries its hydrogens; dragging an H off a carbon is the elimination pluck.
+      const compIds = new Set([atom.id]);
+      const stack = [atom.id];
+      while (stack.length) {
+        const cur = stack.pop();
+        for (const b of bonds) {
+          const nb = b.a === cur ? b.b : b.b === cur ? b.a : null;
+          if (nb !== null && !compIds.has(nb)) { compIds.add(nb); stack.push(nb); }
+        }
+      }
+      const isReagent = [...compIds].every((id2) => byId()[id2]?.el !== "C");
+      if (isReagent) {
+        for (const id2 of compIds) {
+          if (id2 === atom.id) continue;
+          const o = byId()[id2];
+          if (o) { o.x += dx; o.y += dy; }
+        }
+      } else if (atom.el !== "H") {
+        for (const b of bonds) {
+          const otherId = b.a === atom.id ? b.b : b.b === atom.id ? b.a : null;
+          if (otherId === null) continue;
+          const other = byId()[otherId];
+          if (other && other.el === "H") { other.x += dx; other.y += dy; }
         }
       }
       tryBond(atom);
