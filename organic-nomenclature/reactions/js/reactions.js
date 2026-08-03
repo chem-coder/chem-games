@@ -366,6 +366,48 @@ export function makeCarbonylActDealer() {
   ]);
 }
 
+// ── phase 1 — "build these molecules" (Dalia's two-phase spec, 2026-08-04) ──────
+// Every build card opens by asking for the REACTANTS, built with the familiar
+// auto-hydrogen engine. The moment the canvas holds them, the game recognizes it,
+// congratulates, and flips to phase 2: hydrogens freeze into real atoms, and the
+// student performs the reaction by hand. These are the graphs recognition matches.
+function h2Mol() {
+  const a = ++nextId, b = ++nextId;
+  return { atoms: [{ id: a, el: "H" }, { id: b, el: "H" }], bonds: [{ a, b, order: 1 }] };
+}
+function x2Mol(el) {
+  const a = ++nextId, b = ++nextId;
+  return { atoms: [{ id: a, el }, { id: b, el }], bonds: [{ a, b, order: 1 }] };
+}
+function loneAtom(el) {
+  return { atoms: [{ id: ++nextId, el }], bonds: [] };  // implicit H's make it HX / H2O
+}
+
+for (const c of REACTIONS) {
+  c.phase1Mols = [
+    c.reactant.mol,
+    c.type === "hydrogenation" ? h2Mol()
+      : c.type === "halogenation" ? x2Mol(c.reagent === "Br2" ? "Br" : "Cl")
+      : c.type === "hydration" ? loneAtom("O")
+      : loneAtom(c.reagent === "HBr" ? "Br" : "Cl")
+  ];
+}
+for (const c of ELIMINATIONS) c.phase1Mols = [c.reactant.mol];
+for (const c of SUBSTITUTIONS) {
+  c.phase1Mols = c.type === "subHalogenation"
+    ? [c.reactant.mol, x2Mol(c.reagent === "Br2" ? "Br" : "Cl")]
+    : c.type === "subAlcohol"
+    ? [c.reactant.mol, loneAtom(c.reagent === "HBr" ? "Br" : "Cl")]
+    : [c.reactant.mol, loneAtom("O")];   // hydrolysis: the OH source rides along
+  if (c.type === "subHalogenation") c.byproduct = c.reagent === "Br2" ? "HBr" : "HCl";
+  if (c.type === "subAlcohol") c.byproduct = "H2O";
+}
+for (const c of CARBONYLS) {
+  c.phase1Mols = c.reactant.mols ? [...c.reactant.mols]
+    : c.type === "saponification" ? [c.reactant.mol, loneAtom("O")]
+    : [c.reactant.mol];
+}
+
 // Recipe dealer over typed card groups. A draw can straddle a pile's reshuffle
 // boundary, so every draw dedupes against the cards already dealt this round —
 // the same guard makeBag learned in the naming game.
@@ -437,13 +479,13 @@ export const REACTION_INFO = {
     label: "Dehydration", elimination: true,
     adds: "loses H and OH",
     result: "an alkene",
-    hint: "The OH leaves its carbon; an H leaves a NEIGHBOR carbon; the two freed valences become the C=C. Which neighbor? Zaitsev: the more substituted (internal) alkene is the major — either honest alkene is accepted."
+    hint: "Drag the O to the tray — the OH leaves. Then take ONE H off a NEIGHBOR carbon and click that C–C bond double. Which neighbor? Zaitsev: the internal side gives the major — either honest alkene is accepted."
   },
   dehydrohalogenation: {
     label: "Dehydrohalogenation", elimination: true,
     adds: "loses H and X",
     result: "an alkene",
-    hint: "The halogen leaves its carbon; an H leaves a NEIGHBOR; the double bond forms between them. Zaitsev again: internal beats terminal — but both honest alkenes count."
+    hint: "Drag the halogen to the tray, take ONE H off a NEIGHBOR carbon, and click that bond double. Zaitsev again: internal beats terminal — but both honest alkenes count."
   },
   subHalogenation: {
     label: "Halogenation of an alkane", substitution: true,

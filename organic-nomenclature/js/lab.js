@@ -41,6 +41,11 @@ const ELEMENT_STYLE = {
 export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag", additionMode = false } = {}) {
   const ctx = canvas.getContext("2d");
   let activeEl = elements[0];
+  let additionOn = additionMode;
+  // Reaction phase 2 (Dalia's two-engine spec, 2026-08-04): hydrogens stop auto-
+  // adjusting entirely — every H is a real placed object and the STUDENT chooses
+  // which ones move. Bond auto-adjustment (splits, π attacks) stays.
+  let autoH = true;
 
   let atoms = [];            // {id, el, x, y, hs: [{angle, vel, phase}]}
   let bonds = [];            // {a, b, order}
@@ -80,7 +85,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         });
       }
     }
-    while (atom.hs.length < target) {
+    while (autoH && atom.hs.length < target) {
       const dirs = bondAngles(atom);
       const away = dirs.length
         ? Math.atan2(-dirs.reduce((s, a) => s + Math.sin(a), 0), -dirs.reduce((s, a) => s + Math.cos(a), 0))
@@ -123,34 +128,42 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       const d = Math.hypot(other.x - dragged.x, other.y - dragged.y);
       if (d >= SNAP) continue;
       let bondable = canBond(dragged, other, bonds);
-      // additionMode: a SATURATED reagent atom (the Br of an intact H–Br, either H of
-      // H–H) touching a π-bond carbon SPLITS its own molecule — its bond to its
-      // partner breaks, the partner floats free for the far seat, and the attack
-      // proceeds. Students intuitively drag the whole small molecule onto the C=C;
-      // now that intuition is the mechanic. (Dalia's playtest spec, 2026-08-03.)
-      if (!bondable && additionMode && hydrogenCount(dragged, bonds) === 0) {
-        const otherHasPi = bonds.some((b) => (b.a === other.id || b.b === other.id) && b.order > 1);
-        if (otherHasPi) {
-          const partnerBonds = bonds.filter((b) => (b.a === dragged.id || b.b === dragged.id) && b.order === 1);
-          const pick = partnerBonds.find((b) => byId()[b.a === dragged.id ? b.b : b.a]?.el === "H") || partnerBonds[0];
-          if (pick) {
-            bonds = bonds.filter((b) => b !== pick);
-            const freed = byId()[pick.a === dragged.id ? pick.b : pick.a];
-            if (freed) {
-              freed.x += 26;
-              freed.y -= 38;   // drift the freed atom clear so it reads as "released"
-              syncH(freed);
+      // additionMode — Dalia's rule: "if a new bond forms, the corresponding bonds that
+      // break automatically break." Two kinds of pending break make a bond possible:
+      //   · the DRAGGED atom is saturated but can SPLIT off its own partner (the Br of
+      //     an intact H–Br, either H of H–H, the H of a frozen water)
+      //   · the RECEIVER is saturated but holds a π bond — the attack will free the seat
+      //     (in phase 2 every H is explicit, so alkene carbons are chemically full)
+      if (!bondable && additionOn) {
+        const already = bonds.some((b) =>
+          (b.a === dragged.id && b.b === other.id) || (b.a === other.id && b.b === dragged.id));
+        if (!already) {
+          const otherPi = bonds.some((b) => (b.a === other.id || b.b === other.id) && b.order > 1);
+          let draggedReady = hydrogenCount(dragged, bonds) > 0;
+          const otherReady = hydrogenCount(other, bonds) > 0 || otherPi;
+          if (!draggedReady && otherReady) {
+            const partnerBonds = bonds.filter((b) => (b.a === dragged.id || b.b === dragged.id) && b.order === 1);
+            const pick = partnerBonds.find((b) => byId()[b.a === dragged.id ? b.b : b.a]?.el === "H") || partnerBonds[0];
+            if (pick) {
+              bonds = bonds.filter((b) => b !== pick);
+              const freed = byId()[pick.a === dragged.id ? pick.b : pick.a];
+              if (freed) {
+                freed.x += 26;
+                freed.y -= 38;   // drift the freed atom clear so it reads as "released"
+                syncH(freed);
+              }
+              syncH(dragged);
+              draggedReady = hydrogenCount(dragged, bonds) > 0;
             }
-            syncH(dragged);
-            bondable = canBond(dragged, other, bonds);
           }
+          bondable = draggedReady && otherReady;
         }
       }
       if (bondable) {
         // additionMode: an arrival on a multiple-bond carbon ATTACKS the π bond —
         // it drops one order and the far carbon is left with an open seat
         let attacked = false;
-        if (additionMode) {
+        if (additionOn) {
           const multi = bonds.find((b) => (b.a === other.id || b.b === other.id) && b.order > 1);
           if (multi) {
             multi.order -= 1;
@@ -219,7 +232,9 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
 
   function atomAt(x, y) {
     for (let i = atoms.length - 1; i >= 0; i--) {
-      if (Math.hypot(atoms[i].x - x, atoms[i].y - y) < R_C + 4) return atoms[i];
+      // hydrogens are small — their hit circle must match, or they steal bond clicks
+      const hitR = atoms[i].el === "H" ? R_H + 5 : R_C + 4;
+      if (Math.hypot(atoms[i].x - x, atoms[i].y - y) < hitR) return atoms[i];
     }
     return null;
   }
@@ -456,6 +471,44 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     reset() { atoms = []; bonds = []; falling = []; openSlots = []; drag = null; bondHit = null; onChange(); },
     setLocked(v) { locked = v; if (v) { drag = null; bondHit = null; } },
     openSlotCount() { return openSlots.length; },
+    setAutoH(v) { autoH = v; },
+    setAdditionMode(v) { additionOn = v; },
+    // Phase-2 conversion: every implicit H becomes a real, draggable H atom. Placement
+    // is recomputed into the GAPS between bonds — never on a bond axis, where an H
+    // would sit on top of the C–C line and steal every bond click.
+    explicitizeHydrogens() {
+      for (const atom of [...atoms]) {
+        const k = atom.hs.length;
+        if (k === 0) continue;
+        const dirs = bondAngles(atom);
+        const candidates = Array.from({ length: 16 }, (_, i) => (i / 16) * Math.PI * 2);
+        const chosen = [];
+        for (let j = 0; j < k; j++) {
+          let best = null, bestScore = -1;
+          for (const cand of candidates) {
+            const clearance = Math.min(
+              ...dirs.map((d2) => Math.abs(wrap(cand - d2))),
+              ...chosen.map((d2) => Math.abs(wrap(cand - d2))),
+              Math.PI
+            );
+            if (clearance > bestScore) { bestScore = clearance; best = cand; }
+          }
+          chosen.push(best);
+        }
+        for (const angle of chosen) {
+          const hAtom = {
+            id: nextId++, el: "H",
+            x: atom.x + Math.cos(angle) * (H_ORBIT + 6),
+            y: atom.y + Math.sin(angle) * (H_ORBIT + 6),
+            hs: []
+          };
+          atoms.push(hAtom);
+          bonds.push({ a: atom.id, b: hAtom.id, order: 1 });
+        }
+        atom.hs = [];
+      }
+      onChange();
+    },
     resize,
     // deterministic stepper for headless testing (rAF is throttled in driven browsers)
     tick(frames = 1, dt = 1 / 60) {

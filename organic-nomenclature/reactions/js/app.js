@@ -25,6 +25,7 @@ const dealers = {
 
 let mode = "intro";       // "intro" | "play" | "mk" | "done"
 let quiz = "build";       // which quiz the round (and done screen) belongs to
+let phase = "reactants";  // per build card: "reactants" (auto-H, auto-recognized) | "product"
 let queue = [];
 let roundTotal = 0;
 let card = null;
@@ -65,8 +66,44 @@ function loadCard() {
   correct = false;
   solvedName = "";
   picked = -1;
+  phase = "reactants";
   if (mode === "mk") options = Math.random() < 0.5 ? [...card.options] : [...card.options].reverse();
   render();
+}
+
+// ── phase 1 → 2: auto-recognition (Dalia's spec: no button — the game just notices) ──
+function molMatches(comp, mol) {
+  const els = [...new Set([...comp.atoms, ...mol.atoms].map((a) => a.el).concat("H"))];
+  if (gradeIsomorphic(comp.atoms, comp.bonds, mol, els).ok) return true;
+  const sm = stripExplicitH(mol.atoms, mol.bonds);
+  if (sm.atoms.length === 0) return false;
+  const sc = stripExplicitH(comp.atoms, comp.bonds);
+  return sc.atoms.length > 0 && gradeIsomorphic(sc.atoms, sc.bonds, sm, els).ok;
+}
+
+function reactantsBuilt() {
+  const comps = splitComponents(lab.atoms(), lab.bonds());
+  if (comps.length !== card.phase1Mols.length) return false;
+  const used = new Set();
+  for (const mol of card.phase1Mols) {
+    const i = comps.findIndex((g, idx) => !used.has(idx) && molMatches(g, mol));
+    if (i < 0) return false;
+    used.add(i);
+  }
+  return true;
+}
+
+function enterProductPhase() {
+  phase = "product";
+  lab.explicitizeHydrogens();   // every H becomes a real atom — the student's to move
+  lab.setAutoH(false);
+  lab.setAdditionMode(true);    // bonds that must break, break
+  const pop = root.querySelector("#phasePop");
+  if (pop) pop.innerHTML = `<p class="phase-pop">✓ Nice — the reactant${card.phase1Mols.length > 1 ? "s are" : " is"} built! Now: <strong>${card.noReaction ? "what happens when it meets " + card.reagent + "?" : "build the " + (card.targets && card.targets.length > 1 && !card.targets[0].even ? "MAJOR product" : "product") + " of the reaction"}</strong>. Hydrogens are frozen — every move is yours.</p>`;
+  const label = root.querySelector("#buildLabel");
+  if (label) label.textContent = "Step 2 · perform the reaction";
+  const btn = root.querySelector("#checkBtn");
+  if (btn && !checked) btn.disabled = false;
 }
 
 function next() {
@@ -76,17 +113,6 @@ function next() {
 }
 
 // ── build-quiz checking ──
-function explicitHs() {
-  return lab.atoms().filter((a) => a.el === "H");
-}
-
-function hBondedToHeavy(h) {
-  const bond = lab.bonds().find((b) => b.a === h.id || b.b === h.id);
-  if (!bond) return false;
-  const otherId = bond.a === h.id ? bond.b : bond.a;
-  return lab.atoms().find((a) => a.id === otherId)?.el !== "H";
-}
-
 function nudge(msg) {
   const area = root.querySelector("#nudgeArea");
   if (!area) return;
@@ -124,6 +150,7 @@ function checkReactant() {
 // Right on a tertiary-alcohol oxidation; wrong anywhere else.
 function answerNoReaction() {
   if (checked || !lab) return;
+  if (phase !== "product") return nudge("Build the reactant first — then decide whether anything happens to it.");
   correct = Boolean(card.noReaction);
   checked = true;
   lab.setLocked(true);
@@ -137,13 +164,9 @@ function answerNoReaction() {
 }
 
 function check() {
-  if (checked || !lab || lab.atoms().length === 0) return;
+  if (checked || !lab || lab.atoms().length === 0 || phase !== "product") return;
   if (lab.openSlotCount() > 0) {
     return nudge("That blinking carbon still needs a partner — the opened double bond freed a seat, and something must bond there.");
-  }
-  const hs = explicitHs();
-  if (hs.some((h) => !hBondedToHeavy(h))) {
-    return nudge("Every hydrogen token needs a carbon to hold onto — one is still loose.");
   }
   const stripped = stripExplicitH(lab.atoms(), lab.bonds());
   const allowed = card.elements.filter((e) => e !== "H");
@@ -155,13 +178,17 @@ function check() {
     missed.push(card);
     return updateAfterCheck();
   }
+  // Carbon-free leftovers are SPENT REAGENT — chemically the byproduct (the water of a
+  // dehydration, the HX of a substitution). They never count against the answer.
+  const comps = splitComponents(stripped.atoms, stripped.bonds);
+  const carbonComps = comps.filter((g) => g.atoms.some((a) => a.el === "C"));
   // saponification: TWO products, built side by side, matched one-to-one
   if (card.multiTargets) {
-    const comps = splitComponents(stripped.atoms, stripped.bonds);
     const [tA, tB] = card.multiTargets;
     const m = (g, t) => gradeIsomorphic(g.atoms, g.bonds, t.mol, allowed).ok;
-    const ok = comps.length === 2 && ((m(comps[0], tA) && m(comps[1], tB)) || (m(comps[0], tB) && m(comps[1], tA)));
-    if (!ok && comps.length === 1 && (m(comps[0], tA) || m(comps[0], tB))) {
+    const ok = carbonComps.length === 2 &&
+      ((m(carbonComps[0], tA) && m(carbonComps[1], tB)) || (m(carbonComps[0], tB) && m(carbonComps[1], tA)));
+    if (!ok && carbonComps.length === 1 && (m(carbonComps[0], tA) || m(carbonComps[0], tB))) {
       return nudge("That's ONE of the two products — this reaction gives two molecules; build the other beside it.");
     }
     correct = ok;
@@ -176,17 +203,10 @@ function check() {
     return updateAfterCheck();
   }
   const matchOf = (g) => card.targets.find((t) => gradeIsomorphic(g.atoms, g.bonds, t.mol, allowed).ok);
-  const hit = matchOf(stripped);
-  // the right molecule with spare pieces floating is housekeeping, not chemistry
-  if (!hit) {
-    const comps = splitComponents(stripped.atoms, stripped.bonds);
-    if (comps.length > 1 && comps.some(matchOf)) {
-      return nudge("That IS the product — now clear the leftover pieces (drop them on the tray) so only the product remains.");
-    }
-  }
-  // structure right but the reagent's hydrogens weren't placed → teach, don't punish
-  if (hit && card.explicitH > 0 && hs.length < card.explicitH) {
-    return nudge(`The structure is right — but show me the reagent's hydrogen${card.explicitH > 1 ? "s" : ""}: drag ${card.explicitH > 1 ? "them" : "it"} from the tray onto the molecule (${hs.length} of ${card.explicitH} placed).`);
+  const hit = carbonComps.length === 1 ? matchOf(carbonComps[0]) : null;
+  // the right molecule with spare CARBON pieces floating is housekeeping, not chemistry
+  if (!hit && carbonComps.length > 1 && carbonComps.some(matchOf)) {
+    return nudge("That IS the product — now clear the leftover carbon pieces (drop them on the tray) so only the product remains.");
   }
   correct = Boolean(hit);
   solvedName = hit ? hit.name : "";
@@ -303,16 +323,16 @@ function renderPlay() {
       <p class="rxn-prompt">${toSubHtml(card.reactant.condensed)} <span class="rxn-plus">+</span> ${reagentHtml(card)} <span class="rxn-arrow">→</span> <span class="rxn-q">?</span></p>
     </div>
 
-    <p class="build-label">Build the product</p>
+    <p class="build-label" id="buildLabel">Step 1 · build the reactant${card.phase1Mols.length > 1 ? "s" : ""} — the game will notice</p>
     <canvas class="lab-canvas" id="labCanvas"></canvas>
+    <div id="phasePop"></div>
     <div id="nudgeArea"></div>
     <div id="hintArea"></div>
     <div id="verdictArea"></div>
     <div class="controls">
       <p class="score" id="scoreLine"></p>
       <span class="btn-row">
-        <button class="action ghost" id="resetBtn" type="button" title="Wipe the canvas and start this question fresh">↺ Clear</button>
-        <button class="action ghost" id="reactantBtn" type="button">Check my reactant</button>
+        <button class="action ghost" id="resetBtn" type="button" title="Wipe the canvas and restart this question at step 1">↺ Restart question</button>
         ${quiz === "carb" ? `<button class="action ghost no-rxn" id="noRxnBtn" type="button">No reaction</button>` : ""}
         <button class="action primary" id="checkBtn" disabled>Check</button>
       </span>
@@ -320,8 +340,7 @@ function renderPlay() {
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#checkBtn").addEventListener("click", check);
-  root.querySelector("#reactantBtn").addEventListener("click", checkReactant);
-  root.querySelector("#resetBtn").addEventListener("click", () => { if (!checked && lab) lab.reset(); });
+  root.querySelector("#resetBtn").addEventListener("click", resetQuestion);
   const noRxnBtn = root.querySelector("#noRxnBtn");
   if (noRxnBtn) noRxnBtn.addEventListener("click", answerNoReaction);
   updateHints();
@@ -329,14 +348,25 @@ function renderPlay() {
 
   lab = createLab(root.querySelector("#labCanvas"), {
     elements: card.elements,
-    // arrivals attack the π bond only in ADDITION rounds — in elimination the student
-    // sets the double bond deliberately, and an auto-break would sabotage the build
-    additionMode: quiz === "build",
+    additionMode: false,   // phase 1 is the familiar nomenclature engine; phase 2 flips it on
     onChange() {
+      if (!checked && phase === "reactants" && reactantsBuilt()) enterProductPhase();
       const btn = root.querySelector("#checkBtn");
-      if (btn && !checked) btn.disabled = lab.atoms().length === 0;
+      if (btn && !checked) btn.disabled = phase !== "product" || lab.atoms().length === 0;
     }
   });
+}
+
+function resetQuestion() {
+  if (checked || !lab) return;
+  lab.reset();
+  lab.setAutoH(true);
+  lab.setAdditionMode(false);
+  phase = "reactants";
+  const pop = root.querySelector("#phasePop");
+  if (pop) pop.innerHTML = "";
+  const label = root.querySelector("#buildLabel");
+  if (label) label.textContent = `Step 1 · build the reactant${card.phase1Mols.length > 1 ? "s" : ""} — the game will notice`;
 }
 
 function updateScore() {
