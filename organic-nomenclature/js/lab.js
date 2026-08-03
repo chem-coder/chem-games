@@ -129,10 +129,14 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   }
 
   function tryBond(dragged) {
-    for (const other of atoms) {
-      if (other === dragged) continue;
-      const d = Math.hypot(other.x - dragged.x, other.y - dragged.y);
-      if (d >= SNAP) continue;
+    // nearest candidate first, and at most ONE bond per gesture — a drop between two
+    // carbons bonds the closer one instead of bridging both
+    const candidates = atoms
+      .filter((o) => o !== dragged)
+      .map((o) => ({ o, d: Math.hypot(o.x - dragged.x, o.y - dragged.y) }))
+      .filter((c) => c.d < SNAP)
+      .sort((a, b) => a.d - b.d);
+    for (const { o: other } of candidates) {
       let bondable = canBond(dragged, other, bonds);
       // additionMode — Dalia's rule: "if a new bond forms, the corresponding bonds that
       // break automatically break." Two kinds of pending break make a bond possible:
@@ -191,6 +195,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         syncH(dragged, { fall: !silent, towardAngle: Math.atan2(other.y - dragged.y, other.x - dragged.x) });
         syncH(other, { fall: !silent, towardAngle: Math.atan2(dragged.y - other.y, dragged.x - other.x) });
         onChange();
+        return;   // one bond per gesture
       }
     }
   }
@@ -298,14 +303,18 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       const dy = (y + drag.dy) - atom.y;
       atom.x += dx; atom.y += dy;
       // phase 2 (explicit-H world): hydrogens RIDE their heavy atom — dragging the O
-      // of a water brings its H's along. Dragging an H alone still pulls just the H,
-      // so elimination's pluck-an-H-off gesture is untouched.
-      if (atom.el !== "H") {
-        for (const b of bonds) {
-          const otherId = b.a === atom.id ? b.b : b.b === atom.id ? b.a : null;
-          if (otherId === null) continue;
-          const other = byId()[otherId];
-          if (other && other.el === "H") { other.x += dx; other.y += dy; }
+      // of a water brings its H's along. Dragging an H bonded to a CARBON still pulls
+      // just the H (elimination's pluck), but an H bonded only to another H drags the
+      // whole H–H molecule — small molecules move as one.
+      for (const b of bonds) {
+        const otherId = b.a === atom.id ? b.b : b.b === atom.id ? b.a : null;
+        if (otherId === null) continue;
+        const other = byId()[otherId];
+        if (other && other.el === "H" && (atom.el !== "H" || other !== atom)) {
+          if (atom.el !== "H" || bonds.every((b2) => {
+            const nb = b2.a === atom.id ? b2.b : b2.b === atom.id ? b2.a : null;
+            return nb === null || byId()[nb]?.el === "H";
+          })) { other.x += dx; other.y += dy; }
         }
       }
       tryBond(atom);
@@ -501,11 +510,11 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     // tray. Runs on the reactants at recognition time.
     normalizeLayout() {
       const comps = splitComponents(atoms, bonds);
-      // Long bonds and a flat zigzag (~135° interior — deliberately unscientific,
-      // Dalia's spec): with short bonds, a dropped OH lands inside TWO carbons' snap
-      // radii at once and bridges them. Room to aim beats textbook angles.
-      const L = 124;                // uniform heavy-atom bond length
-      const ZX = L * Math.cos(Math.PI / 8), ZY = L * Math.sin(Math.PI / 8);
+      // Roomy but not sprawling (Dalia's tuning, round two): 120° zigzag, bonds
+      // ~87px — long enough to aim a dropped OH at ONE carbon, short enough to
+      // read as a molecule rather than a constellation.
+      const L = 87;                 // uniform heavy-atom bond length
+      const ZX = L * Math.cos(Math.PI / 6), ZY = L * Math.sin(Math.PI / 6);
       const laid = [];
       const nbsOf = (id) => bonds
         .filter((b) => b.a === id || b.b === id)
@@ -621,6 +630,19 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         }
         cursor += l2.w + gap;
       }
+      // final fit pass: whatever the arithmetic above did, nothing may hang off the bench
+      const pad = RH + 14;
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      for (const a of atoms) {
+        minX = Math.min(minX, a.x); maxX = Math.max(maxX, a.x);
+        minY = Math.min(minY, a.y); maxY = Math.max(maxY, a.y);
+      }
+      let shiftX = 0, shiftY = 0;
+      if (minX < pad) shiftX = pad - minX;
+      else if (maxX > W - pad) shiftX = Math.max((W - pad) - maxX, pad - minX);
+      if (minY < pad) shiftY = pad - minY;
+      else if (maxY > regionH - pad) shiftY = Math.max((regionH - pad) - maxY, pad - minY);
+      for (const a of atoms) { a.x += shiftX; a.y += shiftY; }
       onChange();
     },
     // Phase-2 conversion: every implicit H becomes a real, draggable H atom. Placement
