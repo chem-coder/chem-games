@@ -12,12 +12,13 @@
 import { toSubHtml } from "../../js/organic.js";
 import { gradeIsomorphic, stripExplicitH, splitComponents } from "../../js/chem.js";
 import { createLab } from "../../js/lab.js";
-import { REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeMarkovnikovDealer } from "./reactions.js";
+import { REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeSubstitutionDealer, makeMarkovnikovDealer } from "./reactions.js";
 
 const root = document.querySelector("#game");
 const dealers = {
   build: makeReactionDealer(),
   elim: makeEliminationDealer(),
+  sub: makeSubstitutionDealer(),
   mk: makeMarkovnikovDealer()
 };
 
@@ -169,6 +170,7 @@ function render() {
 
 const ADDITION_TYPES = ["hydrogenation", "halogenation", "hydrohalogenation", "hydration"];
 const ELIMINATION_TYPES = ["dehydration", "dehydrohalogenation"];
+const SUBSTITUTION_TYPES = ["subHalogenation", "subAlcohol", "hydrolysis"];
 
 function introRows(types) {
   return types.map((t) => {
@@ -179,7 +181,7 @@ function introRows(types) {
 
 function renderIntro() {
   root.innerHTML = `<div class="intro">
-    <p class="intro-eyebrow">Reactions · addition &amp; elimination</p>
+    <p class="intro-eyebrow">Reactions · addition · elimination · substitution</p>
     <p class="intro-lede"><strong>Addition</strong>: the C=C double bond opens, and each of its two carbons picks up one new piece.</p>
     <table class="rxn-table">
       <thead><tr><th>Reaction</th><th>adds…</th><th>giving…</th></tr></thead>
@@ -190,8 +192,14 @@ function renderIntro() {
       <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
       <tbody>${introRows(ELIMINATION_TYPES)}</tbody>
     </table>
+    <p class="intro-lede"><strong>Substitution</strong> swaps one passenger for another on the same carbon — no bond orders change at all.</p>
+    <table class="rxn-table">
+      <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
+      <tbody>${introRows(SUBSTITUTION_TYPES)}</tbody>
+    </table>
     <ul class="pt-points">
-      <li>Either direction, the carbon skeleton <strong>never changes</strong>.</li>
+      <li>In every family, the carbon skeleton <strong>never changes</strong>.</li>
+      <li>The exam's favorite trap: <strong>KOH concentrated + heat eliminates</strong> (→ alkene), <strong>KOH aqueous substitutes</strong> (→ alcohol). Same reagent — the <em>conditions</em> are part of the answer.</li>
       <li>You build the <strong>product</strong>: many players build the reactant first, check it, then make it react — the <em>Check my reactant</em> button is there for exactly that. In elimination, removing the OH or X and closing the double bond IS the reaction.</li>
       <li>In addition, the reagent's own hydrogen arrives in the tray: <strong>place it</strong>. Where the H goes is half the chemistry.</li>
     </ul>
@@ -208,11 +216,13 @@ function renderIntro() {
     <div class="controls two-up">
       <button class="action primary alt" id="startBuild">Build: addition</button>
       <button class="action primary alt" id="startElim">Build: elimination</button>
+      <button class="action primary alt" id="startSub">Build: substitution</button>
       <button class="action primary" id="startMk">Major or minor? · quiz</button>
     </div>
   </div>`;
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
   root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
+  root.querySelector("#startSub").addEventListener("click", () => startRound("sub"));
   root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
 }
 
@@ -359,15 +369,18 @@ function renderDone() {
     <p class="done-next">${{
       mk: "Markovnikov for addition, Zaitsev for elimination — both are just 'count the neighbors'.",
       elim: "Every round deals three dehydrations and two dehydrohalogenations — Zaitsev decides the major.",
+      sub: "Swaps only: H for X under UV, OH for X with HX, X for OH with aqueous KOH.",
       build: "Every round covers all four additions: H2, X2, HX, and water."
     }[quiz]}</p>
     <div class="controls two-up">
       <button class="action primary alt" id="startBuild">Build: addition</button>
       <button class="action primary alt" id="startElim">Build: elimination</button>
+      <button class="action primary alt" id="startSub">Build: substitution</button>
       <button class="action primary" id="startMk">Major or minor? · quiz</button>
     </div>`;
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
   root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
+  root.querySelector("#startSub").addEventListener("click", () => startRound("sub"));
   root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
 }
 

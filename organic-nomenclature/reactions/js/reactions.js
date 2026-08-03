@@ -205,6 +205,87 @@ export const ELIMINATIONS = [
   }))
 ];
 
+// ── Act C: SUBSTITUTION (IMAT 5.50) — one piece swaps for another ───────────────
+// No bond orders change; the skeleton stays. Three flavors:
+//   alkane + X2 (UV)      → H swapped for X — ANY position is an honest product
+//   alcohol + HX          → the OH swapped for X, same carbon
+//   haloalkane + KOH(aq)  → the X swapped for OH — same reagent as elimination,
+//                           DIFFERENT conditions: aqueous substitutes, conc.+heat
+//                           eliminates. Conditions are part of the answer.
+const SUB_HALOGENATION_SPECS = [
+  { n: 1, x: "Cl" }, { n: 2, x: "Br" }, { n: 3, x: "Cl" },
+  { n: 4, x: "Br" }, { n: 4, x: "Cl" }, { n: 5, x: "Cl" }
+];
+const SUB_ALCOHOL_SPECS = [
+  { n: 2, oh: 1, x: "Cl" }, { n: 3, oh: 1, x: "Br" }, { n: 3, oh: 2, x: "Cl" },
+  { n: 4, oh: 1, x: "Br" }, { n: 4, oh: 2, x: "Cl" }, { n: 5, oh: 2, x: "Br" }
+];
+const HYDROLYSIS_SPECS = [
+  { n: 2, at: 1, el: "Cl" }, { n: 3, at: 1, el: "Br" }, { n: 3, at: 2, el: "Cl" },
+  { n: 4, at: 2, el: "Br" }, { n: 4, at: 1, el: "Cl" }, { n: 5, at: 3, el: "Br" }
+];
+
+export const SUBSTITUTIONS = [
+  ...SUB_HALOGENATION_SPECS.map(({ n, x }) => {
+    const positions = Array.from({ length: Math.ceil(n / 2) }, (_, i) => i + 1);
+    const targets = positions.map((p) => ({
+      name: haloName(n, x, [p]),
+      condensed: haloCondensed(n, x, [p]),
+      mol: chainWith(n, [{ el: x, at: p }]),
+      even: positions.length > 1 || undefined
+    }));
+    return {
+      id: `subx-${x.toLowerCase()}2-${ALKANE_BY_N[n].name}`,
+      type: "subHalogenation",
+      reactant: { name: ALKANE_BY_N[n].name, condensed: condensedFormula(n), mol: chainWith(n) },
+      reagent: `${x}2`, conditions: "UV light",
+      elements: ["C", x], explicitH: 0,
+      targets
+    };
+  }),
+  ...SUB_ALCOHOL_SPECS.map(({ n, oh, x }) => ({
+    id: `suboh-${alcoholName({ n, oh })}-h${x.toLowerCase()}`,
+    type: "subAlcohol",
+    reactant: { name: alcoholName({ n, oh }), condensed: alcoholCondensed({ n, oh }), mol: chainWith(n, [{ el: "O", at: oh }]) },
+    reagent: `H${x}`, conditions: null,
+    elements: ["C", "O", x], explicitH: 0,
+    targets: [{ name: haloName(n, x, [oh]), condensed: haloCondensed(n, x, [oh]), mol: chainWith(n, [{ el: x, at: oh }]) }]
+  })),
+  ...HYDROLYSIS_SPECS.map(({ n, at, el }) => {
+    const oh = Math.min(at, n + 1 - at);
+    return {
+      id: `hydrol-${haloName(n, el, [at])}`,
+      type: "hydrolysis",
+      reactant: { name: haloName(n, el, [at]), condensed: haloCondensed(n, el, [at]), mol: chainWith(n, [{ el, at }]) },
+      reagent: "KOH", conditions: "aqueous",
+      elements: ["C", "O", el], explicitH: 0,
+      targets: [{ name: alcoholName({ n, oh }), condensed: alcoholCondensed({ n, oh }), mol: chainWith(n, [{ el: "O", at }]) }]
+    };
+  })
+];
+
+// Round of 5: 2 alkane halogenations + 1 alcohol→halide + 2 hydrolyses.
+export function makeSubstitutionDealer() {
+  const groups = {
+    halog: SUBSTITUTIONS.filter((c) => c.type === "subHalogenation"),
+    suboh: SUBSTITUTIONS.filter((c) => c.type === "subAlcohol"),
+    hydrol: SUBSTITUTIONS.filter((c) => c.type === "hydrolysis")
+  };
+  const piles = { halog: [], suboh: [], hydrol: [] };
+  const draw = (key, rng) => {
+    if (piles[key].length === 0) piles[key] = [...groups[key]].sort(() => rng() - 0.5);
+    return piles[key].pop();
+  };
+  return function deal(rng = Math.random) {
+    const cards = [
+      draw("halog", rng), draw("halog", rng),
+      draw("suboh", rng),
+      draw("hydrol", rng), draw("hydrol", rng)
+    ];
+    return cards.sort(() => rng() - 0.5);
+  };
+}
+
 // Round of 5: 3 dehydrations + 2 dehydrohalogenations.
 export function makeEliminationDealer() {
   const dehyd = ELIMINATIONS.filter((c) => c.type === "dehydration");
@@ -260,6 +341,24 @@ export const REACTION_INFO = {
     adds: "loses H and X",
     result: "an alkene",
     hint: "The halogen leaves its carbon; an H leaves a NEIGHBOR; the double bond forms between them. Zaitsev again: internal beats terminal — but both honest alkenes count."
+  },
+  subHalogenation: {
+    label: "Halogenation of an alkane", substitution: true,
+    adds: "swaps one H for X",
+    result: "a haloalkane",
+    hint: "UV light lets the halogen pluck ONE hydrogen off the alkane and take its seat. Any carbon's H can be the one — every position is an honest product."
+  },
+  subAlcohol: {
+    label: "Halogenation of an alcohol", substitution: true,
+    adds: "swaps the OH for X",
+    result: "a haloalkane",
+    hint: "The whole –OH group leaves and the halogen takes its exact seat — same carbon, no wandering."
+  },
+  hydrolysis: {
+    label: "Hydrolysis of a haloalkane", substitution: true,
+    adds: "swaps the X for OH",
+    result: "an alcohol",
+    hint: "The halogen leaves and –OH takes its exact seat. Note the conditions: KOH AQUEOUS substitutes; KOH concentrated + heat would eliminate instead."
   }
 };
 
@@ -272,6 +371,8 @@ export function hintsFor(card) {
   return [
     info.elimination
       ? "Elimination: two NEIGHBOR carbons each lose a piece, and the freed valences become a C=C double bond. The skeleton never changes — build the chain, then click the right bond double."
+      : info.substitution
+      ? "Substitution: one piece SWAPS for another on the same carbon. No bond orders change, the skeleton stays — only the passenger is different."
       : "Addition: the C=C double bond OPENS, and each of its two carbons picks up one new piece. Count the reactant's carbons — the skeleton never changes.",
     info.hint,
     `Build ${toSubHtml(major.condensed)} — ${major.name}${partnerNote}.`

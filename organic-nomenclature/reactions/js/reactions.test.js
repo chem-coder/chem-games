@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { REACTIONS, ELIMINATIONS, REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
+import { REACTIONS, ELIMINATIONS, SUBSTITUTIONS, REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeSubstitutionDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
 import { componentFormulas, gradeIsomorphic, stripExplicitH, VALENCE } from "../../js/chem.js";
 
 test("halogens exist in the valence table", () => {
@@ -184,6 +184,49 @@ test("elimination hints speak elimination, addition hints speak addition", () =>
   assert.match(add[0], /Addition/);
   const tie = hintsFor(REACTIONS.find((c) => c.id === "hbr-pent-2-ene"));
   assert.match(tie[2], /either forms/);
+});
+
+test("substitutions: swaps preserve the skeleton, positions honest, conditions teach", () => {
+  assert.equal(SUBSTITUTIONS.length, 18);
+  const byId = Object.fromEntries(SUBSTITUTIONS.map((c) => [c.id, c]));
+  // alkane halogenation: every mono position offered, flagged even when there's a choice
+  const pentCl = byId["subx-cl2-pentane"];
+  assert.equal(pentCl.targets.length, 3, "pentane: positions 1, 2, 3");
+  assert.ok(pentCl.targets.every((t) => t.even));
+  assert.equal(byId["subx-cl2-methane"].targets.length, 1);
+  assert.equal(byId["subx-cl2-methane"].targets[0].name, "chloromethane");
+  // alcohol → halide keeps the exact seat
+  assert.equal(byId["suboh-propan-2-ol-hcl"].targets[0].name, "2-chloropropane");
+  // hydrolysis mirrors elimination's reagent with DIFFERENT conditions
+  const hydrol = byId["hydrol-2-bromobutane"];
+  assert.equal(hydrol.targets[0].name, "butan-2-ol");
+  assert.equal(hydrol.conditions, "aqueous");
+  const elim = ELIMINATIONS.find((c) => c.id === "dhx-2-bromobutane");
+  assert.equal(elim.reagent, hydrol.reagent, "same reagent (KOH)…");
+  assert.notEqual(elim.conditions, hydrol.conditions, "…different conditions, different product");
+  // carbon counts conserved, single-component targets
+  for (const card of SUBSTITUTIONS) {
+    const reactantC = card.reactant.mol.atoms.filter((a) => a.el === "C").length;
+    for (const t of card.targets) {
+      assert.equal(t.mol.atoms.filter((a) => a.el === "C").length, reactantC, card.id);
+      assert.equal(componentFormulas(t.mol.atoms, t.mol.bonds).length, 1, card.id);
+      assert.ok(t.mol.bonds.every((b) => b.order === 1), `${card.id}: substitution never changes bond orders`);
+    }
+  }
+  // hints speak substitution
+  assert.match(hintsFor(SUBSTITUTIONS[0])[0], /Substitution/);
+});
+
+test("substitution dealer: 2 halogenations + 1 alcohol swap + 2 hydrolyses", () => {
+  const deal = makeSubstitutionDealer();
+  for (let r = 0; r < 8; r++) {
+    const cards = deal();
+    assert.equal(cards.length, 5);
+    assert.equal(cards.filter((c) => c.type === "subHalogenation").length, 2);
+    assert.equal(cards.filter((c) => c.type === "subAlcohol").length, 1);
+    assert.equal(cards.filter((c) => c.type === "hydrolysis").length, 2);
+    assert.equal(new Set(cards.map((c) => c.id)).size, 5);
+  }
 });
 
 test("markovnikov dealer: 5 cards, no duplicates", () => {
