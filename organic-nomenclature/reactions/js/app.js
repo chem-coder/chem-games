@@ -10,7 +10,7 @@
 //   · structure-right-but-H-implicit is a NUDGE, not a wrong (house rule: formatting
 //     nudges, chemistry wrongs)
 import { toSubHtml } from "../../js/organic.js";
-import { gradeIsomorphic, stripExplicitH } from "../../js/chem.js";
+import { gradeIsomorphic, stripExplicitH, splitComponents } from "../../js/chem.js";
 import { createLab } from "../../js/lab.js";
 import { REACTION_INFO, hintsFor, makeReactionDealer, makeMarkovnikovDealer } from "./reactions.js";
 
@@ -94,9 +94,12 @@ function checkReactant() {
   if (checked || !lab) return;
   const stripped = stripExplicitH(lab.atoms(), lab.bonds());
   if (stripped.atoms.length === 0) return nudge("The canvas is empty — build the reactant first.");
-  const ok = gradeIsomorphic(stripped.atoms, stripped.bonds, card.reactant.mol, ["C"]).ok;
+  // component-wise: having the reagent (or spares) alongside is fine — students
+  // reasonably build both reactants before making them meet
+  const comps = splitComponents(stripped.atoms, stripped.bonds);
+  const ok = comps.some((g) => gradeIsomorphic(g.atoms, g.bonds, card.reactant.mol, ["C"]).ok);
   nudge(ok
-    ? `✓ That's ${card.reactant.name} — now make it react with ${toSubHtml(card.reagent)}.`
+    ? `✓ That's ${card.reactant.name}${comps.length > 1 ? " (spare pieces aside)" : ""} — now make it react with ${toSubHtml(card.reagent)}.`
     : `Not ${card.reactant.name} yet — check the carbon count and where the double bond sits.`);
 }
 
@@ -111,9 +114,17 @@ function check() {
   }
   const stripped = stripExplicitH(lab.atoms(), lab.bonds());
   const allowed = card.elements.filter((e) => e !== "H");
-  const hit = card.targets.find((t) => gradeIsomorphic(stripped.atoms, stripped.bonds, t.mol, allowed).ok);
+  const matchOf = (g) => card.targets.find((t) => gradeIsomorphic(g.atoms, g.bonds, t.mol, allowed).ok);
+  const hit = matchOf(stripped);
+  // the right molecule with spare pieces floating is housekeeping, not chemistry
+  if (!hit) {
+    const comps = splitComponents(stripped.atoms, stripped.bonds);
+    if (comps.length > 1 && comps.some(matchOf)) {
+      return nudge("That IS the product — now clear the leftover pieces (drop them on the tray) so only the product remains.");
+    }
+  }
   // structure right but the reagent's hydrogens weren't placed → teach, don't punish
-  if (hit && card.explicitH > 0 && hs.length !== card.explicitH) {
+  if (hit && card.explicitH > 0 && hs.length < card.explicitH) {
     return nudge(`The structure is right — but show me the reagent's hydrogen${card.explicitH > 1 ? "s" : ""}: drag ${card.explicitH > 1 ? "them" : "it"} from the tray onto the molecule (${hs.length} of ${card.explicitH} placed).`);
   }
   correct = Boolean(hit);

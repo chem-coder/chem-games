@@ -45,7 +45,11 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   let atoms = [];            // {id, el, x, y, hs: [{angle, vel, phase}]}
   let bonds = [];            // {a, b, order}
   let falling = [];          // {x, y, phase}
-  let openSlots = new Map(); // atomId → freed seats awaiting a bond (additionMode)
+  // Open seats awaiting a bond (additionMode). Each records the attack that created it,
+  // so undoing the attack — removing the attacker, or restoring the double bond —
+  // dissolves the seat instead of leaving a phantom that blocks a correct answer.
+  let openSlots = [];        // [{farId, nearId, attackerId}]
+  const slotsFor = (id) => openSlots.filter((s) => s.farId === id).length;
   let nextId = 1;
   let drag = null;
   let bondHit = null;
@@ -59,7 +63,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   function syncH(atom, { fall = false, towardAngle = null } = {}) {
     // an explicit H token IS a hydrogen — it never grows implicit ones of its own;
     // an open seat is reserved and must NOT be filled by an implicit H
-    const reserved = openSlots.get(atom.id) || 0;
+    const reserved = slotsFor(atom.id);
     const target = atom.el === "H" ? 0 : Math.max(0, hydrogenCount(atom, bonds) - reserved);
     while (atom.hs.length > target) {
       let idx = 0;
@@ -107,7 +111,8 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       .map((b) => byId()[b.a === atom.id ? b.b : b.a]);
     bonds = bonds.filter((b) => b.a !== atom.id && b.b !== atom.id);
     atoms = atoms.filter((a) => a !== atom);
-    openSlots.delete(atom.id);
+    openSlots = openSlots.filter((s) => s.farId !== atom.id);
+    pruneSlots();
     partners.forEach((p) => syncH(p));   // instant H restore
     onChange();
   }
@@ -125,7 +130,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           if (multi) {
             multi.order -= 1;
             const farId = multi.a === other.id ? multi.b : multi.a;
-            openSlots.set(farId, (openSlots.get(farId) || 0) + 1);
+            openSlots.push({ farId, nearId: other.id, attackerId: dragged.id });
             const far = byId()[farId];
             if (far) syncH(far);
             attacked = true;
@@ -133,10 +138,9 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         }
         bonds.push({ a: dragged.id, b: other.id, order: 1 });
         // consume an open seat if this arrival is the one filling it
-        if (openSlots.get(other.id)) {
-          const left = openSlots.get(other.id) - 1;
-          if (left > 0) openSlots.set(other.id, left); else openSlots.delete(other.id);
-        }
+        const seat = openSlots.findIndex((s) => s.farId === other.id);
+        if (seat >= 0) openSlots.splice(seat, 1);
+        pruneSlots();
         // an arriving explicit H takes an implicit H's seat — a silent swap, not a shed;
         // a π-bond attack also sheds nothing (addition keeps every hydrogen)
         const silent = attacked || dragged.el === "H" || other.el === "H";
@@ -152,8 +156,27 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     const endpoints = [byId()[bond.a], byId()[bond.b]];
     if (o === 0) bonds = bonds.filter((b) => b !== bond);
     else bond.order = o;
+    pruneSlots();
     endpoints.forEach((a) => syncH(a));  // spec: bond changes re-balance with no animation
     onChange();
+  }
+
+  // A seat is only real while its attack still stands: attacker present and bonded to
+  // the near carbon, and the broken bond still single. Undo any of that and the seat
+  // dissolves — the implicit hydrogen quietly returns.
+  function pruneSlots() {
+    const bondBetween = (x, y) =>
+      bonds.find((b) => (b.a === x && b.b === y) || (b.a === y && b.b === x));
+    const before = openSlots.length;
+    openSlots = openSlots.filter((s) =>
+      atoms.some((a) => a.id === s.attackerId) &&
+      atoms.some((a) => a.id === s.farId) &&
+      bondBetween(s.attackerId, s.nearId) &&
+      bondBetween(s.farId, s.nearId)?.order === 1
+    );
+    if (openSlots.length !== before) {
+      for (const atom of atoms) syncH(atom);
+    }
   }
 
   // ── geometry / hit testing ──
@@ -315,7 +338,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         drawH(atom.x + Math.cos(a) * H_ORBIT, atom.y + Math.sin(a) * H_ORBIT);
       }
       // open seat: a pulsing dashed stub pointing away from the bonds — "bond me"
-      if (openSlots.get(atom.id)) {
+      if (slotsFor(atom.id)) {
         const dirs = bondAngles(atom);
         const away = dirs.length
           ? Math.atan2(-dirs.reduce((s, a2) => s + Math.sin(a2), 0), -dirs.reduce((s, a2) => s + Math.cos(a2), 0))
@@ -405,9 +428,9 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     bonds: () => bonds,
     falling: () => falling,
     formulas: () => componentFormulas(atoms, bonds),
-    reset() { atoms = []; bonds = []; falling = []; openSlots.clear(); drag = null; bondHit = null; onChange(); },
+    reset() { atoms = []; bonds = []; falling = []; openSlots = []; drag = null; bondHit = null; onChange(); },
     setLocked(v) { locked = v; if (v) { drag = null; bondHit = null; } },
-    openSlotCount() { let s = 0; for (const v of openSlots.values()) s += v; return s; },
+    openSlotCount() { return openSlots.length; },
     resize,
     // deterministic stepper for headless testing (rAF is throttled in driven browsers)
     tick(frames = 1, dt = 1 / 60) {

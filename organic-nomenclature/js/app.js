@@ -3,7 +3,7 @@
 // builder: intro → 5-card round → done, progressive hints, missed cards rotate back.
 // Two directions per rung: formula → name (typed) and name → structure (built on canvas).
 import { toSubHtml, toChainHtml, ALKANES, LEVELS, buildAnyStructure, gradeAnswer, makeDealer, makeAlkaneBuildDealer, makeUnsaturatedDealer, makeBranchedDealer, makeAlcoholDealer, makeCarbonylDealer, makeEtherDealer, makeAcidEsterDealer, makeNitrogenDealer, requeue, DEFAULT_ROUND } from "./organic.js";
-import { gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild, gradeIsomorphic } from "./chem.js";
+import { gradeChainBuild, gradeBranchedBuild, gradeAlcoholBuild, gradeIsomorphic, splitComponents } from "./chem.js";
 import { createLab } from "./lab.js";
 
 const root = document.querySelector("#game");
@@ -70,13 +70,23 @@ function check() {
   if (direction === "build") {
     if (!lab || lab.atoms().length === 0) return;
     const s = problem.spec;
-    const result = problem.target ? gradeIsomorphic(lab.atoms(), lab.bonds(), problem.target, problem.allowed)
-      : s.methyls ? gradeBranchedBuild(lab.atoms(), lab.bonds(), s)
-      : s.oh ? gradeAlcoholBuild(lab.atoms(), lab.bonds(), s)
-      : gradeChainBuild(lab.atoms(), lab.bonds(), {
+    const gradeGraph = (atoms, bonds) =>
+      problem.target ? gradeIsomorphic(atoms, bonds, problem.target, problem.allowed)
+      : s.methyls ? gradeBranchedBuild(atoms, bonds, s)
+      : s.oh ? gradeAlcoholBuild(atoms, bonds, s)
+      : gradeChainBuild(atoms, bonds, {
           n: problem.n,
           special: s.order ? { slot: s.slot, order: s.order } : null
         });
+    const result = gradeGraph(lab.atoms(), lab.bonds());
+    // the right molecule with spare pieces floating is housekeeping, not chemistry —
+    // nudge, don't burn the card (players who undo and rebuild often leave leftovers)
+    if (!result.ok) {
+      const comps = splitComponents(lab.atoms(), lab.bonds());
+      if (comps.length > 1 && comps.some((g) => gradeGraph(g.atoms, g.bonds).ok)) {
+        return buildNudge("That IS the molecule — now clear the leftover pieces (drop them on the tray) so it stands alone.");
+      }
+    }
     graded = { correct: result.ok };
     lab.setLocked(true);
   } else {
@@ -511,6 +521,7 @@ function renderPlayBuild() {
 
     <p class="build-label">Build this molecule</p>
     <canvas class="lab-canvas" id="labCanvas"></canvas>
+    <div id="nudgeArea"></div>
     <div id="hintArea"></div>
     <div id="verdictArea"></div>
     <div class="controls">
@@ -534,6 +545,14 @@ function renderPlayBuild() {
 
 function updateScoreLine() {
   root.querySelector("#scoreLine").textContent = `Built ${masteredThisRound} of ${roundTotal} · ${queue.length} left`;
+}
+
+function buildNudge(msg) {
+  const area = root.querySelector("#nudgeArea");
+  if (!area) return;
+  area.innerHTML = `<p class="nudge">${msg}</p>`;
+  clearTimeout(buildNudge.timer);
+  buildNudge.timer = setTimeout(() => { const a = root.querySelector("#nudgeArea"); if (a) a.innerHTML = ""; }, 6000);
 }
 
 function updateBuildHints() {

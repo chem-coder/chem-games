@@ -178,6 +178,32 @@ export function canonMolecule(atoms, bonds) {
   return `${mid.order}:${[canon(a, b), canon(b, a)].sort().join("|")}`;
 }
 
+// Split a canvas into its connected molecules — so a check can recognise "the right
+// molecule, plus leftover pieces" and nudge instead of failing (a student who undoes
+// and rebuilds often leaves spares floating; that is housekeeping, not chemistry).
+export function splitComponents(atoms, bonds) {
+  const seen = new Set();
+  const out = [];
+  for (const atom of atoms) {
+    if (seen.has(atom.id)) continue;
+    const ids = new Set([atom.id]);
+    const stack = [atom.id];
+    while (stack.length) {
+      const cur = stack.pop();
+      for (const b of bonds) {
+        const other = b.a === cur ? b.b : b.b === cur ? b.a : null;
+        if (other !== null && !ids.has(other)) { ids.add(other); stack.push(other); }
+      }
+    }
+    ids.forEach((id) => seen.add(id));
+    out.push({
+      atoms: atoms.filter((a) => ids.has(a.id)),
+      bonds: bonds.filter((b) => ids.has(b.a) && ids.has(b.b))
+    });
+  }
+  return out;
+}
+
 // Explicit H atoms (the reactions game's placeable hydrogen tokens) fold back into the
 // implicit count before grading: delete the H nodes, and the valence slot each one held
 // is re-derived as an implicit H. A single-bonded explicit H is therefore structurally
