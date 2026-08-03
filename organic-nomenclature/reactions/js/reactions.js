@@ -10,7 +10,7 @@
 //   labels the Markovnikov product as major. The IMAT lesson lists the reactions without
 //   regiochemistry, so we teach the preference without failing the honest alternative.
 
-import { unsaturatedCondensed, toSubHtml } from "../../js/organic.js";
+import { unsaturatedCondensed, unsaturatedName, alcoholName, alcoholCondensed, condensedFormula, ALKANE_BY_N, toSubHtml } from "../../js/organic.js";
 
 // small graph builder: a single-bonded carbon chain with substituents hung on it
 let nextId = 0;
@@ -45,121 +45,183 @@ function eneGraph(n, slot) {
   return { atoms, bonds };
 }
 
-// Each card: reactant (alkene, displayed condensed), reagent chip, conditions note,
-// accepted target structures (first = major, shown in the reveal), tray elements.
-export const REACTIONS = [
-  // ── hydrogenation: +H2 (catalyst) → alkane ──
-  {
-    id: "h2-ethene", type: "hydrogenation",
-    reactant: { name: "ethene", condensed: unsaturatedCondensed(ene(2, 1)), mol: eneGraph(2, 1) },
-    reagent: "H2", conditions: "catalyst",
-    elements: ["C", "H"], explicitH: 2,
-    targets: [{ name: "ethane", condensed: "CH3CH3", mol: chainWith(2) }]
-  },
-  {
-    id: "h2-propene", type: "hydrogenation",
-    reactant: { name: "propene", condensed: unsaturatedCondensed(ene(3, 1)), mol: eneGraph(3, 1) },
-    reagent: "H2", conditions: "catalyst",
-    elements: ["C", "H"], explicitH: 2,
-    targets: [{ name: "propane", condensed: "CH3CH2CH3", mol: chainWith(3) }]
-  },
-  {
-    id: "h2-but2ene", type: "hydrogenation",
-    reactant: { name: "but-2-ene", condensed: unsaturatedCondensed(ene(4, 2)), mol: eneGraph(4, 2) },
-    reagent: "H2", conditions: "catalyst",
-    elements: ["C", "H"], explicitH: 2,
-    targets: [{ name: "butane", condensed: "CH3CH2CH2CH3", mol: chainWith(4) }]
-  },
-  {
-    id: "h2-but1ene", type: "hydrogenation",
-    reactant: { name: "but-1-ene", condensed: unsaturatedCondensed(ene(4, 1)), mol: eneGraph(4, 1) },
-    reagent: "H2", conditions: "catalyst",
-    elements: ["C", "H"], explicitH: 2,
-    targets: [{ name: "butane", condensed: "CH3CH2CH2CH3", mol: chainWith(4) }]
-  },
+// ── product naming helpers ──────────────────────────────────────────────────────
+const HALO_PREFIX = { Cl: "chloro", Br: "bromo" };
 
-  // ── halogenation: +X2 → vicinal dihaloalkane (X on BOTH alkene carbons) ──
-  {
-    id: "br2-ethene", type: "halogenation",
-    reactant: { name: "ethene", condensed: unsaturatedCondensed(ene(2, 1)), mol: eneGraph(2, 1) },
-    reagent: "Br2", conditions: null,
-    elements: ["C", "Br"], explicitH: 0,
-    targets: [{ name: "1,2-dibromoethane", condensed: "CH2BrCH2Br",
-      mol: chainWith(2, [{ el: "Br", at: 1 }, { el: "Br", at: 2 }]) }]
-  },
-  {
-    id: "cl2-propene", type: "halogenation",
-    reactant: { name: "propene", condensed: unsaturatedCondensed(ene(3, 1)), mol: eneGraph(3, 1) },
-    reagent: "Cl2", conditions: null,
-    elements: ["C", "Cl"], explicitH: 0,
-    targets: [{ name: "1,2-dichloropropane", condensed: "CH2ClCHClCH3",
-      mol: chainWith(3, [{ el: "Cl", at: 1 }, { el: "Cl", at: 2 }]) }]
-  },
-  {
-    id: "br2-but2ene", type: "halogenation",
-    reactant: { name: "but-2-ene", condensed: unsaturatedCondensed(ene(4, 2)), mol: eneGraph(4, 2) },
-    reagent: "Br2", conditions: null,
-    elements: ["C", "Br"], explicitH: 0,
-    targets: [{ name: "2,3-dibromobutane", condensed: "CH3CHBrCHBrCH3",
-      mol: chainWith(4, [{ el: "Br", at: 2 }, { el: "Br", at: 3 }]) }]
-  },
-
-  // ── hydrohalogenation: +HX → haloalkane (H on one alkene carbon, X on the other) ──
-  {
-    id: "hcl-ethene", type: "hydrohalogenation",
-    reactant: { name: "ethene", condensed: unsaturatedCondensed(ene(2, 1)), mol: eneGraph(2, 1) },
-    reagent: "HCl", conditions: null,
-    elements: ["C", "H", "Cl"], explicitH: 1,
-    targets: [{ name: "chloroethane", condensed: "CH3CH2Cl", mol: chainWith(2, [{ el: "Cl", at: 1 }]) }]
-  },
-  {
-    id: "hbr-propene", type: "hydrohalogenation",
-    reactant: { name: "propene", condensed: unsaturatedCondensed(ene(3, 1)), mol: eneGraph(3, 1) },
-    reagent: "HBr", conditions: null,
-    elements: ["C", "H", "Br"], explicitH: 1,
-    targets: [
-      { name: "2-bromopropane", condensed: "CH3CHBrCH3", major: true,
-        mol: chainWith(3, [{ el: "Br", at: 2 }]) },
-      { name: "1-bromopropane", condensed: "CH2BrCH2CH3",
-        mol: chainWith(3, [{ el: "Br", at: 1 }]) }
-    ]
-  },
-  {
-    id: "hbr-but2ene", type: "hydrohalogenation",
-    reactant: { name: "but-2-ene", condensed: unsaturatedCondensed(ene(4, 2)), mol: eneGraph(4, 2) },
-    reagent: "HBr", conditions: null,
-    elements: ["C", "H", "Br"], explicitH: 1,
-    targets: [{ name: "2-bromobutane", condensed: "CH3CHBrCH2CH3", mol: chainWith(4, [{ el: "Br", at: 2 }]) }]
-  },
-
-  // ── hydration: +H2O (acid catalyst) → alcohol ──
-  {
-    id: "h2o-ethene", type: "hydration",
-    reactant: { name: "ethene", condensed: unsaturatedCondensed(ene(2, 1)), mol: eneGraph(2, 1) },
-    reagent: "H2O", conditions: "acid catalyst",
-    elements: ["C", "H", "O"], explicitH: 1,
-    targets: [{ name: "ethanol", condensed: "CH3CH2OH", mol: chainWith(2, [{ el: "O", at: 1 }]) }]
-  },
-  {
-    id: "h2o-propene", type: "hydration",
-    reactant: { name: "propene", condensed: unsaturatedCondensed(ene(3, 1)), mol: eneGraph(3, 1) },
-    reagent: "H2O", conditions: "acid catalyst",
-    elements: ["C", "H", "O"], explicitH: 1,
-    targets: [
-      { name: "propan-2-ol", condensed: "CH3CH(OH)CH3", major: true,
-        mol: chainWith(3, [{ el: "O", at: 2 }]) },
-      { name: "propan-1-ol", condensed: "CH3CH2CH2OH",
-        mol: chainWith(3, [{ el: "O", at: 1 }]) }
-    ]
-  },
-  {
-    id: "h2o-but2ene", type: "hydration",
-    reactant: { name: "but-2-ene", condensed: unsaturatedCondensed(ene(4, 2)), mol: eneGraph(4, 2) },
-    reagent: "H2O", conditions: "acid catalyst",
-    elements: ["C", "H", "O"], explicitH: 1,
-    targets: [{ name: "butan-2-ol", condensed: "CH3CH(OH)CH2CH3", mol: chainWith(4, [{ el: "O", at: 2 }]) }]
+// lowest-locant set, counting from whichever end wins
+function canonLocants(n, ats) {
+  const fwd = [...ats].sort((x, y) => x - y);
+  const rev = ats.map((p) => n + 1 - p).sort((x, y) => x - y);
+  for (let i = 0; i < fwd.length; i++) {
+    if (fwd[i] !== rev[i]) return fwd[i] < rev[i] ? fwd : rev;
   }
+  return fwd;
+}
+
+function haloName(n, el, ats) {
+  const locs = canonLocants(n, ats);
+  const multi = ats.length === 2 ? "di" : "";
+  const needLocant = ats.length > 1 || n > 2;
+  return `${needLocant ? `${locs.join(",")}-` : ""}${multi}${HALO_PREFIX[el]}${ALKANE_BY_N[n].name}`;
+}
+
+function haloCondensed(n, el, ats) {
+  const locs = canonLocants(n, ats);
+  const onC = Array(n + 1).fill(0);
+  locs.forEach((p) => { onC[p] += 1; });
+  let s = "";
+  for (let c = 1; c <= n; c++) {
+    const spent = (c > 1 ? 1 : 0) + (c < n ? 1 : 0) + onC[c];
+    const h = 4 - spent;
+    s += `C${h === 0 ? "" : h === 1 ? "H" : `H${h}`}${el.repeat(onC[c])}`;
+  }
+  return s;
+}
+
+// ── GENERATED addition deck: every alkene × every reagent ───────────────────────
+// The alkene's two carbons keep their H counts; when they differ, Markovnikov calls
+// the major (X/OH to the poorer carbon) and both regioisomers are accepted. When
+// they tie on an internal bond (pent-2-ene), both products form with no preference —
+// the card says so instead of pretending one wins.
+const ALKENES = [
+  ene(2, 1), ene(3, 1), ene(4, 1), ene(4, 2), ene(5, 1), ene(5, 2)
 ];
+const REAGENTS = [
+  { reagent: "H2", type: "hydrogenation", conditions: "catalyst" },
+  { reagent: "Br2", type: "halogenation", conditions: null },
+  { reagent: "Cl2", type: "halogenation", conditions: null },
+  { reagent: "HBr", type: "hydrohalogenation", conditions: null },
+  { reagent: "HCl", type: "hydrohalogenation", conditions: null },
+  { reagent: "H2O", type: "hydration", conditions: "acid catalyst" }
+];
+
+// H on an alkene carbon = 4 − bonds: the double (2) plus a chain single per side it has
+function eneCarbonH(spec, c) {
+  let bondsSum = 2; // the double bond
+  if (c > 1 && spec.slot !== c - 1) bondsSum += 1;
+  if (c < spec.n && spec.slot !== c) bondsSum += 1;
+  return 4 - bondsSum;
+}
+
+function additionTargets(spec, rg) {
+  const { n, slot } = spec;
+  const [cA, cB] = [slot, slot + 1];
+  if (rg.type === "hydrogenation") {
+    return [{ name: ALKANE_BY_N[n].name, condensed: condensedFormula(n), mol: chainWith(n) }];
+  }
+  if (rg.type === "halogenation") {
+    const el = rg.reagent === "Br2" ? "Br" : "Cl";
+    return [{
+      name: haloName(n, el, [cA, cB]),
+      condensed: haloCondensed(n, el, [cA, cB]),
+      mol: chainWith(n, [{ el, at: cA }, { el, at: cB }])
+    }];
+  }
+  // HX or H2O: X/OH lands on either double-bond carbon
+  const el = rg.type === "hydration" ? "O" : rg.reagent === "HBr" ? "Br" : "Cl";
+  const make = (at) => rg.type === "hydration"
+    ? (() => { const oh = Math.min(at, n + 1 - at); return { name: alcoholName({ n, oh }), condensed: alcoholCondensed({ n, oh }), mol: chainWith(n, [{ el: "O", at }]) }; })()
+    : { name: haloName(n, el, [at]), condensed: haloCondensed(n, el, [at]), mol: chainWith(n, [{ el, at }]) };
+  const hA = eneCarbonH(spec, cA), hB = eneCarbonH(spec, cB);
+  const [first, second] = hA === hB ? [cA, cB] : hA > hB ? [cB, cA] : [cA, cB];
+  const targets = [make(first), make(second)].filter((t, i, arr) => arr.findIndex((x) => x.name === t.name) === i);
+  if (targets.length > 1 && hA !== hB) targets[0].major = true;
+  if (targets.length > 1 && hA === hB) targets.forEach((t) => { t.even = true; });
+  return targets;
+}
+
+export const REACTIONS = [];
+for (const spec of ALKENES) {
+  const eneName = unsaturatedName(spec);
+  for (const rg of REAGENTS) {
+    REACTIONS.push({
+      id: `${rg.reagent.toLowerCase()}-${eneName}`,
+      type: rg.type,
+      reactant: { name: eneName, condensed: unsaturatedCondensed(spec), mol: eneGraph(spec.n, spec.slot) },
+      reagent: rg.reagent,
+      conditions: rg.conditions,
+      elements: rg.type === "hydrogenation" ? ["C", "H"]
+        : rg.type === "halogenation" ? ["C", rg.reagent === "Br2" ? "Br" : "Cl"]
+        : rg.type === "hydration" ? ["C", "H", "O"]
+        : ["C", "H", rg.reagent === "HBr" ? "Br" : "Cl"],
+      explicitH: rg.type === "hydrogenation" ? 2 : rg.type === "halogenation" ? 0 : 1,
+      targets: additionTargets(spec, rg)
+    });
+  }
+}
+
+// ── Act B: ELIMINATION (IMAT 5.49) — addition run backwards ─────────────────────
+// The reactant carries the leaving group; the student builds the ALKENE. Where the
+// double bond can form on either side, Zaitsev calls the major: the more substituted
+// (internal) alkene wins. Both honest alkenes are accepted.
+function eliminationTargets(n, at) {
+  const slots = [];
+  if (at > 1) slots.push(at - 1);
+  if (at < n) slots.push(at);
+  const canonical = [...new Set(slots.map((s) => Math.min(s, n - s)))];
+  const targets = canonical.map((slot) => ({
+    name: unsaturatedName(ene(n, slot)),
+    condensed: unsaturatedCondensed(ene(n, slot)),
+    mol: eneGraph(n, slot),
+    internal: slot > 1 && slot < n - 1
+  }));
+  if (targets.length > 1) {
+    targets.sort((a, b) => Number(b.internal) - Number(a.internal)); // Zaitsev first
+    targets[0].major = true;
+  }
+  return targets.map(({ internal, ...t }) => t);
+}
+
+const DEHYDRATION_SPECS = [
+  { n: 2, at: 1 }, { n: 3, at: 1 }, { n: 3, at: 2 }, { n: 4, at: 1 },
+  { n: 4, at: 2 }, { n: 5, at: 1 }, { n: 5, at: 2 }, { n: 5, at: 3 }
+];
+const DEHYDROHALOGENATION_SPECS = [
+  { n: 2, at: 1, el: "Br" }, { n: 3, at: 2, el: "Br" }, { n: 4, at: 2, el: "Br" },
+  { n: 4, at: 1, el: "Cl" }, { n: 5, at: 2, el: "Cl" }, { n: 5, at: 3, el: "Br" }
+];
+
+export const ELIMINATIONS = [
+  ...DEHYDRATION_SPECS.map(({ n, at }) => {
+    const oh = Math.min(at, n + 1 - at);
+    return {
+      id: `dehyd-${alcoholName({ n, oh })}`,
+      type: "dehydration",
+      reactant: { name: alcoholName({ n, oh }), condensed: alcoholCondensed({ n, oh }), mol: chainWith(n, [{ el: "O", at }]) },
+      reagent: "H2SO4", conditions: "conc. · heat",
+      // O rides in the tray so the student can BUILD the alcohol, then eliminate:
+      // drop the OH back on the tray and click the freed bond double
+      elements: ["C", "O"], explicitH: 0,
+      targets: eliminationTargets(n, at)
+    };
+  }),
+  ...DEHYDROHALOGENATION_SPECS.map(({ n, at, el }) => ({
+    id: `dhx-${haloName(n, el, [at])}`,
+    type: "dehydrohalogenation",
+    reactant: { name: haloName(n, el, [at]), condensed: haloCondensed(n, el, [at]), mol: chainWith(n, [{ el, at }]) },
+    reagent: "KOH", conditions: "conc. · heat",
+    elements: ["C", el], explicitH: 0,
+    targets: eliminationTargets(n, at)
+  }))
+];
+
+// Round of 5: 3 dehydrations + 2 dehydrohalogenations.
+export function makeEliminationDealer() {
+  const dehyd = ELIMINATIONS.filter((c) => c.type === "dehydration");
+  const dhx = ELIMINATIONS.filter((c) => c.type === "dehydrohalogenation");
+  const piles = { dehyd: [], dhx: [] };
+  const draw = (key, source, rng) => {
+    if (piles[key].length === 0) piles[key] = [...source].sort(() => rng() - 0.5);
+    return piles[key].pop();
+  };
+  return function deal(rng = Math.random) {
+    const cards = [
+      draw("dehyd", dehyd, rng), draw("dehyd", dehyd, rng), draw("dehyd", dehyd, rng),
+      draw("dhx", dhx, rng), draw("dhx", dhx, rng)
+    ];
+    return cards.sort(() => rng() - 0.5);
+  };
+}
 
 // What each reaction type teaches — feeds the hint ladder and the intro table.
 export const REACTION_INFO = {
@@ -186,16 +248,33 @@ export const REACTION_INFO = {
     adds: "H and OH",
     result: "an alcohol",
     hint: "Water splits: H to one alkene carbon, OH to the other. The OH prefers the carbon with fewer hydrogens (Markovnikov) — either neighbor is accepted here."
+  },
+  dehydration: {
+    label: "Dehydration", elimination: true,
+    adds: "loses H and OH",
+    result: "an alkene",
+    hint: "The OH leaves its carbon; an H leaves a NEIGHBOR carbon; the two freed valences become the C=C. Which neighbor? Zaitsev: the more substituted (internal) alkene is the major — either honest alkene is accepted."
+  },
+  dehydrohalogenation: {
+    label: "Dehydrohalogenation", elimination: true,
+    adds: "loses H and X",
+    result: "an alkene",
+    hint: "The halogen leaves its carbon; an H leaves a NEIGHBOR; the double bond forms between them. Zaitsev again: internal beats terminal — but both honest alkenes count."
   }
 };
 
 export function hintsFor(card) {
   const info = REACTION_INFO[card.type];
   const major = card.targets[0];
+  const partnerNote = card.targets.length > 1
+    ? (major.even ? " (either forms — both accepted)" : " (the major product; its partner is accepted too)")
+    : "";
   return [
-    "Addition: the C=C double bond OPENS, and each of its two carbons picks up one new piece. Count the reactant's carbons — the skeleton never changes.",
+    info.elimination
+      ? "Elimination: two NEIGHBOR carbons each lose a piece, and the freed valences become a C=C double bond. The skeleton never changes — build the chain, then click the right bond double."
+      : "Addition: the C=C double bond OPENS, and each of its two carbons picks up one new piece. Count the reactant's carbons — the skeleton never changes.",
     info.hint,
-    `Build ${toSubHtml(major.condensed)} — ${major.name}${card.targets.length > 1 ? " (the major product; its partner is accepted too)" : ""}.`
+    `Build ${toSubHtml(major.condensed)} — ${major.name}${partnerNote}.`
   ];
 }
 
@@ -263,6 +342,47 @@ export const MK_CARDS = [
       { name: "1-bromo-2-methylpropane", condensed: "CH2BrCH(CH3)CH3" }
     ],
     why: "The branched carbon of the double bond has NO H's at all — the strongest Markovnikov case. H to the CH2, Br to the branch point."
+  },
+  // ── Zaitsev calls: elimination's major/minor, same 50/50 shape ──
+  {
+    id: "mk-zaitsev-butan-2-ol",
+    reactant: { name: "butan-2-ol", condensed: "CH3CH(OH)CH2CH3" },
+    reagent: "H2SO4",
+    options: [
+      { name: "but-2-ene", condensed: "CH3CH=CHCH3", major: true },
+      { name: "but-1-ene", condensed: "CH2=CHCH2CH3" }
+    ],
+    why: "The OH leaves C-2; the H can leave C-1 or C-3. Zaitsev: the more substituted double bond — the INTERNAL one — is the major."
+  },
+  {
+    id: "mk-zaitsev-2-bromobutane",
+    reactant: { name: "2-bromobutane", condensed: "CH3CHBrCH2CH3" },
+    reagent: "KOH",
+    options: [
+      { name: "but-2-ene", condensed: "CH3CH=CHCH3", major: true },
+      { name: "but-1-ene", condensed: "CH2=CHCH2CH3" }
+    ],
+    why: "Same call as dehydration: Br leaves C-2, the H leaves a neighbor, and Zaitsev picks the internal alkene as major."
+  },
+  {
+    id: "mk-zaitsev-pentan-2-ol",
+    reactant: { name: "pentan-2-ol", condensed: "CH3CH(OH)CH2CH2CH3" },
+    reagent: "H2SO4",
+    options: [
+      { name: "pent-2-ene", condensed: "CH3CH=CHCH2CH3", major: true },
+      { name: "pent-1-ene", condensed: "CH2=CHCH2CH2CH3" }
+    ],
+    why: "H from C-1 gives the terminal alkene; H from C-3 gives the internal one. Internal wins — Zaitsev."
+  },
+  {
+    id: "mk-zaitsev-2-chloropentane",
+    reactant: { name: "2-chloropentane", condensed: "CH3CHClCH2CH2CH3" },
+    reagent: "KOH",
+    options: [
+      { name: "pent-2-ene", condensed: "CH3CH=CHCH2CH3", major: true },
+      { name: "pent-1-ene", condensed: "CH2=CHCH2CH2CH3" }
+    ],
+    why: "The Cl leaves C-2. Count substitution on the two possible double bonds: pent-2-ene's carries more carbon neighbors — major."
   }
 ];
 

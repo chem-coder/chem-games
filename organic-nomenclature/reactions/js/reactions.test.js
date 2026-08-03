@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { REACTIONS, REACTION_INFO, hintsFor, makeReactionDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
+import { REACTIONS, ELIMINATIONS, REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
 import { componentFormulas, gradeIsomorphic, stripExplicitH, VALENCE } from "../../js/chem.js";
 
 test("halogens exist in the valence table", () => {
@@ -109,6 +109,81 @@ test("markovnikov quiz cards: two distinct options, exactly one major, a why for
     const major = card.options.find((o) => o.major);
     assert.ok(!/^1-/.test(major.name), `${card.id}: Markovnikov never puts X/OH on C-1 here`);
   }
+});
+
+test("generated addition deck: 6 alkenes × 6 reagents", () => {
+  assert.equal(REACTIONS.length, 36);
+  assert.equal(new Set(REACTIONS.map((c) => c.id)).size, 36, "ids unique");
+  // generated names spot-checks
+  const byId = Object.fromEntries(REACTIONS.map((c) => [c.id, c]));
+  assert.equal(byId["br2-ethene"].targets[0].name, "1,2-dibromoethane");
+  assert.equal(byId["cl2-pent-2-ene"].targets[0].name, "2,3-dichloropentane");
+  assert.equal(byId["hbr-pent-1-ene"].targets[0].name, "2-bromopentane");
+  assert.equal(byId["h2o-but-2-ene"].targets[0].name, "butan-2-ol");
+  assert.equal(byId["hcl-ethene"].targets[0].name, "chloroethane", "no locant on chloroethane");
+});
+
+test("even-split cards: internal tie means both products, no false major", () => {
+  const tie = REACTIONS.find((c) => c.id === "hbr-pent-2-ene");
+  assert.equal(tie.targets.length, 2);
+  assert.ok(tie.targets.every((t) => t.even), "both flagged as equal");
+  assert.ok(!tie.targets.some((t) => t.major), "no major claimed");
+  assert.deepEqual(tie.targets.map((t) => t.name).sort(), ["2-bromopentane", "3-bromopentane"]);
+});
+
+test("eliminations: Zaitsev majors, symmetric cases collapse to one product", () => {
+  assert.equal(ELIMINATIONS.length, 14);
+  const byId = Object.fromEntries(ELIMINATIONS.map((c) => [c.id, c]));
+  // butan-2-ol → but-2-ene major, but-1-ene accepted
+  const b2 = byId["dehyd-butan-2-ol"];
+  assert.equal(b2.targets[0].name, "but-2-ene");
+  assert.ok(b2.targets[0].major);
+  assert.equal(b2.targets[1].name, "but-1-ene");
+  // propan-2-ol has only one possible alkene
+  assert.equal(byId["dehyd-propan-2-ol"].targets.length, 1);
+  assert.equal(byId["dehyd-propan-2-ol"].targets[0].name, "propene");
+  // dehydrohalogenation mirrors it
+  const dhx = byId["dhx-2-bromobutane"];
+  assert.equal(dhx.targets[0].name, "but-2-ene");
+  assert.ok(dhx.targets[0].major);
+  // every elimination target is a valid single alkene
+  for (const card of ELIMINATIONS) {
+    for (const t of card.targets) {
+      assert.equal(componentFormulas(t.mol.atoms, t.mol.bonds).length, 1, card.id);
+      assert.equal(t.mol.bonds.filter((b) => b.order === 2).length, 1, card.id);
+    }
+    assert.ok(card.elements.length >= 2, `${card.id}: leaving group rides in the tray`);
+  }
+});
+
+test("elimination dealer: 3 dehydrations + 2 dehydrohalogenations", () => {
+  const deal = makeEliminationDealer();
+  for (let r = 0; r < 8; r++) {
+    const cards = deal();
+    assert.equal(cards.length, 5);
+    assert.equal(cards.filter((c) => c.type === "dehydration").length, 3);
+    assert.equal(cards.filter((c) => c.type === "dehydrohalogenation").length, 2);
+    assert.equal(new Set(cards.map((c) => c.id)).size, 5);
+  }
+});
+
+test("zaitsev quiz cards ride in the MK deck", () => {
+  const zaitsev = MK_CARDS.filter((c) => c.id.startsWith("mk-zaitsev"));
+  assert.equal(zaitsev.length, 4);
+  for (const card of zaitsev) {
+    assert.equal(card.options.filter((o) => o.major).length, 1);
+    assert.ok(card.options.find((o) => o.major).name.includes("-2-ene"), `${card.id}: internal alkene is major`);
+  }
+  assert.equal(MK_CARDS.length, 10);
+});
+
+test("elimination hints speak elimination, addition hints speak addition", () => {
+  const elim = hintsFor(ELIMINATIONS[0]);
+  assert.match(elim[0], /Elimination/);
+  const add = hintsFor(REACTIONS[0]);
+  assert.match(add[0], /Addition/);
+  const tie = hintsFor(REACTIONS.find((c) => c.id === "hbr-pent-2-ene"));
+  assert.match(tie[2], /either forms/);
 });
 
 test("markovnikov dealer: 5 cards, no duplicates", () => {

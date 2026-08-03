@@ -12,11 +12,14 @@
 import { toSubHtml } from "../../js/organic.js";
 import { gradeIsomorphic, stripExplicitH, splitComponents } from "../../js/chem.js";
 import { createLab } from "../../js/lab.js";
-import { REACTION_INFO, hintsFor, makeReactionDealer, makeMarkovnikovDealer } from "./reactions.js";
+import { REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeMarkovnikovDealer } from "./reactions.js";
 
 const root = document.querySelector("#game");
-const dealBuild = makeReactionDealer();
-const dealMk = makeMarkovnikovDealer();
+const dealers = {
+  build: makeReactionDealer(),
+  elim: makeEliminationDealer(),
+  mk: makeMarkovnikovDealer()
+};
 
 let mode = "intro";       // "intro" | "play" | "mk" | "done"
 let quiz = "build";       // which quiz the round (and done screen) belongs to
@@ -44,12 +47,12 @@ function reagentHtml(c) {
 
 function startRound(which) {
   quiz = which;
-  queue = which === "build" ? dealBuild() : dealMk();
+  queue = dealers[which]();
   roundTotal = queue.length;
   mastered = 0;
   cleanSolves = 0;
   missed = [];
-  mode = which === "build" ? "play" : "mk";
+  mode = which === "mk" ? "mk" : "play";
   loadCard();
 }
 
@@ -97,7 +100,8 @@ function checkReactant() {
   // component-wise: having the reagent (or spares) alongside is fine — students
   // reasonably build both reactants before making them meet
   const comps = splitComponents(stripped.atoms, stripped.bonds);
-  const ok = comps.some((g) => gradeIsomorphic(g.atoms, g.bonds, card.reactant.mol, ["C"]).ok);
+  const reactantEls = [...new Set(card.reactant.mol.atoms.map((a) => a.el))];
+  const ok = comps.some((g) => gradeIsomorphic(g.atoms, g.bonds, card.reactant.mol, reactantEls).ok);
   nudge(ok
     ? `✓ That's ${card.reactant.name}${comps.length > 1 ? " (spare pieces aside)" : ""} — now make it react with ${toSubHtml(card.reagent)}.`
     : `Not ${card.reactant.name} yet — check the carbon count and where the double bond sits.`);
@@ -163,36 +167,52 @@ function render() {
   renderPlay();
 }
 
+const ADDITION_TYPES = ["hydrogenation", "halogenation", "hydrohalogenation", "hydration"];
+const ELIMINATION_TYPES = ["dehydration", "dehydrohalogenation"];
+
+function introRows(types) {
+  return types.map((t) => {
+    const i = REACTION_INFO[t];
+    return `<tr><td><strong>${i.label}</strong></td><td>${i.adds}</td><td>${i.result}</td></tr>`;
+  }).join("");
+}
+
 function renderIntro() {
-  const rows = Object.values(REACTION_INFO).map((i) =>
-    `<tr><td><strong>${i.label}</strong></td><td>${i.adds}</td><td>${i.result}</td></tr>`
-  ).join("");
   root.innerHTML = `<div class="intro">
-    <p class="intro-eyebrow">Reactions · Act A · addition to alkenes</p>
-    <p class="intro-lede">One idea, four costumes: the C=C double bond <strong>opens</strong>, and each of its two carbons picks up one new piece.</p>
+    <p class="intro-eyebrow">Reactions · addition &amp; elimination</p>
+    <p class="intro-lede"><strong>Addition</strong>: the C=C double bond opens, and each of its two carbons picks up one new piece.</p>
     <table class="rxn-table">
       <thead><tr><th>Reaction</th><th>adds…</th><th>giving…</th></tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>${introRows(ADDITION_TYPES)}</tbody>
+    </table>
+    <p class="intro-lede"><strong>Elimination</strong> is addition run backwards: two neighbor carbons each lose a piece, and the freed valences close into a C=C.</p>
+    <table class="rxn-table">
+      <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
+      <tbody>${introRows(ELIMINATION_TYPES)}</tbody>
     </table>
     <ul class="pt-points">
-      <li>The carbon skeleton <strong>never changes</strong> — addition only spends the double bond.</li>
-      <li>You build the <strong>product</strong>: many players build the reactant first, check it, then make it react — the <em>Check my reactant</em> button is there for exactly that.</li>
-      <li>The reagent's own hydrogen arrives in the tray: <strong>place it</strong>. Where the H goes is half the chemistry.</li>
+      <li>Either direction, the carbon skeleton <strong>never changes</strong>.</li>
+      <li>You build the <strong>product</strong>: many players build the reactant first, check it, then make it react — the <em>Check my reactant</em> button is there for exactly that. In elimination, removing the OH or X and closing the double bond IS the reaction.</li>
+      <li>In addition, the reagent's own hydrogen arrives in the tray: <strong>place it</strong>. Where the H goes is half the chemistry.</li>
     </ul>
 
     <div class="mk-teach">
-      <h3>Markovnikov's rule</h3>
+      <h3>Markovnikov's rule — addition's major</h3>
       <p>When H–Br or H–OH adds to an <strong>unsymmetric</strong> alkene, two products are possible — and they are not equally likely.</p>
       <p class="mk-worked">${toSubHtml("CH2=CHCH3")} + ${toSubHtml("HBr")}: &nbsp;C-1 of the double bond holds <strong>two</strong> H's, C-2 holds <strong>one</strong>. The new H joins the carbon that already has more — <em>the rich get richer</em> — so H goes to C-1 and the Br takes C-2: <strong>2-bromopropane</strong> is the <strong>major</strong> product. 1-bromopropane still forms, as the <strong>minor</strong>.</p>
       <p>Count the hydrogens on the two double-bond carbons; the H joins the richer one, the X or OH takes the poorer one. That's the whole rule.</p>
+      <h3>Zaitsev's rule — elimination's major</h3>
+      <p>When the double bond could form on <strong>either side</strong> of the leaving group, the <strong>more substituted</strong> alkene — the internal one, with more carbon neighbors on its C=C — is the major. Butan-2-ol dehydrates mostly to <strong>but-2-ene</strong>, only a little to but-1-ene.</p>
     </div>
 
     <div class="controls two-up">
-      <button class="action primary alt" id="startBuild">Build the products</button>
+      <button class="action primary alt" id="startBuild">Build: addition</button>
+      <button class="action primary alt" id="startElim">Build: elimination</button>
       <button class="action primary" id="startMk">Major or minor? · quiz</button>
     </div>
   </div>`;
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
+  root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
   root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
 }
 
@@ -225,7 +245,9 @@ function renderPlay() {
 
   lab = createLab(root.querySelector("#labCanvas"), {
     elements: card.elements,
-    additionMode: true,   // arrivals attack the π bond; the far carbon shows an open seat
+    // arrivals attack the π bond only in ADDITION rounds — in elimination the student
+    // sets the double bond deliberately, and an auto-break would sabotage the build
+    additionMode: quiz === "build",
     onChange() {
       const btn = root.querySelector("#checkBtn");
       if (btn && !checked) btn.disabled = lab.atoms().length === 0;
@@ -256,13 +278,19 @@ function updateAfterCheck() {
   root.querySelector("#hintArea").innerHTML = "";
   root.querySelector("#nudgeArea").innerHTML = "";
   const major = card.targets[0];
-  const builtMinor = card.targets.length > 1 && solvedName && solvedName !== major.name;
+  const isElim = Boolean(REACTION_INFO[card.type].elimination);
+  const evenSplit = Boolean(major.even);
+  const builtMinor = card.targets.length > 1 && !evenSplit && solvedName && solvedName !== major.name;
+  const minorNote = builtMinor
+    ? `<p class="regio-note">You built the <strong>minor</strong> product — real, accepted. The <strong>major</strong> is ${major.name}: ${isElim
+        ? "Zaitsev prefers the more substituted (internal) alkene."
+        : `Markovnikov puts the ${card.type === "hydration" ? "OH" : "halogen"} on the double-bond carbon with fewer H's.`}</p>`
+    : "";
   const feedback = correct
-    ? `<p class="feedback ok">${hintsShown ? "Correct." : "Solved clean — no hints. 💪"} It leaves the stack.</p>${builtMinor
-        ? `<p class="regio-note">You built the <strong>minor</strong> product — real, accepted. The <strong>major</strong> is ${major.name}: Markovnikov puts the ${card.type === "hydration" ? "OH" : "halogen"} on the double-bond carbon with fewer H's.</p>`
-        : ""}`
+    ? `<p class="feedback ok">${hintsShown ? "Correct." : "Solved clean — no hints. 💪"} It leaves the stack.</p>${minorNote}`
     : `<p class="feedback no">Not quite — this one comes back around.</p>`;
-  const reveal = `<p class="reveal">${toSubHtml(card.reactant.condensed)} + ${reagentHtml(card)} → <strong>${major.name}</strong> &nbsp;·&nbsp; ${toSubHtml(major.condensed)}${card.targets.length > 1 ? ` <span class="minor-note">(major)</span>` : ""}</p>`;
+  const tag = card.targets.length > 1 ? ` <span class="minor-note">${evenSplit ? "(either forms)" : "(major)"}</span>` : "";
+  const reveal = `<p class="reveal">${toSubHtml(card.reactant.condensed)} + ${reagentHtml(card)} → <strong>${major.name}</strong> &nbsp;·&nbsp; ${toSubHtml(major.condensed)}${tag}</p>`;
   root.querySelector("#verdictArea").innerHTML = `${reveal}${feedback}`;
   const controls = root.querySelector(".controls");
   controls.innerHTML = `
@@ -328,14 +356,18 @@ function renderDone() {
   root.innerHTML = `
     <p class="prompt">Round done — ${roundTotal} ${quiz === "mk" ? "Markovnikov calls" : "reactions"}, ${cleanSolves} solved ${quiz === "mk" ? "first try" : "hint-free"}.</p>
     ${missedBlock}
-    <p class="done-next">${quiz === "mk"
-      ? "Count the H's on the two double-bond carbons — the rule never changes."
-      : "Every round covers all four additions: H2, X2, HX, and water."}</p>
+    <p class="done-next">${{
+      mk: "Markovnikov for addition, Zaitsev for elimination — both are just 'count the neighbors'.",
+      elim: "Every round deals three dehydrations and two dehydrohalogenations — Zaitsev decides the major.",
+      build: "Every round covers all four additions: H2, X2, HX, and water."
+    }[quiz]}</p>
     <div class="controls two-up">
-      <button class="action primary alt" id="startBuild">Build the products</button>
+      <button class="action primary alt" id="startBuild">Build: addition</button>
+      <button class="action primary alt" id="startElim">Build: elimination</button>
       <button class="action primary" id="startMk">Major or minor? · quiz</button>
     </div>`;
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
+  root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
   root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
 }
 
