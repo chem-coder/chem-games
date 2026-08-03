@@ -121,7 +121,32 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     for (const other of atoms) {
       if (other === dragged) continue;
       const d = Math.hypot(other.x - dragged.x, other.y - dragged.y);
-      if (d < SNAP && canBond(dragged, other, bonds)) {
+      if (d >= SNAP) continue;
+      let bondable = canBond(dragged, other, bonds);
+      // additionMode: a SATURATED reagent atom (the Br of an intact H–Br, either H of
+      // H–H) touching a π-bond carbon SPLITS its own molecule — its bond to its
+      // partner breaks, the partner floats free for the far seat, and the attack
+      // proceeds. Students intuitively drag the whole small molecule onto the C=C;
+      // now that intuition is the mechanic. (Dalia's playtest spec, 2026-08-03.)
+      if (!bondable && additionMode && hydrogenCount(dragged, bonds) === 0) {
+        const otherHasPi = bonds.some((b) => (b.a === other.id || b.b === other.id) && b.order > 1);
+        if (otherHasPi) {
+          const partnerBonds = bonds.filter((b) => (b.a === dragged.id || b.b === dragged.id) && b.order === 1);
+          const pick = partnerBonds.find((b) => byId()[b.a === dragged.id ? b.b : b.a]?.el === "H") || partnerBonds[0];
+          if (pick) {
+            bonds = bonds.filter((b) => b !== pick);
+            const freed = byId()[pick.a === dragged.id ? pick.b : pick.a];
+            if (freed) {
+              freed.x += 26;
+              freed.y -= 38;   // drift the freed atom clear so it reads as "released"
+              syncH(freed);
+            }
+            syncH(dragged);
+            bondable = canBond(dragged, other, bonds);
+          }
+        }
+      }
+      if (bondable) {
         // additionMode: an arrival on a multiple-bond carbon ATTACKS the π bond —
         // it drops one order and the far carbon is left with an open seat
         let attacked = false;

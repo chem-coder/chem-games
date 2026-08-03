@@ -264,6 +264,7 @@ function renderIntro() {
       <li>The exam's favorite trap: <strong>KOH concentrated + heat eliminates</strong> (→ alkene), <strong>KOH aqueous substitutes</strong> (→ alcohol). Same reagent — the <em>conditions</em> are part of the answer.</li>
       <li>You build the <strong>product</strong>: many players build the reactant first, check it, then make it react — the <em>Check my reactant</em> button is there for exactly that. In elimination, removing the OH or X and closing the double bond IS the reaction.</li>
       <li>In addition, the reagent's own hydrogen arrives in the tray: <strong>place it</strong>. Where the H goes is half the chemistry.</li>
+      <li>Or build the reagent <strong>whole</strong> — assemble H–Br and touch it to the double bond: it <strong>splits across it</strong>, one piece bonding, the other floating free for the blinking carbon.</li>
     </ul>
 
     <div class="mk-teach">
