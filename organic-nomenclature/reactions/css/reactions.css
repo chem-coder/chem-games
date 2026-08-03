@@ -1,0 +1,126 @@
+/* Organic Reactions prototype — links shared tokens first, then this.
+   Chrome mirrors the organic-nomenclature game so it reads as the same family. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+.app-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+
+/* House rule: formula subscripts render at ≥50% size, slightly lowered. */
+sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: inherit; }
+
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow {
+  margin: 18px 0 4px; color: var(--plum); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.app-header h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; }
+.lede { margin: 8px 0 0; color: var(--muted); max-width: 52ch; }
+
+.game {
+  margin-top: 22px; padding: 24px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+/* intro */
+.intro-eyebrow {
+  margin: 0 0 6px; color: var(--plum); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.intro-lede { margin: 0 0 14px; font-size: 1.05rem; }
+.rxn-table { width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 0.95rem; }
+.rxn-table th {
+  text-align: left; padding: 6px 10px; color: var(--muted);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+  text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1.5px solid var(--line);
+}
+.rxn-table td { padding: 7px 10px; border-bottom: 1px solid var(--line); }
+.pt-points { margin: 0 0 6px; padding-left: 20px; }
+.pt-points li { margin: 6px 0; }
+
+/* play */
+.intro-link {
+  margin: 0 0 12px; padding: 0; border: 0; background: none; cursor: pointer;
+  color: var(--accent); font-family: var(--font-body); font-weight: 600; font-size: 0.9rem;
+}
+.intro-link:hover { text-decoration: underline; }
+.formula-card {
+  padding: 18px 20px; background: var(--surface-soft);
+  border: 1px solid var(--line); border-radius: 14px;
+}
+.card-tag {
+  display: block; color: var(--muted); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.rxn-prompt {
+  margin: 8px 0 0; text-align: center;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; line-height: 1.3;
+}
+.rxn-plus, .rxn-arrow { color: var(--muted); font-weight: 700; padding: 0 6px; }
+.rxn-q { color: var(--plum); }
+.conditions { font-size: 0.6em; color: var(--muted); font-weight: 600; }
+.build-label {
+  margin: 16px 0 0; text-align: center; color: var(--muted);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.85rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.lab-canvas {
+  display: block; width: 100%; height: 480px; margin-top: 10px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line); border-radius: 14px;
+  touch-action: none;
+}
+
+/* hints */
+.hints { margin-top: 14px; text-align: center; }
+.hint-btn {
+  padding: 8px 20px; font-family: var(--font-display); font-weight: 700; font-size: 0.9rem;
+  color: var(--plum); background: var(--plum-soft); border: 1.5px solid var(--plum);
+  border-radius: 999px; cursor: pointer;
+}
+.hint-btn:hover { background: var(--plum); color: #fff; }
+.hint-list { margin: 0 0 10px; padding: 0 8px; list-style: none; text-align: left; }
+.hint-list li {
+  margin: 8px 0; padding: 10px 14px; font-size: 0.95rem;
+  background: var(--plum-soft); border-radius: 10px;
+}
+
+/* verdict */
+.reveal { margin: 16px 0 0; text-align: center; font-size: 1.15rem; }
+.feedback { margin: 8px 0 0; text-align: center; font-weight: 600; }
+.feedback.ok { color: var(--success); }
+.feedback.no { color: var(--danger); }
+.minor-note { color: var(--muted); font-weight: 500; font-size: 0.85em; }
+
+/* controls */
+.controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+.controls.two-up { justify-content: center; }
+.score { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.action {
+  padding: 11px 26px; font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+  border: 1.5px solid transparent; border-radius: 999px; cursor: pointer;
+}
+.action.primary { color: #fff; background: var(--accent); }
+.action.primary:hover { background: var(--accent-dark); }
+.action.primary:disabled { background: var(--line); color: var(--muted); cursor: default; }
+.action.primary.alt { background: var(--plum); border-color: var(--plum-dark); }
+.action.primary.alt:hover { background: var(--plum-dark); }
+
+/* done */
+.prompt { margin: 0 0 8px; font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; }
+.missed-block { margin-top: 10px; }
+.missed-label { margin: 0 0 8px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 6px 14px; background: var(--warning-soft); border: 1px solid var(--warning-line);
+  border-radius: 999px; font-weight: 600; font-size: 0.95rem;
+}
+.done-next { margin: 14px 0 0; color: var(--muted); }
+
+.proto-note { margin-top: 16px; font-size: 0.88rem; color: var(--muted); }

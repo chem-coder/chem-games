@@ -20,11 +20,18 @@ const INK = "#2d2a23", LINE = "#8d8474";
 const ELEMENT_STYLE = {
   C: { fill: "#beb5a2", stroke: LINE, text: INK, label: "Carbon" },
   O: { fill: "#b4502f", stroke: "#8a3c22", text: "#fff7ef", label: "Oxygen" },
-  N: { fill: "#1e7268", stroke: "#134f48", text: "#eef6f2", label: "Nitrogen" }
+  N: { fill: "#1e7268", stroke: "#134f48", text: "#eef6f2", label: "Nitrogen" },
+  Cl: { fill: "#356b45", stroke: "#274f33", text: "#eaf3ec", label: "Chlorine" },
+  Br: { fill: "#6b4d68", stroke: "#523a50", text: "#f2ecf1", label: "Bromine" }
 };
 
-export function createLab(canvas, { onChange = () => {}, elements = ["C"] } = {}) {
+// Two input modes, NEVER mixed within one game (Dalia's rule, 2026-07-31):
+//   "drag"  — atoms are dragged out of the tray (the charm, for shorter molecules)
+//   "click" — the tray is a palette; tapping the canvas drops the selected element
+//             (the fast hand, for long molecules and advanced rungs)
+export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag" } = {}) {
   const ctx = canvas.getContext("2d");
+  let activeEl = elements[0];
 
   let atoms = [];            // {id, el, x, y, hs: [{angle, vel, phase}]}
   let bonds = [];            // {a, b, order}
@@ -161,8 +168,17 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"] } = {}
     if (inTray(x, y)) {
       const t = trayRect();
       const section = Math.min(elements.length - 1, Math.floor(((x - t.x) / t.w) * elements.length));
+      if (inputMode === "click") { activeEl = elements[section]; return; } // palette select
       const a = spawnAtom(x, y, elements[section]);
       drag = { id: a.id, dx: 0, dy: 0 };
+      onChange();
+      return;
+    }
+    if (inputMode === "click") {
+      // tap on open canvas: drop the selected element right here, bonding if in range
+      const a = spawnAtom(x, y, activeEl);
+      tryBond(a);
+      drag = { id: a.id, dx: 0, dy: 0 }; // still adjustable until the finger lifts
       onChange();
     }
   }
@@ -279,6 +295,11 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"] } = {}
     elements.forEach((el, i) => {
       const st = ELEMENT_STYLE[el];
       const cx = tr.x + secW * i + secW / 2, cy = tr.y + tr.h / 2 - 6;
+      if (inputMode === "click" && el === activeEl) {
+        ctx.beginPath(); ctx.roundRect(tr.x + secW * i + 5, tr.y + 5, secW - 10, tr.h - 10, 10);
+        ctx.fillStyle = "rgba(30, 114, 104, 0.10)"; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = "#1e7268"; ctx.stroke();
+      }
       if (i > 0) {
         ctx.beginPath(); ctx.moveTo(tr.x + secW * i, tr.y + 10); ctx.lineTo(tr.x + secW * i, tr.y + tr.h - 10);
         ctx.lineWidth = 1; ctx.strokeStyle = "#e5dbc9"; ctx.stroke();
@@ -295,7 +316,12 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"] } = {}
     });
     ctx.fillStyle = "#b0a691"; ctx.font = "600 10px Lexend, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("drag one out · drop one back to remove it", tr.x + tr.w / 2, tr.y + 12);
+    ctx.fillText(
+      inputMode === "click"
+        ? "pick an element here · tap the canvas to place it · drop an atom here to remove it"
+        : "drag one out · drop one back to remove it",
+      tr.x + tr.w / 2, tr.y + 12
+    );
   }
 
   // ── loop ──
