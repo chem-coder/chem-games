@@ -129,6 +129,8 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
    break points, so no overflow-wrap needed (it could split a symbol from its subscript) */
 .formula.as-chain { font-size: clamp(1.2rem, 4.5vw, 1.9rem); line-height: 1.35; }
 
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
 /* formative nudge — housekeeping feedback that doesn't burn the card */
 .nudge {
   margin: 12px 0 0; padding: 10px 14px; text-align: center;

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { REACTIONS, ELIMINATIONS, SUBSTITUTIONS, REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeSubstitutionDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
+import { REACTIONS, ELIMINATIONS, SUBSTITUTIONS, CARBONYLS, REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeSubstitutionDealer, makeCarbonylActDealer, MK_CARDS, makeMarkovnikovDealer } from "./reactions.js";
 import { componentFormulas, gradeIsomorphic, stripExplicitH, VALENCE } from "../../js/chem.js";
 
 test("halogens exist in the valence table", () => {
@@ -225,6 +225,68 @@ test("substitution dealer: 2 halogenations + 1 alcohol swap + 2 hydrolyses", () 
     assert.equal(cards.filter((c) => c.type === "subHalogenation").length, 2);
     assert.equal(cards.filter((c) => c.type === "subAlcohol").length, 1);
     assert.equal(cards.filter((c) => c.type === "hydrolysis").length, 2);
+    assert.equal(new Set(cards.map((c) => c.id)).size, 5);
+  }
+});
+
+test("carbonyl act: the 1°/2°/3° oxidation ladder, with honest no-reaction cards", () => {
+  assert.equal(CARBONYLS.length, 20);
+  const byId = Object.fromEntries(CARBONYLS.map((c) => [c.id, c]));
+  // 1° partial vs full — same alcohol, different conditions, different product
+  assert.equal(byId["ox-ald-ethanol"].targets[0].name, "ethanal");
+  assert.equal(byId["ox-acid-ethanol"].targets[0].name, "ethanoic acid");
+  assert.notEqual(byId["ox-ald-ethanol"].conditions, byId["ox-acid-ethanol"].conditions);
+  // 2° → ketone
+  assert.equal(byId["ox-ket-propan-2-ol"].targets[0].name, "propan-2-one");
+  assert.equal(byId["ox-ket-pentan-3-ol"].targets[0].name, "pentan-3-one");
+  // 3° → no reaction, with the explanation on the card
+  const tert = byId["ox-none-2-methylpropan-2-ol"];
+  assert.ok(tert.noReaction);
+  assert.ok(tert.whyNo.includes("no hydrogen") || tert.whyNo.includes("NO hydrogen"));
+  assert.ok(!tert.targets, "no targets on a no-reaction card");
+  assert.match(hintsFor(tert)[2], /No reaction/);
+  // the tertiary reactant really is tertiary: its OH-carbon touches 3 carbons
+  const oId = tert.reactant.mol.atoms.find((a) => a.el === "O").id;
+  const ohBond = tert.reactant.mol.bonds.find((b) => b.a === oId || b.b === oId);
+  const cId = ohBond.a === oId ? ohBond.b : ohBond.a;
+  const cNeighbors = tert.reactant.mol.bonds.filter((b) =>
+    (b.a === cId || b.b === cId) &&
+    tert.reactant.mol.atoms.find((a) => a.id === (b.a === cId ? b.b : b.a)).el === "C").length;
+  assert.equal(cNeighbors, 3);
+});
+
+test("esterification: condensation with water as byproduct, both reactant mols carried", () => {
+  const est = CARBONYLS.find((c) => c.id === "esterif-methyl-ethanoate");
+  assert.equal(est.byproduct, "H2O");
+  assert.equal(est.reactant.mols.length, 2);
+  assert.equal(est.targets[0].name, "methyl ethanoate");
+  assert.deepEqual(componentFormulas(est.targets[0].mol.atoms, est.targets[0].mol.bonds), ["C3H6O2"]);
+  // atom bookkeeping: acid + alcohol = ester + H2O (one O and two H leave as water)
+  const count = (mol, el) => mol.atoms.filter((a) => a.el === el).length;
+  const oIn = count(est.reactant.mols[0], "O") + count(est.reactant.mols[1], "O");
+  assert.equal(count(est.targets[0].mol, "O"), oIn - 1, "one O leaves in the water");
+});
+
+test("saponification: two products, matched either way", () => {
+  const sap = CARBONYLS.find((c) => c.id === "sapon-methyl-ethanoate");
+  assert.equal(sap.multiTargets.length, 2);
+  assert.equal(sap.multiTargets[0].name, "ethanoic acid");
+  assert.equal(sap.multiTargets[1].name, "methanol");
+  assert.ok(sap.multiTargets[0].note.includes("soap"));
+  assert.match(hintsFor(sap)[2], /BOTH/);
+  for (const t of sap.multiTargets) {
+    assert.equal(componentFormulas(t.mol.atoms, t.mol.bonds).length, 1);
+  }
+});
+
+test("carbonyl dealer: 3 oxidations + 1 esterification + 1 saponification", () => {
+  const deal = makeCarbonylActDealer();
+  for (let r = 0; r < 8; r++) {
+    const cards = deal();
+    assert.equal(cards.length, 5);
+    assert.equal(cards.filter((c) => c.type === "oxidation").length, 3);
+    assert.equal(cards.filter((c) => c.type === "esterification").length, 1);
+    assert.equal(cards.filter((c) => c.type === "saponification").length, 1);
     assert.equal(new Set(cards.map((c) => c.id)).size, 5);
   }
 });

@@ -12,13 +12,14 @@
 import { toSubHtml } from "../../js/organic.js";
 import { gradeIsomorphic, stripExplicitH, splitComponents } from "../../js/chem.js";
 import { createLab } from "../../js/lab.js";
-import { REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeSubstitutionDealer, makeMarkovnikovDealer } from "./reactions.js";
+import { REACTION_INFO, hintsFor, makeReactionDealer, makeEliminationDealer, makeSubstitutionDealer, makeCarbonylActDealer, makeMarkovnikovDealer } from "./reactions.js";
 
 const root = document.querySelector("#game");
 const dealers = {
   build: makeReactionDealer(),
   elim: makeEliminationDealer(),
   sub: makeSubstitutionDealer(),
+  carb: makeCarbonylActDealer(),
   mk: makeMarkovnikovDealer()
 };
 
@@ -101,11 +102,38 @@ function checkReactant() {
   // component-wise: having the reagent (or spares) alongside is fine — students
   // reasonably build both reactants before making them meet
   const comps = splitComponents(stripped.atoms, stripped.bonds);
-  const reactantEls = [...new Set(card.reactant.mol.atoms.map((a) => a.el))];
-  const ok = comps.some((g) => gradeIsomorphic(g.atoms, g.bonds, card.reactant.mol, reactantEls).ok);
-  nudge(ok
+  const mols = card.reactant.mols || [card.reactant.mol];
+  const found = mols.filter((m) => {
+    const els = [...new Set(m.atoms.map((a) => a.el))];
+    return comps.some((g) => gradeIsomorphic(g.atoms, g.bonds, m, els).ok);
+  }).length;
+  if (mols.length > 1) {
+    nudge(found === mols.length
+      ? `✓ Both reactants built — now let them react.`
+      : found > 0
+      ? `✓ One reactant down — build the other beside it, or go straight for the product.`
+      : `Neither reactant yet — the prompt names both; build them piece by piece.`);
+    return;
+  }
+  nudge(found
     ? `✓ That's ${card.reactant.name}${comps.length > 1 ? " (spare pieces aside)" : ""} — now make it react with ${toSubHtml(card.reagent)}.`
-    : `Not ${card.reactant.name} yet — check the carbon count and where the double bond sits.`);
+    : `Not ${card.reactant.name} yet — check the atom count and where everything sits.`);
+}
+
+// The No-reaction button (Dalia's spec): a REAL answer, trained in the intro.
+// Right on a tertiary-alcohol oxidation; wrong anywhere else.
+function answerNoReaction() {
+  if (checked || !lab) return;
+  correct = Boolean(card.noReaction);
+  checked = true;
+  lab.setLocked(true);
+  if (correct) {
+    mastered += 1;
+    if (hintsShown === 0) cleanSolves += 1;
+  } else {
+    missed.push(card);
+  }
+  updateAfterCheck();
 }
 
 function check() {
@@ -119,6 +147,34 @@ function check() {
   }
   const stripped = stripExplicitH(lab.atoms(), lab.bonds());
   const allowed = card.elements.filter((e) => e !== "H");
+  // a no-reaction card: building any "product" is the wrong call
+  if (card.noReaction) {
+    correct = false;
+    checked = true;
+    lab.setLocked(true);
+    missed.push(card);
+    return updateAfterCheck();
+  }
+  // saponification: TWO products, built side by side, matched one-to-one
+  if (card.multiTargets) {
+    const comps = splitComponents(stripped.atoms, stripped.bonds);
+    const [tA, tB] = card.multiTargets;
+    const m = (g, t) => gradeIsomorphic(g.atoms, g.bonds, t.mol, allowed).ok;
+    const ok = comps.length === 2 && ((m(comps[0], tA) && m(comps[1], tB)) || (m(comps[0], tB) && m(comps[1], tA)));
+    if (!ok && comps.length === 1 && (m(comps[0], tA) || m(comps[0], tB))) {
+      return nudge("That's ONE of the two products — this reaction gives two molecules; build the other beside it.");
+    }
+    correct = ok;
+    checked = true;
+    lab.setLocked(true);
+    if (correct) {
+      mastered += 1;
+      if (hintsShown === 0) cleanSolves += 1;
+    } else {
+      missed.push(card);
+    }
+    return updateAfterCheck();
+  }
   const matchOf = (g) => card.targets.find((t) => gradeIsomorphic(g.atoms, g.bonds, t.mol, allowed).ok);
   const hit = matchOf(stripped);
   // the right molecule with spare pieces floating is housekeeping, not chemistry
@@ -171,6 +227,7 @@ function render() {
 const ADDITION_TYPES = ["hydrogenation", "halogenation", "hydrohalogenation", "hydration"];
 const ELIMINATION_TYPES = ["dehydration", "dehydrohalogenation"];
 const SUBSTITUTION_TYPES = ["subHalogenation", "subAlcohol", "hydrolysis"];
+const CARBONYL_TYPES = ["oxidation", "esterification", "saponification"];
 
 function introRows(types) {
   return types.map((t) => {
@@ -181,7 +238,7 @@ function introRows(types) {
 
 function renderIntro() {
   root.innerHTML = `<div class="intro">
-    <p class="intro-eyebrow">Reactions · addition · elimination · substitution</p>
+    <p class="intro-eyebrow">Reactions · addition · elimination · substitution · carbonyls</p>
     <p class="intro-lede"><strong>Addition</strong>: the C=C double bond opens, and each of its two carbons picks up one new piece.</p>
     <table class="rxn-table">
       <thead><tr><th>Reaction</th><th>adds…</th><th>giving…</th></tr></thead>
@@ -197,6 +254,11 @@ function renderIntro() {
       <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
       <tbody>${introRows(SUBSTITUTION_TYPES)}</tbody>
     </table>
+    <p class="intro-lede"><strong>Carbonyl chemistry</strong> — alcohols oxidize, acids and alcohols condense into esters, and esters split back apart.</p>
+    <table class="rxn-table">
+      <thead><tr><th>Reaction</th><th>the molecule…</th><th>giving…</th></tr></thead>
+      <tbody>${introRows(CARBONYL_TYPES)}</tbody>
+    </table>
     <ul class="pt-points">
       <li>In every family, the carbon skeleton <strong>never changes</strong>.</li>
       <li>The exam's favorite trap: <strong>KOH concentrated + heat eliminates</strong> (→ alkene), <strong>KOH aqueous substitutes</strong> (→ alcohol). Same reagent — the <em>conditions</em> are part of the answer.</li>
@@ -211,18 +273,24 @@ function renderIntro() {
       <p>Count the hydrogens on the two double-bond carbons; the H joins the richer one, the X or OH takes the poorer one. That's the whole rule.</p>
       <h3>Zaitsev's rule — elimination's major</h3>
       <p>When the double bond could form on <strong>either side</strong> of the leaving group, the <strong>more substituted</strong> alkene — the internal one, with more carbon neighbors on its C=C — is the major. Butan-2-ol dehydrates mostly to <strong>but-2-ene</strong>, only a little to but-1-ene.</p>
+      <h3>Oxidation &amp; the 1° / 2° / 3° ladder — including "no reaction"</h3>
+      <p>Before oxidizing an alcohol, classify it: <strong>count the carbons attached to the OH-carbon</strong>.</p>
+      <p class="mk-worked"><strong>1 carbon → primary</strong> → [O] gives the <strong>aldehyde</strong> — and with excess oxidant under reflux, it runs on to the <strong>carboxylic acid</strong>. &nbsp;·&nbsp; <strong>2 → secondary</strong> → a <strong>ketone</strong>, full stop. &nbsp;·&nbsp; <strong>3 → tertiary</strong> → <strong>NO REACTION</strong>: oxidation must pull an H off the OH-carbon itself, and a tertiary carbon has none to give.</p>
+      <p>That last case is a real exam answer, so it's a real button here: when nothing happens, press <strong>No reaction</strong>. Pressing it when a reaction <em>does</em> exist counts as wrong — deciding <em>whether</em> is part of the skill.</p>
     </div>
 
     <div class="controls two-up">
       <button class="action primary alt" id="startBuild">Build: addition</button>
       <button class="action primary alt" id="startElim">Build: elimination</button>
       <button class="action primary alt" id="startSub">Build: substitution</button>
+      <button class="action primary alt" id="startCarb">Build: carbonyls</button>
       <button class="action primary" id="startMk">Major or minor? · quiz</button>
     </div>
   </div>`;
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
   root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
   root.querySelector("#startSub").addEventListener("click", () => startRound("sub"));
+  root.querySelector("#startCarb").addEventListener("click", () => startRound("carb"));
   root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
 }
 
@@ -242,7 +310,9 @@ function renderPlay() {
     <div class="controls">
       <p class="score" id="scoreLine"></p>
       <span class="btn-row">
+        <button class="action ghost" id="resetBtn" type="button" title="Wipe the canvas and start this question fresh">↺ Clear</button>
         <button class="action ghost" id="reactantBtn" type="button">Check my reactant</button>
+        ${quiz === "carb" ? `<button class="action ghost no-rxn" id="noRxnBtn" type="button">No reaction</button>` : ""}
         <button class="action primary" id="checkBtn" disabled>Check</button>
       </span>
     </div>`;
@@ -250,6 +320,9 @@ function renderPlay() {
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#checkBtn").addEventListener("click", check);
   root.querySelector("#reactantBtn").addEventListener("click", checkReactant);
+  root.querySelector("#resetBtn").addEventListener("click", () => { if (!checked && lab) lab.reset(); });
+  const noRxnBtn = root.querySelector("#noRxnBtn");
+  if (noRxnBtn) noRxnBtn.addEventListener("click", answerNoReaction);
   updateHints();
   updateScore();
 
@@ -287,6 +360,24 @@ function updateHints() {
 function updateAfterCheck() {
   root.querySelector("#hintArea").innerHTML = "";
   root.querySelector("#nudgeArea").innerHTML = "";
+  // no-reaction and two-product cards carry their own reveals
+  if (card.noReaction) {
+    const feedback = correct
+      ? `<p class="feedback ok">${hintsShown ? "Right — no reaction." : "Right — no reaction, called clean. 💪"}</p><p class="regio-note">${card.whyNo}</p>`
+      : `<p class="feedback no">Not quite — nothing happens here. ${card.whyNo}</p>`;
+    root.querySelector("#verdictArea").innerHTML =
+      `<p class="reveal">${toSubHtml(card.reactant.condensed)} + ${reagentHtml(card)} → <strong>no reaction</strong></p>${feedback}`;
+    return finishControls();
+  }
+  if (card.multiTargets) {
+    const [a, b] = card.multiTargets;
+    const feedback = correct
+      ? `<p class="feedback ok">${hintsShown ? "Correct — both products." : "Both products, solved clean. 💪"} It leaves the stack.</p>${a.note ? `<p class="regio-note">The acid actually leaves ${a.note}.</p>` : ""}`
+      : `<p class="feedback no">Not quite — this one comes back around.</p>`;
+    root.querySelector("#verdictArea").innerHTML =
+      `<p class="reveal">${toSubHtml(card.reactant.condensed)} + ${reagentHtml(card)} → <strong>${a.name}</strong> + <strong>${b.name}</strong> &nbsp;·&nbsp; ${toSubHtml(a.condensed)} + ${toSubHtml(b.condensed)}</p>${feedback}`;
+    return finishControls();
+  }
   const major = card.targets[0];
   const isElim = Boolean(REACTION_INFO[card.type].elimination);
   const evenSplit = Boolean(major.even);
@@ -300,8 +391,20 @@ function updateAfterCheck() {
     ? `<p class="feedback ok">${hintsShown ? "Correct." : "Solved clean — no hints. 💪"} It leaves the stack.</p>${minorNote}`
     : `<p class="feedback no">Not quite — this one comes back around.</p>`;
   const tag = card.targets.length > 1 ? ` <span class="minor-note">${evenSplit ? "(either forms)" : "(major)"}</span>` : "";
-  const reveal = `<p class="reveal">${toSubHtml(card.reactant.condensed)} + ${reagentHtml(card)} → <strong>${major.name}</strong> &nbsp;·&nbsp; ${toSubHtml(major.condensed)}${tag}</p>`;
+  const by = card.byproduct ? ` + ${toSubHtml(card.byproduct)}` : "";
+  const reveal = `<p class="reveal">${toSubHtml(card.reactant.condensed)} + ${reagentHtml(card)} → <strong>${major.name}</strong>${by} &nbsp;·&nbsp; ${toSubHtml(major.condensed)}${tag}</p>`;
   root.querySelector("#verdictArea").innerHTML = `${reveal}${feedback}`;
+  const controls = root.querySelector(".controls");
+  controls.innerHTML = `
+    <p class="score" id="scoreLine"></p>
+    <button class="action primary" id="nextBtn">${queue.length > 1 || !correct ? "Next →" : "Finish"}</button>`;
+  updateScore();
+  const nextBtn = root.querySelector("#nextBtn");
+  nextBtn.addEventListener("click", next);
+  nextBtn.focus();
+}
+
+function finishControls() {
   const controls = root.querySelector(".controls");
   controls.innerHTML = `
     <p class="score" id="scoreLine"></p>
@@ -370,17 +473,20 @@ function renderDone() {
       mk: "Markovnikov for addition, Zaitsev for elimination — both are just 'count the neighbors'.",
       elim: "Every round deals three dehydrations and two dehydrohalogenations — Zaitsev decides the major.",
       sub: "Swaps only: H for X under UV, OH for X with HX, X for OH with aqueous KOH.",
+      carb: "Classify before you oxidize: 1° → aldehyde → acid, 2° → ketone, 3° → no reaction at all.",
       build: "Every round covers all four additions: H2, X2, HX, and water."
     }[quiz]}</p>
     <div class="controls two-up">
       <button class="action primary alt" id="startBuild">Build: addition</button>
       <button class="action primary alt" id="startElim">Build: elimination</button>
       <button class="action primary alt" id="startSub">Build: substitution</button>
+      <button class="action primary alt" id="startCarb">Build: carbonyls</button>
       <button class="action primary" id="startMk">Major or minor? · quiz</button>
     </div>`;
   root.querySelector("#startBuild").addEventListener("click", () => startRound("build"));
   root.querySelector("#startElim").addEventListener("click", () => startRound("elim"));
   root.querySelector("#startSub").addEventListener("click", () => startRound("sub"));
+  root.querySelector("#startCarb").addEventListener("click", () => startRound("carb"));
   root.querySelector("#startMk").addEventListener("click", () => startRound("mk"));
 }
 

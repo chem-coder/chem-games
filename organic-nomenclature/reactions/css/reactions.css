@@ -128,6 +128,9 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .action.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
 .action.ghost:hover { background: var(--accent-soft); }
+/* "No reaction" is a real answer, not a utility — warm it so it reads as a choice */
+.action.ghost.no-rxn { color: var(--danger); border-color: var(--danger); }
+.action.ghost.no-rxn:hover { background: var(--warning-soft); }
 
 /* Markovnikov teach block on the intro */
 .mk-teach {

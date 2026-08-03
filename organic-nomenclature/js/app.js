@@ -526,11 +526,15 @@ function renderPlayBuild() {
     <div id="verdictArea"></div>
     <div class="controls">
       <p class="score" id="scoreLine"></p>
-      <button class="action primary" id="checkBtn" disabled>Check</button>
+      <span class="btn-row">
+        <button class="action ghost" id="resetBtn" type="button" title="Wipe the canvas and start this question fresh">↺ Clear</button>
+        <button class="action primary" id="checkBtn" disabled>Check</button>
+      </span>
     </div>`;
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#checkBtn").addEventListener("click", check);
+  root.querySelector("#resetBtn").addEventListener("click", () => { if (!checked && lab) lab.reset(); });
   updateBuildHints();
   updateScoreLine();
 

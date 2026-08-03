@@ -10,7 +10,7 @@
 //   labels the Markovnikov product as major. The IMAT lesson lists the reactions without
 //   regiochemistry, so we teach the preference without failing the honest alternative.
 
-import { unsaturatedCondensed, unsaturatedName, alcoholName, alcoholCondensed, condensedFormula, ALKANE_BY_N, toSubHtml } from "../../js/organic.js";
+import { unsaturatedCondensed, unsaturatedName, alcoholName, alcoholCondensed, condensedFormula, ALKANE_BY_N, FAMILIES, toSubHtml } from "../../js/organic.js";
 
 // small graph builder: a single-bonded carbon chain with substituents hung on it
 let nextId = 0;
@@ -25,7 +25,7 @@ function chainWith(n, subs = []) {
   }
   for (const s of subs) {
     atoms.push({ id: ++nextId, el: s.el });
-    bonds.push({ a: chain[s.at - 1], b: nextId, order: 1 });
+    bonds.push({ a: chain[s.at - 1], b: nextId, order: s.order || 1 });
   }
   return { atoms, bonds };
 }
@@ -264,6 +264,108 @@ export const SUBSTITUTIONS = [
   })
 ];
 
+// ── Act D: CARBONYL CHEMISTRY (IMAT 5.41 oxidation · 5.52 esterification · 5.46
+// saponification) ────────────────────────────────────────────────────────────────
+// Oxidation rides the 1°/2°/3° ladder — and the tertiary rung's honest answer is
+// NO REACTION (Dalia's spec: a real button, trained in the intro). Esterification
+// is a condensation: build the ester, water leaves. Saponification splits an ester
+// into TWO products — both get built, side by side on the canvas.
+const straightAlcohol = (n, oh) => ({
+  name: alcoholName({ n, oh }),
+  condensed: alcoholCondensed({ n, oh }),
+  mol: chainWith(n, [{ el: "O", at: oh }])
+});
+
+const OXIDATION_CARDS = [
+  // 1° → aldehyde (distill the product away before it oxidizes further)
+  ...[2, 3, 4].map((n) => ({
+    id: `ox-ald-${alcoholName({ n, oh: 1 })}`,
+    type: "oxidation",
+    reactant: straightAlcohol(n, 1),
+    reagent: "[O]", conditions: "distill product off",
+    elements: ["C", "O"],
+    targets: [{ name: FAMILIES.aldehyde.name({ n }), condensed: FAMILIES.aldehyde.condensed({ n }), mol: chainWith(n, [{ el: "O", at: 1, order: 2 }]) }]
+  })),
+  // 1° → carboxylic acid (excess oxidant, reflux — the oxidation runs to the end)
+  ...[2, 3].map((n) => ({
+    id: `ox-acid-${alcoholName({ n, oh: 1 })}`,
+    type: "oxidation",
+    reactant: straightAlcohol(n, 1),
+    reagent: "[O]", conditions: "excess · reflux",
+    elements: ["C", "O"],
+    targets: [{ name: FAMILIES.acid.name({ n }), condensed: FAMILIES.acid.condensed({ n }), mol: chainWith(n, [{ el: "O", at: 1, order: 2 }, { el: "O", at: 1 }]) }]
+  })),
+  // 2° → ketone, full stop
+  ...[{ n: 3, oh: 2 }, { n: 4, oh: 2 }, { n: 5, oh: 2 }, { n: 5, oh: 3 }].map(({ n, oh }) => ({
+    id: `ox-ket-${alcoholName({ n, oh })}`,
+    type: "oxidation",
+    reactant: straightAlcohol(n, oh),
+    reagent: "[O]", conditions: null,
+    elements: ["C", "O"],
+    targets: [{ name: FAMILIES.ketone.name({ n, slot: oh }), condensed: FAMILIES.ketone.condensed({ n, slot: oh }), mol: chainWith(n, [{ el: "O", at: oh, order: 2 }]) }]
+  })),
+  // 3° → NO REACTION: the OH-carbon has no H to give up
+  ...[
+    { name: "2-methylpropan-2-ol", condensed: "CH3C(CH3)(OH)CH3", mol: chainWith(3, [{ el: "C", at: 2 }, { el: "O", at: 2 }]) },
+    { name: "2-methylbutan-2-ol", condensed: "CH3C(CH3)(OH)CH2CH3", mol: chainWith(4, [{ el: "C", at: 2 }, { el: "O", at: 2 }]) }
+  ].map((reactant) => ({
+    id: `ox-none-${reactant.name}`,
+    type: "oxidation",
+    reactant,
+    reagent: "[O]", conditions: null,
+    elements: ["C", "O"],
+    noReaction: true,
+    whyNo: "The OH-carbon holds three carbons and NO hydrogen — and oxidation must take an H from exactly that carbon. Tertiary alcohols refuse."
+  }))
+];
+
+const ESTER_PAIRS = [
+  { acyl: 2, alkyl: 1 }, { acyl: 2, alkyl: 2 }, { acyl: 3, alkyl: 1 },
+  { acyl: 1, alkyl: 2 }, { acyl: 2, alkyl: 3 }
+];
+
+const ESTERIFICATION_CARDS = ESTER_PAIRS.map(({ acyl, alkyl }) => ({
+  id: `esterif-${FAMILIES.ester.name({ acyl, alkyl }).replace(" ", "-")}`,
+  type: "esterification",
+  reactant: {
+    name: `${FAMILIES.acid.name({ n: acyl })} + ${alcoholName({ n: alkyl, oh: 1 })}`,
+    condensed: `${FAMILIES.acid.condensed({ n: acyl })} + ${alcoholCondensed({ n: alkyl, oh: 1 })}`,
+    mols: [FAMILIES.acid.graph({ n: acyl }), chainWith(alkyl, [{ el: "O", at: 1 }])]
+  },
+  reagent: "H2SO4", conditions: "catalyst · heat",
+  elements: ["C", "O"],
+  byproduct: "H2O",
+  targets: [{ name: FAMILIES.ester.name({ acyl, alkyl }), condensed: FAMILIES.ester.condensed({ acyl, alkyl }), mol: FAMILIES.ester.graph({ acyl, alkyl }) }]
+}));
+
+const SAPONIFICATION_CARDS = ESTER_PAIRS.slice(0, 4).map(({ acyl, alkyl }) => ({
+  id: `sapon-${FAMILIES.ester.name({ acyl, alkyl }).replace(" ", "-")}`,
+  type: "saponification",
+  reactant: {
+    name: FAMILIES.ester.name({ acyl, alkyl }),
+    condensed: FAMILIES.ester.condensed({ acyl, alkyl }),
+    mol: FAMILIES.ester.graph({ acyl, alkyl })
+  },
+  reagent: "NaOH", conditions: "aq · heat",
+  elements: ["C", "O"],
+  multiTargets: [
+    { name: FAMILIES.acid.name({ n: acyl }), condensed: FAMILIES.acid.condensed({ n: acyl }), mol: FAMILIES.acid.graph({ n: acyl }), note: "as its sodium salt — the soap" },
+    { name: alcoholName({ n: alkyl, oh: 1 }), condensed: alcoholCondensed({ n: alkyl, oh: 1 }), mol: chainWith(alkyl, [{ el: "O", at: 1 }]) }
+  ]
+}));
+
+export const CARBONYLS = [...OXIDATION_CARDS, ...ESTERIFICATION_CARDS, ...SAPONIFICATION_CARDS];
+
+// Round of 5: 3 oxidations (the 1°/2°/3° ladder mixes naturally — no-reaction cards
+// appear organically, never on a schedule) + 1 esterification + 1 saponification.
+export function makeCarbonylActDealer() {
+  return makeRecipeDealer([
+    { cards: OXIDATION_CARDS, count: 3 },
+    { cards: ESTERIFICATION_CARDS, count: 1 },
+    { cards: SAPONIFICATION_CARDS, count: 1 }
+  ]);
+}
+
 // Recipe dealer over typed card groups. A draw can straddle a pile's reshuffle
 // boundary, so every draw dedupes against the cards already dealt this round —
 // the same guard makeBag learned in the naming game.
@@ -360,21 +462,60 @@ export const REACTION_INFO = {
     adds: "swaps the X for OH",
     result: "an alcohol",
     hint: "The halogen leaves and –OH takes its exact seat. Note the conditions: KOH AQUEOUS substitutes; KOH concentrated + heat would eliminate instead."
+  },
+  oxidation: {
+    label: "Oxidation of an alcohol", carbonyl: true,
+    adds: "C–OH becomes C=O",
+    result: "aldehyde · acid · ketone — or nothing",
+    first: "Oxidation takes TWO hydrogens: one off the O, one off the OH-carbon itself — turning C–OH into C=O. Everything hangs on whether that carbon has an H to give.",
+    hint: "Classify first — count the carbons attached to the OH-carbon. One → primary → aldehyde (or, with excess and reflux, all the way to the acid). Two → secondary → ketone. Three → tertiary → NO REACTION."
+  },
+  esterification: {
+    label: "Esterification (Fischer)", carbonyl: true,
+    adds: "acid + alcohol join",
+    result: "an ester + water",
+    first: "Condensation: two molecules JOIN, and water falls out of the seam.",
+    hint: "The acid drops its whole –OH; the alcohol drops just the H off its O. Those pieces leave as water, and the alcohol's O becomes the bridge: acid-C(=O)–O–alkyl."
+  },
+  saponification: {
+    label: "Saponification (ester hydrolysis)", carbonyl: true,
+    adds: "the ester splits",
+    result: "an acid (its salt) + an alcohol",
+    first: "Hydrolysis: the ester is CUT at its bridge oxygen — one molecule in, TWO molecules out. Build both, side by side.",
+    hint: "The C=O side keeps the bridge O and becomes the ACID (with NaOH, its sodium salt — that's soap). The other side takes an H and becomes the ALCOHOL."
   }
 };
 
 export function hintsFor(card) {
   const info = REACTION_INFO[card.type];
+  const firstLine = info.first
+    ? info.first
+    : info.elimination
+    ? "Elimination: two NEIGHBOR carbons each lose a piece, and the freed valences become a C=C double bond. The skeleton never changes — build the chain, then click the right bond double."
+    : info.substitution
+    ? "Substitution: one piece SWAPS for another on the same carbon. No bond orders change, the skeleton stays — only the passenger is different."
+    : "Addition: the C=C double bond OPENS, and each of its two carbons picks up one new piece. Count the reactant's carbons — the skeleton never changes.";
+  if (card.noReaction) {
+    return [
+      firstLine,
+      info.hint,
+      "Count the carbons on this OH-carbon: three. No H there to remove — this is the case the No reaction button exists for."
+    ];
+  }
+  if (card.multiTargets) {
+    const [a, b] = card.multiTargets;
+    return [
+      firstLine,
+      info.hint,
+      `Build BOTH, as two separate molecules: ${toSubHtml(a.condensed)} (${a.name}) and ${toSubHtml(b.condensed)} (${b.name}).`
+    ];
+  }
   const major = card.targets[0];
   const partnerNote = card.targets.length > 1
     ? (major.even ? " (either forms — both accepted)" : " (the major product; its partner is accepted too)")
     : "";
   return [
-    info.elimination
-      ? "Elimination: two NEIGHBOR carbons each lose a piece, and the freed valences become a C=C double bond. The skeleton never changes — build the chain, then click the right bond double."
-      : info.substitution
-      ? "Substitution: one piece SWAPS for another on the same carbon. No bond orders change, the skeleton stays — only the passenger is different."
-      : "Addition: the C=C double bond OPENS, and each of its two carbons picks up one new piece. Count the reactant's carbons — the skeleton never changes.",
+    firstLine,
     info.hint,
     `Build ${toSubHtml(major.condensed)} — ${major.name}${partnerNote}.`
   ];
