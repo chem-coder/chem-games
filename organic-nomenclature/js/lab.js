@@ -154,12 +154,16 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           if (!draggedReady && otherReady) {
             const partnerBonds = bonds.filter((b) => (b.a === dragged.id || b.b === dragged.id) && b.order === 1);
             const pick = partnerBonds.find((b) => byId()[b.a === dragged.id ? b.b : b.a]?.el === "H") || partnerBonds[0];
-            if (pick) {
+            // one split per gesture — otherwise a continuing drag re-splits its own
+            // fresh bond at every brush and the freed partner leaps away repeatedly
+            if (pick && !(drag && drag.didSplit)) {
+              if (drag) drag.didSplit = true;
               bonds = bonds.filter((b) => b !== pick);
               const freed = byId()[pick.a === dragged.id ? pick.b : pick.a];
               if (freed) {
-                freed.x += 26;
-                freed.y -= 38;   // drift the freed atom clear so it reads as "released"
+                // only hydrogens get the "released" drift — a carbon teleporting away
+                // reads as the molecule fleeing (Dalia's runaway-carbon bug)
+                if (freed.el === "H") { freed.x += 26; freed.y -= 38; }
                 syncH(freed);
               }
               syncH(dragged);
@@ -272,7 +276,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     const { x, y } = pos(e);
     try { canvas.setPointerCapture(e.pointerId); } catch {}
     const atom = atomAt(x, y);
-    if (atom) { drag = { id: atom.id, dx: atom.x - x, dy: atom.y - y }; bondHit = null; return; }
+    if (atom) { drag = { id: atom.id, dx: atom.x - x, dy: atom.y - y, didSplit: false }; bondHit = null; return; }
     const bond = bondAt(x, y);
     if (bond) { bondHit = bond; return; }
     if (inTray(x, y)) {
