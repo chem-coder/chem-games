@@ -52,6 +52,12 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   // adjusting entirely — every H is a real placed object and the STUDENT chooses
   // which ones move. Bond auto-adjustment (splits, π attacks) stays.
   let autoH = true;
+  // VSEPR-as-drawn (Dalia's spec, 2026-08-04): electron-domain angles, Lewis-textbook
+  // style. Count NEIGHBORS (a double bond is one electron cloud): 4 → 90° cross,
+  // 3 → 120°, 2 → 180°. Only atoms with FULLY satisfied valence (no free seats, no
+  // open slots) enforce their geometry, and everything eases there smoothly — an
+  // animation, never a jump.
+  let vsepr = false;
 
   let atoms = [];            // {id, el, x, y, hs: [{angle, vel, phase}]}
   let bonds = [];            // {a, b, order}
@@ -385,6 +391,202 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     falling = falling.filter((p) => p.y < H + RH);
   }
 
+  // ── VSEPR relaxation: molecules here are trees, so instead of local forces
+  // (which fight each other and never settle) we compute ONE global ideal
+  // embedding each frame — BFS from a stable root, even 360°/k spacing at every
+  // satisfied atom (double bond = one electron cloud, so k counts NEIGHBORS),
+  // current geometry kept verbatim around unsatisfied atoms — then ease every
+  // atom toward its absolute target. The embedding is its own fixed point, so
+  // the animation glides in and stops.
+  const VSEPR_L_HEAVY = 65;   // heavy-atom bond target (Dalia: 25% shorter again)
+  const VSEPR_L_H = 46;       // any bond involving H
+  function relaxGeometry(dt) {
+    if (!vsepr) return;
+    const map = byId();
+    const nbs = new Map(atoms.map((a) => [a.id, []]));
+    for (const b of bonds) {
+      if (nbs.has(b.a)) nbs.get(b.a).push(b.b);
+      if (nbs.has(b.b)) nbs.get(b.b).push(b.a);
+    }
+    const satisfied = (a) =>
+      a.el !== "H" && hydrogenCount(a, bonds) === 0 && slotsFor(a.id) === 0;
+    const bondLen = (a, o) => (a.el === "H" || o.el === "H" ? VSEPR_L_H : VSEPR_L_HEAVY);
+    const rate = Math.min(0.3, 3.2 * dt);
+    const target = new Map();
+    const seen = new Set();
+
+    for (const rootCand of atoms) {
+      if (seen.has(rootCand.id)) continue;
+      // collect the component; root at the dragged atom if it's here (never
+      // fight the finger — everything lays out around it), else lowest id
+      const comp = [];
+      const stack = [rootCand.id];
+      const inComp = new Set([rootCand.id]);
+      while (stack.length) {
+        const id = stack.pop();
+        comp.push(id);
+        for (const n of nbs.get(id) || []) {
+          if (!inComp.has(n)) { inComp.add(n); stack.push(n); }
+        }
+      }
+      comp.forEach((id) => seen.add(id));
+      const dragged = drag && inComp.has(drag.id) ? drag.id : null;
+      const rootId = dragged ?? comp.reduce((m, id) => (id < m ? id : m), comp[0]);
+      const root = map[rootId];
+      target.set(rootId, { x: root.x, y: root.y });
+
+      // BFS embedding
+      const queue = [{ id: rootId, parent: null }];
+      const visited = new Set([rootId]);
+      while (queue.length) {
+        const { id, parent } = queue.shift();
+        const a = map[id];
+        const ta = target.get(id);
+        const neighbors = nbs.get(id) || [];
+        const children = neighbors.filter((n) => !visited.has(n));
+        if (children.length) {
+          let place;
+          if (satisfied(a) && neighbors.length >= 2) {
+            // even 360°/k star, circular order preserved, phased to minimize
+            // total swing from where the bonds are right now
+            const k = neighbors.length;
+            const spacing = (Math.PI * 2) / k;
+            const cur = neighbors.map((n) => {
+              const o = map[n];
+              return Math.atan2(o.y - a.y, o.x - a.x);
+            });
+            const order = neighbors.map((_, i) => i).sort((i, j) => cur[i] - cur[j]);
+            let rank = [];
+            order.forEach((ni, j) => { rank[ni] = j; });
+            // textbook rule: a 4-region atom with exactly two heavy neighbors is
+            // a chain link — the chain must pass THROUGH it, heavies on opposite
+            // arms. If the current circular order left them adjacent, swap one
+            // heavy with a neighboring H (whichever rearrangement is cheaper).
+            const heavyIdx = neighbors.map((n, i) => (map[n].el === "H" ? -1 : i)).filter((i) => i >= 0);
+            if (k === 4 && heavyIdx.length === 2) {
+              const gap = (rank[heavyIdx[1]] - rank[heavyIdx[0]] + 4) % 4;
+              if (gap !== 2) {
+                const evalCost = (rk) => {
+                  let cx = 0, cy = 0;
+                  neighbors.forEach((_, i) => {
+                    const d = cur[i] - rk[i] * spacing;
+                    cx += Math.cos(d); cy += Math.sin(d);
+                  });
+                  const ph = Math.atan2(cy, cx);
+                  return neighbors.reduce((s, _, i) => {
+                    const off = Math.atan2(
+                      Math.sin(cur[i] - ph - rk[i] * spacing),
+                      Math.cos(cur[i] - ph - rk[i] * spacing));
+                    return s + Math.abs(off);
+                  }, 0);
+                };
+                const variants = [];
+                for (const hi of heavyIdx) {
+                  for (const step of [1, 3]) {
+                    const other = neighbors.findIndex((_, i) => rank[i] === (rank[hi] + step) % 4);
+                    const rk = rank.slice();
+                    [rk[hi], rk[other]] = [rk[other], rk[hi]];
+                    const g2 = (rk[heavyIdx[1]] - rk[heavyIdx[0]] + 4) % 4;
+                    if (g2 === 2) variants.push(rk);
+                  }
+                }
+                let bestCost = Infinity;
+                for (const rk of variants) {
+                  const cost = evalCost(rk);
+                  if (cost < bestCost) { bestCost = cost; rank = rk; }
+                }
+              }
+            }
+            let sx = 0, sy = 0;
+            neighbors.forEach((_, i) => {
+              const d = cur[i] - rank[i] * spacing;
+              sx += Math.cos(d); sy += Math.sin(d);
+            });
+            let phase = Math.atan2(sy, sx);
+            // anchor: the bond back to the parent already has a direction in the
+            // target frame — rotate the whole star so they agree
+            if (parent !== null) {
+              const tp = target.get(parent);
+              const pi = neighbors.indexOf(parent);
+              phase += Math.atan2(tp.y - ta.y, tp.x - ta.x) - (phase + rank[pi] * spacing);
+            } else if (!dragged) {
+              // root sets the whole component's orientation: lay a heavy-atom
+              // arm flat so chains settle straight across, textbook-style
+              // (skip while the finger is steering)
+              const wrap = (t) => Math.atan2(Math.sin(t), Math.cos(t));
+              let corr = null, best = Infinity;
+              neighbors.forEach((n, i) => {
+                if (map[n].el === "H") return;
+                const t = phase + rank[i] * spacing;
+                for (const goal of [0, Math.PI]) {
+                  const off = wrap(goal - t);
+                  if (Math.abs(off) < best) { best = Math.abs(off); corr = off; }
+                }
+              });
+              if (corr === null) {
+                // all-H root (e.g. methane): nearest arm onto the 90° grid
+                for (let j = 0; j < k; j++) {
+                  const t = phase + j * spacing;
+                  const d = ((t % (Math.PI / 2)) + Math.PI * 2) % (Math.PI / 2);
+                  const off = d > Math.PI / 4 ? d - Math.PI / 2 : d;
+                  if (Math.abs(off) < best) { best = Math.abs(off); corr = -off; }
+                }
+              }
+              phase += corr;
+            }
+            place = (n) => {
+              const t = phase + rank[neighbors.indexOf(n)] * spacing;
+              const len = bondLen(a, map[n]);
+              return { x: ta.x + Math.cos(t) * len, y: ta.y + Math.sin(t) * len };
+            };
+          } else {
+            // unsatisfied (open valence or waiting seat): leave its local
+            // geometry exactly as it is, just carried along
+            place = (n) => {
+              const o = map[n];
+              return { x: ta.x + (o.x - a.x), y: ta.y + (o.y - a.y) };
+            };
+          }
+          for (const n of children) {
+            visited.add(n);
+            target.set(n, place(n));
+            queue.push({ id: n, parent: id });
+          }
+        }
+      }
+
+      // rigid shift to keep the settled component on the bench (skip while the
+      // finger is steering it)
+      if (!dragged && comp.length > 1) {
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (const id of comp) {
+          const t = target.get(id);
+          minX = Math.min(minX, t.x); maxX = Math.max(maxX, t.x);
+          minY = Math.min(minY, t.y); maxY = Math.max(maxY, t.y);
+        }
+        const pad = RC + 12;
+        let dx = 0, dy = 0;
+        if (minX < pad) dx = pad - minX;
+        else if (maxX > W - pad) dx = Math.max(pad - minX, W - pad - maxX);
+        const benchBottom = H - TRAY_H - 14;   // same floor as normalizeLayout
+        if (minY < pad) dy = pad - minY;
+        else if (maxY > benchBottom - pad) dy = Math.max(pad - minY, benchBottom - pad - maxY);
+        if (dx || dy) {
+          for (const id of comp) {
+            const t = target.get(id);
+            t.x += dx; t.y += dy;
+          }
+        }
+      }
+    }
+
+    for (const [id, t] of target) {
+      if (drag && drag.id === id) continue;   // never fight the finger
+      const a = map[id];
+      if (a) { a.x += (t.x - a.x) * rate; a.y += (t.y - a.y) * rate; }
+    }
+  }
+
   // ── drawing ──
   function drawH(x, y, alpha = 1) {
     ctx.globalAlpha = alpha;
@@ -502,6 +704,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     last = now;
     stepH(dt);
     stepFalling(dt);
+    relaxGeometry(dt);
     draw(now);
     rafId = requestAnimationFrame(frame);
   }
@@ -519,6 +722,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     openSlotCount() { return openSlots.length; },
     setAutoH(v) { autoH = v; },
     setAdditionMode(v) { additionOn = v; },
+    setVsepr(v) { vsepr = v; },
     isDragging() { return Boolean(drag); },
     // atoms must clear this line to count as "out of the inventory"
     stagingLine() { return H - TRAY_H - 14 - 30; },
@@ -530,7 +734,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       // Roomy but not sprawling (Dalia's tuning, round two): 120° zigzag, bonds
       // ~87px — long enough to aim a dropped OH at ONE carbon, short enough to
       // read as a molecule rather than a constellation.
-      const L = 87;                 // uniform heavy-atom bond length
+      const L = 65;                 // uniform heavy-atom bond length (25% shorter, Dalia)
       const ZX = L * Math.cos(Math.PI / 6), ZY = L * Math.sin(Math.PI / 6);
       const laid = [];
       const nbsOf = (id) => bonds
@@ -586,7 +790,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           }
         }
         // explicit H leaves: gap-spread around their heavy atom at uniform reach
-        const reach = RC + RH + 16;
+        const reach = 46;
         for (const a of comp.atoms) {
           if (a.el === "H" || !pos2.has(a.id)) continue;
           const hKids = nbsOf(a.id).filter((id2) => comp.atoms.find((x) => x.id === id2)?.el === "H");
@@ -686,7 +890,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
         }
         // pushed clear of the carbon so the C–H bond LINE is visible — when building,
         // hydrogens float tucked-in; when reacting, you see the chemical bonds
-        const reach = RC + RH + 16;
+        const reach = 46;
         for (const angle of chosen) {
           const hAtom = {
             id: nextId++, el: "H",
@@ -704,7 +908,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     resize,
     // deterministic stepper for headless testing (rAF is throttled in driven browsers)
     tick(frames = 1, dt = 1 / 60) {
-      for (let i = 0; i < frames; i++) { now += dt; stepH(dt); stepFalling(dt); }
+      for (let i = 0; i < frames; i++) { now += dt; stepH(dt); stepFalling(dt); relaxGeometry(dt); }
       draw(now);
     },
     destroy() {

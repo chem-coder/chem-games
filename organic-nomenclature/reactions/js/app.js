@@ -144,6 +144,7 @@ function continueToProducts() {
   lab.explicitizeHydrogens();   // every H becomes a real atom, bond lines showing
   lab.setAutoH(false);
   lab.setAdditionMode(true);    // bonds that must break, break
+  lab.setVsepr(true);           // textbook geometry: satisfied atoms ease into 90/120/180
   lab.setLocked(false);
   const label = root.querySelector("#buildLabel");
   if (label) label.textContent = "Step 2 · perform the reaction";
@@ -451,6 +452,7 @@ function resetQuestion() {
   lab.reset();
   lab.setAutoH(true);
   lab.setAdditionMode(false);
+  lab.setVsepr(false);
   lab.setLocked(false);
   phase = "reactants";
   const modal = root.querySelector("#phaseModal");
