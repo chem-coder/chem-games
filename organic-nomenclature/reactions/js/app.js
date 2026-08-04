@@ -146,6 +146,7 @@ function continueToProducts() {
   lab.setAdditionMode(true);    // bonds that must break, break
   lab.setVsepr(true);           // textbook geometry: satisfied atoms ease into 90/120/180
   lab.setLocked(false);
+  resetTools();                 // fresh phase, fresh hands: order tool at –, ✕ off
   const label = root.querySelector("#buildLabel");
   if (label) label.textContent = "Step 2 · perform the reaction";
   const btn = root.querySelector("#checkBtn");
@@ -413,6 +414,10 @@ function renderPlay() {
     <p class="build-label" id="buildLabel">Step 1 · build the reactant${card.phase1Mols.length > 1 ? "s" : ""} — the game will notice</p>
     <div class="lab-wrap">
       <canvas class="lab-canvas" id="labCanvas"></canvas>
+      <div class="bond-tools">
+        <button class="tool tool-break" id="toolBreak" type="button" title="Break a bond — one cut, then it switches itself off">✕</button>
+        <button class="tool active" id="toolOrder" type="button" title="Set a bond's order — tap to switch between –, =, ≡; then click a bond">–</button>
+      </div>
       <div id="phaseModal"></div>
     </div>
     <div id="nudgeArea"></div>
@@ -432,6 +437,17 @@ function renderPlay() {
   root.querySelector("#resetBtn").addEventListener("click", resetQuestion);
   const noRxnBtn = root.querySelector("#noRxnBtn");
   if (noRxnBtn) noRxnBtn.addEventListener("click", answerNoReaction);
+  root.querySelector("#toolBreak").addEventListener("click", () => {
+    breakArmed = !breakArmed;
+    syncTools();
+  });
+  root.querySelector("#toolOrder").addEventListener("click", () => {
+    // if ✕ was armed, this tap just switches back to the order tool; otherwise
+    // it advances the glyph – → = → ≡ → –
+    if (breakArmed) breakArmed = false;
+    else toolOrderN = (toolOrderN % 3) + 1;
+    syncTools();
+  });
   updateHints();
   updateScore();
 
@@ -443,8 +459,36 @@ function renderPlay() {
       if (!checked && phase === "reactants" && reactantsBuilt()) onReactantsRecognized();
       const btn = root.querySelector("#checkBtn");
       if (btn && !checked) btn.disabled = phase !== "product" || lab.atoms().length === 0;
+    },
+    onBondTool(type) {
+      // ✕ is single-use: one cut, then back to the order tool — no forgotten
+      // scissors shredding the molecule
+      if (type === "break") { breakArmed = false; syncTools(); }
     }
   });
+  syncTools();
+}
+
+// ── bond tools: two buttons, one meaning each ──
+// drag moves matter; a bond click applies the lit tool. ✕ breaks (one shot),
+// [– / = / ≡] sets the order it shows — or the bond wiggles "no" if there's no room.
+let toolOrderN = 1;
+let breakArmed = false;
+
+function syncTools() {
+  const bBtn = root.querySelector("#toolBreak");
+  const oBtn = root.querySelector("#toolOrder");
+  if (!bBtn || !oBtn || !lab) return;
+  bBtn.classList.toggle("armed", breakArmed);
+  oBtn.classList.toggle("active", !breakArmed);
+  oBtn.textContent = ["–", "=", "≡"][toolOrderN - 1];
+  lab.setBondTool(breakArmed ? { type: "break" } : { type: "order", order: toolOrderN });
+}
+
+function resetTools() {
+  toolOrderN = 1;
+  breakArmed = false;
+  syncTools();
 }
 
 function resetQuestion() {
@@ -454,6 +498,7 @@ function resetQuestion() {
   lab.setAdditionMode(false);
   lab.setVsepr(false);
   lab.setLocked(false);
+  resetTools();
   phase = "reactants";
   const modal = root.querySelector("#phaseModal");
   if (modal) modal.innerHTML = "";

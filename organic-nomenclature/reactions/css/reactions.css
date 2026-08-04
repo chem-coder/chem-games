@@ -40,6 +40,20 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
 
 /* the recognition popup: bench locks until the student clicks Continue */
 .lab-wrap { position: relative; }
+
+/* bond tools: two buttons, one meaning each — ✕ breaks (one shot),
+   [– / = / ≡] sets the order it shows. Drag never changes meaning. */
+.bond-tools { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 4; }
+.tool {
+  width: 40px; height: 40px; border-radius: 12px; cursor: pointer;
+  font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; line-height: 1;
+  color: var(--muted); background: var(--surface); border: 1.5px solid var(--line);
+  display: grid; place-items: center; padding: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.tool:hover { border-color: var(--accent); }
+.tool.active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+.tool-break.armed { color: #fff; background: var(--danger); border-color: var(--danger); }
 #phaseModal:not(:empty) { position: absolute; inset: 0; }
 .phase-modal {
   position: absolute; inset: 0; z-index: 5;

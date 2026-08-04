@@ -32,21 +32,15 @@ export function maxOrder(elA, elB) {
 
 // Clicking a bond cycles single → double → triple → gone, capped by what the element
 // pair allows (C–O never offers triple; C–H goes straight from single to gone).
-// A step is also skipped when either endpoint can't afford it — unless `shed` is on
-// (explicit-hydrogen mode): then an endpoint may cover the raise by giving up
-// explicit H's, one per unit of order. 0 (remove) is always affordable, so the
-// cycle can never wedge.
+// A step is skipped when either endpoint can't afford it (e.g. the middle carbon of
+// a chain already spending its valence). 0 (remove) is always affordable, so the
+// cycle can never wedge. (Classic behavior — the naming builder. The reactions lab
+// uses explicit tools instead; see setBondTool in lab.js.)
 export const ORDER_CYCLE = [1, 2, 3, 0];
 
-export function nextOrder(bond, atomsById, bonds, { shed = false } = {}) {
-  const isH = (id) => atomsById[id]?.el === "H";
-  const explicitH = (atomId) => bonds.filter((b) =>
-    (b.a === atomId && isH(b.b)) || (b.b === atomId && isH(b.a))).length;
+export function nextOrder(bond, atomsById, bonds) {
   const cap = maxOrder(atomsById[bond.a].el, atomsById[bond.b].el);
-  const fits = (atomId, o) => {
-    const overdraft = bondSum(atomId, bonds) - bond.order + o - VALENCE[atomsById[atomId].el];
-    return overdraft <= (shed ? explicitH(atomId) : 0);
-  };
+  const fits = (atomId, o) => bondSum(atomId, bonds) - bond.order + o <= VALENCE[atomsById[atomId].el];
   const start = ORDER_CYCLE.indexOf(bond.order);
   for (let i = 1; i <= ORDER_CYCLE.length; i++) {
     const o = ORDER_CYCLE[(start + i) % ORDER_CYCLE.length];

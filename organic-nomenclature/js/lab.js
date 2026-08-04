@@ -4,7 +4,7 @@
 //   · every carbon arrives saturated — 4 H's riding its rim, alive, sliding to spread out
 //   · bonding sheds the paid hydrogens with a slow fall (a little faster than snowflakes)
 //   · cycling a bond's order re-balances H's INSTANTLY — no animation
-import { hydrogenCount, canBond, nextOrder, bondSum, VALENCE, componentFormulas, splitComponents } from "./chem.js";
+import { hydrogenCount, canBond, nextOrder, maxOrder, bondSum, VALENCE, componentFormulas, splitComponents } from "./chem.js";
 
 // ── tuning ──
 const R_C = 26;            // carbon radius, px
@@ -38,7 +38,7 @@ const ELEMENT_STYLE = {
 // The student must put something there. (Dalia's spec, 2026-08-03: "needs to be bonded
 // to something".) Chemistry bonus: the attacked carbon keeps all its hydrogens, which
 // is what really happens in addition.
-export function createLab(canvas, { onChange = () => {}, elements = ["C"], inputMode = "drag", additionMode = false, atomScale = 1 } = {}) {
+export function createLab(canvas, { onChange = () => {}, onBondTool = () => {}, elements = ["C"], inputMode = "drag", additionMode = false, atomScale = 1 } = {}) {
   // Per-instance atom sizing (Dalia, 2026-08-04): the reactions bench runs smaller
   // atoms so there is room to aim a dropped OH at ONE carbon; the naming builder
   // keeps the full-size chunky look.
@@ -74,6 +74,8 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   // away from its former partner for about a second, decelerating, which carries
   // it out of the bonding radius on its own — then it floats until grabbed.
   let drifts = [];           // [{ids: [atomId], vx, vy}]
+  let bondTool = null;       // null = classic click-cycle; see applyBondClick
+  let shakes = [];           // bonds wiggling "no" after a refused order change
   let nextId = 1;
   let drag = null;
   let bondHit = null;
@@ -164,7 +166,22 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     let ux = cx - fromX, uy = cy - fromY;
     const d = Math.hypot(ux, uy);
     if (d < 1) { ux = 0.5; uy = -0.86; } else { ux /= d; uy /= d; }
-    drifts.push({ ids, vx: ux * DRIFT_V, vy: uy * DRIFT_V });
+    let vx = ux * DRIFT_V, vy = uy * DRIFT_V;
+    // straight away from the partner is the natural exit — but if that runs into
+    // a bench edge or the tray (the glide would clamp dead after a few pixels and
+    // the piece would hover right where it broke off), steer sideways instead
+    const benchBottom = H - TRAY_H - 14;
+    const pad = RC + 12;
+    const clear = (tx, ty) => {
+      const ex = cx + tx * 0.4, ey = cy + ty * 0.4;   // ≈ where the glide ends
+      return ex > pad && ex < W - pad && ey > pad && ey < benchBottom - pad;
+    };
+    for (const ang of [0, Math.PI / 2, -Math.PI / 2, Math.PI]) {
+      const tx = vx * Math.cos(ang) - vy * Math.sin(ang);
+      const ty = vx * Math.sin(ang) + vy * Math.cos(ang);
+      if (clear(tx, ty)) { vx = tx; vy = ty; break; }
+    }
+    drifts.push({ ids, vx, vy });
   }
 
   function stepDrift(dt) {
@@ -203,10 +220,15 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     });
     const vetoed = (o) => brokenPairs.some((p) =>
       (p.a === dragged.id && p.b === o.id) || (p.b === dragged.id && p.a === o.id));
+    // no bonds WITHIN a molecule (Dalia's simplify pass, 2026-08-04): every target
+    // in the curriculum is ring-free, so an intramolecular bond only ever produces
+    // triangles and molecules folding in on themselves. Atoms already connected to
+    // the dragged atom — through any path — are not candidates.
+    const ownComp = new Set(compOf(dragged.id));
     // nearest candidate first, and at most ONE bond per gesture — a drop between two
     // carbons bonds the closer one instead of bridging both
     const candidates = atoms
-      .filter((o) => o !== dragged && !vetoed(o))
+      .filter((o) => o !== dragged && !ownComp.has(o.id) && !vetoed(o))
       .map((o) => ({ o, d: Math.hypot(o.x - dragged.x, o.y - dragged.y) }))
       .filter((c) => c.d < SNAP)
       .sort((a, b) => a.d - b.d);
@@ -280,45 +302,62 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     }
   }
 
-  function cycleBond(bond) {
-    // explicit-H mode (autoH off): a raise may be paid for by shedding H's —
-    // "the bonds that must break, break", and the freed H's drift away
-    const o = nextOrder(bond, byId(), bonds, { shed: !autoH });
+  function breakBond(bond) {
     const endpoints = [byId()[bond.a], byId()[bond.b]];
-    if (o > bond.order && !autoH) {
-      for (const end of endpoints) {
-        let overdraft = bondSum(end.id, bonds) - bond.order + o - VALENCE[end.el];
-        while (overdraft > 0) {
-          const hb = bonds.find((b) =>
-            (b.a === end.id && byId()[b.b]?.el === "H") ||
-            (b.b === end.id && byId()[b.a]?.el === "H"));
-          if (!hb) break;
-          const hAtom = byId()[hb.a === end.id ? hb.b : hb.a];
-          bonds = bonds.filter((b) => b !== hb);
-          if (hAtom) startDrift([hAtom.id], end.x, end.y);
-          overdraft--;
-        }
-      }
-    }
-    if (o === 0) {
-      bonds = bonds.filter((b) => b !== bond);
-      brokenPairs.push({ a: bond.a, b: bond.b });
-      // the freed piece drifts away from its former partner (Dalia's idea) —
-      // carbon-free fragments (an OH, a halogen) go; between two carbon
-      // fragments, the smaller one goes
-      const compA = compOf(bond.a), compB = compOf(bond.b);
-      const carbonFree = (comp) => comp.every((id) => byId()[id]?.el !== "C");
-      const freeA = carbonFree(compA), freeB = carbonFree(compB);
-      let goes, stays;
-      if (freeA !== freeB) [goes, stays] = freeA ? [compA, bond.b] : [compB, bond.a];
-      else [goes, stays] = compA.length <= compB.length ? [compA, bond.b] : [compB, bond.a];
-      const anchor = byId()[stays];
-      if (anchor) startDrift(goes, anchor.x, anchor.y);
-    }
-    else bond.order = o;
+    bonds = bonds.filter((b) => b !== bond);
+    brokenPairs.push({ a: bond.a, b: bond.b });
+    // the freed piece drifts away from its former partner (Dalia's idea) —
+    // carbon-free fragments (an OH, a halogen) go; between two carbon
+    // fragments, the smaller one goes
+    const compA = compOf(bond.a), compB = compOf(bond.b);
+    const carbonFree = (comp) => comp.every((id) => byId()[id]?.el !== "C");
+    const freeA = carbonFree(compA), freeB = carbonFree(compB);
+    let goes, stays;
+    if (freeA !== freeB) [goes, stays] = freeA ? [compA, bond.b] : [compB, bond.a];
+    else [goes, stays] = compA.length <= compB.length ? [compA, bond.b] : [compB, bond.a];
+    const anchor = byId()[stays];
+    if (anchor) startDrift(goes, anchor.x, anchor.y);
     pruneSlots();
-    endpoints.forEach((a) => syncH(a));  // spec: bond changes re-balance with no animation
+    endpoints.forEach((a) => syncH(a));
     onChange();
+  }
+
+  function cycleBond(bond) {
+    const o = nextOrder(bond, byId(), bonds);
+    if (o === 0) { breakBond(bond); return; }
+    bond.order = o;
+    pruneSlots();
+    [byId()[bond.a], byId()[bond.b]].forEach((a) => syncH(a));  // spec: bond changes re-balance with no animation
+    onChange();
+  }
+
+  // ── bond tools (the reactions lab's two buttons; null = classic click-cycle) ──
+  // {type: "break"}          — click a bond: it snaps, the freed piece drifts off
+  // {type: "order", order:n} — click a bond: it BECOMES that order, if the pair
+  //                            allows it and both ends have room; otherwise the
+  //                            bond wiggles "no" and nothing else happens
+  function applyBondClick(bond) {
+    if (!bondTool) { cycleBond(bond); return; }
+    if (bondTool.type === "break") {
+      breakBond(bond);
+      onBondTool("break", true);
+      return;
+    }
+    const n = bondTool.order;
+    if (n === bond.order) return;
+    const map = byId();
+    const capOk = n <= maxOrder(map[bond.a].el, map[bond.b].el);
+    const fits = (id) => bondSum(id, bonds) - bond.order + n <= VALENCE[map[id].el];
+    if (capOk && fits(bond.a) && fits(bond.b)) {
+      bond.order = n;
+      pruneSlots();
+      [map[bond.a], map[bond.b]].forEach((a) => syncH(a));
+      onChange();
+      onBondTool("order", true);
+    } else {
+      shakes.push({ bond, t0: now });
+      onBondTool("order", false);
+    }
   }
 
   // A seat is only real while its attack still stands: attacker present and bonded to
@@ -461,7 +500,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
       drag = null;
       onChange();   // a released drag is a settled state — recognition may look now
     } else if (bondHit && bondHit === bondAt(x, y)) {
-      cycleBond(bondHit);
+      applyBondClick(bondHit);
     }
     bondHit = null;
   }
@@ -719,16 +758,21 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     ctx.clearRect(0, 0, W, H);
     const map = byId();
 
+    shakes = shakes.filter((s) => t - s.t0 < 0.45 && bonds.includes(s.bond));
     for (const b of bonds) {
       const p = map[b.a], q = map[b.b];
       const nx = -(q.y - p.y), ny = q.x - p.x;
       const n = Math.hypot(nx, ny) || 1;
+      // a refused order change wiggles the bond sideways — "no", said gently
+      const shake = shakes.find((s) => s.bond === b);
+      const wob = shake ? Math.sin((t - shake.t0) * 42) * 4 * (1 - (t - shake.t0) / 0.45) : 0;
+      const wx = (nx / n) * wob, wy = (ny / n) * wob;
       const offsets = b.order === 1 ? [0] : b.order === 2 ? [-3.5, 3.5] : [-6, 0, 6];
       ctx.lineWidth = 3.5; ctx.strokeStyle = LINE; ctx.lineCap = "round";
       for (const o of offsets) {
         ctx.beginPath();
-        ctx.moveTo(p.x + (nx / n) * o, p.y + (ny / n) * o);
-        ctx.lineTo(q.x + (nx / n) * o, q.y + (ny / n) * o);
+        ctx.moveTo(p.x + (nx / n) * o + wx, p.y + (ny / n) * o + wy);
+        ctx.lineTo(q.x + (nx / n) * o + wx, q.y + (ny / n) * o + wy);
         ctx.stroke();
       }
     }
@@ -841,6 +885,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     setAutoH(v) { autoH = v; },
     setAdditionMode(v) { additionOn = v; },
     setVsepr(v) { vsepr = v; },
+    setBondTool(t) { bondTool = t; },
     isDragging() { return Boolean(drag); },
     // atoms must clear this line to count as "out of the inventory"
     stagingLine() { return H - TRAY_H - 14 - 30; },
