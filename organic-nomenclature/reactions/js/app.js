@@ -115,6 +115,44 @@ function reactantsBuilt() {
   return true;
 }
 
+// Half-built staging deserves a hint, not silence (Dalia's KOH card: she built the
+// haloalkane perfectly and the game just sat there waiting for the lone O it never
+// mentioned). If the main reactant matches but expected reagent pieces are missing —
+// and nothing ELSE is on the bench that shouldn't be — say exactly what's still needed.
+let stagingNudges = new Set();   // one showing per distinct message per question
+
+function describePiece(mol) {
+  const heavy = mol.atoms.filter((a) => a.el !== "H");
+  if (mol.atoms.length === 1) {
+    const el = mol.atoms[0].el;
+    if (el === "O") return "one O from the tray (its hydrogens make it the water — your OH source; the rest of the reagent stays dissolved)";
+    return `one ${el} from the tray (the reactive piece of the reagent — the rest stays behind)`;
+  }
+  if (mol.atoms.every((a) => a.el === "H")) return "the H–H molecule (two H, bonded)";
+  if (heavy.length === 2 && mol.atoms.length === 2 && heavy[0].el === heavy[1].el)
+    return `the ${heavy[0].el}–${heavy[1].el} molecule (two ${heavy[0].el}, bonded)`;
+  return "the second reactant from the prompt";
+}
+
+function missingPieceNudge() {
+  if (lab.isDragging()) return;
+  const all = lab.atoms();
+  if (all.length === 0) return;
+  const comps = splitComponents(all, lab.bonds());
+  const remaining = [...card.phase1Mols];
+  const usedComp = new Set();
+  for (let mi = remaining.length - 1; mi >= 0; mi--) {
+    const i = comps.findIndex((g, idx) => !usedComp.has(idx) && molMatches(g, remaining[mi]));
+    if (i >= 0) { usedComp.add(i); remaining.splice(mi, 1); }
+  }
+  const mainBuilt = !remaining.includes(card.phase1Mols[0]);
+  if (!mainBuilt || remaining.length === 0 || usedComp.size !== comps.length) return;
+  const msg = `That structure is right ✓ — the bench still needs ${remaining.map(describePiece).join(" and ")}.`;
+  if (stagingNudges.has(msg)) return;
+  stagingNudges.add(msg);
+  nudge(msg);
+}
+
 // Recognition LOCKS the bench and raises a real popup; the student must click
 // Continue before the workspace opens back up (Dalia: without the explicit action
 // the transition read as a freeze).
@@ -404,6 +442,7 @@ function renderIntro() {
 }
 
 function renderPlay() {
+  stagingNudges = new Set();   // fresh question, fresh hints
   root.innerHTML = `
     <button class="intro-link" id="introBtn" type="button">↩ How addition reactions work</button>
     <div class="formula-card">
@@ -454,7 +493,10 @@ function renderPlay() {
     atomScale: 0.72,       // smaller atoms on the reactions bench — room to aim
     additionMode: false,   // phase 1 is the familiar nomenclature engine; phase 2 flips it on
     onChange() {
-      if (!checked && phase === "reactants" && reactantsBuilt()) onReactantsRecognized();
+      if (!checked && phase === "reactants") {
+        if (reactantsBuilt()) onReactantsRecognized();
+        else missingPieceNudge();
+      }
       const btn = root.querySelector("#checkBtn");
       if (btn && !checked) btn.disabled = phase !== "product" || lab.atoms().length === 0;
     }
