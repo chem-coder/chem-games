@@ -4,7 +4,7 @@
 //   · every carbon arrives saturated — 4 H's riding its rim, alive, sliding to spread out
 //   · bonding sheds the paid hydrogens with a slow fall (a little faster than snowflakes)
 //   · cycling a bond's order re-balances H's INSTANTLY — no animation
-import { hydrogenCount, canBond, nextOrder, componentFormulas, splitComponents } from "./chem.js";
+import { hydrogenCount, canBond, nextOrder, bondSum, VALENCE, componentFormulas, splitComponents } from "./chem.js";
 
 // ── tuning ──
 const R_C = 26;            // carbon radius, px
@@ -281,8 +281,25 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   }
 
   function cycleBond(bond) {
-    const o = nextOrder(bond, byId(), bonds);
+    // explicit-H mode (autoH off): a raise may be paid for by shedding H's —
+    // "the bonds that must break, break", and the freed H's drift away
+    const o = nextOrder(bond, byId(), bonds, { shed: !autoH });
     const endpoints = [byId()[bond.a], byId()[bond.b]];
+    if (o > bond.order && !autoH) {
+      for (const end of endpoints) {
+        let overdraft = bondSum(end.id, bonds) - bond.order + o - VALENCE[end.el];
+        while (overdraft > 0) {
+          const hb = bonds.find((b) =>
+            (b.a === end.id && byId()[b.b]?.el === "H") ||
+            (b.b === end.id && byId()[b.a]?.el === "H"));
+          if (!hb) break;
+          const hAtom = byId()[hb.a === end.id ? hb.b : hb.a];
+          bonds = bonds.filter((b) => b !== hb);
+          if (hAtom) startDrift([hAtom.id], end.x, end.y);
+          overdraft--;
+        }
+      }
+    }
     if (o === 0) {
       bonds = bonds.filter((b) => b !== bond);
       brokenPairs.push({ a: bond.a, b: bond.b });
