@@ -458,43 +458,54 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
             const order = neighbors.map((_, i) => i).sort((i, j) => cur[i] - cur[j]);
             let rank = [];
             order.forEach((ni, j) => { rank[ni] = j; });
-            // textbook rule: a 4-region atom with exactly two heavy neighbors is
-            // a chain link — the chain must pass THROUGH it, heavies on opposite
-            // arms. If the current circular order left them adjacent, swap one
-            // heavy with a neighboring H (whichever rearrangement is cheaper).
+            // textbook rule: the chain runs THROUGH a 4-region atom — its two
+            // CARBON neighbors sit on opposite arms, substituents (Br, OH, H)
+            // hang perpendicular. A chain may zigzag at 120, never kink at 90.
+            // With one carbon neighbor, a heavy substituent takes the opposite
+            // arm instead, extending the line (Br–CH2–…). If the current
+            // circular order disagrees, swap in whichever rearrangement is
+            // cheapest to reach.
+            const carbonIdx = neighbors.map((n, i) => (map[n].el === "C" ? i : -1)).filter((i) => i >= 0);
             const heavyIdx = neighbors.map((n, i) => (map[n].el === "H" ? -1 : i)).filter((i) => i >= 0);
-            if (k === 4 && heavyIdx.length === 2) {
-              const gap = (rank[heavyIdx[1]] - rank[heavyIdx[0]] + 4) % 4;
-              if (gap !== 2) {
-                const evalCost = (rk) => {
-                  let cx = 0, cy = 0;
-                  neighbors.forEach((_, i) => {
-                    const d = cur[i] - rk[i] * spacing;
-                    cx += Math.cos(d); cy += Math.sin(d);
-                  });
-                  const ph = Math.atan2(cy, cx);
-                  return neighbors.reduce((s, _, i) => {
-                    const off = Math.atan2(
-                      Math.sin(cur[i] - ph - rk[i] * spacing),
-                      Math.cos(cur[i] - ph - rk[i] * spacing));
-                    return s + Math.abs(off);
-                  }, 0);
-                };
-                const variants = [];
-                for (const hi of heavyIdx) {
+            let axisPairs = [];
+            if (k === 4) {
+              if (carbonIdx.length === 2) axisPairs = [carbonIdx];
+              else if (carbonIdx.length === 1 && heavyIdx.length >= 2)
+                axisPairs = heavyIdx.filter((i) => i !== carbonIdx[0]).map((h2) => [carbonIdx[0], h2]);
+              else if (carbonIdx.length === 0 && heavyIdx.length === 2) axisPairs = [heavyIdx];
+            }
+            if (axisPairs.length) {
+              const evalCost = (rk) => {
+                let cx = 0, cy = 0;
+                neighbors.forEach((_, i) => {
+                  const d = cur[i] - rk[i] * spacing;
+                  cx += Math.cos(d); cy += Math.sin(d);
+                });
+                const ph = Math.atan2(cy, cx);
+                return neighbors.reduce((s, _, i) => {
+                  const off = Math.atan2(
+                    Math.sin(cur[i] - ph - rk[i] * spacing),
+                    Math.cos(cur[i] - ph - rk[i] * spacing));
+                  return s + Math.abs(off);
+                }, 0);
+              };
+              const opposite = (rk, pair) => (rk[pair[1]] - rk[pair[0]] + 4) % 4 === 2;
+              const variants = [];
+              for (const pair of axisPairs) {
+                if (opposite(rank, pair)) { variants.push(rank); continue; }
+                for (const hi of pair) {
                   for (const step of [1, 3]) {
                     const other = neighbors.findIndex((_, i) => rank[i] === (rank[hi] + step) % 4);
                     const rk = rank.slice();
                     [rk[hi], rk[other]] = [rk[other], rk[hi]];
-                    const g2 = (rk[heavyIdx[1]] - rk[heavyIdx[0]] + 4) % 4;
-                    if (g2 === 2) variants.push(rk);
+                    if (opposite(rk, pair)) variants.push(rk);
                   }
                 }
-                let bestCost = Infinity;
-                for (const rk of variants) {
-                  const cost = evalCost(rk);
-                  if (cost < bestCost) { bestCost = cost; rank = rk; }
-                }
+              }
+              let bestCost = Infinity;
+              for (const rk of variants) {
+                const cost = evalCost(rk);
+                if (cost < bestCost) { bestCost = cost; rank = rk; }
               }
             }
             let sx = 0, sy = 0;
