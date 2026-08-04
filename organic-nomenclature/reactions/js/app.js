@@ -473,6 +473,23 @@ function updateHints() {
   if (btn) btn.addEventListener("click", () => { hintsShown += 1; updateHints(); });
 }
 
+// The regiochemistry read-me: gates the verdict — no Next button until "Got it".
+function regioModal(title, subHtml) {
+  const modal = root.querySelector("#phaseModal");
+  if (!modal) return;
+  modal.innerHTML = `<div class="phase-modal minor-modal">
+      <p class="phase-modal-title">${title}</p>
+      <p class="phase-modal-sub">${subHtml}</p>
+      <button class="action primary" id="minorOkBtn" type="button">Got it →</button>
+    </div>`;
+  modal.querySelector("#minorOkBtn").addEventListener("click", () => {
+    minorAcknowledged = true;
+    modal.innerHTML = "";
+    updateAfterCheck();
+  });
+  modal.querySelector("#minorOkBtn").focus();
+}
+
 function updateAfterCheck() {
   root.querySelector("#hintArea").innerHTML = "";
   root.querySelector("#nudgeArea").innerHTML = "";
@@ -502,23 +519,20 @@ function updateAfterCheck() {
   // product and didn't even notice"). The popup gates the verdict — no Next button
   // exists until it's dismissed.
   if (builtMinor && !minorAcknowledged) {
-    const modal = root.querySelector("#phaseModal");
-    if (modal) {
-      modal.innerHTML = `<div class="phase-modal minor-modal">
-          <p class="phase-modal-title">You built the MINOR product</p>
-          <p class="phase-modal-sub"><strong>${solvedName}</strong> is real, and it counts. But the <strong>major</strong> product is <strong>${major.name}</strong> — ${isElim
-            ? "Zaitsev: the more substituted (internal) alkene wins."
-            : `Markovnikov: the ${card.type === "hydration" ? "OH" : "halogen"} goes to the double-bond carbon with FEWER hydrogens.`}</p>
-          <button class="action primary" id="minorOkBtn" type="button">Got it →</button>
-        </div>`;
-      modal.querySelector("#minorOkBtn").addEventListener("click", () => {
-        minorAcknowledged = true;
-        modal.innerHTML = "";
-        updateAfterCheck();
-      });
-      modal.querySelector("#minorOkBtn").focus();
-    }
-    return;
+    return regioModal(
+      "You built the MINOR product",
+      `<strong>${solvedName}</strong> is real, and it counts. But the <strong>major</strong> product is <strong>${major.name}</strong> — ${isElim
+        ? "Zaitsev: the more substituted (internal) alkene wins."
+        : `Markovnikov: the ${card.type === "hydration" ? "OH" : "halogen"} goes to the double-bond carbon with FEWER hydrogens.`}`
+    );
+  }
+  // a TRUE tie is its own lesson: Markovnikov can't choose between two equal carbons
+  if (correct && evenSplit && !minorAcknowledged) {
+    const other = card.targets.find((t) => t.name !== solvedName);
+    return regioModal(
+      "No major here — a true tie",
+      `Both double-bond carbons hold <strong>one hydrogen each</strong>, so Markovnikov has nothing to choose between: <strong>${solvedName}</strong> and <strong>${other ? other.name : "its partner"}</strong> both form in comparable amounts. Either answer is fully correct.`
+    );
   }
   const minorNote = builtMinor
     ? `<p class="regio-note">You built the <strong>minor</strong> product — real, accepted. The <strong>major</strong> is ${major.name}: ${isElim

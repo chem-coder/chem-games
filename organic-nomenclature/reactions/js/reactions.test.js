@@ -300,6 +300,18 @@ test("markovnikov dealer: 5 cards, no duplicates", () => {
   }
 });
 
+test("every addition round guarantees a true Markovnikov (major/minor) card", () => {
+  const deal = makeReactionDealer();
+  for (let r = 0; r < 40; r++) {
+    const cards = deal();
+    assert.ok(
+      cards.some((c) => c.targets && c.targets.length > 1 && c.targets[0].major),
+      `round ${r} must carry a major/minor pair — the rule has to come up`
+    );
+    assert.equal(new Set(cards.map((c) => c.id)).size, 5, "still no duplicates");
+  }
+});
+
 test("dealer: 5 cards, all four reaction types present, no duplicate cards", () => {
   const deal = makeReactionDealer();
   for (let r = 0; r < 12; r++) {

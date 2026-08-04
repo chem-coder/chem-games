@@ -709,6 +709,16 @@ export function makeReactionDealer() {
     let extra = draw(extraType, rng);
     for (let g = 0; cards.some((c) => c.id === extra.id) && g < 8; g++) extra = draw(extraType, rng);
     cards.push(extra);
+    // Markovnikov guarantee (Dalia: "I've played two sets and the rule never came
+    // up — the students need to learn it"): every round carries at least one card
+    // with a TRUE major/minor pair.
+    const hasMajor = (c) => c.targets && c.targets.length > 1 && Boolean(c.targets[0].major);
+    if (!cards.some(hasMajor)) {
+      const pool = REACTIONS.filter((c) => hasMajor(c) && !cards.some((k) => k.id === c.id));
+      const pick = pool[Math.floor(rng() * pool.length)];
+      const idx = cards.findIndex((c) => c.type === pick.type);
+      cards[idx >= 0 ? idx : cards.length - 1] = pick;
+    }
     return cards.sort(() => rng() - 0.5);
   };
 }
