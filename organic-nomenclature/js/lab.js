@@ -332,10 +332,11 @@ export function createLab(canvas, { onChange = () => {}, onBondTool = () => {}, 
   }
 
   // ── bond tools (the reactions lab's two buttons; null = classic click-cycle) ──
-  // {type: "break"}          — click a bond: it snaps, the freed piece drifts off
-  // {type: "order", order:n} — click a bond: it BECOMES that order, if the pair
-  //                            allows it and both ends have room; otherwise the
-  //                            bond wiggles "no" and nothing else happens
+  // {type: "break"} — click a bond: it snaps, the freed piece drifts off
+  // {type: "cycle"} — click a bond: it steps single → double → triple → single,
+  //                   skipping orders the pair or the atoms' room can't afford,
+  //                   and NEVER through none (that's what ✕ is for). If no other
+  //                   order is affordable the bond wiggles "no".
   function applyBondClick(bond) {
     if (!bondTool) { cycleBond(bond); return; }
     if (bondTool.type === "break") {
@@ -343,21 +344,24 @@ export function createLab(canvas, { onChange = () => {}, onBondTool = () => {}, 
       onBondTool("break", true);
       return;
     }
-    const n = bondTool.order;
-    if (n === bond.order) return;
     const map = byId();
-    const capOk = n <= maxOrder(map[bond.a].el, map[bond.b].el);
-    const fits = (id) => bondSum(id, bonds) - bond.order + n <= VALENCE[map[id].el];
-    if (capOk && fits(bond.a) && fits(bond.b)) {
-      bond.order = n;
-      pruneSlots();
-      [map[bond.a], map[bond.b]].forEach((a) => syncH(a));
-      onChange();
-      onBondTool("order", true);
-    } else {
+    const cap = maxOrder(map[bond.a].el, map[bond.b].el);
+    const fits = (id, n) => bondSum(id, bonds) - bond.order + n <= VALENCE[map[id].el];
+    let next = bond.order;
+    for (let step = 1; step <= 2; step++) {
+      const cand = ((bond.order - 1 + step) % 3) + 1;
+      if (cand <= cap && fits(bond.a, cand) && fits(bond.b, cand)) { next = cand; break; }
+    }
+    if (next === bond.order) {
       shakes.push({ bond, t0: now });
       onBondTool("order", false);
+      return;
     }
+    bond.order = next;
+    pruneSlots();
+    [map[bond.a], map[bond.b]].forEach((a) => syncH(a));
+    onChange();
+    onBondTool("order", true);
   }
 
   // A seat is only real while its attack still stands: attacker present and bonded to

@@ -416,7 +416,7 @@ function renderPlay() {
       <canvas class="lab-canvas" id="labCanvas"></canvas>
       <div class="bond-tools">
         <button class="tool tool-break" id="toolBreak" type="button" title="Break a bond — one cut, then it switches itself off">✕</button>
-        <button class="tool active" id="toolOrder" type="button" title="Set a bond's order — tap to switch between –, =, ≡; then click a bond">–</button>
+        <button class="tool active" id="toolOrder" type="button" title="Change a bond — click a bond to cycle single → double → triple">≡</button>
       </div>
       <div id="phaseModal"></div>
     </div>
@@ -442,10 +442,8 @@ function renderPlay() {
     syncTools();
   });
   root.querySelector("#toolOrder").addEventListener("click", () => {
-    // if ✕ was armed, this tap just switches back to the order tool; otherwise
-    // it advances the glyph – → = → ≡ → –
-    if (breakArmed) breakArmed = false;
-    else toolOrderN = (toolOrderN % 3) + 1;
+    // plain mode toggle: switch back from ✕ to the bond tool
+    breakArmed = false;
     syncTools();
   });
   updateHints();
@@ -469,10 +467,10 @@ function renderPlay() {
   syncTools();
 }
 
-// ── bond tools: two buttons, one meaning each ──
-// drag moves matter; a bond click applies the lit tool. ✕ breaks (one shot),
-// [– / = / ≡] sets the order it shows — or the bond wiggles "no" if there's no room.
-let toolOrderN = 1;
+// ── bond tools: two modes, one meaning each ──
+// drag moves matter; a bond click applies the lit mode. ✕ breaks (one shot);
+// the bond mode [≡] cycles a clicked bond single → double → triple (skipping
+// what the atoms can't afford, never through none — that's ✕'s job).
 let breakArmed = false;
 
 function syncTools() {
@@ -481,12 +479,10 @@ function syncTools() {
   if (!bBtn || !oBtn || !lab) return;
   bBtn.classList.toggle("armed", breakArmed);
   oBtn.classList.toggle("active", !breakArmed);
-  oBtn.textContent = ["–", "=", "≡"][toolOrderN - 1];
-  lab.setBondTool(breakArmed ? { type: "break" } : { type: "order", order: toolOrderN });
+  lab.setBondTool(breakArmed ? { type: "break" } : { type: "cycle" });
 }
 
 function resetTools() {
-  toolOrderN = 1;
   breakArmed = false;
   syncTools();
 }
