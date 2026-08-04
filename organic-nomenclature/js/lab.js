@@ -70,6 +70,10 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   // Pairs whose bond was clicked apart and are still within capture range — they
   // may not re-bond until pulled apart once (pruned inside tryBond).
   let brokenPairs = [];      // [{a, b}]
+  // Fragments set adrift by a bond break (Dalia's idea): the freed piece glides
+  // away from its former partner for about a second, decelerating, which carries
+  // it out of the bonding radius on its own — then it floats until grabbed.
+  let drifts = [];           // [{ids: [atomId], vx, vy}]
   let nextId = 1;
   let drag = null;
   let bondHit = null;
@@ -137,6 +141,56 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     onChange();
   }
 
+  function compOf(id) {
+    const comp = new Set([id]);
+    const stack = [id];
+    while (stack.length) {
+      const cur = stack.pop();
+      for (const b of bonds) {
+        const nb = b.a === cur ? b.b : b.b === cur ? b.a : null;
+        if (nb !== null && !comp.has(nb)) { comp.add(nb); stack.push(nb); }
+      }
+    }
+    return [...comp];
+  }
+
+  const DRIFT_V = 150;       // launch speed; decays to a float in ~a second
+  function startDrift(ids, fromX, fromY) {
+    const map = byId();
+    const members = ids.map((id) => map[id]).filter(Boolean);
+    if (!members.length) return;
+    const cx = members.reduce((s, m) => s + m.x, 0) / members.length;
+    const cy = members.reduce((s, m) => s + m.y, 0) / members.length;
+    let ux = cx - fromX, uy = cy - fromY;
+    const d = Math.hypot(ux, uy);
+    if (d < 1) { ux = 0.5; uy = -0.86; } else { ux /= d; uy /= d; }
+    drifts.push({ ids, vx: ux * DRIFT_V, vy: uy * DRIFT_V });
+  }
+
+  function stepDrift(dt) {
+    if (!drifts.length) return;
+    const map = byId();
+    const benchBottom = H - TRAY_H - 14;
+    const pad = RC + 12;
+    drifts = drifts.filter((d) => {
+      const k = Math.exp(-2.5 * dt);
+      d.vx *= k; d.vy *= k;
+      if (Math.hypot(d.vx, d.vy) < 8) return false;   // settled — now it just floats
+      const members = d.ids.map((id) => map[id]).filter(Boolean);
+      if (!members.length) return false;
+      let dx = d.vx * dt, dy = d.vy * dt;
+      // glide, but never off the bench or into the tray
+      for (const m of members) {
+        if (m.x + dx < pad) dx = pad - m.x;
+        if (m.x + dx > W - pad) dx = W - pad - m.x;
+        if (m.y + dy < pad) dy = pad - m.y;
+        if (m.y + dy > benchBottom - pad) dy = benchBottom - pad - m.y;
+      }
+      for (const m of members) { m.x += dx; m.y += dy; }
+      return true;
+    });
+  }
+
   function tryBond(dragged) {
     // hysteresis (Dalia's stuck-OH bug): a pair broken by clicking its bond starts
     // out still inside capture range, so proximity bonding would snap it right back
@@ -181,9 +235,9 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
               bonds = bonds.filter((b) => b !== pick);
               const freed = byId()[pick.a === dragged.id ? pick.b : pick.a];
               if (freed) {
-                // only hydrogens get the "released" drift — a carbon teleporting away
-                // reads as the molecule fleeing (Dalia's runaway-carbon bug)
-                if (freed.el === "H") { freed.x += 26; freed.y -= 38; }
+                // the released partner glides away from the reaction site — same
+                // drift as a clicked-apart bond (replaces the old teleport hop)
+                startDrift(compOf(freed.id), dragged.x, dragged.y);
                 syncH(freed);
               }
               syncH(dragged);
@@ -209,6 +263,8 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
           }
         }
         bonds.push({ a: dragged.id, b: other.id, order: 1 });
+        // a fragment that just found a bond stops drifting
+        drifts = drifts.filter((d) => !d.ids.includes(dragged.id) && !d.ids.includes(other.id));
         // consume an open seat if this arrival is the one filling it
         const seat = openSlots.findIndex((s) => s.farId === other.id);
         if (seat >= 0) openSlots.splice(seat, 1);
@@ -227,7 +283,21 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   function cycleBond(bond) {
     const o = nextOrder(bond, byId(), bonds);
     const endpoints = [byId()[bond.a], byId()[bond.b]];
-    if (o === 0) { bonds = bonds.filter((b) => b !== bond); brokenPairs.push({ a: bond.a, b: bond.b }); }
+    if (o === 0) {
+      bonds = bonds.filter((b) => b !== bond);
+      brokenPairs.push({ a: bond.a, b: bond.b });
+      // the freed piece drifts away from its former partner (Dalia's idea) —
+      // carbon-free fragments (an OH, a halogen) go; between two carbon
+      // fragments, the smaller one goes
+      const compA = compOf(bond.a), compB = compOf(bond.b);
+      const carbonFree = (comp) => comp.every((id) => byId()[id]?.el !== "C");
+      const freeA = carbonFree(compA), freeB = carbonFree(compB);
+      let goes, stays;
+      if (freeA !== freeB) [goes, stays] = freeA ? [compA, bond.b] : [compB, bond.a];
+      else [goes, stays] = compA.length <= compB.length ? [compA, bond.b] : [compB, bond.a];
+      const anchor = byId()[stays];
+      if (anchor) startDrift(goes, anchor.x, anchor.y);
+    }
     else bond.order = o;
     pruneSlots();
     endpoints.forEach((a) => syncH(a));  // spec: bond changes re-balance with no animation
@@ -296,7 +366,12 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     const { x, y } = pos(e);
     try { canvas.setPointerCapture(e.pointerId); } catch {}
     const atom = atomAt(x, y);
-    if (atom) { drag = { id: atom.id, dx: atom.x - x, dy: atom.y - y, didSplit: false }; bondHit = null; return; }
+    if (atom) {
+      drag = { id: atom.id, dx: atom.x - x, dy: atom.y - y, didSplit: false };
+      bondHit = null;
+      drifts = drifts.filter((d) => !d.ids.includes(atom.id));   // grabbing halts the glide
+      return;
+    }
     const bond = bondAt(x, y);
     if (bond) { bondHit = bond; return; }
     if (inTray(x, y)) {
@@ -729,6 +804,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     last = now;
     stepH(dt);
     stepFalling(dt);
+    stepDrift(dt);
     relaxGeometry(dt);
     draw(now);
     rafId = requestAnimationFrame(frame);
@@ -933,7 +1009,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
     resize,
     // deterministic stepper for headless testing (rAF is throttled in driven browsers)
     tick(frames = 1, dt = 1 / 60) {
-      for (let i = 0; i < frames; i++) { now += dt; stepH(dt); stepFalling(dt); relaxGeometry(dt); }
+      for (let i = 0; i < frames; i++) { now += dt; stepH(dt); stepFalling(dt); stepDrift(dt); relaxGeometry(dt); }
       draw(now);
     },
     destroy() {
