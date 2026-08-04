@@ -467,25 +467,25 @@ export const REACTION_INFO = {
     label: "Hydrohalogenation",
     adds: "H and X",
     result: "a haloalkane",
-    hint: "H goes to one alkene carbon, X to the other. The X prefers the carbon with FEWER hydrogens (Markovnikov) — but either neighbor is a real product here."
+    hint: "H goes to one alkene carbon, X to the other. The X prefers the carbon with FEWER hydrogens (Markovnikov) — build that MAJOR; a minor build comes back for another pass."
   },
   hydration: {
     label: "Hydration",
     adds: "H and OH",
     result: "an alcohol",
-    hint: "Water splits: H to one alkene carbon, OH to the other. The OH prefers the carbon with fewer hydrogens (Markovnikov) — either neighbor is accepted here."
+    hint: "Water splits: H to one alkene carbon, OH to the other. The OH prefers the carbon with fewer hydrogens (Markovnikov) — build that MAJOR; a minor build comes back."
   },
   dehydration: {
     label: "Dehydration", elimination: true,
     adds: "loses H and OH",
     result: "an alkene",
-    hint: "Drag the O to the tray — the OH leaves. Then take ONE H off a NEIGHBOR carbon and click that C–C bond double. Which neighbor? Zaitsev: the internal side gives the major — either honest alkene is accepted."
+    hint: "Drag the O to the tray — the OH leaves. Then take ONE H off a NEIGHBOR carbon and click that C–C bond double. Which neighbor? Zaitsev: the internal side gives the MAJOR — build it; a minor build comes back."
   },
   dehydrohalogenation: {
     label: "Dehydrohalogenation", elimination: true,
     adds: "loses H and X",
     result: "an alkene",
-    hint: "Drag the halogen to the tray, take ONE H off a NEIGHBOR carbon, and click that bond double. Zaitsev again: internal beats terminal — but both honest alkenes count."
+    hint: "Drag the halogen to the tray, take ONE H off a NEIGHBOR carbon, and click that bond double. Zaitsev again: internal beats terminal — build the internal one; the minor comes back."
   },
   subHalogenation: {
     label: "Halogenation of an alkane", substitution: true,

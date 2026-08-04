@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../../shared/css/tokens.css">
-  <link rel="stylesheet" href="css/reactions.css?v=20260804h">
+  <link rel="stylesheet" href="css/reactions.css?v=20260804i">
 </head>
 <body>
   <div class="app-shell">
@@ -23,6 +23,19 @@
 
     <p class="proto-note">IMAT lessons 5.41 (alcohol oxidation), 5.46 (saponification), 5.48 (addition), 5.49 (elimination), 5.50 (substitution), 5.52 (esterification).</p>
   </div>
-  <script type="module" src="js/app.js?v=20260804h"></script>
+  <!-- Cache-busting lives HERE, in ONE place per game (house pattern — see the naming
+       game's index). Submodules resolve through this map to their ?v= URLs, so a token
+       bump refreshes EVERY module, not just the entry. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/reactions.js": "./js/reactions.js?v=20260804i",
+      "../js/organic.js": "../js/organic.js?v=20260804i",
+      "../js/chem.js": "../js/chem.js?v=20260804i",
+      "../js/lab.js": "../js/lab.js?v=20260804i"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260804i"></script>
 </body>
 </html>

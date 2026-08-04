@@ -52,6 +52,7 @@ let mastered = 0;
 let cleanSolves = 0;
 let missed = [];
 let minorAcknowledged = false;  // the minor-product popup must be dismissed before Next exists
+let builtMinorFlag = false;     // minor built: explained by popup, then RETURNS to the stack
 let lab = null;
 
 function killLab() {
@@ -82,6 +83,7 @@ function loadCard() {
   picked = -1;
   phase = "reactants";
   minorAcknowledged = false;
+  builtMinorFlag = false;
   if (mode === "mk") options = Math.random() < 0.5 ? [...card.options] : [...card.options].reverse();
   render();
 }
@@ -252,7 +254,10 @@ function check() {
   if (!hit && carbonComps.length > 1 && carbonComps.some(matchOf)) {
     return nudge("That IS the product — now clear the leftover carbon pieces (drop them on the tray) so only the product remains.");
   }
-  correct = Boolean(hit);
+  // A minor product is real chemistry — but the card leaves the stack only for the
+  // MAJOR (Dalia's rule): the popup explains, then the question comes back around.
+  builtMinorFlag = Boolean(hit && card.targets.length > 1 && !hit.even && !hit.major);
+  correct = Boolean(hit) && !builtMinorFlag;
   solvedName = hit ? hit.name : "";
   checked = true;
   lab.setLocked(true);
@@ -334,7 +339,7 @@ const SHEETS = {
     <div class="mk-teach">
       <h3>Markovnikov's rule — addition's major</h3>
       <p>When H–Br or H–OH adds to an <strong>unsymmetric</strong> alkene, two products are possible — and they are not equally likely.</p>
-      <p class="mk-worked">${toSubHtml("CH2=CHCH3")} + ${toSubHtml("HBr")}: &nbsp;C-1 of the double bond holds <strong>two</strong> H's, C-2 holds <strong>one</strong>. The new H joins the carbon that already has more — <em>the rich get richer</em> — so the Br takes C-2: <strong>2-bromopropane</strong> is the <strong>major</strong>. 1-bromopropane still forms, as the minor. Both count here.</p>
+      <p class="mk-worked">${toSubHtml("CH2=CHCH3")} + ${toSubHtml("HBr")}: &nbsp;C-1 of the double bond holds <strong>two</strong> H's, C-2 holds <strong>one</strong>. The new H joins the carbon that already has more — <em>the rich get richer</em> — so the Br takes C-2: <strong>2-bromopropane</strong> is the <strong>major</strong>. 1-bromopropane still forms, as the minor — but only the <strong>major</strong> retires the question here.</p>
     </div>
     <div class="controls two-up"><button class="action primary alt" id="startTopic">Start: addition</button></div>`,
 
@@ -348,7 +353,7 @@ const SHEETS = {
     </ul>
     <div class="mk-teach">
       <h3>Zaitsev's rule — elimination's major</h3>
-      <p>When the double bond could form on <strong>either side</strong> of the leaving group, the <strong>more substituted</strong> alkene — the internal one — is the major. Butan-2-ol dehydrates mostly to <strong>but-2-ene</strong>, only a little to but-1-ene. Which H you remove <em>is</em> the choice.</p>
+      <p>When the double bond could form on <strong>either side</strong> of the leaving group, the <strong>more substituted</strong> alkene — the internal one — is the major. Butan-2-ol dehydrates mostly to <strong>but-2-ene</strong>, only a little to but-1-ene. Which H you remove <em>is</em> the choice — and only the major retires the question.</p>
     </div>
     <div class="controls two-up"><button class="action primary alt" id="startTopic">Start: elimination</button></div>`,
 
@@ -514,16 +519,15 @@ function updateAfterCheck() {
   const major = card.targets[0];
   const isElim = Boolean(REACTION_INFO[card.type].elimination);
   const evenSplit = Boolean(major.even);
-  const builtMinor = card.targets.length > 1 && !evenSplit && solvedName && solvedName !== major.name;
   // A minor product must be READ about, not scrolled past (Dalia: "I built a minor
-  // product and didn't even notice"). The popup gates the verdict — no Next button
-  // exists until it's dismissed.
-  if (builtMinor && !minorAcknowledged) {
+  // product and didn't even notice") — and it RETURNS to the stack: only the major
+  // retires the card. The popup gates the verdict; no Next button until dismissed.
+  if (builtMinorFlag && !minorAcknowledged) {
     return regioModal(
       "You built the MINOR product",
-      `<strong>${solvedName}</strong> is real, and it counts. But the <strong>major</strong> product is <strong>${major.name}</strong> — ${isElim
-        ? "Zaitsev: the more substituted (internal) alkene wins."
-        : `Markovnikov: the ${card.type === "hydration" ? "OH" : "halogen"} goes to the double-bond carbon with FEWER hydrogens.`}`
+      `<strong>${solvedName}</strong> is real chemistry — but the <strong>major</strong> product is <strong>${major.name}</strong>: ${isElim
+        ? "Zaitsev — the more substituted (internal) alkene wins."
+        : `Markovnikov — the ${card.type === "hydration" ? "OH" : "halogen"} goes to the double-bond carbon with FEWER hydrogens.`} This question returns to the stack — build the major when it comes back.`
     );
   }
   // a TRUE tie is its own lesson: Markovnikov can't choose between two equal carbons
@@ -534,13 +538,10 @@ function updateAfterCheck() {
       `Both double-bond carbons hold <strong>one hydrogen each</strong>, so Markovnikov has nothing to choose between: <strong>${solvedName}</strong> and <strong>${other ? other.name : "its partner"}</strong> both form in comparable amounts. Either answer is fully correct.`
     );
   }
-  const minorNote = builtMinor
-    ? `<p class="regio-note">You built the <strong>minor</strong> product — real, accepted. The <strong>major</strong> is ${major.name}: ${isElim
-        ? "Zaitsev prefers the more substituted (internal) alkene."
-        : `Markovnikov puts the ${card.type === "hydration" ? "OH" : "halogen"} on the double-bond carbon with fewer H's.`}</p>`
-    : "";
   const feedback = correct
-    ? `<p class="feedback ok">${hintsShown ? "Correct." : "Solved clean — no hints. 💪"} It leaves the stack.</p>${minorNote}`
+    ? `<p class="feedback ok">${hintsShown ? "Correct." : "Solved clean — no hints. 💪"} It leaves the stack.</p>`
+    : builtMinorFlag
+    ? `<p class="feedback no">The minor — explained above — comes back around. Next time: the major.</p>`
     : `<p class="feedback no">Not quite — this one comes back around.</p>`;
   const tag = card.targets.length > 1 ? ` <span class="minor-note">${evenSplit ? "(either forms)" : "(major)"}</span>` : "";
   const by = card.byproduct ? ` + ${toSubHtml(card.byproduct)}` : "";
