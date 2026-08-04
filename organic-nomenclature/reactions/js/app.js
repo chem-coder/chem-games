@@ -51,6 +51,7 @@ let solvedName = "";
 let mastered = 0;
 let cleanSolves = 0;
 let missed = [];
+let minorAcknowledged = false;  // the minor-product popup must be dismissed before Next exists
 let lab = null;
 
 function killLab() {
@@ -80,6 +81,7 @@ function loadCard() {
   solvedName = "";
   picked = -1;
   phase = "reactants";
+  minorAcknowledged = false;
   if (mode === "mk") options = Math.random() < 0.5 ? [...card.options] : [...card.options].reverse();
   render();
 }
@@ -496,6 +498,28 @@ function updateAfterCheck() {
   const isElim = Boolean(REACTION_INFO[card.type].elimination);
   const evenSplit = Boolean(major.even);
   const builtMinor = card.targets.length > 1 && !evenSplit && solvedName && solvedName !== major.name;
+  // A minor product must be READ about, not scrolled past (Dalia: "I built a minor
+  // product and didn't even notice"). The popup gates the verdict — no Next button
+  // exists until it's dismissed.
+  if (builtMinor && !minorAcknowledged) {
+    const modal = root.querySelector("#phaseModal");
+    if (modal) {
+      modal.innerHTML = `<div class="phase-modal minor-modal">
+          <p class="phase-modal-title">You built the MINOR product</p>
+          <p class="phase-modal-sub"><strong>${solvedName}</strong> is real, and it counts. But the <strong>major</strong> product is <strong>${major.name}</strong> — ${isElim
+            ? "Zaitsev: the more substituted (internal) alkene wins."
+            : `Markovnikov: the ${card.type === "hydration" ? "OH" : "halogen"} goes to the double-bond carbon with FEWER hydrogens.`}</p>
+          <button class="action primary" id="minorOkBtn" type="button">Got it →</button>
+        </div>`;
+      modal.querySelector("#minorOkBtn").addEventListener("click", () => {
+        minorAcknowledged = true;
+        modal.innerHTML = "";
+        updateAfterCheck();
+      });
+      modal.querySelector("#minorOkBtn").focus();
+    }
+    return;
+  }
   const minorNote = builtMinor
     ? `<p class="regio-note">You built the <strong>minor</strong> product — real, accepted. The <strong>major</strong> is ${major.name}: ${isElim
         ? "Zaitsev prefers the more substituted (internal) alkene."

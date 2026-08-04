@@ -49,7 +49,10 @@ sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: in
   animation: phase-pop-in 0.35s ease-out;
 }
 .phase-modal-title { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--success); }
-.phase-modal-sub { margin: 0 0 8px; font-size: 1.02rem; }
+.phase-modal-sub { margin: 0 0 8px; font-size: 1.02rem; max-width: 46ch; }
+/* the minor-product read-me: warm, not celebratory */
+.minor-modal { border-color: var(--warning-line); background: rgba(255, 251, 240, 0.95); }
+.minor-modal .phase-modal-title { color: var(--danger); }
 
 /* intro */
 .intro-eyebrow {
