@@ -67,6 +67,9 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   // dissolves the seat instead of leaving a phantom that blocks a correct answer.
   let openSlots = [];        // [{farId, nearId, attackerId}]
   const slotsFor = (id) => openSlots.filter((s) => s.farId === id).length;
+  // Pairs whose bond was clicked apart and are still within capture range — they
+  // may not re-bond until pulled apart once (pruned inside tryBond).
+  let brokenPairs = [];      // [{a, b}]
   let nextId = 1;
   let drag = null;
   let bondHit = null;
@@ -135,10 +138,21 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   }
 
   function tryBond(dragged) {
+    // hysteresis (Dalia's stuck-OH bug): a pair broken by clicking its bond starts
+    // out still inside capture range, so proximity bonding would snap it right back
+    // together before the piece can be dragged anywhere. The pair stays ineligible
+    // until it has actually been pulled apart once — after that, returning
+    // deliberately re-bonds as usual.
+    brokenPairs = brokenPairs.filter((p) => {
+      const pa = byId()[p.a], pb = byId()[p.b];
+      return pa && pb && Math.hypot(pa.x - pb.x, pa.y - pb.y) < SNAP + 16;
+    });
+    const vetoed = (o) => brokenPairs.some((p) =>
+      (p.a === dragged.id && p.b === o.id) || (p.b === dragged.id && p.a === o.id));
     // nearest candidate first, and at most ONE bond per gesture — a drop between two
     // carbons bonds the closer one instead of bridging both
     const candidates = atoms
-      .filter((o) => o !== dragged)
+      .filter((o) => o !== dragged && !vetoed(o))
       .map((o) => ({ o, d: Math.hypot(o.x - dragged.x, o.y - dragged.y) }))
       .filter((c) => c.d < SNAP)
       .sort((a, b) => a.d - b.d);
@@ -213,7 +227,7 @@ export function createLab(canvas, { onChange = () => {}, elements = ["C"], input
   function cycleBond(bond) {
     const o = nextOrder(bond, byId(), bonds);
     const endpoints = [byId()[bond.a], byId()[bond.b]];
-    if (o === 0) bonds = bonds.filter((b) => b !== bond);
+    if (o === 0) { bonds = bonds.filter((b) => b !== bond); brokenPairs.push({ a: bond.a, b: bond.b }); }
     else bond.order = o;
     pruneSlots();
     endpoints.forEach((a) => syncH(a));  // spec: bond changes re-balance with no animation
