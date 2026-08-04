@@ -415,7 +415,7 @@ function renderPlay() {
     <div class="lab-wrap">
       <canvas class="lab-canvas" id="labCanvas"></canvas>
       <div class="bond-tools">
-        <button class="tool tool-break" id="toolBreak" type="button" title="Break a bond — one cut, then it switches itself off">✕</button>
+        <button class="tool tool-break" id="toolBreak" type="button" title="Break bonds — stays on until you switch back to the bond mode">✕</button>
         <button class="tool active" id="toolOrder" type="button" title="Change a bond — click a bond to cycle single → double → triple">≡</button>
       </div>
       <div id="phaseModal"></div>
@@ -457,18 +457,14 @@ function renderPlay() {
       if (!checked && phase === "reactants" && reactantsBuilt()) onReactantsRecognized();
       const btn = root.querySelector("#checkBtn");
       if (btn && !checked) btn.disabled = phase !== "product" || lab.atoms().length === 0;
-    },
-    onBondTool(type) {
-      // ✕ is single-use: one cut, then back to the order tool — no forgotten
-      // scissors shredding the molecule
-      if (type === "break") { breakArmed = false; syncTools(); }
     }
   });
   syncTools();
 }
 
 // ── bond tools: two modes, one meaning each ──
-// drag moves matter; a bond click applies the lit mode. ✕ breaks (one shot);
+// drag moves matter; a bond click applies the lit mode. ✕ breaks and STAYS on
+// (Dalia: "I will delete the bonds I want and then manually switch back");
 // the bond mode [≡] cycles a clicked bond single → double → triple (skipping
 // what the atoms can't afford, never through none — that's ✕'s job).
 let breakArmed = false;
