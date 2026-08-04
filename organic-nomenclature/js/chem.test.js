@@ -56,7 +56,7 @@ test("nextOrder walks 1→2→3→0 and skips unaffordable steps", () => {
 });
 
 test("valences match chemistry", () => {
-  assert.deepEqual(VALENCE, { C: 4, N: 3, O: 2, H: 1, Cl: 1, Br: 1 });
+  assert.deepEqual(VALENCE, { C: 4, N: 3, O: 2, H: 1, Cl: 1, Br: 1, K: 1, Na: 1 });
 });
 
 // ── grading built structures against a straight-chain alkane target ──

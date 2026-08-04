@@ -5,7 +5,7 @@
 // layer just animates the difference when that number changes (falling H's on bond
 // formation, instant re-balance on bond-order cycling — Dalia's spec, 2026-07-29).
 
-export const VALENCE = { C: 4, N: 3, O: 2, H: 1, Cl: 1, Br: 1 };
+export const VALENCE = { C: 4, N: 3, O: 2, H: 1, Cl: 1, Br: 1, K: 1, Na: 1 };
 
 export function bondSum(atomId, bonds) {
   return bonds.reduce((s, b) => s + ((b.a === atomId || b.b === atomId) ? b.order : 0), 0);

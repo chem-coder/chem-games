@@ -129,8 +129,13 @@ function describePiece(mol) {
     return `one ${el} from the tray (the reactive piece of the reagent — the rest stays behind)`;
   }
   if (mol.atoms.every((a) => a.el === "H")) return "the H–H molecule (two H, bonded)";
-  if (heavy.length === 2 && mol.atoms.length === 2 && heavy[0].el === heavy[1].el)
-    return `the ${heavy[0].el}–${heavy[1].el} molecule (two ${heavy[0].el}, bonded)`;
+  if (heavy.length === 2 && mol.atoms.length === 2) {
+    const [x, y] = [heavy[0].el, heavy[1].el];
+    if (x === y) return `the ${x}–${y} molecule (two ${x}, bonded)`;
+    const metal = ["K", "Na"].includes(x) ? x : ["K", "Na"].includes(y) ? y : null;
+    if (metal) return `the ${metal}OH — drag a ${metal} and an O together; the O's floating hydrogen completes it`;
+    return `the ${x}–${y} molecule (a ${x} and a ${y}, bonded)`;
+  }
   return "the second reactant from the prompt";
 }
 

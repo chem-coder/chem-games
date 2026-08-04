@@ -23,6 +23,9 @@ const ELEMENT_STYLE = {
   N: { fill: "#1e7268", stroke: "#134f48", text: "#eef6f2", label: "Nitrogen" },
   Cl: { fill: "#356b45", stroke: "#274f33", text: "#eaf3ec", label: "Chlorine" },
   Br: { fill: "#6b4d68", stroke: "#523a50", text: "#f2ecf1", label: "Bromine" },
+  // the hydroxide metals — placeable so KOH / NaOH can be BUILT, not implied
+  K: { fill: "#a8883b", stroke: "#7d6425", text: "#f9f3e2", label: "Potassium" },
+  Na: { fill: "#98987f", stroke: "#6f6f5a", text: "#f4f2e6", label: "Sodium" },
   // explicit hydrogen — a placeable token for the reactions game, where the delivered H
   // IS the teaching. Styled like the implicit H's so it reads as the same species.
   H: { fill: "#f7f3ea", stroke: "#b9ac94", text: "#6e6553", label: "Hydrogen" }
@@ -249,7 +252,12 @@ export function createLab(canvas, { onChange = () => {}, onBondTool = () => {}, 
           const otherReady = hydrogenCount(other, bonds) > 0 || otherPi;
           if (!draggedReady && otherReady) {
             const partnerBonds = bonds.filter((b) => (b.a === dragged.id || b.b === dragged.id) && b.order === 1);
-            const pick = partnerBonds.find((b) => byId()[b.a === dragged.id ? b.b : b.a]?.el === "H") || partnerBonds[0];
+            // which partner lets go: the metal first (KOH's O gives up its K and
+            // keeps its H — the whole point of the hydroxide), then an H, else any
+            const partnerEl = (b) => byId()[b.a === dragged.id ? b.b : b.a]?.el;
+            const pick = partnerBonds.find((b) => partnerEl(b) === "K" || partnerEl(b) === "Na")
+              || partnerBonds.find((b) => partnerEl(b) === "H")
+              || partnerBonds[0];
             // one split per gesture — otherwise a continuing drag re-splits its own
             // fresh bond at every brush and the freed partner leaps away repeatedly
             if (pick && !(drag && drag.didSplit)) {

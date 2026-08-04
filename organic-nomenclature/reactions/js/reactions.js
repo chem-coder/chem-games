@@ -258,7 +258,7 @@ export const SUBSTITUTIONS = [
       type: "hydrolysis",
       reactant: { name: haloName(n, el, [at]), condensed: haloCondensed(n, el, [at]), mol: chainWith(n, [{ el, at }]) },
       reagent: "KOH", conditions: "aqueous",
-      elements: ["C", "O", el], explicitH: 0,
+      elements: ["C", "O", el, "K"], explicitH: 0,
       targets: [{ name: alcoholName({ n, oh }), condensed: alcoholCondensed({ n, oh }), mol: chainWith(n, [{ el: "O", at }]) }]
     };
   })
@@ -347,7 +347,7 @@ const SAPONIFICATION_CARDS = ESTER_PAIRS.slice(0, 4).map(({ acyl, alkyl }) => ({
     mol: FAMILIES.ester.graph({ acyl, alkyl })
   },
   reagent: "NaOH", conditions: "aq · heat",
-  elements: ["C", "O"],
+  elements: ["C", "O", "Na"],
   multiTargets: [
     { name: FAMILIES.acid.name({ n: acyl }), condensed: FAMILIES.acid.condensed({ n: acyl }), mol: FAMILIES.acid.graph({ n: acyl }), note: "as its sodium salt — the soap" },
     { name: alcoholName({ n: alkyl, oh: 1 }), condensed: alcoholCondensed({ n: alkyl, oh: 1 }), mol: chainWith(alkyl, [{ el: "O", at: 1 }]) }
@@ -382,6 +382,13 @@ function x2Mol(el) {
 function loneAtom(el) {
   return { atoms: [{ id: ++nextId, el }], bonds: [] };  // implicit H's make it HX / H2O
 }
+function mohMol(metal) {
+  // a metal hydroxide the student can BUILD (Dalia: "add K to the tray so that I
+  // can have enough elements to create all the reagents") — metal bonded to O,
+  // the O's implicit H completes the M–O–H
+  const a = ++nextId, b = ++nextId;
+  return { atoms: [{ id: a, el: metal }, { id: b, el: "O" }], bonds: [{ a, b, order: 1 }] };
+}
 
 for (const c of REACTIONS) {
   c.phase1Mols = [
@@ -398,13 +405,13 @@ for (const c of SUBSTITUTIONS) {
     ? [c.reactant.mol, x2Mol(c.reagent === "Br2" ? "Br" : "Cl")]
     : c.type === "subAlcohol"
     ? [c.reactant.mol, loneAtom(c.reagent === "HBr" ? "Br" : "Cl")]
-    : [c.reactant.mol, loneAtom("O")];   // hydrolysis: the OH source rides along
+    : [c.reactant.mol, mohMol("K")];     // hydrolysis: the student builds the KOH itself
   if (c.type === "subHalogenation") c.byproduct = c.reagent === "Br2" ? "HBr" : "HCl";
   if (c.type === "subAlcohol") c.byproduct = "H2O";
 }
 for (const c of CARBONYLS) {
   c.phase1Mols = c.reactant.mols ? [...c.reactant.mols]
-    : c.type === "saponification" ? [c.reactant.mol, loneAtom("O")]
+    : c.type === "saponification" ? [c.reactant.mol, mohMol("Na")]
     : [c.reactant.mol];
 }
 
