@@ -79,6 +79,35 @@ base side: max(ph−k, 7)), with an `approx` flag when the clamp engaged (drives
 display and the discovery reveal). All arithmetic stays integer; tests cross-check every
 scripted step and card.
 
+## Rung 4 spec — pH Ladder (locked 2026-08-11)
+
+Decisions (Dalia): drag with tap-tap fallback (two equivalent gestures, one meaning);
+mostly increasing order with one prominently-labeled decreasing puzzle; hydrolyzing
+salts deferred — they join as a bonus mixed-ladder deck AFTER Salt Court teaches them.
+
+**The rule the rung teaches** (equal concentration, qualitative only, no Ka ever):
+diprotic strong acid < strong acid < weak acid < 7 < weak base < strong base < diprotic
+strong base. Neutral salts and pure water sit at 7.
+
+**Mechanic.** Each round item is one ordering PUZZLE: 3–5 solution cards (every puzzle
+states "all 0.1 M"), a row of empty slots labeled lowest → highest pH (or the reverse,
+labeled loudly, on the one decreasing puzzle), the spine gradient beneath for ambient
+orientation. Placement: pointer-drag or tap-card-then-tap-slot; cards rearrange freely;
+Check enables only when all slots are filled; one commit per puzzle, binary grade,
+requeue on miss. No per-card feedback before Check (predict-before-reveal).
+
+**Reveal teaches classification:** each placed card marks right/wrong in place; the
+correct sequence appears with a class chip under each card ("strong acid · 2 H⁺",
+"weak acid", "neutral salt · pH 7"). Hints: ① classify each species ② the ordering
+rule ③ the diprotic/count detail.
+
+**Content.** Species pool with classes: HCl, HNO3 (strong acid); H2SO4 (diprotic);
+CH3COOH, HCOOH, HF (weak acid); NaCl, KNO3, KCl (neutral salt); pure water; NH3 (weak
+base); NaOH, KOH (strong base); Ba(OH)2, Ca(OH)2 (diprotic base). Five puzzles climbing:
+3-item warm-up → +weak acid → the 2023 skill with our own species mix (never the exam's
+exact five) → +weak base → water-anchored 5-item (one of the later ones decreasing).
+Engine refuses puzzles with class ties (ambiguous order = authoring error, thrown).
+
 ## Build order
 
 1. Rung 1 + shared engine (typed-answer accepted-set checker, hint ladder, deck runner, gradient spine) — this is the template all rungs reuse.

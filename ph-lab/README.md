@@ -4,7 +4,7 @@ The quantitative acid–base game. First build of the IMAT course track — see
 [documentation/imat-course/ph-lab-plan.md](../documentation/imat-course/ph-lab-plan.md)
 for the full six-rung plan and the locked decisions behind it.
 
-## Current Scope — Rungs 1–3 of 6
+## Current Scope — Rungs 1–4 of 6
 
 **Rung 1 — Powers of Ten.** The pH square: [H⁺] ↔ pH ↔ pOH ↔ [OH⁻], all conversions
 via exponent reading (flip the sign; pH + pOH = 14; Kw exponents sum to −14).
@@ -25,6 +25,16 @@ base run meets the same wall from above. Then a 5-card stack in the exam's
 framings: "made up to", "how much water to ADD" (99/90 mL — answering the total
 is wrong, and the reveal shows total − existing = added), the factor question,
 and the asymptote card. Bench steps grade but never requeue mid-session.
+
+**Rung 4 — pH Ladder.** Ordering puzzles at equal concentration (always 0.1 M):
+drag cards into slots — or tap a card, then tap a slot; both gestures share one
+placement semantic — and Check only when every slot is filled. One rule:
+diprotic strong acid < strong acid < weak acid < 7 < weak base < strong base <
+diprotic base; neutral salts and pure water pin the middle. One late puzzle runs
+DECREASING with a loud banner. The reveal marks each slot and shows the correct
+sequence with class chips — the why is always the classification. The engine
+throws on class ties, so ambiguous puzzles can't be authored. Hydrolyzing salts
+join later, after Salt Court teaches them.
 - Typed answers: plain integers for pH/pOH; for concentrations the input box IS the
   superscript slot of 10^▢, so the student types a signed exponent.
 - Sign near-misses (dropped minus on an exponent, spurious minus on a pH) get a

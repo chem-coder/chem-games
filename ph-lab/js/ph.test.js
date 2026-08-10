@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr, dilute, volFactorExp, isApprox } from "./ph.js";
+import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr, dilute, volFactorExp, isApprox,
+  ladderRank, ladderChip, ladderSolve, ladderGrade, ladderHints } from "./ph.js";
 import { TIERS } from "./content.js";
 
 // ── the six conversions ───────────────────────────────────────────────────────
@@ -27,16 +28,16 @@ test("solutionPh places every problem on the 0–14 spine", () => {
 // ── content cross-check: hand-entered expected vs engine ─────────────────────
 test("every content item's hand-entered expected matches the engine", () => {
   for (const tier of TIERS) {
-    for (const item of tier.items) {
+    for (const item of tier.items ?? []) {
       assert.equal(solve(item), item.expected, `${tier.id}/${item.id}`);
     }
   }
 });
 
 test("content ids are unique, n stays inside 0–14, and every answer lands on the 0–14 spine", () => {
-  const ids = TIERS.flatMap((t) => t.items.map((i) => i.id));
+  const ids = TIERS.flatMap((t) => [...(t.items ?? []), ...(t.puzzles ?? [])].map((i) => i.id));
   assert.equal(new Set(ids).size, ids.length);
-  for (const tier of TIERS) for (const item of tier.items) {
+  for (const tier of TIERS) for (const item of tier.items ?? []) {
     if ("n" in item) assert.ok(item.n >= 0 && item.n <= 14, `${item.id} n out of range`);
     const ph = solutionPh(item);
     assert.ok(ph >= 0 && ph <= 14, `${item.id} solution pH ${ph} off the spine`);
@@ -132,6 +133,47 @@ test("approx problems accept the typed 7 and format with the ≈", () => {
   assert.equal(grade(p, "7").correct, true);
   assert.equal(grade(p, "9").correct, false);   // the formal-arithmetic wrong answer
   assert.equal(formatAnswer(p), "pH ≈7");
+});
+
+// ── rung 4: the pH Ladder ─────────────────────────────────────────────────────
+test("ladder ranks follow the one rule, both directions", () => {
+  assert.ok(ladderRank("H2SO4") < ladderRank("HCl"));
+  assert.ok(ladderRank("HCl") < ladderRank("CH3COOH"));
+  assert.ok(ladderRank("CH3COOH") < ladderRank("NaCl"));
+  assert.equal(ladderRank("NaCl"), ladderRank("H2O"));       // both live at 7
+  assert.ok(ladderRank("H2O") < ladderRank("NH3"));
+  assert.ok(ladderRank("NH3") < ladderRank("NaOH"));
+  assert.ok(ladderRank("NaOH") < ladderRank("Ba(OH)2"));
+  assert.throws(() => ladderRank("C6H6"), /unknown ladder species/);
+  assert.equal(ladderChip("H2SO4"), "strong acid · 2 H⁺");
+});
+
+test("ladderSolve orders by class, honors direction, and refuses ties", () => {
+  assert.deepEqual(ladderSolve({ direction: "inc", species: ["NaOH", "HCl", "NaCl"] }), ["HCl", "NaCl", "NaOH"]);
+  assert.deepEqual(ladderSolve({ direction: "dec", species: ["H2O", "NH3", "HCl", "Ba(OH)2", "HCOOH"] }),
+    ["Ba(OH)2", "NH3", "H2O", "HCOOH", "HCl"]);
+  assert.throws(() => ladderSolve({ direction: "inc", species: ["HCl", "HNO3", "NaOH"] }), /class tie/);   // two sa1
+  assert.throws(() => ladderSolve({ direction: "inc", species: ["NaCl", "H2O", "HCl"] }), /class tie/);    // both at 7
+});
+
+test("ladderGrade marks per-slot and overall", () => {
+  const p = { direction: "inc", species: ["NaOH", "HCl", "NaCl"] };
+  assert.deepEqual(ladderGrade(["HCl", "NaCl", "NaOH"], p).perSlot, [true, true, true]);
+  const g = ladderGrade(["NaCl", "HCl", "NaOH"], p);
+  assert.equal(g.correct, false);
+  assert.deepEqual(g.perSlot, [false, false, true]);
+  assert.deepEqual(g.expected, ["HCl", "NaCl", "NaOH"]);
+});
+
+test("every ladder puzzle's hand-entered expected matches the engine, tie-free", () => {
+  for (const tier of TIERS) {
+    if (!tier.puzzles) continue;
+    for (const p of tier.puzzles) {
+      assert.deepEqual(ladderSolve(p), p.expected, p.id);
+      assert.ok(ladderHints(p).length >= 3, `${p.id} hints`);
+    }
+    assert.ok(tier.puzzles.some((p) => p.direction === "dec"), "one decreasing puzzle must exist");
+  }
 });
 
 test("every scripted bench step's hand-entered chain matches dilute()", () => {

@@ -102,6 +102,27 @@ export const TIERS = [
       { id: "df-1000", kind: "dilute-factor", side: "acid", startPh: 1, targetPh: 4, expected: 1000 },
       { id: "db-asym", kind: "dilute-by",     side: "acid", startPh: 6, factorK: 3, expected: 7 }                                 // ≈7, never 9
     ]
+  },
+  {
+    id: "ladder",
+    label: "pH Ladder",
+    tagline: "same concentration, different pH — classify, then order",
+    // Ordering puzzles (rung 4). Every puzzle is equal-concentration (0.1 M) and
+    // tie-free by construction — ladderSolve throws otherwise. `expected` is the
+    // hand-entered correct sequence in the puzzle's own direction, cross-checked
+    // by the tests. Difficulty climbs; the one "dec" puzzle is late on purpose.
+    puzzles: [
+      { id: "L1", direction: "inc", species: ["NaOH", "HCl", "NaCl"],
+        expected: ["HCl", "NaCl", "NaOH"] },
+      { id: "L2", direction: "inc", species: ["KNO3", "HNO3", "CH3COOH", "KOH"],
+        expected: ["HNO3", "CH3COOH", "KNO3", "KOH"] },
+      { id: "L3", direction: "inc", species: ["HCOOH", "Ca(OH)2", "H2SO4", "KCl", "HCl"],
+        expected: ["H2SO4", "HCl", "HCOOH", "KCl", "Ca(OH)2"] },      // the 2023 skill, our species
+      { id: "L4", direction: "inc", species: ["NH3", "NaOH", "CH3COOH", "HNO3", "KNO3"],
+        expected: ["HNO3", "CH3COOH", "KNO3", "NH3", "NaOH"] },
+      { id: "L5", direction: "dec", species: ["H2O", "NH3", "HCl", "Ba(OH)2", "HCOOH"],
+        expected: ["Ba(OH)2", "NH3", "H2O", "HCOOH", "HCl"] }         // highest pH first!
+    ]
   }
 ];
 

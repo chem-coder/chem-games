@@ -2,7 +2,8 @@
 // Rung 1 (Powers of Ten): read a corner of the pH square, type the corner you're sent to,
 // Check. Predict-then-Check spine with a progressive hint ladder — same skeleton as the
 // Oxidation-State Trainer, so the family keeps one feel.
-import { buildProblem, grade, supNum, formatAnswer, fmtSpecies, concStr, parseTyped } from "./ph.js";
+import { buildProblem, grade, supNum, formatAnswer, fmtSpecies, concStr, parseTyped,
+  ladderSolve, ladderGrade, ladderHints, ladderChip } from "./ph.js";
 import { TIERS } from "./content.js";
 
 const root = document.querySelector("#game");
@@ -40,6 +41,13 @@ let benchPh = 0;           // the beaker's CURRENT (revealed) pH
 let benchSolved = 0;
 let benchTotal = 0;
 let benchMisses = [];      // step labels for the round report (bench steps never requeue)
+
+// ── ladder state (pH Ladder, rung 4) ──
+let puzzle = null;         // current ordering puzzle
+let placed = [];           // slot index → species | null
+let trayOrder = [];        // shuffled display order of the puzzle's species
+let selected = null;       // { species, from: "tray" | slotIndex } — the tap-tap half-gesture
+let ladderGraded = null;   // { correct, perSlot, expected }
 
 const NUDGE_MSG = {
   "exponent-negative": `Almost — the minus is the message. Concentrations here run from 1 M (10⁰) <em>down</em> to 10⁻¹⁴ M, so the exponent is <strong>negative</strong>.`,
@@ -111,7 +119,53 @@ const benchApproxNow = () => benchWasApprox;
 // ── flow ──
 function startRound() {
   if (tier().sessions) return startBench();
+  if (tier().puzzles) return startLadder();
   startCards();
+}
+
+// ── ladder flow ──
+const displaySpecies = (s) => s === "H2O" ? "pure H<sub>2</sub>O" : fmtSpecies(s);
+function startLadder() {
+  queue = shuffle(tier().puzzles);
+  roundTotal = queue.length;
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  mode = "ladder";
+  loadPuzzle();
+}
+function loadPuzzle() {
+  puzzle = queue[0];
+  placed = Array(puzzle.species.length).fill(null);
+  trayOrder = shuffle(puzzle.species);
+  selected = null; ladderGraded = null; hintsShown = 0; checked = false;
+  render();
+}
+const trayPool = () => trayOrder.filter((s) => !placed.includes(s));
+// One placement semantic serves both gestures: put `sel` into slot i. A tray card bumps
+// any occupant back to the tray; a card moved between slots swaps with the occupant.
+function placeInto(slotIdx, sel) {
+  const occupant = placed[slotIdx];
+  if (sel.from === "tray") placed[slotIdx] = sel.species;
+  else { placed[sel.from] = occupant; placed[slotIdx] = sel.species; }
+  selected = null;
+  render();
+}
+function returnToTray(sel) {
+  if (sel.from !== "tray") placed[sel.from] = null;
+  selected = null;
+  render();
+}
+function ladderCheck() {
+  if (checked || placed.includes(null)) return;
+  ladderGraded = ladderGrade(placed, puzzle);
+  graded = { correct: ladderGraded.correct };
+  checked = true; selected = null;
+  if (ladderGraded.correct) { solvedThisRound += 1; if (hintsShown === 0) cleanSolves += 1; }
+  else missedThisRound.push(puzzle);
+  render();
+}
+function ladderNext() {
+  queue = requeue(queue, ladderGraded.correct);
+  if (queue.length === 0) { mode = "done"; render(); } else loadPuzzle();
 }
 function startCards() {
   queue = shuffle(tier().items).slice(0, Math.min(DEFAULT_ROUND, tier().items.length));
@@ -188,8 +242,136 @@ function render() {
   if (mode === "intro") return renderIntro();
   if (mode === "done") return renderDone();
   if (mode === "bench") return renderBench();
+  if (mode === "ladder") return renderLadder();
   renderPlay();
 }
+
+function renderLadder() {
+  const n = puzzle.species.length;
+  const dec = puzzle.direction === "dec";
+  const isSel = (species, from) => selected && selected.species === species &&
+    String(selected.from) === String(from);
+
+  const cardHtml = (species, from) =>
+    `<span class="ladder-card${isSel(species, from) ? " sel" : ""}" data-species="${species}" data-from="${from}">${displaySpecies(species)}</span>`;
+
+  const slots = placed.map((s, i) => {
+    const mark = checked ? (ladderGraded.perSlot[i] ? " ok" : " no") : "";
+    return `<div class="ladder-slot${s ? " filled" : ""}${mark}" data-slot="${i}">
+      ${s ? cardHtml(s, i) : `<span class="slot-num">${i + 1}</span>`}
+    </div>`;
+  }).join("");
+
+  const pool = trayPool();
+  const tray = checked ? "" : `<div class="ladder-tray" id="ladderTray">
+      ${pool.length ? pool.map((s) => cardHtml(s, "tray")).join("") : `<span class="tray-empty">all placed — Check when you're sure</span>`}
+    </div>`;
+
+  const hints = ladderHints(puzzle);
+  const shown = hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
+  const hintBlock = checked ? "" : `<div class="hints">
+      ${hintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
+      ${hintsShown < hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${hintsShown ? "Another hint" : "Need a hint?"}</button>` : ""}
+    </div>`;
+
+  let reveal = "", feedback = `<p class="feedback">&nbsp;</p>`;
+  if (checked) {
+    feedback = ladderGraded.correct
+      ? `<p class="feedback ok">${hintsShown ? "Ordered." : "Ordered — no hints. 💪"} It leaves the stack.</p>`
+      : `<p class="feedback no">Not quite — this ordering comes back around.</p>`;
+    reveal = `<div class="ladder-answer">
+      <p class="ladder-answer-h">The ladder, ${dec ? "highest" : "lowest"} pH first:</p>
+      <div class="ladder-answer-row">${ladderGraded.expected.map((s) =>
+        `<span class="ladder-answer-card">${displaySpecies(s)}<span class="class-chip">${ladderChip(s)}</span></span>`).join("")}</div>
+    </div>`;
+  }
+
+  root.innerHTML = `
+    <button class="intro-link" id="introBtn" type="button">↩ How the ladder works</button>
+    <p class="ladder-direction${dec ? " dir-dec" : ""}">${dec
+      ? `⚠ Order by <strong>DECREASING</strong> pH — highest first. All solutions 0.1 M.`
+      : `Order by <strong>increasing</strong> pH — lowest first. All solutions 0.1 M.`}</p>
+    <div class="ladder-slots">${slots}</div>
+    ${dec ? "" : spine()}
+    ${tray}
+    ${hintBlock}
+    ${reveal}
+    ${feedback}
+    <div class="controls">
+      <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+      ${checked
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !ladderGraded.correct ? "Next →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn" ${placed.includes(null) ? "disabled" : ""}>Check</button>`}
+    </div>`;
+
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", showHint);
+  const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", ladderCheck);
+  const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", ladderNext); nextBtn.focus(); }
+  if (!checked) wireLadderGestures();
+}
+
+// ── placement gestures: pointer-drag, with tap-card-then-tap-slot as the same meaning ──
+function wireLadderGestures() {
+  const fromOf = (el) => el.dataset.from === "tray" ? "tray" : Number(el.dataset.from);
+
+  root.querySelectorAll(".ladder-card").forEach((card) => {
+    card.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const sel = { species: card.dataset.species, from: fromOf(card) };
+      let ghost = null, dragged = false;
+      const startX = e.clientX, startY = e.clientY;
+
+      const move = (ev) => {
+        if (!dragged && Math.hypot(ev.clientX - startX, ev.clientY - startY) < 6) return;
+        if (!ghost) {
+          dragged = true;
+          ghost = card.cloneNode(true);
+          ghost.classList.add("ghost");
+          document.body.appendChild(ghost);
+          card.classList.add("dragging");
+        }
+        ghost.style.left = `${ev.clientX}px`;
+        ghost.style.top = `${ev.clientY}px`;
+      };
+      const up = (ev) => {
+        document.removeEventListener("pointermove", move);
+        document.removeEventListener("pointerup", up);
+        if (ghost) { ghost.remove(); card.classList.remove("dragging"); }
+        if (!dragged) {   // a tap
+          // Holding a selection and tapping a card that sits IN A SLOT places there (swap);
+          // any other tap just moves the selection.
+          if (selected && !isSameSel(sel) && sel.from !== "tray") { placeInto(sel.from, selected); return; }
+          selected = isSameSel(sel) ? null : sel;
+          render();
+          return;
+        }
+        const under = document.elementFromPoint(ev.clientX, ev.clientY);
+        const slotEl = under && under.closest(".ladder-slot");
+        if (slotEl) placeInto(Number(slotEl.dataset.slot), sel);
+        else if (under && under.closest("#ladderTray")) returnToTray(sel);
+        else render();   // dropped nowhere — snap back
+      };
+      document.addEventListener("pointermove", move);
+      document.addEventListener("pointerup", up);
+    });
+  });
+
+  // Tapping a slot completes the tap-tap gesture (or retrieves nothing if no selection).
+  root.querySelectorAll(".ladder-slot").forEach((slotEl) => {
+    slotEl.addEventListener("pointerup", (e) => {
+      if (!selected) return;
+      if (e.target.closest(".ladder-card")) return;   // the card's own handler owns this tap
+      placeInto(Number(slotEl.dataset.slot), selected);
+    });
+  });
+  const trayEl = root.querySelector("#ladderTray");
+  if (trayEl) trayEl.addEventListener("pointerup", (e) => {
+    if (!selected || e.target.closest(".ladder-card")) return;
+    returnToTray(selected);
+  });
+}
+const isSameSel = (sel) => selected && selected.species === sel.species && String(selected.from) === String(sel.from);
 
 function renderBench() {
   const s = benchStep();
@@ -375,8 +557,36 @@ function introDilution() {
   </div>`;
 }
 
+function introLadder() {
+  const band = [["H₂SO₄", "strong acid · 2 H⁺"], ["HCl", "strong acid"], ["CH₃COOH", "weak acid"],
+    ["NaCl · H₂O", "neutral · 7"], ["NH₃", "weak base"], ["NaOH", "strong base"], ["Ba(OH)₂", "strong base · 2 OH⁻"]];
+  return `<div class="intro">
+    <p class="intro-eyebrow">pH Ladder · classify, then order</p>
+    <p class="intro-lede">Same concentration, different pH. No numbers to compute here — every card has a <strong>class</strong>, and the classes have a fixed order around 7:</p>
+    <div class="rule-band">${band.map(([f, c], i) =>
+      `<span class="rule-step${i === 3 ? " rule-seven" : ""}"><span class="rule-formula">${f}</span><span class="rule-class">${c}</span></span>`
+    ).join(`<span class="rule-lt">&lt;</span>`)}</div>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-text"><strong>Classify every card first</strong> — strong or weak, acid or base, or neutral. The order falls out of the classes, never out of memory.</span></li>
+      <li><span class="step-num">2</span><span class="step-text"><strong>Strong beats weak</strong> at pulling away from 7 — and a diprotic acid (or 2 OH⁻ base) pulls hardest of all.</span></li>
+      <li><span class="step-num">3</span><span class="step-text"><strong>Read the direction.</strong> The exam asks increasing <em>and</em> decreasing — the ladder will too.</span></li>
+    </ol>
+    <div class="ox-worked">
+      <p class="ox-worked-h">Worked example — 0.1 M each: NaOH, HCl, NaCl, increasing pH</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text">Classify: HCl strong acid · NaCl neutral salt · NaOH strong base.</span></li>
+        <li><span class="step-num">2</span><span class="step-text">Order around 7: <strong>HCl &lt; NaCl &lt; NaOH</strong>.</span></li>
+      </ol>
+    </div>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
-  const body = tier().id === "strong" ? introStrong() : tier().id === "dilution" ? introDilution() : introPowers();
+  const body = tier().id === "strong" ? introStrong()
+    : tier().id === "dilution" ? introDilution()
+    : tier().id === "ladder" ? introLadder()
+    : introPowers();
   root.innerHTML = `${tierTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); renderIntro(); }));
@@ -471,7 +681,7 @@ function renderPlay() {
 
 function renderDone() {
   const isBenchTier = !!tier().sessions;
-  const chipOf = (p) => renderGiven(p);
+  const chipOf = (p) => p.species && Array.isArray(p.species) ? p.species.map(displaySpecies).join(" · ") : renderGiven(p);
   const missedChips = missedThisRound.map((p) => `<span class="chip">${chipOf(p)}</span>`).join("")
     + (isBenchTier ? benchMisses.map((m) => `<span class="chip">${m}</span>`).join("") : "");
   const missCount = missedThisRound.length + (isBenchTier ? benchMisses.length : 0);
@@ -480,7 +690,9 @@ function renderDone() {
     : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} with no hints. 🎉</p>`;
   const headline = isBenchTier
     ? `Bench done — ${benchSolved} of ${benchTotal} predictions called, ${solvedThisRound} of ${roundTotal} cards solved.`
-    : `Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.`;
+    : tier().puzzles
+      ? `Round done — ${roundTotal} orderings, ${cleanSolves} solved hint-free.`
+      : `Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.`;
 
   root.innerHTML = `
     ${tierTabs()}
@@ -495,7 +707,8 @@ function renderDone() {
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     queue = missedThisRound.slice();
-    roundTotal = queue.length; solvedThisRound = 0; cleanSolves = 0; missedThisRound = []; mode = "play"; loadCard();
+    roundTotal = queue.length; solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+    if (tier().puzzles) { mode = "ladder"; loadPuzzle(); } else { mode = "play"; loadCard(); }
   });
   root.querySelector("#startBtn").addEventListener("click", startRound);
 }

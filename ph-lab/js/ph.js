@@ -221,6 +221,62 @@ export function buildHints(item) {
   }
 }
 
+// ── rung 4: the pH Ladder (qualitative ordering at equal concentration) ──────
+// One rule: diprotic strong acid < strong acid < weak acid < 7 < weak base <
+// strong base < diprotic strong base. Weak species get a PLACE, never a number.
+export const LADDER_CLASSES = {
+  sa2: { rank: 0, chip: "strong acid · 2 H⁺" },
+  sa1: { rank: 1, chip: "strong acid" },
+  wa:  { rank: 2, chip: "weak acid" },
+  ns:  { rank: 3, chip: "neutral salt · pH 7" },
+  w7:  { rank: 3, chip: "pure water · pH 7" },
+  wb:  { rank: 4, chip: "weak base" },
+  sb1: { rank: 5, chip: "strong base" },
+  sb2: { rank: 6, chip: "strong base · 2 OH⁻" }
+};
+export const LADDER_SPECIES = {
+  "HCl": "sa1", "HNO3": "sa1", "H2SO4": "sa2",
+  "CH3COOH": "wa", "HCOOH": "wa", "HF": "wa",
+  "NaCl": "ns", "KNO3": "ns", "KCl": "ns", "H2O": "w7",
+  "NH3": "wb", "NaOH": "sb1", "KOH": "sb1", "Ba(OH)2": "sb2", "Ca(OH)2": "sb2"
+};
+export function ladderClass(species) {
+  const cls = LADDER_SPECIES[species];
+  if (!cls) throw new Error(`unknown ladder species: ${species}`);
+  return cls;
+}
+export const ladderRank = (species) => LADDER_CLASSES[ladderClass(species)].rank;
+export const ladderChip = (species) => LADDER_CLASSES[ladderClass(species)].chip;
+
+// The correct sequence for a puzzle — throws on class ties (an ambiguous ordering is an
+// authoring error, same spirit as the clean-power-of-ten guarantee).
+export function ladderSolve(puzzle) {
+  const ranks = puzzle.species.map(ladderRank);
+  if (new Set(ranks).size !== ranks.length) throw new Error(`ladder puzzle has a class tie: ${puzzle.species.join(", ")}`);
+  const sorted = puzzle.species.slice().sort((a, b) => ladderRank(a) - ladderRank(b));
+  return puzzle.direction === "dec" ? sorted.reverse() : sorted;
+}
+
+// Grade a full placement: overall verdict plus per-slot marks for the reveal.
+export function ladderGrade(placed, puzzle) {
+  const expected = ladderSolve(puzzle);
+  const perSlot = placed.map((s, i) => s === expected[i]);
+  return { correct: perSlot.every(Boolean), perSlot, expected };
+}
+
+export function ladderHints(puzzle) {
+  const hints = [
+    `Classify each one first: strong acid, weak acid, neutral, weak base, or strong base. Don't order anything until every card has a class.`,
+    `At equal concentration: <strong>strong acid &lt; weak acid &lt; 7 &lt; weak base &lt; strong base</strong>. Neutral salts and pure water sit exactly at 7.`
+  ];
+  const hasDi = puzzle.species.some((s) => ["sa2", "sb2"].includes(ladderClass(s)));
+  hints.push(hasDi
+    ? `Count the ions: a <strong>diprotic</strong> acid (or a 2 OH⁻ base) releases twice as much per unit, so it pulls <em>further</em> from 7 than its monoprotic neighbour.`
+    : `Weak just means <em>partially</em> dissociated — a weak acid is still an acid, so it sits between the strong acids and 7, never above it.`);
+  if (puzzle.direction === "dec") hints.push(`Read the direction again — this ladder runs <strong>highest pH first</strong>.`);
+  return hints;
+}
+
 // Plain-ish formatters used inside hints (HTML sup allowed there).
 // Formula digits become real subscripts: "H2SO4" → H₂SO₄, "Ba(OH)2" → Ba(OH)₂.
 export const fmtSpecies = (formula) => formula.replace(/(\d+)/g, "<sub>$1</sub>");
