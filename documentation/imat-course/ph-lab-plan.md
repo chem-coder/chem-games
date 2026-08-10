@@ -45,6 +45,40 @@
 - Subscripts/superscripts at house size rule (≥50%, slightly lowered) — this game is formula-dense (H₃O⁺, 10⁻¹⁴).
 - Rung intros: two-block template (visual diagram + worked example), diagrams in the style of her slide decks. **Open item:** does an acids/bases slide deck exist to mine, like the Ch 05 nomenclature deck? If yes, map slides → rungs before building intros.
 
+## Rung 3 spec — Dilution Bench (locked 2026-08-11)
+
+Decisions (Dalia): scripted sequences; asymptote as engineered discovery; the 99-mL
+trap grades as honestly wrong with a teaching reveal; pH-tinted beaker built now.
+
+**Phase 1 — The Bench.** A CSS beaker whose liquid color tracks the spine gradient at its
+current pH. Two scripted sessions on one continuing beaker each; every step announces a
+dilution ("water is added until ×10") and the student types the predicted pH BEFORE the
+meter reads. Steps grade like cards but never requeue mid-session (the chain must stay
+coherent); misses are collected for the round report.
+
+- *Acid session* (5 predictions): start 10 mL of 0.1 M HCl, pH 1 → ×10 (2) → ×100 (4) →
+  ×10 (5) → ×10 (6) → **×100 (the discovery: predicted 8, meter reads ≈7)**. The intro
+  never mentions the asymptote — the misprediction is the lesson, and the reveal explains:
+  water itself supplies H⁺; dilution approaches 7 and never passes it.
+- *Base session* (4 predictions): start 0.1 M NaOH, pH 13 → ×10 (12) → ×100 (10) →
+  ×100 (8) → ×10 (**≈7 again** — reinforcement from the other side; bases dilute *down*).
+- Near-7 answers: display "≈7", accept a typed 7.
+
+**Phase 2 — the card stack** (5 cards, requeue as normal), the exam's framings:
+1. "Made up to" (2017 Q44 shape): e.g. 50 mL of 0.1 M HNO₃ made up to 5 L → pH 3.
+2. "How much water to add" (2024 Q46 shape): 1 mL at pH 3 → pH 5 needs 100× total →
+   **99 mL added**. Answering 100 is *wrong* — the reveal shows total − existing = added.
+3. Same trap at a different scale: 10 mL at pH 2 → pH 3 → add **90 mL**.
+4. Factor question: what dilution factor takes pH 1 to pH 4 → ×1000.
+5. Asymptote card: pH 6 diluted 1000× → ≈7 (not 9).
+Volume cards fix the unit on the card ("___ mL"); the student types the number only.
+
+**Logic:** `dilute(ph, factorExp, side)` in ph.js — formal pH shifts by the factor's
+exponent toward the far end, but the *actual* answer clamps at ≈7 (acid side: min(ph+k, 7);
+base side: max(ph−k, 7)), with an `approx` flag when the clamp engaged (drives the "≈7"
+display and the discovery reveal). All arithmetic stays integer; tests cross-check every
+scripted step and card.
+
 ## Build order
 
 1. Rung 1 + shared engine (typed-answer accepted-set checker, hint ladder, deck runner, gradient spine) — this is the template all rungs reuse.

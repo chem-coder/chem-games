@@ -63,6 +63,45 @@ export const TIERS = [
       { id: "mb-naoh", kind: "mass-base", species: "NaOH", mass: 4,     vol: 10, molar: 40,   expected: 12 },
       { id: "mb-koh",  kind: "mass-base", species: "KOH",  mass: 5.6,   vol: 1,  molar: 56,   expected: 13 }
     ]
+  },
+  {
+    id: "dilution",
+    label: "Dilution Bench",
+    tagline: "every ×10 is one pH step toward 7 — predict before the meter reads",
+    // Phase 1: scripted bench sessions on a continuing beaker. `expected` chains are
+    // hand-entered (approx marks the ≈7 clamp — THE discovery; the intro stays silent
+    // about it on purpose, so don't leak it in step text).
+    sessions: [
+      {
+        id: "acid-run", side: "acid", label: "the acid",
+        startText: "10 mL of 0.1 M HCl", startPh: 1,
+        steps: [
+          { k: 1, expected: 2,  approx: false },
+          { k: 2, expected: 4,  approx: false },
+          { k: 1, expected: 5,  approx: false },
+          { k: 1, expected: 6,  approx: false },
+          { k: 2, expected: 7,  approx: true }   // formally 8 — the meter says otherwise
+        ]
+      },
+      {
+        id: "base-run", side: "base", label: "the base",
+        startText: "10 mL of 0.1 M NaOH", startPh: 13,
+        steps: [
+          { k: 1, expected: 12, approx: false },
+          { k: 2, expected: 10, approx: false },
+          { k: 2, expected: 8,  approx: false },
+          { k: 1, expected: 7,  approx: true }   // the ceiling holds from the other side too
+        ]
+      }
+    ],
+    // Phase 2: the exam's framings. dilute-add answers are the volume ADDED (the trap).
+    items: [
+      { id: "dm-hno3", kind: "dilute-made",   side: "acid", species: "HNO3", exp: 1, startVolMl: 50, endVolL: 5, expected: 3 },   // 2017 Q44's shape
+      { id: "da-99",   kind: "dilute-add",    side: "acid", startVolMl: 1,  startPh: 3, targetPh: 5, expected: 99 },              // 2024 Q46's shape
+      { id: "da-90",   kind: "dilute-add",    side: "acid", startVolMl: 10, startPh: 2, targetPh: 3, expected: 90 },
+      { id: "df-1000", kind: "dilute-factor", side: "acid", startPh: 1, targetPh: 4, expected: 1000 },
+      { id: "db-asym", kind: "dilute-by",     side: "acid", startPh: 6, factorK: 3, expected: 7 }                                 // ≈7, never 9
+    ]
   }
 ];
 

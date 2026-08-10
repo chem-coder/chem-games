@@ -20,8 +20,38 @@ export const KINDS = {
   "strong-acid": { given: "conc", ask: "pH",  answerKind: "integer" },
   "strong-base": { given: "conc", ask: "pH",  answerKind: "integer" },
   "mass-acid":   { given: "mass", ask: "pH",  answerKind: "integer" },
-  "mass-base":   { given: "mass", ask: "pH",  answerKind: "integer" }
+  "mass-base":   { given: "mass", ask: "pH",  answerKind: "integer" },
+  "dilute-made":   { given: "dilution", ask: "pH",     answerKind: "integer" },
+  "dilute-by":     { given: "dilution", ask: "pH",     answerKind: "integer" },
+  "dilute-add":    { given: "dilution", ask: "vol",    answerKind: "volume" },
+  "dilute-factor": { given: "dilution", ask: "factor", answerKind: "factor" }
 };
+
+// ── rung 3: dilution ─────────────────────────────────────────────────────────
+// Each ×10 dilution moves the pH one step toward 7 — and never past it. The formal
+// arithmetic can cross 7; real solutions can't, because water's own ions take over.
+// `approx: true` means the value clamped (display "≈7", accept a typed 7).
+export function dilute(ph, factorExp, side) {
+  if (side === "acid") {
+    const formal = ph + factorExp;
+    return formal >= 7 && ph < 7 ? { ph: 7, approx: true } : { ph: formal, approx: false };
+  }
+  if (side === "base") {
+    const formal = ph - factorExp;
+    return formal <= 7 && ph > 7 ? { ph: 7, approx: true } : { ph: formal, approx: false };
+  }
+  throw new Error(`unknown side: ${side}`);
+}
+
+// "made up to": dilution factor from the two volumes — must be a clean power of ten.
+export function volFactorExp(startVolMl, endVolL) {
+  const factor = (endVolL * 1000) / startVolMl;
+  const k = Math.round(Math.log10(factor));
+  if (10 ** k !== factor) throw new Error(`dilution factor ${factor} is not a power of ten`);
+  return k;
+}
+// pH steps between here and the target (always toward 7).
+const stepsBetween = (item) => item.side === "acid" ? item.targetPh - item.startPh : item.startPh - item.targetPh;
 
 // [ion] = ions × mantissa × 10^−exp must itself be a clean power of ten — that's the whole
 // no-calculator promise. Allowed: 1 × 10^−exp (→ exp) and 2 × 5 × 10^−exp = 10^−(exp−1).
@@ -56,8 +86,25 @@ export function solve(item) {
     case "strong-base": return 14 - ionExp(item);   // [OH-] → pOH → pH
     case "mass-acid":   return massExp(item);       // g → mol → M, then as a strong acid
     case "mass-base":   return 14 - massExp(item);
+    case "dilute-made": {                            // volumes → factor → steps toward 7
+      const startPh = item.side === "acid" ? item.exp : 14 - item.exp;
+      return dilute(startPh, volFactorExp(item.startVolMl, item.endVolL), item.side).ph;
+    }
+    case "dilute-by":     return dilute(item.startPh, item.factorK, item.side).ph;
+    case "dilute-add":    return item.startVolMl * 10 ** stepsBetween(item) - item.startVolMl; // ADDED, not total
+    case "dilute-factor": return 10 ** stepsBetween(item);
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
+}
+
+// Did this problem's answer clamp at the ≈7 ceiling? (Drives the "≈7" display.)
+export function isApprox(item) {
+  if (item.kind === "dilute-by") return dilute(item.startPh, item.factorK, item.side).approx;
+  if (item.kind === "dilute-made") {
+    const startPh = item.side === "acid" ? item.exp : 14 - item.exp;
+    return dilute(startPh, volFactorExp(item.startVolMl, item.endVolL), item.side).approx;
+  }
+  return false;
 }
 
 // Where the solution sits on the 0–14 spine (for the reveal marker). Every problem resolves
@@ -71,8 +118,11 @@ export function solutionPh(item) {
     case "poh-to-ph": return 14 - n;
     case "h-to-oh":   return n;
     case "oh-to-ph":  return 14 - n;
-    // Rung 2 always asks for the pH, so the solution sits exactly where the answer says.
-    case "strong-acid": case "strong-base": case "mass-acid": case "mass-base": return solve(item);
+    // Rungs 2–3 mostly ask for the pH, so the solution sits where the answer says; the
+    // volume/factor cards sit at their TARGET pH.
+    case "strong-acid": case "strong-base": case "mass-acid": case "mass-base":
+    case "dilute-made": case "dilute-by": return solve(item);
+    case "dilute-add": case "dilute-factor": return item.targetPh;
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
 }
@@ -139,6 +189,34 @@ export function buildHints(item) {
           : `Now it's a strong-base card: pOH = ${massExp(item)}, so pH = 14 − ${massExp(item)} = <strong>${14 - massExp(item)}</strong>.`
       ];
     }
+    case "dilute-made": {
+      const k = volFactorExp(item.startVolMl, item.endVolL);
+      return [
+        `Dilution factor first: <strong>final volume ÷ starting volume</strong>.`,
+        `${item.endVolL} L ÷ ${item.startVolMl} mL = ×10<sup>${k}</sup> — that's <strong>${k} step${k === 1 ? "" : "s"}</strong>, each one pH step toward 7.`,
+        `Start at pH ${item.side === "acid" ? item.exp : 14 - item.exp}, take ${k} step${k === 1 ? "" : "s"} toward 7.`
+      ];
+    }
+    case "dilute-by": return [
+      `Each <strong>×10</strong> of dilution moves the pH <strong>one step toward 7</strong>.`,
+      `×10<sup>${item.factorK}</sup> = ${item.factorK} steps from pH ${item.startPh}.`,
+      `Careful near the middle — dilution can bring a solution <em>toward</em> 7, but never past it.`
+    ];
+    case "dilute-add": {
+      const k = stepsBetween(item);
+      return [
+        `Each pH step toward 7 needs <strong>×10 the total volume</strong>.`,
+        `pH ${item.startPh} → pH ${item.targetPh} is ${k} step${k === 1 ? "" : "s"}: total = ${item.startVolMl} mL × 10<sup>${k}</sup> = <strong>${item.startVolMl * 10 ** k} mL</strong>.`,
+        `The question asks how much to <strong>ADD</strong> — and some of the total is already in the flask.`
+      ];
+    }
+    case "dilute-factor": {
+      const k = stepsBetween(item);
+      return [
+        `Count the pH steps: ${item.startPh} → ${item.targetPh} is <strong>${k}</strong>.`,
+        `Each step is ×10, so the factor is 10<sup>${k}</sup>.`
+      ];
+    }
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
 }
@@ -156,15 +234,15 @@ export function concStr(item) {
 export function buildProblem(item) {
   const meta = KINDS[item.kind];
   if (!meta) throw new Error(`unknown kind: ${item.kind}`);
-  return { ...item, ...meta, answer: solve(item), ph: solutionPh(item), hints: buildHints(item) };
+  return { ...item, ...meta, answer: solve(item), ph: solutionPh(item), approx: isApprox(item), hints: buildHints(item) };
 }
 
 // ── grading ──────────────────────────────────────────────────────────────────
 // Typed answers are bare integers ("12") for pH/pOH, signed exponents ("−3" / "-3") for
 // concentrations. Normalize unicode minus and stray spaces; a leading "+" is fine.
 export function parseTyped(text) {
-  const cleaned = String(text).replace(/[−–—]/g, "-").replace(/\s+/g, "").replace(/^\+/, "");
-  if (!/^-?\d{1,2}$/.test(cleaned)) return NaN;
+  const cleaned = String(text).replace(/[−–—]/g, "-").replace(/\s+/g, "").replace(/^\+/, "").replace(/^[x×]/i, "");
+  if (!/^-?\d{1,4}$/.test(cleaned)) return NaN;   // up to 4 digits: volumes (999) and factors (1000)
   return Number(cleaned);
 }
 
@@ -188,5 +266,7 @@ const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴
 export const supNum = (x) => String(x).split("").map((c) => SUP[c] ?? c).join("");
 export function formatAnswer(problem) {
   if (problem.answerKind === "exponent") return `10${supNum(problem.answer)} M`;
-  return `${problem.ask} ${problem.answer}`;
+  if (problem.answerKind === "volume") return `${problem.answer} mL`;
+  if (problem.answerKind === "factor") return `× ${problem.answer}`;
+  return `${problem.ask} ${problem.approx ? "≈" : ""}${problem.answer}`;
 }

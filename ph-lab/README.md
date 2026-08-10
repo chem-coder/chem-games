@@ -4,7 +4,7 @@ The quantitative acid–base game. First build of the IMAT course track — see
 [documentation/imat-course/ph-lab-plan.md](../documentation/imat-course/ph-lab-plan.md)
 for the full six-rung plan and the locked decisions behind it.
 
-## Current Scope — Rungs 1–2 of 6
+## Current Scope — Rungs 1–3 of 6
 
 **Rung 1 — Powers of Ten.** The pH square: [H⁺] ↔ pH ↔ pOH ↔ [OH⁻], all conversions
 via exponent reading (flip the sign; pH + pOH = 14; Kw exponents sum to −14).
@@ -15,6 +15,16 @@ No logs, no calculator.
 the diprotic ×2 wrinkle (0.005 M H₂SO₄ → pH 2), and the mass chain
 (g → mol ÷ Mr → M ÷ L → pH) with the Mr printed on the card, exam-style.
 Multi-step cards get an ungraded scratch pad.
+
+**Rung 3 — Dilution Bench.** Two phases. The Bench: scripted dilution sessions on
+a pH-tinted CSS beaker (color tracks the spine gradient; water raises the level
+immediately, but the color only changes when the meter reads — predict first).
+The acid run walks pH 1 toward 7; its last step invites the formal answer (8) and
+the meter reads ≈7 — the never-past-7 asymptote is discovered, not taught; the
+base run meets the same wall from above. Then a 5-card stack in the exam's
+framings: "made up to", "how much water to ADD" (99/90 mL — answering the total
+is wrong, and the reveal shows total − existing = added), the factor question,
+and the asymptote card. Bench steps grade but never requeue mid-session.
 - Typed answers: plain integers for pH/pOH; for concentrations the input box IS the
   superscript slot of 10^▢, so the student types a signed exponent.
 - Sign near-misses (dropped minus on an exponent, spurious minus on a pH) get a

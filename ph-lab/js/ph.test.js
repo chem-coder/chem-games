@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr } from "./ph.js";
+import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr, dilute, volFactorExp, isApprox } from "./ph.js";
 import { TIERS } from "./content.js";
 
 // ── the six conversions ───────────────────────────────────────────────────────
@@ -82,6 +82,72 @@ test("concStr prints exam-style decimals for small exponents", () => {
   assert.equal(concStr({ mantissa: 5, exp: 3 }), "0.005 M");
   assert.equal(concStr({ mantissa: 1, exp: 2 }), "0.01 M");
   assert.equal(concStr({ mantissa: 1, exp: 0 }), "1 M");
+});
+
+// ── rung 3: dilution ──────────────────────────────────────────────────────────
+test("dilute walks toward 7 and clamps there — from both sides", () => {
+  assert.deepEqual(dilute(2, 1, "acid"), { ph: 3, approx: false });
+  assert.deepEqual(dilute(1, 3, "acid"), { ph: 4, approx: false });
+  assert.deepEqual(dilute(6, 2, "acid"), { ph: 7, approx: true });   // formally 8 — the discovery
+  assert.deepEqual(dilute(5, 2, "acid"), { ph: 7, approx: true });   // landing exactly on 7 formally is still ≈
+  assert.deepEqual(dilute(12, 2, "base"), { ph: 10, approx: false });
+  assert.deepEqual(dilute(8, 1, "base"), { ph: 7, approx: true });
+  assert.deepEqual(dilute(7, 3, "acid"), { ph: 10, approx: false }); // degenerate: already at 7 — no clamp claim
+  assert.throws(() => dilute(3, 1, "sideways"), /unknown side/);
+});
+
+test("volFactorExp reads made-up-to volumes, powers of ten only", () => {
+  assert.equal(volFactorExp(10, 1), 2);     // 10 mL → 1 L = ×100
+  assert.equal(volFactorExp(50, 5), 2);     // 50 mL → 5 L = ×100
+  assert.equal(volFactorExp(1, 0.01), 1);   // 1 mL → 10 mL
+  assert.throws(() => volFactorExp(50, 1), /power of ten/);  // ×20 is not clean
+});
+
+test("the dilution card kinds solve to exam answers", () => {
+  assert.equal(solve({ kind: "dilute-made", side: "acid", exp: 1, startVolMl: 50, endVolL: 5 }), 3);        // 2017 shape
+  assert.equal(solve({ kind: "dilute-add", side: "acid", startVolMl: 1, startPh: 3, targetPh: 5 }), 99);    // 2024 shape: ADDED
+  assert.equal(solve({ kind: "dilute-add", side: "acid", startVolMl: 10, startPh: 2, targetPh: 3 }), 90);
+  assert.equal(solve({ kind: "dilute-factor", side: "acid", startPh: 1, targetPh: 4 }), 1000);
+  assert.equal(solve({ kind: "dilute-by", side: "acid", startPh: 6, factorK: 3 }), 7);
+  assert.equal(isApprox({ kind: "dilute-by", side: "acid", startPh: 6, factorK: 3 }), true);
+  assert.equal(isApprox({ kind: "dilute-by", side: "acid", startPh: 2, factorK: 3 }), false);
+});
+
+test("volume and factor answers parse and grade without sign nudges", () => {
+  assert.equal(parseTyped("1000"), 1000);
+  assert.equal(parseTyped("×1000"), 1000);   // typed with the times sign — accepted
+  assert.equal(parseTyped("x100"), 100);
+  const add = buildProblem({ kind: "dilute-add", side: "acid", startVolMl: 1, startPh: 3, targetPh: 5 });
+  assert.equal(grade(add, "99").correct, true);
+  assert.deepEqual(grade(add, "100"), { correct: false, value: 100, nudge: null });  // the trap is WRONG, not a nudge
+  const factor = buildProblem({ kind: "dilute-factor", side: "acid", startPh: 1, targetPh: 4 });
+  assert.equal(grade(factor, "1000").correct, true);
+  assert.equal(formatAnswer(add), "99 mL");
+  assert.equal(formatAnswer(factor), "× 1000");
+});
+
+test("approx problems accept the typed 7 and format with the ≈", () => {
+  const p = buildProblem({ kind: "dilute-by", side: "acid", startPh: 6, factorK: 3 });
+  assert.equal(p.approx, true);
+  assert.equal(grade(p, "7").correct, true);
+  assert.equal(grade(p, "9").correct, false);   // the formal-arithmetic wrong answer
+  assert.equal(formatAnswer(p), "pH ≈7");
+});
+
+test("every scripted bench step's hand-entered chain matches dilute()", () => {
+  for (const tier of TIERS) {
+    if (!tier.sessions) continue;
+    for (const s of tier.sessions) {
+      let ph = s.startPh;
+      for (const step of s.steps) {
+        const out = dilute(ph, step.k, s.side);
+        assert.equal(out.ph, step.expected, `${s.id} step ×10^${step.k} from ${ph}`);
+        assert.equal(out.approx, step.approx, `${s.id} approx flag from ${ph}`);
+        ph = out.ph;
+      }
+      assert.equal(ph, 7, `${s.id} must end at the ≈7 wall — that's the discovery`);
+    }
+  }
 });
 
 // ── typed-answer parsing (accepted-set model) ─────────────────────────────────

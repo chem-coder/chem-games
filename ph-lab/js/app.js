@@ -2,7 +2,7 @@
 // Rung 1 (Powers of Ten): read a corner of the pH square, type the corner you're sent to,
 // Check. Predict-then-Check spine with a progressive hint ladder — same skeleton as the
 // Oxidation-State Trainer, so the family keeps one feel.
-import { buildProblem, grade, supNum, formatAnswer, fmtSpecies, concStr } from "./ph.js";
+import { buildProblem, grade, supNum, formatAnswer, fmtSpecies, concStr, parseTyped } from "./ph.js";
 import { TIERS } from "./content.js";
 
 const root = document.querySelector("#game");
@@ -33,6 +33,14 @@ let missedThisRound = [];
 let nudge = null;          // sign near-miss — retry, don't burn the card
 let scratch = "";          // ephemeral per-card working space (Strong Stuff tier), never graded
 
+// ── bench state (Dilution Bench, phase 1) ──
+let sessionIdx = 0;        // which scripted session
+let stepIdx = 0;           // which step within it
+let benchPh = 0;           // the beaker's CURRENT (revealed) pH
+let benchSolved = 0;
+let benchTotal = 0;
+let benchMisses = [];      // step labels for the round report (bench steps never requeue)
+
 const NUDGE_MSG = {
   "exponent-negative": `Almost — the minus is the message. Concentrations here run from 1 M (10⁰) <em>down</em> to 10⁻¹⁴ M, so the exponent is <strong>negative</strong>.`,
   "scale-positive": `Almost — pH and pOH are themselves <strong>positive</strong> numbers (0–14). The minus already lives inside the formula.`
@@ -44,28 +52,37 @@ const H = "H⁺", OH = "OH⁻";
 
 // The given quantity, as the big card line.
 function renderGiven(p) {
+  if (p.kind === "dilute-made") return `${p.startVolMl} mL of ${concStr({ mantissa: 1, exp: p.exp })} ${fmtSpecies(p.species)}`;
+  if (p.kind === "dilute-add") return `${p.startVolMl} mL at pH ${p.startPh}`;
+  if (p.kind === "dilute-factor") return `pH ${p.startPh} → pH ${p.targetPh}`;
+  if (p.kind === "dilute-by") return `a pH ${p.startPh} solution`;
   if (p.given === "conc") return `${concStr(p)} ${fmtSpecies(p.species)}`;
   if (p.given === "mass") return `${p.mass} g ${fmtSpecies(p.species)} in ${p.vol} L`;
   if (p.given === "H") return conc(H, p.n);
   if (p.given === "OH") return conc(OH, p.n);
   return `${p.given} = ${p.n}`;
 }
-// The mass-chain cards carry their Mr, the way the exam prints Ar/Mr values.
+// The second card line: Mr on mass cards (exam-style), the dilution action on rung-3 cards.
 function renderCardSub(p) {
-  if (p.given !== "mass") return "";
-  return `<p class="card-sub">M<sub>r</sub>(${fmtSpecies(p.species)}) = ${p.molar}</p>`;
+  if (p.given === "mass") return `<p class="card-sub">M<sub>r</sub>(${fmtSpecies(p.species)}) = ${p.molar}</p>`;
+  if (p.kind === "dilute-made") return `<p class="card-sub">made up to ${p.endVolL} L with water</p>`;
+  if (p.kind === "dilute-add") return `<p class="card-sub">target: pH ${p.targetPh}</p>`;
+  if (p.kind === "dilute-by") return `<p class="card-sub">diluted ×${10 ** p.factorK}</p>`;
+  return "";
 }
 // What the card asks for, in words.
 function renderAsk(p) {
   if (p.ask === "H") return `what is [${H}]?`;
   if (p.ask === "OH") return `what is [${OH}]?`;
+  if (p.ask === "vol") return `how much water must you <strong>add</strong>, in mL?`;
+  if (p.ask === "factor") return `what dilution factor is needed?`;
   return `what is the ${p.ask}?`;
 }
 
 // The autumn spine: 0–14 gradient bar, teal at 7. Marker only after Check (predict first).
-function spine(ph = null) {
+function spine(ph = null, tag = null) {
   const marker = ph === null ? "" :
-    `<span class="spine-marker" style="left:${(ph / 14) * 100}%"><span class="spine-marker-tag">${ph}</span></span>`;
+    `<span class="spine-marker" style="left:${(ph / 14) * 100}%"><span class="spine-marker-tag">${tag ?? ph}</span></span>`;
   return `<div class="spine-wrap">
     <div class="spine">${marker}</div>
     <div class="spine-scale"><span>0</span><span class="spine-mid">7</span><span>14</span></div>
@@ -73,8 +90,30 @@ function spine(ph = null) {
   </div>`;
 }
 
+// ── the beaker: liquid color sampled from the spine gradient, one swatch per pH ──
+const PH_COLORS = ["#8a3b22", "#a04628", "#b4502f", "#c26b41", "#cf8a55", "#d8ac7e", "#e0cfa8",
+  "#1e7268", "#6f8f6a", "#5f8160", "#4a7355", "#3f664c", "#345a44", "#2d5440", "#274e3c"];
+
+const session = () => tier().sessions[sessionIdx];
+const benchStep = () => session().steps[stepIdx];
+// A bench step graded like a card: generic hints that never leak the ≈7 ceiling.
+function benchHints() {
+  const s = benchStep();
+  return [
+    `Each <strong>×10</strong> of dilution moves the pH <strong>one step toward 7</strong>.`,
+    `This is ×10<sup>${s.k}</sup> — ${s.k} step${s.k === 1 ? "" : "s"} from pH ${benchApproxNow() ? "≈" : ""}${benchPh}.`
+  ];
+}
+let benchWasApprox = false;                       // did the CURRENT beaker already clamp?
+let benchFormal = null;                           // the un-clamped arithmetic value of the last step
+const benchApproxNow = () => benchWasApprox;
+
 // ── flow ──
 function startRound() {
+  if (tier().sessions) return startBench();
+  startCards();
+}
+function startCards() {
   queue = shuffle(tier().items).slice(0, Math.min(DEFAULT_ROUND, tier().items.length));
   roundTotal = queue.length;
   solvedThisRound = 0;
@@ -82,6 +121,41 @@ function startRound() {
   missedThisRound = [];
   mode = "play";
   loadCard();
+}
+function startBench() {
+  sessionIdx = 0; stepIdx = 0;
+  benchPh = session().startPh; benchWasApprox = false;
+  benchSolved = 0; benchMisses = [];
+  benchTotal = tier().sessions.reduce((n, s) => n + s.steps.length, 0);
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  typed = ""; hintsShown = 0; checked = false; graded = null; nudge = null;
+  mode = "bench";
+  render();
+}
+function benchCheck() {
+  if (checked || !typed.trim()) return;
+  const value = parseTyped(typed);
+  const s = benchStep();
+  graded = { correct: value === s.expected, value };
+  checked = true;
+  if (graded.correct) benchSolved += 1;
+  else benchMisses.push(`${session().label} · pH ${benchApproxNow() ? "≈" : ""}${benchPh} ×10${supNum(s.k)}`);
+  // What the arithmetic alone would say — quoted by the discovery panel when the meter disagrees.
+  benchFormal = session().side === "acid" ? benchPh + s.k : benchPh - s.k;
+  // The beaker updates only on reveal: color shifts to the new pH, discovery text may fire.
+  benchWasApprox = s.approx;
+  benchPh = s.expected;
+  render();
+}
+function benchNext() {
+  stepIdx += 1;
+  if (stepIdx >= session().steps.length) {
+    sessionIdx += 1; stepIdx = 0;
+    if (sessionIdx >= tier().sessions.length) return startCards();   // phase 2
+    benchPh = session().startPh; benchWasApprox = false;
+  }
+  typed = ""; hintsShown = 0; checked = false; graded = null;
+  render();
 }
 function loadCard() {
   problem = buildProblem(queue[0]);
@@ -99,7 +173,11 @@ function check() {
   else missedThisRound.push(problem);
   render();
 }
-function showHint() { if (hintsShown < problem.hints.length) hintsShown += 1; render(); }
+function showHint() {
+  const hints = mode === "bench" ? benchHints() : problem.hints;
+  if (hintsShown < hints.length) hintsShown += 1;
+  render();
+}
 function next() {
   queue = requeue(queue, graded.correct);
   if (queue.length === 0) { mode = "done"; render(); } else loadCard();
@@ -109,7 +187,90 @@ function next() {
 function render() {
   if (mode === "intro") return renderIntro();
   if (mode === "done") return renderDone();
+  if (mode === "bench") return renderBench();
   renderPlay();
+}
+
+function renderBench() {
+  const s = benchStep();
+  const side = session().side;
+  const atStart = stepIdx === 0 && !checked;
+  const stateLine = atStart
+    ? `In the beaker: <strong>${session().startText}</strong> — pH <strong>${benchPh}</strong>`
+    : `In the beaker: pH <strong>${benchWasApprox ? "≈7" : benchPh}</strong>`;
+  const action = `💧 Water is added until the total volume is <strong>×${10 ** s.k}</strong> what it was.`;
+
+  // The announced water is already IN the beaker (level up) — but the color only changes
+  // when the meter reads, at Check. Predict first; the liquid keeps its old face till then.
+  const level = Math.min(25 + (stepIdx + 1) * 13, 90);
+  const beaker = `<div class="beaker" role="img" aria-label="beaker of solution">
+      <div class="beaker-liquid" style="height:${level}%; background:${PH_COLORS[benchPh]}"></div>
+    </div>`;
+
+  const answerArea = checked
+    ? `<div class="answer-built ${graded.correct ? "ok" : "no"}"><span>${Number.isNaN(graded.value) ? "—" : `pH ${graded.value}`}</span></div>`
+    : `<input class="answer-input" id="answerInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="pH = ?" value="${typed.replace(/"/g, "&quot;")}">`;
+
+  const hints = benchHints();
+  const shown = hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
+  const hintBlock = checked ? "" : `<div class="hints">
+      ${hintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
+      ${hintsShown < hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${hintsShown ? "Another hint" : "Need a hint?"}</button>` : ""}
+    </div>`;
+
+  let reveal = "", feedback = `<p class="feedback">&nbsp;</p>`, discovery = "";
+  if (checked) {
+    feedback = graded.correct
+      ? `<p class="feedback ok">Predicted it. ${benchWasApprox ? "You saw the ceiling coming." : ""}</p>`
+      : `<p class="feedback no">The meter disagrees — watch it land.</p>`;
+    reveal = spine(benchPh, benchWasApprox ? "≈7" : null);
+    if (benchWasApprox) {
+      discovery = side === "acid"
+        ? `<div class="discovery"><p class="discovery-h">The meter stalls.</p><p>The arithmetic says pH ${benchFormal} — but dilution can never carry an acid <em>past</em> 7. As the acid's H⁺ fades away, <strong>water's own H⁺ (10⁻⁷ M) takes over</strong>. The meter walks toward 7 and stops at the door.</p></div>`
+        : `<div class="discovery"><p class="discovery-h">The ceiling holds from this side too.</p><p>The arithmetic says pH ${benchFormal} — but the same wall stands on the basic side: as the base's OH⁻ fades, <strong>water's own OH⁻ takes over</strong>. Dilution brings every solution toward 7, and no further.</p></div>`;
+    }
+  }
+
+  const isLastStep = stepIdx === session().steps.length - 1;
+  const isLastSession = sessionIdx === tier().sessions.length - 1;
+  const nextLabel = !isLastStep ? "Next step →" : (!isLastSession ? "Next: the base session →" : "To the card stack →");
+
+  root.innerHTML = `
+    <button class="intro-link" id="introBtn" type="button">↩ How dilution works</button>
+    <div class="bench-stage">
+      ${beaker}
+      <div class="bench-info">
+        <p class="bench-session-tag">The Bench · ${session().label}</p>
+        <p class="bench-state">${stateLine}</p>
+        <p class="bench-action">${action}</p>
+      </div>
+    </div>
+    <p class="build-label">Predict the pH — then the meter reads</p>
+    <div class="answer-row">${answerArea}</div>
+    ${hintBlock}
+    ${checked ? `<div class="bench-reveal">${reveal}</div>` : ""}
+    ${discovery}
+    ${feedback}
+    <div class="controls">
+      <p class="score">Prediction ${sessionIdx === 0 ? stepIdx + 1 : tier().sessions[0].steps.length + stepIdx + 1} of ${benchTotal}</p>
+      ${checked
+        ? `<button class="action primary" id="nextBtn">${nextLabel}</button>`
+        : `<button class="action primary" id="checkBtn" ${typed.trim() ? "" : "disabled"}>Check</button>`}
+    </div>`;
+
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const input = root.querySelector("#answerInput");
+  if (input) {
+    input.addEventListener("input", () => {
+      typed = input.value;
+      const b = root.querySelector("#checkBtn"); if (b) b.disabled = !typed.trim();
+    });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); benchCheck(); } });
+    input.focus();
+  }
+  const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", showHint);
+  const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", benchCheck);
+  const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", benchNext); nextBtn.focus(); }
 }
 
 function tierTabs() {
@@ -192,8 +353,30 @@ function introStrong() {
   </div>`;
 }
 
+function introDilution() {
+  // Deliberately silent about the ≈7 ceiling — that's the Bench's discovery to make.
+  return `<div class="intro">
+    <p class="intro-eyebrow">Dilution Bench · water changes everything</p>
+    <p class="intro-lede">Adding water spreads the same ions through more volume. The concentration drops by the dilution factor — and because pH lives in exponents, <strong>every ×10 of dilution is exactly one pH step</strong>.</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-text"><strong>Factor first:</strong> final volume ÷ starting volume. "10 mL made up to 1 L" is ×100. <span class="muted-ex">×10<sup>k</sup> means k steps</span></span></li>
+      <li><span class="step-num">2</span><span class="step-text"><strong>Steps move toward 7:</strong> acids climb (pH 2 → 3 → 4…), bases descend (pH 12 → 11 → 10…). Dilution always weakens what's there. <span class="muted-ex">0.01 M HCl ×10 → 0.001 M → pH 3</span></span></li>
+      <li><span class="step-num">3</span><span class="step-text"><strong>Adding vs total:</strong> "make the volume ×100" and "add 100 mL" are different sentences. The exam knows the difference. <span class="muted-ex">watch for it in the card stack</span></span></li>
+    </ol>
+    <div class="ox-worked">
+      <p class="ox-worked-h">Worked example — 1 mL of pH 2 HCl, made up to 10 mL</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text">Factor: 10 ÷ 1 = <strong>×10</strong> → one step.</span></li>
+        <li><span class="step-num">2</span><span class="step-text">Acid, so the step goes up: <strong>pH 3</strong>.</span></li>
+      </ol>
+    </div>
+    <p class="spine-note">First the Bench: two dilution runs where you call the meter's reading before it lands. Then the card stack.</p>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
-  const body = tier().id === "strong" ? introStrong() : introPowers();
+  const body = tier().id === "strong" ? introStrong() : tier().id === "dilution" ? introDilution() : introPowers();
   root.innerHTML = `${tierTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); renderIntro(); }));
@@ -233,7 +416,12 @@ function renderPlay() {
     feedback = graded.correct
       ? `<p class="feedback ok">${hintsShown ? "Correct." : "Correct — no hints. 💪"} It leaves the stack.</p>`
       : `<p class="feedback no">Not quite — this one comes back around.</p>`;
-    reveal = `<p class="reveal">${renderGiven(problem)} &nbsp;→&nbsp; <strong>${formatAnswer(problem)}</strong></p>${spine(problem.ph)}`;
+    reveal = `<p class="reveal">${renderGiven(problem)} &nbsp;→&nbsp; <strong>${formatAnswer(problem)}</strong></p>${spine(problem.ph, problem.approx ? "≈7" : null)}`;
+    // The add-vs-total arithmetic, spelled out — the 99-mL trap's teaching line.
+    if (problem.kind === "dilute-add") {
+      const total = problem.answer + problem.startVolMl;
+      reveal += `<p class="reveal-note">Total needed = ${problem.startVolMl} mL × ${total / problem.startVolMl} = <strong>${total} mL</strong> — minus the ${problem.startVolMl} mL already in the flask → <strong>${problem.answer} mL added</strong>.</p>`;
+    }
   }
 
   const nudgeHtml = (!checked && nudge) ? `<p class="ox-nudge">${nudge}</p>` : "";
@@ -241,7 +429,8 @@ function renderPlay() {
   const scratchHtml = (!checked && tier().id === "strong")
     ? `<div class="scratch"><p class="scratch-label">Scratch space (not saved):</p><textarea class="scratch-pad" id="scratchPad" rows="2" autocomplete="off" spellcheck="false" placeholder="work it out here…"></textarea></div>`
     : "";
-  const introLabel = tier().id === "strong" ? "How strong stuff works" : "How the pH square works";
+  const introLabel = tier().id === "strong" ? "How strong stuff works"
+    : tier().id === "dilution" ? "How dilution works" : "How the pH square works";
 
   root.innerHTML = `
     <button class="intro-link" id="introBtn" type="button">↩ ${introLabel}</button>
@@ -281,15 +470,21 @@ function renderPlay() {
 }
 
 function renderDone() {
+  const isBenchTier = !!tier().sessions;
   const chipOf = (p) => renderGiven(p);
-  const missedChips = missedThisRound.map((p) => `<span class="chip">${chipOf(p)}</span>`).join("");
-  const missedBlock = missedThisRound.length
-    ? `<div class="missed-block"><p class="missed-label">Worth another pass — you stumbled on ${missedThisRound.length}:</p><div class="chips">${missedChips}</div></div>`
+  const missedChips = missedThisRound.map((p) => `<span class="chip">${chipOf(p)}</span>`).join("")
+    + (isBenchTier ? benchMisses.map((m) => `<span class="chip">${m}</span>`).join("") : "");
+  const missCount = missedThisRound.length + (isBenchTier ? benchMisses.length : 0);
+  const missedBlock = missCount
+    ? `<div class="missed-block"><p class="missed-label">Worth another pass — you stumbled on ${missCount}:</p><div class="chips">${missedChips}</div></div>`
     : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} with no hints. 🎉</p>`;
+  const headline = isBenchTier
+    ? `Bench done — ${benchSolved} of ${benchTotal} predictions called, ${solvedThisRound} of ${roundTotal} cards solved.`
+    : `Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.`;
 
   root.innerHTML = `
     ${tierTabs()}
-    <p class="prompt">Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.</p>
+    <p class="prompt">${headline}</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
     <p class="done-next">Go again below — more rungs of the ladder are on the way.</p>

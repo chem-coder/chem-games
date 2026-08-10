@@ -159,6 +159,39 @@ sup { font-size: 0.62em; line-height: 0; vertical-align: 0.55em; font-weight: in
 .ox-nudge { margin: 10px auto 0; max-width: 42ch; text-align: center; padding: 8px 13px; border-radius: var(--radius-sm); background: var(--warning-soft); color: #7a5e15; font-size: 0.9rem; line-height: 1.45; }
 .ox-nudge strong { color: #6b4d15; }
 
+/* ── the Bench: beaker + step info ── */
+.bench-stage { display: flex; align-items: stretch; gap: 18px; margin-bottom: 18px; padding: 18px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius); }
+.beaker {
+  position: relative; flex: none; width: 92px; min-height: 120px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12));
+  border: 2px solid var(--line); border-top-width: 1px;
+  border-radius: 6px 6px 18px 18px;
+}
+.beaker::after { /* the spout lip */
+  content: ""; position: absolute; top: 0; left: -2px; right: -2px; height: 7px;
+  border-bottom: 2px solid var(--line);
+}
+.beaker-liquid {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  border-radius: 0 0 16px 16px;
+  transition: height 0.6s ease, background-color 0.8s ease;
+}
+.bench-info { display: grid; align-content: center; gap: 7px; }
+.bench-session-tag { margin: 0; color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.bench-state { margin: 0; font-size: 1.08rem; }
+.bench-action { margin: 0; padding: 9px 13px; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius-sm); font-size: 0.98rem; }
+.bench-reveal { margin: 16px 0 4px; }
+@media (max-width: 480px) { .bench-stage { flex-direction: column; align-items: center; text-align: center; } }
+
+/* the asymptote discovery panel — plum, the color of the family's teaching asides */
+.discovery { margin: 14px 0 4px; padding: 13px 16px; background: var(--plum-soft); border: 1px solid var(--plum); border-radius: var(--radius-sm); }
+.discovery-h { margin: 0 0 5px; font-family: var(--font-display); font-weight: 800; font-size: 1rem; color: var(--plum-dark); }
+.discovery p:last-child { margin: 0; font-size: 0.95rem; line-height: 1.55; }
+
+/* the add-vs-total teaching line under dilute-add reveals */
+.reveal-note { margin: 8px auto 0; max-width: 52ch; text-align: center; color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+.reveal-note strong { color: var(--ink); }
+
 /* scratch space (multi-step tier) — ephemeral working room, never saved or graded */
 .scratch { margin: 14px 0 4px; }
 .scratch-label { margin: 0 0 5px; color: var(--muted); font-size: 0.82rem; }
