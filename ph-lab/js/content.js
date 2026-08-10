@@ -36,6 +36,33 @@ export const TIERS = [
       { id: "oh5",  kind: "oh-to-ph", n: 5,  expected: 9 },
       { id: "oh10", kind: "oh-to-ph", n: 10, expected: 4 }   // an [OH−] can still mean an acid
     ]
+  },
+  {
+    id: "strong",
+    label: "Strong Stuff",
+    tagline: "fully dissociated — the concentration IS the answer",
+    items: [
+      // strong monoprotic acids: [H+] = the concentration, straight off
+      { id: "sa-hcl2",   kind: "strong-acid", species: "HCl",     ions: 1, mantissa: 1, exp: 2, expected: 2 },
+      { id: "sa-hno3",   kind: "strong-acid", species: "HNO3",    ions: 1, mantissa: 1, exp: 3, expected: 3 },
+      { id: "sa-hcl1",   kind: "strong-acid", species: "HCl",     ions: 1, mantissa: 1, exp: 1, expected: 1 },
+      { id: "sa-hno0",   kind: "strong-acid", species: "HNO3",    ions: 1, mantissa: 1, exp: 0, expected: 0 },  // 1 M → pH 0
+      // the diprotic wrinkle: 2 H⁺ per unit turns 5×10⁻ⁿ into a clean power of ten (2021 Q47's trap)
+      { id: "sa-h2so4a", kind: "strong-acid", species: "H2SO4",   ions: 2, mantissa: 5, exp: 3, expected: 2 },
+      { id: "sa-h2so4b", kind: "strong-acid", species: "H2SO4",   ions: 2, mantissa: 5, exp: 2, expected: 1 },
+      // strong bases: [OH−] first, pOH, then 14 −
+      { id: "sb-naoh2",  kind: "strong-base", species: "NaOH",    ions: 1, mantissa: 1, exp: 2, expected: 12 }, // 2016 Q48 verbatim shape
+      { id: "sb-koh3",   kind: "strong-base", species: "KOH",     ions: 1, mantissa: 1, exp: 3, expected: 11 },
+      { id: "sb-naoh1",  kind: "strong-base", species: "NaOH",    ions: 1, mantissa: 1, exp: 1, expected: 13 },
+      { id: "sb-baoh2a", kind: "strong-base", species: "Ba(OH)2", ions: 2, mantissa: 5, exp: 3, expected: 12 },
+      { id: "sb-baoh2b", kind: "strong-base", species: "Ba(OH)2", ions: 2, mantissa: 5, exp: 2, expected: 13 },
+      // the mass chain: g → mol → M → pH (2022 Q47's shape, Mr given on the card like IMAT
+      // does — but our own numbers, never the exam's verbatim)
+      { id: "ma-hcl",  kind: "mass-acid", species: "HCl",  mass: 0.73,  vol: 20, molar: 36.5, expected: 3 },
+      { id: "ma-hno3", kind: "mass-acid", species: "HNO3", mass: 6.3,   vol: 1,  molar: 63,   expected: 1 },
+      { id: "mb-naoh", kind: "mass-base", species: "NaOH", mass: 4,     vol: 10, molar: 40,   expected: 12 },
+      { id: "mb-koh",  kind: "mass-base", species: "KOH",  mass: 5.6,   vol: 1,  molar: 56,   expected: 13 }
+    ]
   }
 ];
 

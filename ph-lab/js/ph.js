@@ -3,17 +3,42 @@
 // exponent arithmetic — flip a sign, or make two numbers meet 14. No logs, no calculator,
 // exactly like the exam.
 
-// The four corners of the pH square and the conversions between them.
-// Every item is { kind, n } where n is the magnitude of the GIVEN exponent (or the given pH/pOH).
-// n may be 0 (a 1 M strong acid → pH 0) through 14.
+// The four corners of the pH square and the conversions between them (rung 1).
+// Every rung-1 item is { kind, n } where n is the magnitude of the GIVEN exponent (or the
+// given pH/pOH). n may be 0 (a 1 M strong acid → pH 0) through 14.
+//
+// Rung 2 (Strong Stuff) items carry a species instead: { kind, species, ions, mantissa, exp }
+// for concentration cards (concentration = mantissa × 10^−exp; ions = H⁺ or OH⁻ released per
+// unit), and { kind, species, mass, vol, molar } for the grams → moles → M → pH chain.
 export const KINDS = {
-  "h-to-ph":   { given: "H",   ask: "pH",  answerKind: "integer" },
-  "ph-to-h":   { given: "pH",  ask: "H",   answerKind: "exponent" },
-  "ph-to-poh": { given: "pH",  ask: "pOH", answerKind: "integer" },
-  "poh-to-ph": { given: "pOH", ask: "pH",  answerKind: "integer" },
-  "h-to-oh":   { given: "H",   ask: "OH",  answerKind: "exponent" },
-  "oh-to-ph":  { given: "OH",  ask: "pH",  answerKind: "integer" }
+  "h-to-ph":     { given: "H",    ask: "pH",  answerKind: "integer" },
+  "ph-to-h":     { given: "pH",   ask: "H",   answerKind: "exponent" },
+  "ph-to-poh":   { given: "pH",   ask: "pOH", answerKind: "integer" },
+  "poh-to-ph":   { given: "pOH",  ask: "pH",  answerKind: "integer" },
+  "h-to-oh":     { given: "H",    ask: "OH",  answerKind: "exponent" },
+  "oh-to-ph":    { given: "OH",   ask: "pH",  answerKind: "integer" },
+  "strong-acid": { given: "conc", ask: "pH",  answerKind: "integer" },
+  "strong-base": { given: "conc", ask: "pH",  answerKind: "integer" },
+  "mass-acid":   { given: "mass", ask: "pH",  answerKind: "integer" },
+  "mass-base":   { given: "mass", ask: "pH",  answerKind: "integer" }
 };
+
+// [ion] = ions × mantissa × 10^−exp must itself be a clean power of ten — that's the whole
+// no-calculator promise. Allowed: 1 × 10^−exp (→ exp) and 2 × 5 × 10^−exp = 10^−(exp−1).
+function ionExp(item) {
+  const product = item.ions * item.mantissa;
+  if (product === 1) return item.exp;
+  if (product === 10) return item.exp - 1;
+  throw new Error(`not a clean power of ten: ions ${item.ions} × mantissa ${item.mantissa}`);
+}
+
+// The mass chain: concentration = (mass ÷ molar) ÷ vol, which must land exactly on 10^−exp.
+export function massExp(item) {
+  const conc = item.mass / item.molar / item.vol;
+  const exp = Math.round(-Math.log10(conc));
+  if (Math.abs(conc * 10 ** exp - 1) > 1e-9) throw new Error(`mass chain is not a clean power of ten: ${conc}`);
+  return exp;
+}
 
 // The single source of numeric truth: what is the answer for this item?
 // Integer answers are pH/pOH values (always 0..14 here); exponent answers are the signed
@@ -27,6 +52,10 @@ export function solve(item) {
     case "poh-to-ph": return 14 - n;
     case "h-to-oh":   return -(14 - n);    // exponents sum to −14 (Kw)
     case "oh-to-ph":  return 14 - n;       // [OH-] = 10^-n → pOH = n → pH = 14 − n
+    case "strong-acid": return ionExp(item);        // fully dissociated → [H+] read directly
+    case "strong-base": return 14 - ionExp(item);   // [OH-] → pOH → pH
+    case "mass-acid":   return massExp(item);       // g → mol → M, then as a strong acid
+    case "mass-base":   return 14 - massExp(item);
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
 }
@@ -42,6 +71,8 @@ export function solutionPh(item) {
     case "poh-to-ph": return 14 - n;
     case "h-to-oh":   return n;
     case "oh-to-ph":  return 14 - n;
+    // Rung 2 always asks for the pH, so the solution sits exactly where the answer says.
+    case "strong-acid": case "strong-base": case "mass-acid": case "mass-base": return solve(item);
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
 }
@@ -80,8 +111,46 @@ export function buildHints(item) {
       `[OH⁻] = 10<sup>−${n}</sup> → pOH = ${n}.`,
       `pH = 14 − <strong>${n}</strong>.`
     ];
+    case "strong-acid": return item.ions === 2 ? [
+      `${fmtSpecies(item.species)} is strong <em>and</em> <strong>diprotic</strong> — every unit releases <strong>2 H⁺</strong>, so [H⁺] = 2 × the concentration.`,
+      `2 × ${concStr(item)} = <strong>${expStr(ionExp(item))} M</strong> — now it IS a clean power of ten.`,
+      `Flip the exponent's sign: pH = <strong>${ionExp(item)}</strong>.`
+    ] : [
+      `<strong>Strong</strong> means fully dissociated — every unit releases its H⁺, so <strong>[H⁺] = the acid's concentration</strong>.`,
+      `${concStr(item)} = ${expStr(item.exp)} M. Flip the exponent's sign.`,
+      `pH = <strong>${item.exp}</strong>.`
+    ];
+    case "strong-base": return [
+      item.ions === 2
+        ? `A strong base fully dissociates, and this one carries <strong>2 OH⁻</strong> per unit: [OH⁻] = 2 × the concentration. Work out the <strong>pOH</strong> first.`
+        : `A strong base fully dissociates: <strong>[OH⁻] = the base's concentration</strong>. Work out the <strong>pOH</strong> first.`,
+      `[OH⁻] = ${expStr(ionExp(item))} M → pOH = ${ionExp(item)}.`,
+      `pH = 14 − ${ionExp(item)} = <strong>${14 - ionExp(item)}</strong>.`
+    ];
+    case "mass-acid": case "mass-base": {
+      const moles = trimNum(item.mass / item.molar);
+      const conc = expStr(massExp(item));
+      const acid = item.kind === "mass-acid";
+      return [
+        `Concentration first: <strong>moles = mass ÷ M<sub>r</sub></strong> → ${item.mass} ÷ ${item.molar} = <strong>${moles} mol</strong>.`,
+        `<strong>M = moles ÷ litres</strong> → ${moles} ÷ ${item.vol} = <strong>${conc} M</strong>.`,
+        acid
+          ? `Now it's a strong-acid card: pH = <strong>${massExp(item)}</strong>.`
+          : `Now it's a strong-base card: pOH = ${massExp(item)}, so pH = 14 − ${massExp(item)} = <strong>${14 - massExp(item)}</strong>.`
+      ];
+    }
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
+}
+
+// Plain-ish formatters used inside hints (HTML sup allowed there).
+// Formula digits become real subscripts: "H2SO4" → H₂SO₄, "Ba(OH)2" → Ba(OH)₂.
+export const fmtSpecies = (formula) => formula.replace(/(\d+)/g, "<sub>$1</sub>");
+const trimNum = (x) => String(Number(x.toPrecision(10)));
+const expStr = (exp) => (exp <= 3 ? trimNum(10 ** -exp) : `10<sup>−${exp}</sup>`);
+export function concStr(item) {
+  const value = item.mantissa * 10 ** -item.exp;
+  return item.exp <= 3 ? `${trimNum(value)} M` : `${item.mantissa === 1 ? "" : `${item.mantissa} × `}10<sup>−${item.exp}</sup> M`;
 }
 
 export function buildProblem(item) {

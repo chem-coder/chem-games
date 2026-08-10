@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer } from "./ph.js";
+import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr } from "./ph.js";
 import { TIERS } from "./content.js";
 
 // ── the six conversions ───────────────────────────────────────────────────────
@@ -33,12 +33,55 @@ test("every content item's hand-entered expected matches the engine", () => {
   }
 });
 
-test("content ids are unique and n stays inside 0–14", () => {
+test("content ids are unique, n stays inside 0–14, and every answer lands on the 0–14 spine", () => {
   const ids = TIERS.flatMap((t) => t.items.map((i) => i.id));
   assert.equal(new Set(ids).size, ids.length);
   for (const tier of TIERS) for (const item of tier.items) {
-    assert.ok(item.n >= 0 && item.n <= 14, `${item.id} n out of range`);
+    if ("n" in item) assert.ok(item.n >= 0 && item.n <= 14, `${item.id} n out of range`);
+    const ph = solutionPh(item);
+    assert.ok(ph >= 0 && ph <= 14, `${item.id} solution pH ${ph} off the spine`);
   }
+});
+
+// ── rung 2: strong stuff ──────────────────────────────────────────────────────
+test("strong acids read [H+] straight off the label, diprotics double it", () => {
+  assert.equal(solve({ kind: "strong-acid", species: "HCl", ions: 1, mantissa: 1, exp: 2 }), 2);
+  assert.equal(solve({ kind: "strong-acid", species: "HNO3", ions: 1, mantissa: 1, exp: 0 }), 0);     // 1 M
+  assert.equal(solve({ kind: "strong-acid", species: "H2SO4", ions: 2, mantissa: 5, exp: 3 }), 2);    // 0.005 → 0.01
+  assert.equal(solve({ kind: "strong-acid", species: "H2SO4", ions: 2, mantissa: 5, exp: 2 }), 1);
+});
+
+test("strong bases route through pOH and 14", () => {
+  assert.equal(solve({ kind: "strong-base", species: "NaOH", ions: 1, mantissa: 1, exp: 2 }), 12);
+  assert.equal(solve({ kind: "strong-base", species: "Ba(OH)2", ions: 2, mantissa: 5, exp: 3 }), 12); // 0.005 → [OH-] 0.01
+});
+
+test("unclean ion products throw — the no-calculator promise is enforced", () => {
+  assert.throws(() => solve({ kind: "strong-acid", species: "X", ions: 1, mantissa: 5, exp: 3 }), /clean power of ten/);
+  assert.throws(() => solve({ kind: "strong-acid", species: "X", ions: 2, mantissa: 1, exp: 3 }), /clean power of ten/);
+});
+
+test("the mass chain lands exactly on a power of ten, or throws", () => {
+  assert.equal(massExp({ mass: 0.73, vol: 20, molar: 36.5 }), 3);   // 0.02 mol / 20 L = 0.001 M
+  assert.equal(solve({ kind: "mass-acid", species: "HCl", mass: 0.73, vol: 20, molar: 36.5 }), 3);
+  assert.equal(solve({ kind: "mass-base", species: "NaOH", mass: 4, vol: 10, molar: 40 }), 12);
+  assert.throws(() => massExp({ mass: 1, vol: 1, molar: 36.5 }), /clean power of ten/);
+});
+
+test("rung-2 problems still grade, nudge, and format like the family", () => {
+  const p = buildProblem({ kind: "strong-base", species: "NaOH", ions: 1, mantissa: 1, exp: 2 });
+  assert.equal(p.answerKind, "integer");
+  assert.equal(p.ph, 12);
+  assert.equal(grade(p, "12").correct, true);
+  assert.equal(grade(p, "-12").nudge, "scale-positive");
+  assert.equal(formatAnswer(p), "pH 12");
+  assert.equal(p.hints.length, 3);
+});
+
+test("concStr prints exam-style decimals for small exponents", () => {
+  assert.equal(concStr({ mantissa: 5, exp: 3 }), "0.005 M");
+  assert.equal(concStr({ mantissa: 1, exp: 2 }), "0.01 M");
+  assert.equal(concStr({ mantissa: 1, exp: 0 }), "1 M");
 });
 
 // ── typed-answer parsing (accepted-set model) ─────────────────────────────────

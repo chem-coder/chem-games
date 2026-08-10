@@ -4,10 +4,17 @@ The quantitative acid–base game. First build of the IMAT course track — see
 [documentation/imat-course/ph-lab-plan.md](../documentation/imat-course/ph-lab-plan.md)
 for the full six-rung plan and the locked decisions behind it.
 
-## Current Scope — Rung 1 of 6: Powers of Ten
+## Current Scope — Rungs 1–2 of 6
 
-- The pH square: [H⁺] ↔ pH ↔ pOH ↔ [OH⁻], all conversions via exponent reading
-  (flip the sign; pH + pOH = 14; Kw exponents sum to −14). No logs, no calculator.
+**Rung 1 — Powers of Ten.** The pH square: [H⁺] ↔ pH ↔ pOH ↔ [OH⁻], all conversions
+via exponent reading (flip the sign; pH + pOH = 14; Kw exponents sum to −14).
+No logs, no calculator.
+
+**Rung 2 — Strong Stuff.** pH from concentration for the strong acids and bases
+(fully dissociated, so the label concentration IS [H⁺]/[OH⁻]): direct reads,
+the diprotic ×2 wrinkle (0.005 M H₂SO₄ → pH 2), and the mass chain
+(g → mol ÷ Mr → M ÷ L → pH) with the Mr printed on the card, exam-style.
+Multi-step cards get an ungraded scratch pad.
 - Typed answers: plain integers for pH/pOH; for concentrations the input box IS the
   superscript slot of 10^▢, so the student types a signed exponent.
 - Sign near-misses (dropped minus on an exponent, spurious minus on a pH) get a

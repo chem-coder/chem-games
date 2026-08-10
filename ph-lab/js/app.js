@@ -2,7 +2,7 @@
 // Rung 1 (Powers of Ten): read a corner of the pH square, type the corner you're sent to,
 // Check. Predict-then-Check spine with a progressive hint ladder — same skeleton as the
 // Oxidation-State Trainer, so the family keeps one feel.
-import { buildProblem, grade, supNum, formatAnswer } from "./ph.js";
+import { buildProblem, grade, supNum, formatAnswer, fmtSpecies, concStr } from "./ph.js";
 import { TIERS } from "./content.js";
 
 const root = document.querySelector("#game");
@@ -31,6 +31,7 @@ let solvedThisRound = 0;
 let cleanSolves = 0;
 let missedThisRound = [];
 let nudge = null;          // sign near-miss — retry, don't burn the card
+let scratch = "";          // ephemeral per-card working space (Strong Stuff tier), never graded
 
 const NUDGE_MSG = {
   "exponent-negative": `Almost — the minus is the message. Concentrations here run from 1 M (10⁰) <em>down</em> to 10⁻¹⁴ M, so the exponent is <strong>negative</strong>.`,
@@ -43,9 +44,16 @@ const H = "H⁺", OH = "OH⁻";
 
 // The given quantity, as the big card line.
 function renderGiven(p) {
+  if (p.given === "conc") return `${concStr(p)} ${fmtSpecies(p.species)}`;
+  if (p.given === "mass") return `${p.mass} g ${fmtSpecies(p.species)} in ${p.vol} L`;
   if (p.given === "H") return conc(H, p.n);
   if (p.given === "OH") return conc(OH, p.n);
   return `${p.given} = ${p.n}`;
+}
+// The mass-chain cards carry their Mr, the way the exam prints Ar/Mr values.
+function renderCardSub(p) {
+  if (p.given !== "mass") return "";
+  return `<p class="card-sub">M<sub>r</sub>(${fmtSpecies(p.species)}) = ${p.molar}</p>`;
 }
 // What the card asks for, in words.
 function renderAsk(p) {
@@ -77,7 +85,7 @@ function startRound() {
 }
 function loadCard() {
   problem = buildProblem(queue[0]);
-  typed = ""; hintsShown = 0; checked = false; graded = null; nudge = null;
+  typed = ""; hintsShown = 0; checked = false; graded = null; nudge = null; scratch = "";
   render();
 }
 function check() {
@@ -151,8 +159,42 @@ function introPowers() {
   </div>`;
 }
 
+// The strong species worth knowing on sight — the Sorter crossover.
+function strongChips() {
+  const acids = ["HCl", "HBr", "HI", "HNO3", "H2SO4"];
+  const bases = ["NaOH", "KOH", "Ba(OH)2", "Ca(OH)2"];
+  const chip = (f) => `<span class="em-chip">${fmtSpecies(f)}</span>`;
+  return `<div class="elem-molecules">
+    <p class="em-lead"><strong>Know the strong ones on sight</strong> — everything else is weak, and weak stays qualitative on the IMAT:</p>
+    <div class="em-row"><span class="em-tag">strong acids</span><span class="em-chips">${acids.map(chip).join("")}</span></div>
+    <div class="em-row"><span class="em-tag">strong bases</span><span class="em-chips">${bases.map(chip).join("")}</span></div>
+  </div>`;
+}
+
+function introStrong() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Strong Stuff · fully dissociated</p>
+    <p class="intro-lede"><strong>Strong</strong> means every unit falls apart completely in water. So nothing is hidden: the concentration on the bottle tells you [H⁺] or [OH⁻] <em>directly</em> — then it's rung-1 arithmetic.</p>
+    ${strongChips()}
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-text"><strong>Strong acid:</strong> [H⁺] = the concentration — <strong>× 2 if diprotic</strong> (H₂SO₄). Then pH = the flipped exponent. <span class="muted-ex">0.01 M HCl → pH 2</span></span></li>
+      <li><span class="step-num">2</span><span class="step-text"><strong>Strong base:</strong> [OH⁻] = the concentration (× 2 for Ba(OH)₂) → <strong>pOH first</strong>, then pH = 14 − pOH. <span class="muted-ex">0.01 M NaOH → pOH 2 → pH 12</span></span></li>
+      <li><span class="step-num">3</span><span class="step-text"><strong>Given grams?</strong> Build the concentration first: <strong>moles = g ÷ M<sub>r</sub></strong>, then <strong>M = moles ÷ litres</strong>. <span class="muted-ex">the M<sub>r</sub> is always printed on the card</span></span></li>
+    </ol>
+    <div class="ox-worked">
+      <p class="ox-worked-h">Worked example — 0.005 M H<sub>2</sub>SO<sub>4</sub>. What is the pH?</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text">Diprotic: [H⁺] = 2 × 0.005 = <strong>0.01 M</strong> = 10<sup>−2</sup> M.</span></li>
+        <li><span class="step-num">2</span><span class="step-text">Flip the exponent: <strong>pH 2</strong>. The ×2 turned an awkward 5 × 10⁻³ into a clean power of ten — the exam picks numbers that do this.</span></li>
+      </ol>
+    </div>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
-  root.innerHTML = `${tierTabs()}${introPowers()}`;
+  const body = tier().id === "strong" ? introStrong() : introPowers();
+  root.innerHTML = `${tierTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
     b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); renderIntro(); }));
   root.querySelector("#startBtn").addEventListener("click", startRound);
@@ -165,6 +207,7 @@ function renderPlay() {
   const promptCard = `<div class="formula-card">
       <span class="card-tag">${tier().label}</span>
       <p class="formula ph-formula">${renderGiven(problem)}</p>
+      ${renderCardSub(problem)}
       <p class="ox-ask">${renderAsk(problem)}</p>
     </div>`;
 
@@ -194,15 +237,21 @@ function renderPlay() {
   }
 
   const nudgeHtml = (!checked && nudge) ? `<p class="ox-nudge">${nudge}</p>` : "";
+  // Scratch space on the multi-step tier — ephemeral working room, never graded (house pattern).
+  const scratchHtml = (!checked && tier().id === "strong")
+    ? `<div class="scratch"><p class="scratch-label">Scratch space (not saved):</p><textarea class="scratch-pad" id="scratchPad" rows="2" autocomplete="off" spellcheck="false" placeholder="work it out here…"></textarea></div>`
+    : "";
+  const introLabel = tier().id === "strong" ? "How strong stuff works" : "How the pH square works";
 
   root.innerHTML = `
-    <button class="intro-link" id="introBtn" type="button">↩ How the pH square works</button>
+    <button class="intro-link" id="introBtn" type="button">↩ ${introLabel}</button>
     ${promptCard}
 
     <p class="build-label">${buildLabel}</p>
     <div class="answer-row">${answerArea}</div>
     ${nudgeHtml}
     ${hintBlock}
+    ${scratchHtml}
 
     ${reveal}
     ${feedback}
@@ -223,6 +272,9 @@ function renderPlay() {
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); check(); } });
     input.focus();
   }
+  // Restore + persist the scratch text across re-renders (revealing a hint rebuilds the screen).
+  const pad = root.querySelector("#scratchPad");
+  if (pad) { pad.value = scratch; pad.addEventListener("input", () => { scratch = pad.value; }); }
   const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", showHint);
   const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", check);
   const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", next); nextBtn.focus(); }
