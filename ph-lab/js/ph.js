@@ -225,20 +225,26 @@ export function buildHints(item) {
 // One rule: diprotic strong acid < strong acid < weak acid < 7 < weak base <
 // strong base < diprotic strong base. Weak species get a PLACE, never a number.
 export const LADDER_CLASSES = {
-  sa2: { rank: 0, chip: "strong acid · 2 H⁺" },
-  sa1: { rank: 1, chip: "strong acid" },
-  wa:  { rank: 2, chip: "weak acid" },
-  ns:  { rank: 3, chip: "neutral salt · pH 7" },
-  w7:  { rank: 3, chip: "pure water · pH 7" },
-  wb:  { rank: 4, chip: "weak base" },
-  sb1: { rank: 5, chip: "strong base" },
-  sb2: { rank: 6, chip: "strong base · 2 OH⁻" }
+  sa2: { rank: 0,   chip: "strong acid · 2 H⁺" },
+  sa1: { rank: 1,   chip: "strong acid" },
+  wa:  { rank: 2,   chip: "weak acid" },
+  as:  { rank: 2.5, chip: "acidic salt" },
+  ns:  { rank: 3,   chip: "neutral salt · pH 7" },
+  w7:  { rank: 3,   chip: "pure water · pH 7" },
+  bs:  { rank: 3.5, chip: "basic salt" },
+  wb:  { rank: 4,   chip: "weak base" },
+  sb1: { rank: 5,   chip: "strong base" },
+  sb2: { rank: 6,   chip: "strong base · 2 OH⁻" }
 };
 export const LADDER_SPECIES = {
   "HCl": "sa1", "HNO3": "sa1", "H2SO4": "sa2",
   "CH3COOH": "wa", "HCOOH": "wa", "HF": "wa",
   "NaCl": "ns", "KNO3": "ns", "KCl": "ns", "H2O": "w7",
-  "NH3": "wb", "NaOH": "sb1", "KOH": "sb1", "Ba(OH)2": "sb2", "Ca(OH)2": "sb2"
+  "NH3": "wb", "NaOH": "sb1", "KOH": "sb1", "Ba(OH)2": "sb2", "Ca(OH)2": "sb2",
+  // hydrolyzing salts (the Salt Court graduates): milder than the weak acids/bases,
+  // so they rank BETWEEN the weak species and 7 — the mixed-ladder bonus deck
+  "NH4Cl": "as", "NH4NO3": "as",
+  "NaF": "bs", "CH3COONa": "bs", "Na2CO3": "bs", "KNO2": "bs"
 };
 export function ladderClass(species) {
   const cls = LADDER_SPECIES[species];
@@ -275,6 +281,55 @@ export function ladderHints(puzzle) {
     : `Weak just means <em>partially</em> dissociated — a weak acid is still an acid, so it sits between the strong acids and 7, never above it.`);
   if (puzzle.direction === "dec") hints.push(`Read the direction again — this ladder runs <strong>highest pH first</strong>.`);
   return hints;
+}
+
+// ── rung 5: Salt Court (hydrolysis verdicts from the parents) ────────────────
+// Every salt is the child of an acid and a base. In water, THE STRONG PARENT WINS;
+// two strong parents is a draw at exactly 7. Weak+weak is out of scope (needs Ka vs
+// Kb — the IMAT never asks) and the engine refuses it rather than guessing.
+export const STRONG_PARENTS = new Set(["HCl", "HBr", "HI", "HNO3", "H2SO4", "NaOH", "KOH", "Ba(OH)2", "Ca(OH)2"]);
+export const parentStrength = (parent) => STRONG_PARENTS.has(parent) ? "strong" : "weak";
+
+export function saltVerdict(acidStrength, baseStrength) {
+  if (acidStrength === "strong" && baseStrength === "strong") return "neutral";
+  if (acidStrength === "strong" && baseStrength === "weak") return "acidic";
+  if (acidStrength === "weak" && baseStrength === "strong") return "basic";
+  throw new Error("weak + weak is out of scope — the verdict needs Ka vs Kb");
+}
+
+// Grade the five-part chain. A strength mark requires the RIGHT parent judged with the
+// right strength — a wrong parent fails its strength mark too (the chain broke earlier).
+export function saltGrade(picks, item) {
+  const acidStr = parentStrength(item.parentAcid);
+  const baseStr = parentStrength(item.parentBase);
+  const parts = {
+    acidParent: picks.acidParent === item.parentAcid,
+    baseParent: picks.baseParent === item.parentBase,
+    acidStrength: picks.acidParent === item.parentAcid && picks.acidStrength === acidStr,
+    baseStrength: picks.baseParent === item.parentBase && picks.baseStrength === baseStr,
+    verdict: picks.verdict === item.expected
+  };
+  return { correct: Object.values(parts).every(Boolean), parts, acidStr, baseStr };
+}
+
+export function saltHints(item) {
+  return [
+    `Split the salt into its two ions first — each ion walked in from a different parent.`,
+    `The <strong>cation</strong> came from a <em>base</em>, the <strong>anion</strong> from an <em>acid</em>. Rebuild both parents before judging anything.`,
+    `<strong>The strong parent wins.</strong> Both strong? A draw — exactly 7.`
+  ];
+}
+
+// The reveal's courtroom line.
+export function saltRuling(item) {
+  const acidStr = parentStrength(item.parentAcid);
+  const baseStr = parentStrength(item.parentBase);
+  const clause = item.expected === "neutral"
+    ? "two strong parents — a draw at exactly 7"
+    : item.expected === "acidic"
+      ? "the strong parent wins, and it's the acid"
+      : "the strong parent wins, and it's the base";
+  return { acidStr, baseStr, clause };
 }
 
 // Plain-ish formatters used inside hints (HTML sup allowed there).

@@ -108,6 +108,31 @@ base); NaOH, KOH (strong base); Ba(OH)2, Ca(OH)2 (diprotic base). Five puzzles c
 exact five) → +weak base → water-anchored 5-item (one of the later ones decreasing).
 Engine refuses puzzles with class ties (ambiguous order = authoring error, thrown).
 
+## Rung 5 spec — Salt Court (locked 2026-08-11)
+
+Decisions (Dalia): parents picked from 3 candidates per ion (right one + wrong-identity
++ wrong-category); ONE Check grading the whole five-part chain with per-part ✓/✗ marks;
+weak+weak salts and NaHSO₄-style amphiprotic curveballs excluded entirely.
+
+**The rule:** every salt has an acid parent and a base parent. In water, **the strong
+parent wins**; two strong parents is a draw at 7. Fully derivable — no salt lists.
+
+**Card flow (all click, one commit):** the salt appears split into its ions (the split
+itself is the insight). Under each ion: pick its parent from 3 candidates, toggle the
+chosen parent strong/weak (rung-2 chip knowledge pays off here), then declare the
+verdict — acidic / basic / neutral. Check grades parents (2) + strengths (2) + verdict
+(1) with per-part marks; any miss requeues the card. Hints: ① split into ions ② each
+ion came from an acid or a base — which one? ③ the strong parent wins; both strong → 7.
+Light courtroom flavor in reveal copy ("Verdict: basic — the strong parent wins").
+
+**Content:** ~8 salts, 5/round — neutral: NaCl, KNO₃ · basic: NaF, CH₃COONa, Na₂CO₃,
+KNO₂ · acidic: NH₄Cl, NH₄NO₃. Engine validates every salt derives its verdict from its
+parents (hand-entered expected cross-checked, house pattern).
+
+**Follow-on in the same build:** rung 4's bonus **mixed-ladder deck** — hydrolyzing
+salts enter ordering puzzles with ranks *closer to 7* than weak acids/bases (acidic
+salt between weak acid and 7; basic salt between 7 and weak base — qualitatively safe).
+
 ## Build order
 
 1. Rung 1 + shared engine (typed-answer accepted-set checker, hint ladder, deck runner, gradient spine) — this is the template all rungs reuse.

@@ -244,6 +244,52 @@ sup { font-size: 0.62em; line-height: 0; vertical-align: 0.55em; font-weight: in
 }
 .class-chip { font-family: var(--font-body); font-weight: 600; font-size: 0.64rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
 
+/* ── Salt Court: the case card's ion split ── */
+.ion-split { margin: 10px 0 0; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; color: var(--muted); }
+.ion-q { font-size: 0.6em; font-weight: 800; vertical-align: 0.6em; margin-left: 1px; }
+.split-plus { margin: 0 0.35em; color: var(--line); }
+
+/* the two parent panels */
+.parent-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+@media (max-width: 540px) { .parent-panels { grid-template-columns: 1fr; } }
+.parent-panel { padding: 13px 14px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.panel-h { margin: 0 0 9px; text-align: center; color: var(--muted); font-size: 0.88rem; }
+.panel-h sup { color: var(--ink); }
+.cand-row, .str-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 5px; border-radius: var(--radius-sm); border: 1.5px solid transparent; }
+.cand-btn, .str-btn {
+  padding: 7px 13px; cursor: pointer;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.98rem; color: var(--ink);
+}
+.str-btn { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 5px 14px; }
+.cand-btn:hover:not(:disabled), .str-btn:hover:not(:disabled) { border-color: var(--accent); }
+.cand-btn.sel, .str-btn.sel { background: var(--accent); border-color: var(--accent-dark); color: #fff; }
+.cand-btn:disabled, .str-btn:disabled { cursor: default; }
+/* per-part marks: the whole row gets judged */
+.cand-row.ok, .str-row.ok, .verdict-row.ok { border-color: var(--success-vivid); background: var(--success-soft); }
+.cand-row.no, .str-row.no, .verdict-row.no { border-color: var(--danger-line); background: var(--danger-soft); }
+
+/* the verdict row */
+.verdict-row { display: flex; justify-content: center; gap: 10px; padding: 6px; border-radius: var(--radius-sm); border: 1.5px solid transparent; margin-bottom: 4px; }
+.verdict-btn {
+  padding: 10px 22px; cursor: pointer;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+  font-family: var(--font-display); font-weight: 800; font-size: 1.02rem; color: var(--ink);
+}
+.verdict-btn:disabled { cursor: default; }
+.verdict-btn.v-acidic.sel { background: var(--danger); border-color: var(--danger); color: #fff; }
+.verdict-btn.v-neutral.sel { background: var(--accent); border-color: var(--accent-dark); color: #fff; }
+.verdict-btn.v-basic.sel { background: var(--success); border-color: var(--success); color: #fff; }
+.verdict-btn:hover:not(:disabled):not(.sel) { border-color: var(--accent); }
+
+/* the ruling */
+.court-ruling { margin: 14px 0 2px; padding: 13px 16px; text-align: center; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.ruling-h { margin: 0 0 4px; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
+.v-acidic-text { color: var(--danger); }
+.v-neutral-text { color: var(--accent-dark); }
+.v-basic-text { color: var(--success); }
+.ruling-line { margin: 0; font-size: 0.96rem; line-height: 1.5; }
+
 /* scratch space (multi-step tier) — ephemeral working room, never saved or graded */
 .scratch { margin: 14px 0 4px; }
 .scratch-label { margin: 0 0 5px; color: var(--muted); font-size: 0.82rem; }

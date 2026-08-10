@@ -4,7 +4,7 @@ The quantitative acid–base game. First build of the IMAT course track — see
 [documentation/imat-course/ph-lab-plan.md](../documentation/imat-course/ph-lab-plan.md)
 for the full six-rung plan and the locked decisions behind it.
 
-## Current Scope — Rungs 1–4 of 6
+## Current Scope — Rungs 1–5 of 6
 
 **Rung 1 — Powers of Ten.** The pH square: [H⁺] ↔ pH ↔ pOH ↔ [OH⁻], all conversions
 via exponent reading (flip the sign; pH + pOH = 14; Kw exponents sum to −14).
@@ -33,8 +33,18 @@ diprotic strong acid < strong acid < weak acid < 7 < weak base < strong base <
 diprotic base; neutral salts and pure water pin the middle. One late puzzle runs
 DECREASING with a loud banner. The reveal marks each slot and shows the correct
 sequence with class chips — the why is always the classification. The engine
-throws on class ties, so ambiguous puzzles can't be authored. Hydrolyzing salts
-join later, after Salt Court teaches them.
+throws on class ties, so ambiguous puzzles can't be authored. With Salt Court
+live, two bonus mixed-ladder puzzles rotate in (5-of-7 sample per round): the
+hydrolyzing salts rank between the weak species and 7 — milder still.
+
+**Rung 5 — Salt Court.** Hydrolysis verdicts constructed, never memorized: the
+salt splits into its ions on the card; the student picks each ion's parent from
+3 candidates (wrong-identity and wrong-category distractors), toggles each
+parent strong/weak, declares the verdict, and one Check grades the whole
+five-part chain with per-part marks — a wrong parent fails its strength mark
+too, so the broken link is always visible. The rule: THE STRONG PARENT WINS;
+both strong is a draw at exactly 7. Weak+weak and amphiprotic curveballs
+(NaHSO₄) are excluded by design; saltVerdict() throws on weak+weak.
 - Typed answers: plain integers for pH/pOH; for concentrations the input box IS the
   superscript slot of 10^▢, so the student types a signed exponent.
 - Sign near-misses (dropped minus on an exponent, spurious minus on a pH) get a

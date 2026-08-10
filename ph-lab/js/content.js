@@ -121,7 +121,56 @@ export const TIERS = [
       { id: "L4", direction: "inc", species: ["NH3", "NaOH", "CH3COOH", "HNO3", "KNO3"],
         expected: ["HNO3", "CH3COOH", "KNO3", "NH3", "NaOH"] },
       { id: "L5", direction: "dec", species: ["H2O", "NH3", "HCl", "Ba(OH)2", "HCOOH"],
-        expected: ["Ba(OH)2", "NH3", "H2O", "HCOOH", "HCl"] }         // highest pH first!
+        expected: ["Ba(OH)2", "NH3", "H2O", "HCOOH", "HCl"] },        // highest pH first!
+      // Bonus mixed-ladder puzzles — the Salt Court graduates take their places.
+      // A hydrolyzing salt is milder than the weak acid/base it came from.
+      { id: "L6", direction: "inc", species: ["CH3COOH", "NH4Cl", "KNO3", "NH3"],
+        expected: ["CH3COOH", "NH4Cl", "KNO3", "NH3"] },
+      { id: "L7", direction: "inc", species: ["Na2CO3", "HCOOH", "KCl", "NH4NO3", "KOH"],
+        expected: ["HCOOH", "NH4NO3", "KCl", "Na2CO3", "KOH"] }
+    ]
+  },
+  {
+    id: "salts",
+    label: "Salt Court",
+    tagline: "every salt has two parents — the strong one wins",
+    // Rung 5. Each case: pick both parents from 3 candidates (right + wrong-identity +
+    // wrong-category), toggle each strong/weak, declare the verdict, ONE Check.
+    // `expected` is hand-entered and cross-checked against saltVerdict() in the tests;
+    // strengths are never stored — they derive from STRONG_PARENTS.
+    salts: [
+      { id: "nacl",  salt: "NaCl",     cation: { f: "Na",  q: "+" },  anion: { f: "Cl",     q: "−" },
+        parentBase: "NaOH", baseChoices: ["NaOH", "NH3", "HCl"],
+        parentAcid: "HCl",  acidChoices: ["HCl", "HF", "NaOH"],
+        expected: "neutral" },
+      { id: "kno3",  salt: "KNO3",     cation: { f: "K",   q: "+" },  anion: { f: "NO3",    q: "−" },
+        parentBase: "KOH",  baseChoices: ["KOH", "NH3", "HNO3"],
+        parentAcid: "HNO3", acidChoices: ["HNO3", "HNO2", "KOH"],
+        expected: "neutral" },
+      { id: "naf",   salt: "NaF",      cation: { f: "Na",  q: "+" },  anion: { f: "F",      q: "−" },
+        parentBase: "NaOH", baseChoices: ["NaOH", "NH3", "HF"],
+        parentAcid: "HF",   acidChoices: ["HF", "HCl", "NaOH"],
+        expected: "basic" },
+      { id: "acet",  salt: "CH3COONa", cation: { f: "Na",  q: "+" },  anion: { f: "CH3COO", q: "−" },
+        parentBase: "NaOH",    baseChoices: ["NaOH", "NH3", "CH3COOH"],
+        parentAcid: "CH3COOH", acidChoices: ["CH3COOH", "HCl", "NaOH"],
+        expected: "basic" },
+      { id: "carb",  salt: "Na2CO3",   cation: { f: "Na",  q: "+" },  anion: { f: "CO3",    q: "2−" },
+        parentBase: "NaOH",  baseChoices: ["NaOH", "NH3", "H2CO3"],
+        parentAcid: "H2CO3", acidChoices: ["H2CO3", "HCl", "NaOH"],
+        expected: "basic" },
+      { id: "kno2",  salt: "KNO2",     cation: { f: "K",   q: "+" },  anion: { f: "NO2",    q: "−" },
+        parentBase: "KOH",  baseChoices: ["KOH", "NH3", "HNO2"],
+        parentAcid: "HNO2", acidChoices: ["HNO2", "HNO3", "KOH"],   // HNO3 vs HNO2 — the good trap
+        expected: "basic" },
+      { id: "nh4cl", salt: "NH4Cl",    cation: { f: "NH4", q: "+" },  anion: { f: "Cl",     q: "−" },
+        parentBase: "NH3",  baseChoices: ["NH3", "NaOH", "HCl"],
+        parentAcid: "HCl",  acidChoices: ["HCl", "HF", "NH3"],
+        expected: "acidic" },
+      { id: "nh4no3", salt: "NH4NO3",  cation: { f: "NH4", q: "+" },  anion: { f: "NO3",    q: "−" },
+        parentBase: "NH3",  baseChoices: ["NH3", "KOH", "HNO3"],
+        parentAcid: "HNO3", acidChoices: ["HNO3", "HNO2", "NH3"],
+        expected: "acidic" }
     ]
   }
 ];

@@ -3,7 +3,8 @@
 // Check. Predict-then-Check spine with a progressive hint ladder — same skeleton as the
 // Oxidation-State Trainer, so the family keeps one feel.
 import { buildProblem, grade, supNum, formatAnswer, fmtSpecies, concStr, parseTyped,
-  ladderSolve, ladderGrade, ladderHints, ladderChip } from "./ph.js";
+  ladderSolve, ladderGrade, ladderHints, ladderChip,
+  saltGrade, saltHints, saltRuling, parentStrength } from "./ph.js";
 import { TIERS } from "./content.js";
 
 const root = document.querySelector("#game");
@@ -48,6 +49,12 @@ let placed = [];           // slot index → species | null
 let trayOrder = [];        // shuffled display order of the puzzle's species
 let selected = null;       // { species, from: "tray" | slotIndex } — the tap-tap half-gesture
 let ladderGraded = null;   // { correct, perSlot, expected }
+
+// ── court state (Salt Court, rung 5) ──
+let salt = null;           // current case
+let picks = null;          // { baseParent, baseStrength, acidParent, acidStrength, verdict }
+let courtGraded = null;    // saltGrade() result
+let choiceOrder = null;    // shuffled candidate display order per case
 
 const NUDGE_MSG = {
   "exponent-negative": `Almost — the minus is the message. Concentrations here run from 1 M (10⁰) <em>down</em> to 10⁻¹⁴ M, so the exponent is <strong>negative</strong>.`,
@@ -120,13 +127,44 @@ const benchApproxNow = () => benchWasApprox;
 function startRound() {
   if (tier().sessions) return startBench();
   if (tier().puzzles) return startLadder();
+  if (tier().salts) return startCourt();
   startCards();
+}
+
+// ── court flow ──
+function startCourt() {
+  queue = shuffle(tier().salts).slice(0, DEFAULT_ROUND);
+  roundTotal = queue.length;
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  mode = "court";
+  loadCase();
+}
+function loadCase() {
+  salt = queue[0];
+  picks = { baseParent: null, baseStrength: null, acidParent: null, acidStrength: null, verdict: null };
+  choiceOrder = { base: shuffle(salt.baseChoices), acid: shuffle(salt.acidChoices) };
+  courtGraded = null; hintsShown = 0; checked = false;
+  render();
+}
+const allPicked = () => picks && Object.values(picks).every(Boolean);
+function courtCheck() {
+  if (checked || !allPicked()) return;
+  courtGraded = saltGrade(picks, salt);
+  graded = { correct: courtGraded.correct };
+  checked = true;
+  if (courtGraded.correct) { solvedThisRound += 1; if (hintsShown === 0) cleanSolves += 1; }
+  else missedThisRound.push(salt);
+  render();
+}
+function courtNext() {
+  queue = requeue(queue, courtGraded.correct);
+  if (queue.length === 0) { mode = "done"; render(); } else loadCase();
 }
 
 // ── ladder flow ──
 const displaySpecies = (s) => s === "H2O" ? "pure H<sub>2</sub>O" : fmtSpecies(s);
 function startLadder() {
-  queue = shuffle(tier().puzzles);
+  queue = shuffle(tier().puzzles).slice(0, DEFAULT_ROUND);   // 5 of the pool — bonus salts mix in
   roundTotal = queue.length;
   solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
   mode = "ladder";
@@ -228,7 +266,10 @@ function check() {
   render();
 }
 function showHint() {
-  const hints = mode === "bench" ? benchHints() : problem.hints;
+  const hints = mode === "bench" ? benchHints()
+    : mode === "ladder" ? ladderHints(puzzle)
+    : mode === "court" ? saltHints(salt)
+    : problem.hints;
   if (hintsShown < hints.length) hintsShown += 1;
   render();
 }
@@ -243,7 +284,94 @@ function render() {
   if (mode === "done") return renderDone();
   if (mode === "bench") return renderBench();
   if (mode === "ladder") return renderLadder();
+  if (mode === "court") return renderCourt();
   renderPlay();
+}
+
+function renderCourt() {
+  const ion = (i) => `${fmtSpecies(i.f)}<sup class="ion-q">${i.q}</sup>`;
+  const mark = (part) => checked ? (courtGraded.parts[part] ? " ok" : " no") : "";
+
+  const panel = (side) => {
+    const isBase = side === "base";
+    const chosenParent = isBase ? picks.baseParent : picks.acidParent;
+    const chosenStr = isBase ? picks.baseStrength : picks.acidStrength;
+    const choices = isBase ? choiceOrder.base : choiceOrder.acid;
+    const parentPart = isBase ? "baseParent" : "acidParent";
+    const strengthPart = isBase ? "baseStrength" : "acidStrength";
+    return `<div class="parent-panel">
+      <p class="panel-h">the ${ion(isBase ? salt.cation : salt.anion)} came from…</p>
+      <div class="cand-row${mark(parentPart)}">${choices.map((c) =>
+        `<button type="button" class="cand-btn${chosenParent === c ? " sel" : ""}" data-side="${side}" data-parent="${c}" ${checked ? "disabled" : ""}>${fmtSpecies(c)}</button>`).join("")}
+      </div>
+      <div class="str-row${mark(strengthPart)}">${["strong", "weak"].map((s) =>
+        `<button type="button" class="str-btn${chosenStr === s ? " sel" : ""}" data-side="${side}" data-str="${s}" ${checked ? "disabled" : ""}>${s}</button>`).join("")}
+      </div>
+    </div>`;
+  };
+
+  const verdicts = ["acidic", "neutral", "basic"];
+  const verdictRow = `<div class="verdict-row${mark("verdict")}">${verdicts.map((v) =>
+    `<button type="button" class="verdict-btn v-${v}${picks.verdict === v ? " sel" : ""}" data-verdict="${v}" ${checked ? "disabled" : ""}>${v}</button>`).join("")}</div>`;
+
+  const hints = saltHints(salt);
+  const shown = hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
+  const hintBlock = checked ? "" : `<div class="hints">
+      ${hintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
+      ${hintsShown < hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${hintsShown ? "Another hint" : "Need a hint?"}</button>` : ""}
+    </div>`;
+
+  let ruling = "", feedback = `<p class="feedback">&nbsp;</p>`;
+  if (checked) {
+    const r = saltRuling(salt);
+    feedback = courtGraded.correct
+      ? `<p class="feedback ok">${hintsShown ? "Case closed." : "Case closed — no hints. 💪"} It leaves the docket.</p>`
+      : `<p class="feedback no">The court disagrees — this case returns to the docket.</p>`;
+    ruling = `<div class="court-ruling">
+      <p class="ruling-h">Verdict: <strong class="v-${salt.expected}-text">${salt.expected}</strong></p>
+      <p class="ruling-line">${fmtSpecies(salt.parentAcid)} is <strong>${r.acidStr}</strong> · ${fmtSpecies(salt.parentBase)} is <strong>${r.baseStr}</strong> — ${r.clause}.</p>
+    </div>`;
+  }
+
+  root.innerHTML = `
+    <button class="intro-link" id="introBtn" type="button">↩ How the court works</button>
+    <div class="formula-card">
+      <span class="card-tag">${tier().label}</span>
+      <p class="formula ph-formula">${fmtSpecies(salt.salt)}</p>
+      <p class="ion-split">${ion(salt.cation)} <span class="split-plus">+</span> ${ion(salt.anion)}</p>
+      <p class="ox-ask">dissolved in water — what does the solution become?</p>
+    </div>
+    <div class="parent-panels">${panel("base")}${panel("acid")}</div>
+    <p class="build-label">Your verdict</p>
+    ${verdictRow}
+    ${hintBlock}
+    ${ruling}
+    ${feedback}
+    <div class="controls">
+      <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+      ${checked
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !courtGraded.correct ? "Next case →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn" ${allPicked() ? "" : "disabled"}>Check</button>`}
+    </div>`;
+
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  root.querySelectorAll(".cand-btn").forEach((b) => b.addEventListener("click", () => {
+    if (b.dataset.side === "base") picks.baseParent = b.dataset.parent;
+    else picks.acidParent = b.dataset.parent;
+    render();
+  }));
+  root.querySelectorAll(".str-btn").forEach((b) => b.addEventListener("click", () => {
+    if (b.dataset.side === "base") picks.baseStrength = b.dataset.str;
+    else picks.acidStrength = b.dataset.str;
+    render();
+  }));
+  root.querySelectorAll(".verdict-btn").forEach((b) => b.addEventListener("click", () => {
+    picks.verdict = b.dataset.verdict;
+    render();
+  }));
+  const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", showHint);
+  const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", courtCheck);
+  const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", courtNext); nextBtn.focus(); }
 }
 
 function renderLadder() {
@@ -582,10 +710,33 @@ function introLadder() {
   </div>`;
 }
 
+function introCourt() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Salt Court · the strong parent wins</p>
+    <p class="intro-lede">Every salt is the child of an acid and a base. Dissolve it in water and the parents' strengths decide what the solution becomes — <strong>no salt list to memorize, ever</strong>. You rebuild the parents; the verdict follows.</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-text"><strong>Split the salt into its ions.</strong> The cation walked in from a <em>base</em>, the anion from an <em>acid</em>. <span class="muted-ex">NaF → Na⁺ (from NaOH) + F⁻ (from HF)</span></span></li>
+      <li><span class="step-num">2</span><span class="step-text"><strong>Judge each parent:</strong> strong or weak. The strong ones you already know on sight from Strong Stuff.</span></li>
+      <li><span class="step-num">3</span><span class="step-text"><strong>The strong parent wins.</strong> Strong acid + weak base → acidic. Weak acid + strong base → basic. Both strong → a draw at exactly 7.</span></li>
+    </ol>
+    ${strongChips()}
+    <div class="ox-worked">
+      <p class="ox-worked-h">Worked example — NaF in water</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text">Split: Na⁺ + F⁻. Parents: <strong>NaOH</strong> (base) and <strong>HF</strong> (acid).</span></li>
+        <li><span class="step-num">2</span><span class="step-text">NaOH is <strong>strong</strong>; HF is <strong>weak</strong>.</span></li>
+        <li><span class="step-num">3</span><span class="step-text">The strong parent is the base → the solution is <strong>basic</strong>.</span></li>
+      </ol>
+    </div>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
   const body = tier().id === "strong" ? introStrong()
     : tier().id === "dilution" ? introDilution()
     : tier().id === "ladder" ? introLadder()
+    : tier().id === "salts" ? introCourt()
     : introPowers();
   root.innerHTML = `${tierTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
@@ -681,7 +832,9 @@ function renderPlay() {
 
 function renderDone() {
   const isBenchTier = !!tier().sessions;
-  const chipOf = (p) => p.species && Array.isArray(p.species) ? p.species.map(displaySpecies).join(" · ") : renderGiven(p);
+  const chipOf = (p) => p.salt ? fmtSpecies(p.salt)
+    : p.species && Array.isArray(p.species) ? p.species.map(displaySpecies).join(" · ")
+    : renderGiven(p);
   const missedChips = missedThisRound.map((p) => `<span class="chip">${chipOf(p)}</span>`).join("")
     + (isBenchTier ? benchMisses.map((m) => `<span class="chip">${m}</span>`).join("") : "");
   const missCount = missedThisRound.length + (isBenchTier ? benchMisses.length : 0);
@@ -692,7 +845,9 @@ function renderDone() {
     ? `Bench done — ${benchSolved} of ${benchTotal} predictions called, ${solvedThisRound} of ${roundTotal} cards solved.`
     : tier().puzzles
       ? `Round done — ${roundTotal} orderings, ${cleanSolves} solved hint-free.`
-      : `Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.`;
+      : tier().salts
+        ? `Docket cleared — ${roundTotal} cases, ${cleanSolves} ruled hint-free.`
+        : `Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.`;
 
   root.innerHTML = `
     ${tierTabs()}
@@ -708,7 +863,9 @@ function renderDone() {
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     queue = missedThisRound.slice();
     roundTotal = queue.length; solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
-    if (tier().puzzles) { mode = "ladder"; loadPuzzle(); } else { mode = "play"; loadCard(); }
+    if (tier().puzzles) { mode = "ladder"; loadPuzzle(); }
+    else if (tier().salts) { mode = "court"; loadCase(); }
+    else { mode = "play"; loadCard(); }
   });
   root.querySelector("#startBtn").addEventListener("click", startRound);
 }

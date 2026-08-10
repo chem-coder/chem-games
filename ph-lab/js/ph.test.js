@@ -2,7 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr, dilute, volFactorExp, isApprox,
-  ladderRank, ladderChip, ladderSolve, ladderGrade, ladderHints } from "./ph.js";
+  ladderRank, ladderChip, ladderSolve, ladderGrade, ladderHints,
+  saltVerdict, saltGrade, saltHints, saltRuling, parentStrength } from "./ph.js";
 import { TIERS } from "./content.js";
 
 // ── the six conversions ───────────────────────────────────────────────────────
@@ -174,6 +175,62 @@ test("every ladder puzzle's hand-entered expected matches the engine, tie-free",
     }
     assert.ok(tier.puzzles.some((p) => p.direction === "dec"), "one decreasing puzzle must exist");
   }
+});
+
+// ── rung 5: Salt Court ────────────────────────────────────────────────────────
+test("saltVerdict: the strong parent wins; weak+weak refuses to rule", () => {
+  assert.equal(saltVerdict("strong", "strong"), "neutral");
+  assert.equal(saltVerdict("strong", "weak"), "acidic");
+  assert.equal(saltVerdict("weak", "strong"), "basic");
+  assert.throws(() => saltVerdict("weak", "weak"), /out of scope/);
+});
+
+test("parentStrength knows the strong lists and defaults everything else weak", () => {
+  assert.equal(parentStrength("HNO3"), "strong");
+  assert.equal(parentStrength("Ba(OH)2"), "strong");
+  assert.equal(parentStrength("HF"), "weak");
+  assert.equal(parentStrength("NH3"), "weak");
+  assert.equal(parentStrength("H2CO3"), "weak");
+});
+
+test("saltGrade marks the five-part chain; a wrong parent fails its strength mark too", () => {
+  const naf = { parentAcid: "HF", parentBase: "NaOH", expected: "basic" };
+  const right = { acidParent: "HF", acidStrength: "weak", baseParent: "NaOH", baseStrength: "strong", verdict: "basic" };
+  assert.equal(saltGrade(right, naf).correct, true);
+  // right strength word on the WRONG parent: both parent and strength marks fail
+  const wrongParent = { ...right, acidParent: "HCl", acidStrength: "weak" };
+  const g = saltGrade(wrongParent, naf);
+  assert.equal(g.correct, false);
+  assert.equal(g.parts.acidParent, false);
+  assert.equal(g.parts.acidStrength, false);
+  assert.equal(g.parts.baseParent, true);
+  assert.equal(g.parts.verdict, true);
+});
+
+test("every salt case is consistent: verdict derives from its parents, choices contain the truth", () => {
+  for (const tier of TIERS) {
+    if (!tier.salts) continue;
+    for (const s of tier.salts) {
+      assert.equal(saltVerdict(parentStrength(s.parentAcid), parentStrength(s.parentBase)), s.expected, s.id);
+      assert.ok(s.acidChoices.includes(s.parentAcid), `${s.id} acid choices`);
+      assert.ok(s.baseChoices.includes(s.parentBase), `${s.id} base choices`);
+      assert.equal(s.acidChoices.length, 3, `${s.id} acid choice count`);
+      assert.equal(s.baseChoices.length, 3, `${s.id} base choice count`);
+      assert.ok(saltHints(s).length === 3);
+      assert.ok(saltRuling(s).clause.length > 0);
+    }
+    const verdicts = new Set(tier.salts.map((s) => s.expected));
+    assert.deepEqual([...verdicts].sort(), ["acidic", "basic", "neutral"], "all three verdicts represented");
+  }
+});
+
+test("the mixed-ladder bonus puzzles place salts between the weak species and 7", () => {
+  assert.ok(ladderRank("CH3COOH") < ladderRank("NH4Cl"));
+  assert.ok(ladderRank("NH4Cl") < ladderRank("NaCl"));
+  assert.ok(ladderRank("NaCl") < ladderRank("Na2CO3"));
+  assert.ok(ladderRank("Na2CO3") < ladderRank("NH3"));
+  assert.equal(ladderChip("NH4Cl"), "acidic salt");
+  assert.equal(ladderChip("NaF"), "basic salt");
 });
 
 test("every scripted bench step's hand-entered chain matches dilute()", () => {
