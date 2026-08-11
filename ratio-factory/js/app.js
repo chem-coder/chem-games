@@ -294,6 +294,17 @@ const resultsPanel = document.querySelector("#resultsPanel");
 const explanationBox = document.querySelector("#explanationBox");
 const explanationList = document.querySelector("#explanationList");
 const limitingPartFeedback = document.querySelector("#limitingPartFeedback");
+const nextScenarioButton = document.querySelector("#nextScenarioButton");
+const sameScenarioButton = document.querySelector("#sameScenarioButton");
+
+nextScenarioButton.addEventListener("click", () => {
+  const next = scenarios[scenarios.indexOf(scenario) + 1];
+  if (!next) return;
+  scenario = next;
+  renderScenarioSwitcher();
+  renderScenario();
+});
+sameScenarioButton.addEventListener("click", randomizeInventory);
 
 renderScenarioSwitcher();
 renderScenario();
@@ -311,8 +322,9 @@ scenarioSwitcher.addEventListener("click", switchScenario);
 
 function switchScenario(event) {
   const button = event.target.closest("[data-scenario-id]");
-  if (!button || button.dataset.scenarioId === scenario.id) return;
+  if (!button) return;
 
+  // Clicking the active tab restarts this factory fresh — it's the "back to this topic" move.
   const nextScenario = scenarios.find((candidate) => candidate.id === button.dataset.scenarioId);
   if (!nextScenario) return;
 
@@ -859,6 +871,11 @@ function hideAnswerKey() {
 
 function revealAnswerKey() {
   renderExplanation();
+  const next = scenarios[scenarios.indexOf(scenario) + 1];
+  nextScenarioButton.hidden = !next;
+  if (next) {
+    nextScenarioButton.textContent = `Next factory: ${next.menuLabel || next.title} →`;
+  }
   explanationBox.hidden = false;
   resultsPanel.hidden = false;
 }
