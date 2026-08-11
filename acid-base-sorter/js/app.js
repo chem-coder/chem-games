@@ -1,11 +1,11 @@
 // Version-tag every internal import so one release bump busts the whole module graph in the
 // browser cache (otherwise a returning visitor can load a stale engine against fresh data).
-import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260622-order";
-import { renderPeriodicTable } from "./periodic-table.js?v=20260622-order";
-import { STRUCTURES } from "./structures.js?v=20260622-order";
-import { recordResult, masteredCount } from "./stats.js?v=20260622-order";
-import { loadStats, saveStats, resetStats } from "./storage.js?v=20260622-order";
-import { DECKS } from "../data/decks.js?v=20260622-order";
+import { gradeCard, requeue, isComplete, buildStack } from "./sorter.js?v=20260811-nav";
+import { renderPeriodicTable } from "./periodic-table.js?v=20260811-nav";
+import { STRUCTURES } from "./structures.js?v=20260811-nav";
+import { recordResult, masteredCount } from "./stats.js?v=20260811-nav";
+import { loadStats, saveStats, resetStats } from "./storage.js?v=20260811-nav";
+import { DECKS } from "../data/decks.js?v=20260811-nav";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#deckSwitcher");
@@ -101,7 +101,7 @@ function check() {
 
 function next() {
   queue = requeue(queue, graded.allCorrect);
-  if (queue.length === 0) renderDone();
+  if (queue.length === 0) { mode = "done"; render(); }
   else resetCard();
 }
 
@@ -127,6 +127,7 @@ function axisRow(ax) {
 
 function render() {
   if (mode === "intro") return renderIntro();
+  if (mode === "done") return renderDone();
   renderCard();
 }
 
@@ -300,16 +301,26 @@ function renderDone() {
       </div>`
     : `<p class="feedback ok">Clean run — no stumbles. 🎉</p>`;
 
+  const nextDeck = deckIndex < DECKS.length - 1 ? DECKS[deckIndex + 1] : null;
   root.innerHTML = `
     <p class="prompt">Stack cleared — all ${roundTotal} classified, including every strong ${label}.</p>
     ${missedBlock}
     <p class="progress-line">Saved progress: mastered <strong>${done} of ${deck().cards.length}</strong> ${deck().label.toLowerCase()} all-time.</p>
+    ${missed.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Drill the ${missed.length} you missed →</button></div>` : ""}
+    <div class="controls two-up done-nav">
+      ${nextDeck ? `<button class="action primary" id="nextDeckBtn">Next topic: ${nextDeck.label} →</button>` : ""}
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${deck().label.toLowerCase()}</button>
+    </div>
+    <p class="done-next">Or run another stack:</p>
     <div class="controls">
-      ${missed.length ? `<button class="action primary" id="reviewBtn">Drill the ${missed.length} you missed →</button>` : ""}
       <button class="action ${missed.length ? "ghost" : "primary"}" id="againBtn">Shuffle &amp; go again</button>
       <button class="reset-link" id="resetBtn" type="button">Reset saved progress</button>
-    </div>`;
+    </div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
 
+  const nextDeckBtn = root.querySelector("#nextDeckBtn");
+  if (nextDeckBtn) nextDeckBtn.addEventListener("click", () => loadDeck(deckIndex + 1));
+  root.querySelector("#revisitBtn").addEventListener("click", showIntro);
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", reviewMissed);
   root.querySelector("#againBtn").addEventListener("click", () => {

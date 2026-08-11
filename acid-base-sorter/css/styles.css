@@ -463,3 +463,8 @@ button.primary {
 button.primary:hover:not(:disabled) { background: var(--accent-dark); }
 button.primary:active:not(:disabled) { transform: translateY(1px); border-bottom-width: 2px; }
 button.primary:disabled { border-bottom-color: #cfd3da; background: #dde0e6; color: #8a8f98; cursor: default; }
+button.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
+button.ghost:hover { background: var(--accent-soft); }
+
+.controls.two-up { justify-content: center; margin: 20px auto 0; }
+.done-next { margin: 22px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
