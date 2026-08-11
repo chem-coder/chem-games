@@ -51,22 +51,26 @@ sup { font-size: 0.62em; line-height: 0; vertical-align: 0.55em; font-weight: in
 .step-text { line-height: 1.55; }
 .muted-ex { display: block; margin-top: 2px; color: var(--muted); font-size: 0.9rem; }
 
-/* ── the pH square: four corner nodes, three labeled moves ── */
-.ph-square {
+/* ── the Kw-Box: the four quantities on the corners, the conversions on the edges ── */
+.kw-box {
   display: grid; grid-template-columns: auto 1fr auto; align-items: center;
-  gap: 6px 10px; margin: 4px 0 20px; padding: 16px 18px;
+  gap: 10px 12px; margin: 4px 0 20px; padding: 18px;
   background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm);
 }
-.sq-node {
-  justify-self: center; padding: 7px 16px;
-  background: var(--surface); border: 1.5px solid var(--line); border-radius: 999px;
-  font-family: var(--font-display); font-weight: 800; font-size: 1.15rem;
+.kw-node {
+  justify-self: center; padding: 8px 18px;
+  background: var(--surface); border: 1.5px solid var(--accent-dark); border-radius: var(--radius-sm);
+  font-family: var(--font-display); font-weight: 800; font-size: 1.3rem; color: var(--accent-dark);
 }
-.sq-node.sq-strong { background: var(--accent); border-color: var(--accent-dark); color: #fff; }
-.sq-edge { justify-self: center; text-align: center; color: var(--muted); font-size: 0.78rem; line-height: 1.35; }
-.sq-edge.sq-h { font-weight: 600; }
-.sq-edge.sq-v { padding: 2px 0; }
-.sq-mid { min-height: 10px; }
+.kw-edge { justify-self: center; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.kw-formula { text-align: center; color: var(--ink); font-size: 0.84rem; font-weight: 600; white-space: nowrap; }
+.kw-arrow { color: var(--muted); font-weight: 800; font-size: 1.05rem; line-height: 1; }
+.kw-edge-v .kw-arrow { font-size: 1.3rem; }
+.kw-center {
+  justify-self: center; text-align: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+  color: var(--muted); opacity: 0.65; letter-spacing: 0.06em; text-transform: uppercase;
+}
 
 /* "know these on sight" recognition block (family component, from the Trainer) */
 .elem-molecules { margin: 4px 0 18px; padding: 14px 16px; background: var(--warning-soft); border: 1px solid var(--warning-line); border-radius: var(--radius-sm); }
@@ -344,6 +348,7 @@ sup { font-size: 0.62em; line-height: 0; vertical-align: 0.55em; font-weight: in
 
 @media (max-width: 480px) {
   .ph-formula { font-size: 1.7rem; }
-  .ph-square { grid-template-columns: auto 1fr auto; gap: 4px 6px; padding: 12px 10px; }
-  .sq-node { font-size: 1rem; padding: 6px 12px; }
+  .kw-box { gap: 6px 6px; padding: 12px 8px; }
+  .kw-node { font-size: 1.05rem; padding: 6px 12px; }
+  .kw-formula { font-size: 0.72rem; white-space: normal; max-width: 15ch; }
 }

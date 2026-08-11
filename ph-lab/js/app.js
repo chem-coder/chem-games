@@ -353,6 +353,7 @@ function renderCourt() {
   }
 
   root.innerHTML = `
+    ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How the court works</button>
     <div class="formula-card">
       <span class="card-tag">${tier().label}</span>
@@ -374,6 +375,7 @@ function renderCourt() {
     </div>`;
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  wireTabs();
   root.querySelectorAll(".cand-btn").forEach((b) => b.addEventListener("click", () => {
     if (b.dataset.side === "base") picks.baseParent = b.dataset.parent;
     else picks.acidParent = b.dataset.parent;
@@ -434,6 +436,7 @@ function renderLadder() {
   }
 
   root.innerHTML = `
+    ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How the ladder works</button>
     <p class="ladder-direction${dec ? " dir-dec" : ""}">${dec
       ? `⚠ Order by <strong>DECREASING</strong> pH — highest first. All solutions 0.1 M.`
@@ -452,6 +455,7 @@ function renderLadder() {
     </div>`;
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  wireTabs();
   const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", showHint);
   const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", ladderCheck);
   const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", ladderNext); nextBtn.focus(); }
@@ -565,6 +569,7 @@ function renderBench() {
   const nextLabel = !isLastStep ? "Next step →" : (!isLastSession ? "Next: the base session →" : "To the card stack →");
 
   root.innerHTML = `
+    ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How dilution works</button>
     <div class="bench-stage">
       ${beaker}
@@ -588,6 +593,7 @@ function renderBench() {
     </div>`;
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  wireTabs();
   const input = root.querySelector("#answerInput");
   if (input) {
     input.addEventListener("input", () => {
@@ -607,34 +613,41 @@ function tierTabs() {
     `<button class="level-tab${i === tierIndex ? " is-active" : ""}" data-tier="${i}" type="button" role="tab" aria-selected="${i === tierIndex}">${t.label}</button>`
   ).join("")}</div>`;
 }
+// Tabs are on every screen — mid-round clicks jump to that topic's intro (the round is
+// cheap; being stranded isn't). The active tab is "back to this topic" too.
+function wireTabs() {
+  root.querySelectorAll(".level-tab").forEach((b) =>
+    b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); mode = "intro"; render(); }));
+}
 function startControls() {
   return `<div class="controls two-up"><button class="action primary" id="startBtn">Start the ${tier().label.toLowerCase()} stack →</button></div>`;
 }
 
-// The pH square — four corners, and the three moves that connect them.
-function phSquare() {
-  return `<div class="ph-square" role="img" aria-label="The pH square: H+ and pH connected by flipping the sign, OH- and pOH the same, the columns connected by Kw and by 14.">
-    <span class="sq-node">[${H}]</span>
-    <span class="sq-edge sq-h">−log ↔ flip the sign</span>
-    <span class="sq-node sq-strong">pH</span>
-    <span class="sq-edge sq-v">K<sub>w</sub>: exponents<br>sum to −14</span>
-    <span class="sq-mid"></span>
-    <span class="sq-edge sq-v">pH + pOH<br>= 14</span>
-    <span class="sq-node">[${OH}]</span>
-    <span class="sq-edge sq-h">−log ↔ flip the sign</span>
-    <span class="sq-node">pOH</span>
+// The Kw-Box (Dalia's) — the four quantities on the corners, the four conversions on the
+// edges, Kw closing the left side and 14 closing the right. One picture, every move.
+function kwBox() {
+  return `<div class="kw-box" role="img" aria-label="The Kw-Box: H+ and pH connected by pH = minus log of H+ and H+ = ten to the minus pH; OH- and pOH connected the same way; H+ and OH- connected by Kw = H+ times OH-; pH and pOH connected by pH plus pOH = 14.">
+    <span class="kw-node">[${H}]</span>
+    <div class="kw-edge kw-edge-h"><span class="kw-formula">pH = −log[${H}]</span><span class="kw-arrow">⟷</span><span class="kw-formula">[${H}] = 10<sup>−pH</sup></span></div>
+    <span class="kw-node">pH</span>
+    <div class="kw-edge kw-edge-v"><span class="kw-formula">K<sub>w</sub> = [${H}][${OH}]</span><span class="kw-arrow">↕</span></div>
+    <span class="kw-center">the K<sub>w</sub>-Box</span>
+    <div class="kw-edge kw-edge-v"><span class="kw-arrow">↕</span><span class="kw-formula">pH + pOH = 14</span></div>
+    <span class="kw-node">[${OH}]</span>
+    <div class="kw-edge kw-edge-h"><span class="kw-formula">[${OH}] = 10<sup>−pOH</sup></span><span class="kw-arrow">⟷</span><span class="kw-formula">pOH = −log[${OH}]</span></div>
+    <span class="kw-node">pOH</span>
   </div>`;
 }
 
 function introPowers() {
   return `<div class="intro">
-    <p class="intro-eyebrow">Powers of Ten · the pH square</p>
-    <p class="intro-lede">Every pH question on the exam is one of these moves. The concentrations are always clean powers of ten — so there is <strong>never anything to calculate</strong>, only exponents to read.</p>
-    ${phSquare()}
+    <p class="intro-eyebrow">Powers of Ten · the K<sub>w</sub>-Box</p>
+    <p class="intro-lede">Every pH question on the exam lives somewhere on this box — a corner you're given, a corner you're asked for, and an edge to walk. The concentrations are always clean powers of ten, so there is <strong>never anything to calculate</strong>, only exponents to read.</p>
+    ${kwBox()}
     <ol class="steps">
-      <li><span class="step-num">1</span><span class="step-text"><strong>pH = −log₁₀[H⁺]</strong> — with a power of ten, the pH is the exponent, sign flipped. <span class="muted-ex">[H⁺] = 10⁻⁵ M → pH 5</span></span></li>
-      <li><span class="step-num">2</span><span class="step-text"><strong>pH + pOH = 14</strong> — the pair always shares 14. <span class="muted-ex">pH 3 ↔ pOH 11</span></span></li>
-      <li><span class="step-num">3</span><span class="step-text"><strong>[H⁺]·[OH⁻] = K<sub>w</sub> = 10⁻¹⁴</strong> — multiplying powers of ten adds exponents, so the two exponents sum to −14. <span class="muted-ex">10⁻⁴ pairs with 10⁻¹⁰</span></span></li>
+      <li><span class="step-num">1</span><span class="step-text"><strong>The "p" just means "−log of".</strong> pH, pOH, pK<sub>w</sub> — all the same move, and with a power of ten, −log simply <strong>flips the exponent's sign</strong>. <span class="muted-ex">[H⁺] = 10⁻⁵ M → pH 5</span></span></li>
+      <li><span class="step-num">2</span><span class="step-text"><strong>pH + pOH = 14 — because pK<sub>w</sub> = 14.</strong> The right edge of the box: the pair always shares 14. <span class="muted-ex">pH 3 ↔ pOH 11</span></span></li>
+      <li><span class="step-num">3</span><span class="step-text"><strong>K<sub>w</sub> is water's own dissociation constant.</strong> Even perfectly neutral water is a tiny bit ionized: at pH 7, [H⁺] = [OH⁻] = 10⁻⁷ M. Multiply them (exponents add): <strong>K<sub>w</sub> = 10⁻¹⁴, always</strong> — that's the left edge, and why the pair shares 14.</span></li>
     </ol>
     <div class="ox-worked">
       <p class="ox-worked-h">Worked example — [${OH}] = 10<sup>−4</sup> M. What is the pH?</p>
@@ -851,6 +864,7 @@ function renderPlay() {
     : "How the pH square works";
 
   root.innerHTML = `
+    ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ ${introLabel}</button>
     ${promptCard}
 
@@ -870,6 +884,7 @@ function renderPlay() {
     </div>`;
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  wireTabs();
   const input = root.querySelector("#answerInput");
   if (input) {
     input.addEventListener("input", () => {
@@ -910,16 +925,23 @@ function renderDone() {
         ? `Docket cleared — ${roundTotal} cases, ${cleanSolves} ruled hint-free.`
         : `Round done — ${roundTotal} conversions, ${cleanSolves} solved hint-free.`;
 
+  const nextTier = tierIndex < TIERS.length - 1 ? TIERS[tierIndex + 1] : null;
   root.innerHTML = `
     ${tierTabs()}
     <p class="prompt">${headline}</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
-    <p class="done-next">Go again below — more rungs of the ladder are on the way.</p>
+    <div class="controls two-up done-nav">
+      ${nextTier ? `<button class="action primary" id="nextTierBtn">Next topic: ${nextTier.label} →</button>` : ""}
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${tier().label}</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
     ${startControls()}`;
 
-  root.querySelectorAll(".level-tab").forEach((b) =>
-    b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); mode = "intro"; render(); }));
+  wireTabs();
+  const nextTierBtn = root.querySelector("#nextTierBtn");
+  if (nextTierBtn) nextTierBtn.addEventListener("click", () => { tierIndex += 1; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     queue = missedThisRound.slice();
