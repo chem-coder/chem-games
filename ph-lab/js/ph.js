@@ -24,8 +24,31 @@ export const KINDS = {
   "dilute-made":   { given: "dilution", ask: "pH",     answerKind: "integer" },
   "dilute-by":     { given: "dilution", ask: "pH",     answerKind: "integer" },
   "dilute-add":    { given: "dilution", ask: "vol",    answerKind: "volume" },
-  "dilute-factor": { given: "dilution", ask: "factor", answerKind: "factor" }
+  "dilute-factor": { given: "dilution", ask: "factor", answerKind: "factor" },
+  "titr-conc":     { given: "titration", ask: "conc",    answerKind: "decimal" },
+  "titr-vol":      { given: "titration", ask: "vol-cm3", answerKind: "volume" },
+  "titr-gl":       { given: "titration", ask: "gl",      answerKind: "decimal" },
+  "titr-excess":   { given: "titration", ask: "excess",  answerKind: "choice" }
 };
+
+// ── rung 6: Neutral Ground (titration / neutralization mole math) ────────────
+// The equivalence point: moles of H⁺ meet moles of OH⁻. n = c × V (cm³ ÷ 1000),
+// the exchange rate comes off the printed equation, and off equivalence the
+// leftover rules the flask. All numbers land clean — r10 only sands float dust.
+const r10 = (x) => Number(x.toPrecision(10));
+const litres = (cm3) => cm3 / 1000;
+export const titrMoles = (side) => r10(side.c * litres(side.v));
+
+// Moles on the unknown side, through the equation's ratio.
+const titrUnknownMoles = (item) => r10(titrMoles(item.known) * item.unknown.ratio / item.known.ratio);
+
+export const INDICATOR = { acidic: "red", neutral: "green", basic: "blue" };
+export function titrExcess(item) {
+  const nH = r10(item.acid.c * litres(item.acid.v) * item.acid.h);
+  const nOH = r10(item.base.c * litres(item.base.v) * item.base.oh);
+  const verdict = Math.abs(nH - nOH) < 1e-12 ? "neutral" : nH > nOH ? "acidic" : "basic";
+  return { nH, nOH, verdict, color: INDICATOR[verdict] };
+}
 
 // ── rung 3: dilution ─────────────────────────────────────────────────────────
 // Each ×10 dilution moves the pH one step toward 7 — and never past it. The formal
@@ -93,6 +116,10 @@ export function solve(item) {
     case "dilute-by":     return dilute(item.startPh, item.factorK, item.side).ph;
     case "dilute-add":    return item.startVolMl * 10 ** stepsBetween(item) - item.startVolMl; // ADDED, not total
     case "dilute-factor": return 10 ** stepsBetween(item);
+    case "titr-conc": return r10(titrUnknownMoles(item) / litres(item.unknown.v));
+    case "titr-vol":  return r10(titrUnknownMoles(item) / item.unknown.c * 1000);   // back to cm³
+    case "titr-gl":   return r10(titrUnknownMoles(item) / litres(item.unknown.v) * item.unknown.molar);
+    case "titr-excess": return item.mode === "indicator" ? titrExcess(item).color : titrExcess(item).verdict;
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
 }
@@ -123,6 +150,8 @@ export function solutionPh(item) {
     case "strong-acid": case "strong-base": case "mass-acid": case "mass-base":
     case "dilute-made": case "dilute-by": return solve(item);
     case "dilute-add": case "dilute-factor": return item.targetPh;
+    // Titration answers aren't pH values — no spine marker for these.
+    case "titr-conc": case "titr-vol": case "titr-gl": case "titr-excess": return null;
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
 }
@@ -216,6 +245,27 @@ export function buildHints(item) {
         `Count the pH steps: ${item.startPh} → ${item.targetPh} is <strong>${k}</strong>.`,
         `Each step is ×10, so the factor is 10<sup>${k}</sup>.`
       ];
+    }
+    case "titr-conc": case "titr-vol": case "titr-gl": {
+      const nK = titrMoles(item.known), nU = titrUnknownMoles(item);
+      const hints = [
+        `<strong>n = c × V</strong>, with V in litres: cm³ (= mL) ÷ 1000. Start on the side where you know both.`,
+        `Read the exchange rate off the equation: <strong>${item.known.ratio} ${fmtSpecies(item.known.species)} ↔ ${item.unknown.ratio} ${fmtSpecies(item.unknown.species)}</strong>. So ${nK} mol → <strong>${nU} mol</strong>.`
+      ];
+      if (item.kind === "titr-conc") hints.push(`c = n ÷ V → ${nU} ÷ ${r10(litres(item.unknown.v))} L.`);
+      if (item.kind === "titr-vol") hints.push(`V = n ÷ c → ${nU} ÷ ${item.unknown.c}, then × 1000 back to cm³.`);
+      if (item.kind === "titr-gl") hints.push(`Two-step finish: c = ${nU} ÷ ${r10(litres(item.unknown.v))} L = ${r10(nU / litres(item.unknown.v))} mol/L, then <strong>g/L = c × M<sub>r</sub></strong>.`);
+      return hints;
+    }
+    case "titr-excess": {
+      const x = titrExcess(item);
+      const hints = [
+        `Count each side separately: moles of <strong>H⁺</strong> and moles of <strong>OH⁻</strong> — and mind the ×2 on diprotic acids and 2-OH bases.`,
+        `H⁺: ${x.nH} mol · OH⁻: ${x.nOH} mol. Compare them.`,
+        `<strong>The leftover rules the flask.</strong> Acid left → acidic · equal → neutral · base left → basic.`
+      ];
+      if (item.mode === "indicator") hints.push(`Universal indicator: <strong>red</strong> in acid · <strong>green</strong> at neutral · <strong>blue</strong> in base.`);
+      return hints;
     }
     default: throw new Error(`unknown kind: ${item.kind}`);
   }
@@ -345,7 +395,9 @@ export function concStr(item) {
 export function buildProblem(item) {
   const meta = KINDS[item.kind];
   if (!meta) throw new Error(`unknown kind: ${item.kind}`);
-  return { ...item, ...meta, answer: solve(item), ph: solutionPh(item), approx: isApprox(item), hints: buildHints(item) };
+  const problem = { ...item, ...meta, answer: solve(item), ph: solutionPh(item), approx: isApprox(item), hints: buildHints(item) };
+  if (item.kind === "titr-excess") problem.options = item.mode === "indicator" ? ["red", "green", "blue"] : ["acidic", "neutral", "basic"];
+  return problem;
 }
 
 // ── grading ──────────────────────────────────────────────────────────────────
@@ -357,9 +409,25 @@ export function parseTyped(text) {
   return Number(cleaned);
 }
 
+// Decimal answers (rung 6): 0.5, 0,5 and .5 are all the same right answer — an Italian
+// comma never marks a correct number wrong.
+export function parseDecimal(text) {
+  const cleaned = String(text).replace(/,/g, ".").replace(/\s+/g, "");
+  if (!/^\d*\.?\d+$/.test(cleaned)) return NaN;
+  return Number(cleaned);
+}
+
 // Sign near-misses get a nudge and a retry, not a burned card (house pattern from the
 // Oxidation-State Trainer). Everything else grades right/wrong.
 export function grade(problem, typed) {
+  if (problem.answerKind === "choice") {
+    return { correct: typed === problem.answer, value: typed, nudge: null };
+  }
+  if (problem.answerKind === "decimal") {
+    const value = parseDecimal(typed);
+    if (Number.isNaN(value)) return { correct: false, value, nudge: null };
+    return { correct: Math.abs(value - problem.answer) < 1e-9, value, nudge: null };
+  }
   const value = parseTyped(typed);
   if (Number.isNaN(value)) return { correct: false, value, nudge: null };
   if (value === problem.answer) return { correct: true, value, nudge: null };
@@ -377,7 +445,9 @@ const SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴
 export const supNum = (x) => String(x).split("").map((c) => SUP[c] ?? c).join("");
 export function formatAnswer(problem) {
   if (problem.answerKind === "exponent") return `10${supNum(problem.answer)} M`;
-  if (problem.answerKind === "volume") return `${problem.answer} mL`;
+  if (problem.answerKind === "volume") return `${problem.answer} ${problem.unit ?? "mL"}`;
   if (problem.answerKind === "factor") return `× ${problem.answer}`;
+  if (problem.answerKind === "decimal") return `${problem.answer} ${problem.unit ?? ""}`.trim();
+  if (problem.answerKind === "choice") return problem.answer;
   return `${problem.ask} ${problem.approx ? "≈" : ""}${problem.answer}`;
 }

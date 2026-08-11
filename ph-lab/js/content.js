@@ -172,6 +172,54 @@ export const TIERS = [
         parentAcid: "HNO3", acidChoices: ["HNO3", "HNO2", "NH3"],
         expected: "acidic" }
     ]
+  },
+  {
+    id: "titration",
+    label: "Neutral Ground",
+    tagline: "moles of H⁺ meet moles of OH⁻ — the leftover rules",
+    // Rung 6. Volumes in cm³ (= mL, anchored in the intro); the balanced equation is
+    // ALWAYS printed on the card — reading the ratio off it is the skill. `expected`
+    // hand-entered and cross-checked; decimal answers accept comma or dot.
+    items: [
+      // find the unknown concentration (mol/L)
+      { id: "tc1", kind: "titr-conc", unit: "mol/L", equation: "HCl + NaOH → NaCl + H2O",
+        known: { species: "HCl", c: 0.2, v: 25, ratio: 1 }, unknown: { species: "NaOH", v: 50, ratio: 1 },
+        expected: 0.1 },
+      { id: "tc2", kind: "titr-conc", unit: "mol/L", equation: "H2SO4 + 2 NaOH → Na2SO4 + 2 H2O",
+        known: { species: "H2SO4", c: 0.3, v: 20, ratio: 1 }, unknown: { species: "NaOH", v: 30, ratio: 2 },
+        expected: 0.4 },
+      { id: "tc3", kind: "titr-conc", unit: "mol/L", equation: "H2SO4 + 2 KOH → K2SO4 + 2 H2O",
+        known: { species: "KOH", c: 0.2, v: 25, ratio: 2 }, unknown: { species: "H2SO4", v: 25, ratio: 1 },
+        expected: 0.1 },
+      // find the neutralizing volume (cm³)
+      { id: "tv1", kind: "titr-vol", unit: "cm³", equation: "HCl + NaOH → NaCl + H2O",
+        known: { species: "HCl", c: 0.2, v: 20, ratio: 1 }, unknown: { species: "NaOH", c: 0.1, ratio: 1 },
+        expected: 40 },
+      { id: "tv2", kind: "titr-vol", unit: "cm³", equation: "H2SO4 + 2 NaOH → Na2SO4 + 2 H2O",
+        known: { species: "H2SO4", c: 0.1, v: 10, ratio: 1 }, unknown: { species: "NaOH", c: 0.2, ratio: 2 },
+        expected: 10 },
+      // the g/L capstone (2020's shape, our numbers — Mr printed on the card)
+      { id: "tg1", kind: "titr-gl", unit: "g/L", equation: "H2SO4 + 2 NaOH → Na2SO4 + 2 H2O",
+        known: { species: "H2SO4", c: 0.2, v: 25, ratio: 1 }, unknown: { species: "NaOH", v: 40, ratio: 2, molar: 40 },
+        expected: 10 },
+      { id: "tg2", kind: "titr-gl", unit: "g/L", equation: "HCl + KOH → KCl + H2O",
+        known: { species: "HCl", c: 0.1, v: 20, ratio: 1 }, unknown: { species: "KOH", v: 20, ratio: 1, molar: 56 },
+        expected: 5.6 },
+      // excess: the leftover rules the flask
+      { id: "te1", kind: "titr-excess", mode: "verdict",
+        acid: { species: "HCl", c: 0.1, v: 30, h: 1 }, base: { species: "NaOH", c: 0.1, v: 20, oh: 1 },
+        expected: "acidic" },
+      { id: "te2", kind: "titr-excess", mode: "verdict",
+        acid: { species: "HNO3", c: 0.1, v: 25, h: 1 }, base: { species: "KOH", c: 0.1, v: 25, oh: 1 },
+        expected: "neutral" },
+      // the 2019 shape: universal indicator color after mixing
+      { id: "te3", kind: "titr-excess", mode: "indicator",
+        acid: { species: "HCl", c: 0.5, v: 40, h: 1 }, base: { species: "NaOH", c: 0.5, v: 40, oh: 1 },
+        expected: "green" },
+      { id: "te4", kind: "titr-excess", mode: "indicator",
+        acid: { species: "HCl", c: 0.1, v: 10, h: 1 }, base: { species: "Ba(OH)2", c: 0.1, v: 10, oh: 2 },
+        expected: "blue" }
+    ]
   }
 ];
 

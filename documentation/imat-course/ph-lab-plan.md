@@ -133,6 +133,32 @@ parents (hand-entered expected cross-checked, house pattern).
 salts enter ordering puzzles with ranks *closer to 7* than weak acids/bases (acidic
 salt between weak acid and 7; basic salt between 7 and weak base — qualitatively safe).
 
+## Rung 6 spec — Neutral Ground (locked 2026-08-11)
+
+Decisions (Dalia): decimal input accepts comma AND dot (Italian students — never mark a
+right number wrong for its separator); universal-indicator color cards included (2019
+asked them; colors are card facts, not app theming); volumes in cm³ with cm³ = mL
+anchored once in the intro and hint 1; the balanced equation ALWAYS printed on titration
+cards (the skill is reading the ratio, not recalling the equation).
+
+**The idea:** neutral ground = the equivalence point — moles of H⁺ meet moles of OH⁻.
+Three skills: n = c × V (cm³ ÷ 1000), the mole ratio read off the printed equation
+(1:1 vs 2:1), and excess reasoning (the leftover rules the flask).
+
+**Card kinds (one tier, ~10-card pool, 5/round, scratch pad on):**
+1. `titr-conc` — find the unknown concentration at equivalence (decimal M answers).
+2. `titr-vol` — find the neutralizing volume (integer cm³).
+3. `titr-gl` — the 2020-style capstone: concentration in g/L, Mr printed on the card
+   (n → ratio → M → × Mr). Our own numbers, never the exam's.
+4. `titr-excess` — mix given amounts; verdict buttons (acidic/neutral/basic, Salt Court's
+   row) or the universal-indicator variant (red/green/blue — 2019's shape).
+
+**New mechanics:** answerKind "decimal" — parser accepts 0.5 / 0,5 / .5, numeric-equality
+grading, unit label fixed beside the input. Everything else is engine reuse.
+
+Ships → pH Lab is feature-complete; next steps after: Dalia's play-through, deploy for
+Malcolm, then the Acid/Base Sorter theory expansion as a separate build.
+
 ## Build order
 
 1. Rung 1 + shared engine (typed-answer accepted-set checker, hint ladder, deck runner, gradient spine) — this is the template all rungs reuse.

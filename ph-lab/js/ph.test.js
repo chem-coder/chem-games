@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 
 import { solve, solutionPh, buildProblem, parseTyped, grade, supNum, formatAnswer, massExp, concStr, dilute, volFactorExp, isApprox,
   ladderRank, ladderChip, ladderSolve, ladderGrade, ladderHints,
-  saltVerdict, saltGrade, saltHints, saltRuling, parentStrength } from "./ph.js";
+  saltVerdict, saltGrade, saltHints, saltRuling, parentStrength,
+  titrMoles, titrExcess, parseDecimal, INDICATOR } from "./ph.js";
 import { TIERS } from "./content.js";
 
 // ── the six conversions ───────────────────────────────────────────────────────
@@ -231,6 +232,61 @@ test("the mixed-ladder bonus puzzles place salts between the weak species and 7"
   assert.ok(ladderRank("Na2CO3") < ladderRank("NH3"));
   assert.equal(ladderChip("NH4Cl"), "acidic salt");
   assert.equal(ladderChip("NaF"), "basic salt");
+});
+
+// ── rung 6: Neutral Ground ────────────────────────────────────────────────────
+test("titration solves through the printed ratio, both directions", () => {
+  // 1:1 — 25 cm³ of 0.2 M HCl neutralizes 50 cm³ of NaOH → 0.1 M
+  assert.equal(solve({ kind: "titr-conc", known: { species: "HCl", c: 0.2, v: 25, ratio: 1 }, unknown: { species: "NaOH", v: 50, ratio: 1 } }), 0.1);
+  // 2:1 acid known — 20 cm³ of 0.3 M H2SO4 ↔ 30 cm³ NaOH → 0.4 M
+  assert.equal(solve({ kind: "titr-conc", known: { species: "H2SO4", c: 0.3, v: 20, ratio: 1 }, unknown: { species: "NaOH", v: 30, ratio: 2 } }), 0.4);
+  // 2:1 base known — the ratio runs the other way
+  assert.equal(solve({ kind: "titr-conc", known: { species: "KOH", c: 0.2, v: 25, ratio: 2 }, unknown: { species: "H2SO4", v: 25, ratio: 1 } }), 0.1);
+  // volume, back to cm³
+  assert.equal(solve({ kind: "titr-vol", known: { species: "HCl", c: 0.2, v: 20, ratio: 1 }, unknown: { species: "NaOH", c: 0.1, ratio: 1 } }), 40);
+  // the g/L capstone: n → ratio → M → × Mr
+  assert.equal(solve({ kind: "titr-gl", known: { species: "H2SO4", c: 0.2, v: 25, ratio: 1 }, unknown: { species: "NaOH", v: 40, ratio: 2, molar: 40 } }), 10);
+  assert.equal(titrMoles({ c: 0.2, v: 25 }), 0.005);
+});
+
+test("excess: the leftover rules, diprotic counts double, indicator maps colors", () => {
+  const acidLeft = { kind: "titr-excess", mode: "verdict", acid: { c: 0.1, v: 30, h: 1 }, base: { c: 0.1, v: 20, oh: 1 } };
+  assert.equal(solve(acidLeft), "acidic");
+  const even = { kind: "titr-excess", mode: "verdict", acid: { c: 0.1, v: 25, h: 1 }, base: { c: 0.1, v: 25, oh: 1 } };
+  assert.equal(solve(even), "neutral");
+  const baOH = { kind: "titr-excess", mode: "indicator", acid: { c: 0.1, v: 10, h: 1 }, base: { c: 0.1, v: 10, oh: 2 } };
+  assert.equal(solve(baOH), "blue");   // 2 OH⁻ per Ba(OH)2 outnumbers the acid
+  assert.equal(titrExcess(baOH).verdict, "basic");
+  assert.deepEqual(INDICATOR, { acidic: "red", neutral: "green", basic: "blue" });
+});
+
+test("parseDecimal treats comma and dot alike; junk stays NaN", () => {
+  assert.equal(parseDecimal("0.5"), 0.5);
+  assert.equal(parseDecimal("0,5"), 0.5);
+  assert.equal(parseDecimal(",5"), 0.5);
+  assert.equal(parseDecimal(".5"), 0.5);
+  assert.equal(parseDecimal(" 5,6 "), 5.6);
+  assert.equal(parseDecimal("40"), 40);
+  assert.ok(Number.isNaN(parseDecimal("0.5.1")));
+  assert.ok(Number.isNaN(parseDecimal("half")));
+  assert.ok(Number.isNaN(parseDecimal("")));
+});
+
+test("decimal and choice answers grade correctly, no spine, exam-style formatting", () => {
+  const conc = buildProblem({ kind: "titr-conc", unit: "mol/L", known: { species: "H2SO4", c: 0.3, v: 20, ratio: 1 }, unknown: { species: "NaOH", v: 30, ratio: 2 } });
+  assert.equal(conc.ph, null);
+  assert.equal(grade(conc, "0.4").correct, true);
+  assert.equal(grade(conc, "0,4").correct, true);
+  assert.equal(grade(conc, "0.40").correct, true);
+  assert.equal(grade(conc, "0.2").correct, false);
+  assert.equal(formatAnswer(conc), "0.4 mol/L");
+  const ind = buildProblem({ kind: "titr-excess", mode: "indicator", acid: { c: 0.5, v: 40, h: 1 }, base: { c: 0.5, v: 40, oh: 1 } });
+  assert.deepEqual(ind.options, ["red", "green", "blue"]);
+  assert.equal(grade(ind, "green").correct, true);
+  assert.equal(grade(ind, "blue").correct, false);
+  const verd = buildProblem({ kind: "titr-excess", mode: "verdict", acid: { c: 0.1, v: 30, h: 1 }, base: { c: 0.1, v: 20, oh: 1 } });
+  assert.deepEqual(verd.options, ["acidic", "neutral", "basic"]);
+  assert.ok(verd.hints.length >= 3);
 });
 
 test("every scripted bench step's hand-entered chain matches dilute()", () => {

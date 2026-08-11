@@ -65,8 +65,14 @@ const NUDGE_MSG = {
 const conc = (species, n) => `[${species}] = 10<sup>−${n}</sup> M`;
 const H = "H⁺", OH = "OH⁻";
 
+// Equation strings: subscript digits only when they follow a symbol — coefficients stay big.
+const fmtEqn = (eq) => eq.replace(/([A-Za-z)])(\d+)/g, "$1<sub>$2</sub>");
+
 // The given quantity, as the big card line.
 function renderGiven(p) {
+  if (p.kind === "titr-conc" || p.kind === "titr-gl") return `${p.unknown.v} cm³ of ${fmtSpecies(p.unknown.species)}`;
+  if (p.kind === "titr-vol") return `${p.known.v} cm³ of ${p.known.c} M ${fmtSpecies(p.known.species)}`;
+  if (p.kind === "titr-excess") return `${p.acid.v} cm³ of ${p.acid.c} M ${fmtSpecies(p.acid.species)} <span class="split-plus">+</span> ${p.base.v} cm³ of ${p.base.c} M ${fmtSpecies(p.base.species)}`;
   if (p.kind === "dilute-made") return `${p.startVolMl} mL of ${concStr({ mantissa: 1, exp: p.exp })} ${fmtSpecies(p.species)}`;
   if (p.kind === "dilute-add") return `${p.startVolMl} mL at pH ${p.startPh}`;
   if (p.kind === "dilute-factor") return `pH ${p.startPh} → pH ${p.targetPh}`;
@@ -77,8 +83,17 @@ function renderGiven(p) {
   if (p.given === "OH") return conc(OH, p.n);
   return `${p.given} = ${p.n}`;
 }
-// The second card line: Mr on mass cards (exam-style), the dilution action on rung-3 cards.
+// The second card line: Mr on mass cards (exam-style), the dilution action on rung-3 cards,
+// the neutralization setup + printed equation on rung-6 cards.
 function renderCardSub(p) {
+  if (p.kind === "titr-conc" || p.kind === "titr-gl") {
+    const mr = p.kind === "titr-gl" ? ` &nbsp;·&nbsp; M<sub>r</sub>(${fmtSpecies(p.unknown.species)}) = ${p.unknown.molar}` : "";
+    return `<p class="card-sub">exactly neutralized by ${p.known.v} cm³ of ${p.known.c} M ${fmtSpecies(p.known.species)}</p>
+      <p class="card-sub card-eqn">${fmtEqn(p.equation)}${mr}</p>`;
+  }
+  if (p.kind === "titr-vol") return `<p class="card-sub">to be neutralized with ${p.unknown.c} M ${fmtSpecies(p.unknown.species)}</p>
+      <p class="card-sub card-eqn">${fmtEqn(p.equation)}</p>`;
+  if (p.kind === "titr-excess" && p.mode === "indicator") return `<p class="card-sub">a few drops of universal indicator are added</p>`;
   if (p.given === "mass") return `<p class="card-sub">M<sub>r</sub>(${fmtSpecies(p.species)}) = ${p.molar}</p>`;
   if (p.kind === "dilute-made") return `<p class="card-sub">made up to ${p.endVolL} L with water</p>`;
   if (p.kind === "dilute-add") return `<p class="card-sub">target: pH ${p.targetPh}</p>`;
@@ -91,6 +106,10 @@ function renderAsk(p) {
   if (p.ask === "OH") return `what is [${OH}]?`;
   if (p.ask === "vol") return `how much water must you <strong>add</strong>, in mL?`;
   if (p.ask === "factor") return `what dilution factor is needed?`;
+  if (p.ask === "conc") return `what is its concentration, in mol/L?`;
+  if (p.ask === "vol-cm3") return `what volume is needed, in cm³?`;
+  if (p.ask === "gl") return `what is its concentration, in g/L?`;
+  if (p.ask === "excess") return p.mode === "indicator" ? `what colour does the indicator turn?` : `what does the mixture become?`;
   return `what is the ${p.ask}?`;
 }
 
@@ -732,11 +751,34 @@ function introCourt() {
   </div>`;
 }
 
+function introTitration() {
+  return `<div class="intro">
+    <p class="intro-eyebrow">Neutral Ground · the equivalence point</p>
+    <p class="intro-lede">Neutralization is a meeting: <strong>moles of H⁺ meet moles of OH⁻</strong>. Every card is the same three moves — and the volumes speak the exam's language: <strong>cm³, which is just mL</strong> (÷ 1000 → L).</p>
+    <ol class="steps">
+      <li><span class="step-num">1</span><span class="step-text"><strong>n = c × V</strong> — start on the side where you know both, volume in litres. <span class="muted-ex">25 cm³ of 0.2 M → 0.025 × 0.2 = 0.005 mol</span></span></li>
+      <li><span class="step-num">2</span><span class="step-text"><strong>The printed equation is the exchange rate.</strong> H₂SO₄ + 2 NaOH means every acid mole meets <em>two</em> base moles — read the ratio, don't recall it.</span></li>
+      <li><span class="step-num">3</span><span class="step-text"><strong>At equivalence, solve the unknown</strong> (c = n÷V, V = n÷c, g/L = c × M<sub>r</sub>). Off equivalence, <strong>the leftover rules the flask</strong>: <span class="ind-chip ind-red">acid → red</span> <span class="ind-chip ind-green">neutral → green</span> <span class="ind-chip ind-blue">base → blue</span></span></li>
+    </ol>
+    <div class="ox-worked">
+      <p class="ox-worked-h">Worked example — 10 cm³ of 0.1 M H<sub>2</sub>SO<sub>4</sub>, neutralized by 0.2 M NaOH. What volume?</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text">n(H₂SO₄) = 0.010 × 0.1 = <strong>0.001 mol</strong>.</span></li>
+        <li><span class="step-num">2</span><span class="step-text">Ratio 1 : 2 → n(NaOH) = <strong>0.002 mol</strong>.</span></li>
+        <li><span class="step-num">3</span><span class="step-text">V = 0.002 ÷ 0.2 = 0.01 L = <strong>10 cm³</strong>.</span></li>
+      </ol>
+    </div>
+    <p class="spine-note">Answers here aren't pH values — type concentrations and volumes (comma or dot decimals both count), or rule the flask.</p>
+    ${startControls()}
+  </div>`;
+}
+
 function renderIntro() {
   const body = tier().id === "strong" ? introStrong()
     : tier().id === "dilution" ? introDilution()
     : tier().id === "ladder" ? introLadder()
     : tier().id === "salts" ? introCourt()
+    : tier().id === "titration" ? introTitration()
     : introPowers();
   root.innerHTML = `${tierTabs()}${body}`;
   root.querySelectorAll(".level-tab").forEach((b) =>
@@ -755,13 +797,26 @@ function renderPlay() {
       <p class="ox-ask">${renderAsk(problem)}</p>
     </div>`;
 
-  // Exponent answers type INTO the superscript slot of "10^▢ M"; pH/pOH answers are a plain box.
-  const buildLabel = isExp ? "Type the exponent" : `Type the ${problem.ask}`;
+  const isChoice = problem.answerKind === "choice";
+  const isDecimal = problem.answerKind === "decimal";
+  // Exponent answers type INTO the superscript slot of "10^▢ M"; choice answers are a
+  // button row; everything else is a plain box.
+  const buildLabel = isExp ? "Type the exponent"
+    : isChoice ? "Your ruling"
+    : isDecimal ? `Type the number (${problem.unit})`
+    : problem.answerKind === "volume" ? `Type the volume (${problem.unit ?? "mL"})`
+    : `Type the ${problem.ask}`;
+  const CHOICE_CLASS = { acidic: "c-red", red: "c-red", neutral: "c-teal", green: "c-green", basic: "c-green", blue: "c-blue" };
   let answerArea;
   if (checked) {
-    answerArea = `<div class="answer-built ${graded.correct ? "ok" : "no"}"><span>${graded.correct ? formatAnswer(problem) : (Number.isNaN(graded.value) ? "—" : (isExp ? `10${supNum(graded.value)} M` : `${problem.ask} ${graded.value}`))}</span></div>`;
+    answerArea = `<div class="answer-built ${graded.correct ? "ok" : "no"}"><span>${graded.correct ? formatAnswer(problem) : (isChoice ? graded.value : Number.isNaN(graded.value) ? "—" : (isExp ? `10${supNum(graded.value)} M` : `${graded.value}${problem.unit ? ` ${problem.unit}` : ""}`))}</span></div>`;
+  } else if (isChoice) {
+    answerArea = `<div class="choice-row">${problem.options.map((o) =>
+      `<button type="button" class="choice-btn ${CHOICE_CLASS[o]}${typed === o ? " sel" : ""}" data-choice="${o}">${o}</button>`).join("")}</div>`;
   } else if (isExp) {
     answerArea = `<label class="exp-label">[${problem.ask === "H" ? H : OH}] = 10<input class="answer-input exp-input" id="answerInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="?" value="${typed.replace(/"/g, "&quot;")}"><span class="exp-unit">M</span></label>`;
+  } else if (isDecimal) {
+    answerArea = `<label class="exp-label"><input class="answer-input" id="answerInput" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="?" value="${typed.replace(/"/g, "&quot;")}"><span class="exp-unit">${problem.unit}</span></label>`;
   } else {
     answerArea = `<input class="answer-input" id="answerInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="${problem.ask} = ?" value="${typed.replace(/"/g, "&quot;")}">`;
   }
@@ -777,7 +832,7 @@ function renderPlay() {
     feedback = graded.correct
       ? `<p class="feedback ok">${hintsShown ? "Correct." : "Correct — no hints. 💪"} It leaves the stack.</p>`
       : `<p class="feedback no">Not quite — this one comes back around.</p>`;
-    reveal = `<p class="reveal">${renderGiven(problem)} &nbsp;→&nbsp; <strong>${formatAnswer(problem)}</strong></p>${spine(problem.ph, problem.approx ? "≈7" : null)}`;
+    reveal = `<p class="reveal">${renderGiven(problem)} &nbsp;→&nbsp; <strong>${formatAnswer(problem)}</strong></p>${problem.ph == null ? "" : spine(problem.ph, problem.approx ? "≈7" : null)}`;
     // The add-vs-total arithmetic, spelled out — the 99-mL trap's teaching line.
     if (problem.kind === "dilute-add") {
       const total = problem.answer + problem.startVolMl;
@@ -786,12 +841,14 @@ function renderPlay() {
   }
 
   const nudgeHtml = (!checked && nudge) ? `<p class="ox-nudge">${nudge}</p>` : "";
-  // Scratch space on the multi-step tier — ephemeral working room, never graded (house pattern).
-  const scratchHtml = (!checked && tier().id === "strong")
+  // Scratch space on the multi-step tiers — ephemeral working room, never graded (house pattern).
+  const scratchHtml = (!checked && ["strong", "titration"].includes(tier().id))
     ? `<div class="scratch"><p class="scratch-label">Scratch space (not saved):</p><textarea class="scratch-pad" id="scratchPad" rows="2" autocomplete="off" spellcheck="false" placeholder="work it out here…"></textarea></div>`
     : "";
   const introLabel = tier().id === "strong" ? "How strong stuff works"
-    : tier().id === "dilution" ? "How dilution works" : "How the pH square works";
+    : tier().id === "dilution" ? "How dilution works"
+    : tier().id === "titration" ? "How neutral ground works"
+    : "How the pH square works";
 
   root.innerHTML = `
     <button class="intro-link" id="introBtn" type="button">↩ ${introLabel}</button>
@@ -822,6 +879,10 @@ function renderPlay() {
     input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); check(); } });
     input.focus();
   }
+  root.querySelectorAll(".choice-btn").forEach((b) => b.addEventListener("click", () => {
+    typed = b.dataset.choice;
+    render();
+  }));
   // Restore + persist the scratch text across re-renders (revealing a hint rebuilds the screen).
   const pad = root.querySelector("#scratchPad");
   if (pad) { pad.value = scratch; pad.addEventListener("input", () => { scratch = pad.value; }); }

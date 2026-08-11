@@ -4,7 +4,7 @@ The quantitative acid–base game. First build of the IMAT course track — see
 [documentation/imat-course/ph-lab-plan.md](../documentation/imat-course/ph-lab-plan.md)
 for the full six-rung plan and the locked decisions behind it.
 
-## Current Scope — Rungs 1–5 of 6
+## Current Scope — Complete: all 6 rungs
 
 **Rung 1 — Powers of Ten.** The pH square: [H⁺] ↔ pH ↔ pOH ↔ [OH⁻], all conversions
 via exponent reading (flip the sign; pH + pOH = 14; Kw exponents sum to −14).
@@ -36,6 +36,16 @@ sequence with class chips — the why is always the classification. The engine
 throws on class ties, so ambiguous puzzles can't be authored. With Salt Court
 live, two bonus mixed-ladder puzzles rotate in (5-of-7 sample per round): the
 hydrolyzing salts rank between the weak species and 7 — milder still.
+
+**Rung 6 — Neutral Ground.** Titration mole math at the equivalence point:
+n = c × V with the exam's cm³ (= mL anchored once in the intro), the mole ratio
+read off the ALWAYS-printed balanced equation (never recalled), unknown
+concentration (decimal mol/L — comma and dot decimals both accepted, parseDecimal),
+neutralizing volume (integer cm³), the 2020-style g/L capstone (n → ratio → M →
+× Mr, Mr printed on the card), and excess cards where the leftover rules the
+flask — verdict buttons or the 2019-style universal-indicator colors
+(red/green/blue as card facts, not app theming). Scratch pad on; no spine marker
+(answers aren't pH values).
 
 **Rung 5 — Salt Court.** Hydrolysis verdicts constructed, never memorized: the
 salt splits into its ions on the card; the student picks each ion's parent from
