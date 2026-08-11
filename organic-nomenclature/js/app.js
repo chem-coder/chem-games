@@ -469,6 +469,7 @@ function renderPlayName() {
   }
 
   root.innerHTML = `
+    ${levelTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How alkane names work</button>
     <div class="formula-card">
       <span class="card-tag">Organic · Alkanes · ${condensed ? "condensed" : "molecular"}</span>
@@ -488,6 +489,7 @@ function renderPlayName() {
         : `<button class="action primary" id="checkBtn" ${typed.trim() ? "" : "disabled"}>Check</button>`}
     </div>`;
 
+  wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
 
   const input = root.querySelector("#answerInput");
@@ -513,6 +515,7 @@ function renderPlayName() {
 // would destroy the canvas — and the student's half-built molecule with it.
 function renderPlayBuild() {
   root.innerHTML = `
+    ${levelTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How ${level().buildOnly ? "these names" : "alkane names"} work</button>
     <div class="formula-card">
       <span class="card-tag">Organic · ${level().buildOnly ? level().label.replace("&", "&amp;") : "Alkanes"} · build it</span>
@@ -532,6 +535,7 @@ function renderPlayBuild() {
       </span>
     </div>`;
 
+  wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#checkBtn").addEventListener("click", check);
   root.querySelector("#resetBtn").addEventListener("click", () => { if (!checked && lab) lab.reset(); });
@@ -611,6 +615,12 @@ function renderDone() {
     <p class="prompt">Round done — ${roundTotal} ${noun}, ${cleanSolves} ${verb.toLowerCase()} hint-free.</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
+    <div class="controls two-up done-nav">
+      ${levelIndex < LEVELS.length - 1
+        ? `<button class="action primary" id="nextLevelBtn">Next topic: ${LEVELS[levelIndex + 1].label} →</button>`
+        : `<button class="action primary" id="reactionsBtn">Next up: the Reactions Lab →</button>`}
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${level().label.toLowerCase()}</button>
+    </div>
     <p class="done-next">${{
       unsaturated: "Every round mixes one alkane, two alkenes, two alkynes — fifty molecules in the rotation.",
       branched: "Twenty-two branched skeletons in the rotation, methylpropane through the dimethylhexanes.",
@@ -620,9 +630,15 @@ function renderDone() {
       acids: "Every round deals two acids and three esters — watch which oxygen keeps its hydrogen.",
       nitrogen: "Every round deals three amines and two amides — nitrogen two ways."
     }[level().id] || "Two rounds cover the whole ladder, methane through decane."}</p>
-    ${startControls()}`;
+    ${startControls()}
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
 
   wireTabs();
+  const nextLevelBtn = root.querySelector("#nextLevelBtn");
+  if (nextLevelBtn) nextLevelBtn.addEventListener("click", () => { levelIndex += 1; mode = "intro"; render(); });
+  const reactionsBtn = root.querySelector("#reactionsBtn");
+  if (reactionsBtn) reactionsBtn.addEventListener("click", () => { window.location.href = "reactions/"; });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     queue = missedThisRound.slice();

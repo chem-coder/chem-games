@@ -449,7 +449,8 @@ function renderIntro() {
 function renderPlay() {
   stagingNudges = new Set();   // fresh question, fresh hints
   root.innerHTML = `
-    <button class="intro-link" id="introBtn" type="button">↩ How addition reactions work</button>
+    ${topicTabs()}
+    <button class="intro-link" id="introBtn" type="button">↩ How ${topic().label.toLowerCase().replace(/s$/, "")} reactions work</button>
     <div class="formula-card">
       <span class="card-tag">Organic · Reactions · ${REACTION_INFO[card.type].label.toLowerCase()}</span>
       <p class="rxn-prompt">${toSubHtml(card.reactant.condensed)} <span class="rxn-plus">+</span> ${reagentHtml(card)} <span class="rxn-arrow">→</span> <span class="rxn-q">?</span></p>
@@ -476,6 +477,7 @@ function renderPlay() {
       </span>
     </div>`;
 
+  wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#checkBtn").addEventListener("click", check);
   root.querySelector("#resetBtn").addEventListener("click", resetQuestion);
@@ -671,6 +673,7 @@ function renderMk() {
     : "";
 
   root.innerHTML = `
+    ${topicTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ Markovnikov's rule</button>
     <div class="formula-card">
       <span class="card-tag">Organic · Reactions · major or minor?</span>
@@ -686,6 +689,7 @@ function renderMk() {
         : `<button class="action primary" id="checkBtn" ${picked < 0 ? "disabled" : ""}>Check</button>`}
     </div>`;
 
+  wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelectorAll(".mk-option").forEach((b) =>
     b.addEventListener("click", () => { picked = Number(b.dataset.i); renderMk(); }));
@@ -719,13 +723,19 @@ function renderDone() {
       carb: "Classify before you oxidize: 1° → aldehyde → acid, 2° → ketone, 3° → no reaction at all.",
       build: "Every round covers all four additions: H2, X2, HX, and water."
     }[quiz]}</p>
-    <div class="controls two-up">
-      <button class="action ghost" id="againBtn">Again: ${topic().label}</button>
+    <div class="controls two-up done-nav">
       ${isLast
         ? `<button class="action primary" id="nextTopicBtn">Back to the top: ${TOPICS[0].label} →</button>`
         : `<button class="action primary" id="nextTopicBtn">Next topic: ${TOPICS[topicIndex + 1].label} →</button>`}
-    </div>`;
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${topic().label.toLowerCase()}</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
+    <div class="controls two-up">
+      <button class="action ghost" id="againBtn">Again: ${topic().label}</button>
+    </div>
+    <p class="done-next"><a class="home-link" href="../../">⌂ All Chem Games</a></p>`;
   wireTabs();
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#againBtn").addEventListener("click", () => startRound(topic().id));
   root.querySelector("#nextTopicBtn").addEventListener("click", () => {
     topicIndex = isLast ? 0 : topicIndex + 1;
