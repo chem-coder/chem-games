@@ -1,5 +1,5 @@
 import { orientFactor, checkAnswer } from "../../shared/js/conversion-engine.js";
-import { PACKS } from "../data/problems.js?v=20260621-packs";
+import { PACKS } from "../data/problems.js?v=20260811-nav";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#packSwitcher");
@@ -171,11 +171,26 @@ function render() {
 }
 
 function renderDone() {
+  // Last pack graduates to the Conversion Builder, where the whole grid is yours to assemble.
+  const nextPack = packIndex < PACKS.length - 1 ? PACKS[packIndex + 1] : null;
   root.innerHTML = `
     <p class="prompt">Nice work — you ran all ${problems().length} ${pack().label.toLowerCase()} conversions through the conveyor.</p>
-    <div class="controls">
-      <button class="action primary" id="againBtn">Play again</button>
-    </div>`;
+    <div class="controls two-up done-nav">
+      ${nextPack
+        ? `<button class="action primary" id="nextPackBtn">Next pack: ${nextPack.label} →</button>`
+        : `<button class="action primary" id="builderBtn">Next up: the Conversion Builder →</button>`}
+      <button class="action ghost" id="againBtn">↩ Replay ${pack().label.toLowerCase()}</button>
+    </div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+  const nextPackBtn = root.querySelector("#nextPackBtn");
+  if (nextPackBtn) nextPackBtn.addEventListener("click", () => {
+    packIndex += 1;
+    solvedCount = 0;
+    renderSwitcher();
+    loadProblem(0);
+  });
+  const builderBtn = root.querySelector("#builderBtn");
+  if (builderBtn) builderBtn.addEventListener("click", () => { window.location.href = "../conversion-builder/"; });
   root.querySelector("#againBtn").addEventListener("click", () => {
     solvedCount = 0;
     loadProblem(0);

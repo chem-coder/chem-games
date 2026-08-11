@@ -276,6 +276,8 @@ h1 {
   align-items: center;
   gap: 10px;
 }
+.controls.two-up { justify-content: center; margin: 20px auto 0; }
+.done-next { margin: 22px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
 
 .score {
   margin: 0 auto 0 0;
