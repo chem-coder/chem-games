@@ -1,0 +1,98 @@
+/* Gas Laws landing — the topic screen between the home menu and each law's lab.
+   House style: shared autumn tokens, tab strip like every other game's rungs. */
+
+* { box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: "Lexend", ui-sans-serif, system-ui, sans-serif;
+}
+
+.app-shell {
+  width: min(760px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+}
+
+.app-header { margin-bottom: 18px; }
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.home-link:hover { text-decoration: underline; }
+
+.eyebrow {
+  margin: 14px 0 6px;
+  color: var(--accent-dark);
+  font-family: "Outfit", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(1.9rem, 5vw, 2.7rem);
+  line-height: 1.05;
+}
+
+.lede { margin: 0; color: var(--muted); }
+
+.game {
+  margin-top: 18px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius, 14px);
+}
+
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.level-tab {
+  padding: 8px 14px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent-dark);
+  background: transparent;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent); }
+
+.concept h2 { margin: 0 0 10px; font-family: "Outfit", sans-serif; font-size: 1.25rem; }
+.concept p { margin: 0 0 10px; line-height: 1.55; }
+
+.law-formula {
+  margin: 14px 0 6px;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--accent-dark);
+}
+/* House rule: subscripts stay ≥50% size, slightly lowered — never the tiny default. */
+.law-formula sub { font-size: 0.6em; vertical-align: -0.25em; }
+.law-note { color: var(--muted); font-size: 0.92rem; text-align: center; }
+
+.controls { display: flex; justify-content: center; margin-top: 18px; }
+a.action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  border-radius: var(--radius-sm, 10px);
+  text-decoration: none;
+}
+a.action.primary {
+  color: #fff;
+  background: var(--accent);
+  border-bottom: 3px solid var(--accent-dark);
+}
+a.action.primary:hover { background: var(--accent-dark); }
+
+.coming-note { margin: 18px 0 0; color: var(--muted); font-size: 0.9rem; text-align: center; }

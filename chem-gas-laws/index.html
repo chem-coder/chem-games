@@ -3,29 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Balloon Temperature Lab</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <title>Gas Laws</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/landing.css?v=20260811-nav">
 </head>
 <body>
   <main class="app-shell">
     <header class="app-header">
-      <p class="eyebrow">Gas Laws Motion Lab</p>
-      <h1>Balloon Temperature Lab</h1>
+      <a class="home-link" href="../">&larr; Home</a>
+      <p class="eyebrow">Gases &middot; Gas Laws</p>
+      <h1>Gas Laws</h1>
+      <p class="lede">How a gas answers to temperature, pressure, and volume &mdash; one law at a time, each with its own lab.</p>
     </header>
 
-    <section class="lab" aria-label="Balloon temperature environment">
-      <canvas id="balloonCanvas" width="1100" height="680" aria-label="A red transparent balloon with gas particles inside, suspended in a seasonal outdoor scene"></canvas>
-
-      <div class="temperature-panel">
-        <label for="temperatureSlider">
-          Outside temperature
-          <span id="temperatureReadout">20 C</span>
-        </label>
-        <input id="temperatureSlider" type="range" min="-20" max="40" step="1" value="20">
+    <section class="game">
+      <!-- One tab today; Boyle and Gay-Lussac join this strip as their labs are built. -->
+      <div class="level-tabs" role="tablist">
+        <button class="level-tab is-active" type="button" role="tab" aria-selected="true">Charles&rsquo;s Law</button>
       </div>
+
+      <div class="concept">
+        <h2>Charles&rsquo;s Law &mdash; volume follows temperature</h2>
+        <p>At constant pressure, the volume of a gas is proportional to its temperature: warm a balloon and it swells, chill it and it shrinks. The particles inside don&rsquo;t change &mdash; they just push harder or softer.</p>
+        <p class="law-formula">V<sub>1</sub> / T<sub>1</sub> = V<sub>2</sub> / T<sub>2</sub></p>
+        <p class="law-note">Temperatures in <strong>kelvin</strong> &mdash; the proportionality only holds from absolute zero. (T in K = &deg;C + 273.15)</p>
+        <div class="controls">
+          <a class="action primary" href="charles-law/">Open the Balloon Temperature Lab &rarr;</a>
+        </div>
+      </div>
+
+      <p class="coming-note">More labs are coming to this strip &mdash; Boyle&rsquo;s law (pressure &times; volume) and Gay-Lussac&rsquo;s law (pressure vs. temperature) will appear as tabs here.</p>
     </section>
   </main>
-
-  <script src="js/charlesLaw.js"></script>
 </body>
 </html>
