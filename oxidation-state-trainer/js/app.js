@@ -125,6 +125,12 @@ function tierTabs() {
     `<button class="level-tab${i === tierIndex ? " is-active" : ""}" data-tier="${i}" type="button" role="tab" aria-selected="${i === tierIndex}">${t.label}</button>`
   ).join("")}</div>`;
 }
+// Tabs are on every screen — mid-round clicks jump to that tier's intro (the round is
+// cheap; being stranded isn't). The active tab is "back to this tier" too.
+function wireTabs() {
+  root.querySelectorAll(".level-tab").forEach((b) =>
+    b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); mode = "intro"; render(); }));
+}
 function startControls() {
   return `<div class="controls two-up"><button class="action primary" id="startBtn">Start the ${tier().label.toLowerCase()} stack →</button></div>`;
 }
@@ -231,8 +237,7 @@ function renderIntro() {
     : tier().id === "ions" ? introIons()
     : introHalf();
   root.innerHTML = `${tierTabs()}${body}`;
-  root.querySelectorAll(".level-tab").forEach((b) =>
-    b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); renderIntro(); }));
+  wireTabs();
   root.querySelector("#startBtn").addEventListener("click", startRound);
 }
 
@@ -300,6 +305,7 @@ function renderPlay() {
     : "";
 
   root.innerHTML = `
+    ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How ${tier().label.toLowerCase()} work</button>
     ${promptCard}
 
@@ -318,6 +324,7 @@ function renderPlay() {
         : `<button class="action primary" id="checkBtn" ${canCheck ? "" : "disabled"}>Check</button>`}
     </div>`;
 
+  wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
   const updateCheck = () => { const b = root.querySelector("#checkBtn"); if (b) b.disabled = half ? !(typed.trim() && pickedDir) : !typed.trim(); };
   const input = root.querySelector("#answerInput");
@@ -350,17 +357,25 @@ function renderDone() {
     ? `<p class="ladder-teaser done">Did you catch it? The chlorine ladder <strong>ClO⁻ +1 · ClO₂⁻ +3 · ClO₃⁻ +5 · ClO₄⁻ +7</strong> is the same hypo&#8209;/&#8209;ite/&#8209;ate/per&#8209; pattern you name with.</p>`
     : "";
 
+  const nextTier = tierIndex < TIERS.length - 1 ? TIERS[tierIndex + 1] : null;
   root.innerHTML = `
     ${tierTabs()}
     <p class="prompt">Round done — ${roundTotal} ${isHalf() ? "half-reactions" : "atoms"}, ${cleanSolves} solved hint-free.</p>
     ${missedBlock}
     ${ladderNote}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
-    <p class="done-next">Go again below — or switch tier above.</p>
-    ${startControls()}`;
+    <div class="controls two-up done-nav">
+      ${nextTier ? `<button class="action primary" id="nextTierBtn">Next topic: ${nextTier.label} →</button>` : ""}
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${tier().label.toLowerCase()}</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
+    ${startControls()}
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
 
-  root.querySelectorAll(".level-tab").forEach((b) =>
-    b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); mode = "intro"; render(); }));
+  wireTabs();
+  const nextTierBtn = root.querySelector("#nextTierBtn");
+  if (nextTierBtn) nextTierBtn.addEventListener("click", () => { tierIndex += 1; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     // The built problems still carry their original item fields, so loadCard's builder re-derives them.
