@@ -138,6 +138,14 @@ function levelTabs() {
   ).join("")}</div>`;
 }
 
+// Tabs are on every screen — mid-round clicks jump to that level's intro (the round is
+// cheap; being stranded isn't). The active tab is "back to this level" too.
+function wireTabs() {
+  root.querySelectorAll(".level-tab").forEach((b) =>
+    b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); mode = "intro"; render(); })
+  );
+}
+
 // Two ways to drill each level: name from formula (easier, first) or formula from name (harder).
 // `activeDir` gets the filled/primary style — on intros that's "name" (the recommended start); on
 // the done screen it's the direction just played, so the highlight reflects what you did.
@@ -385,9 +393,7 @@ function renderIntro() {
     : level().id === "acid" ? introAcid()
     : introCovalent();
   root.innerHTML = `${levelTabs()}${body}`;
-  root.querySelectorAll(".level-tab").forEach((b) =>
-    b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); renderIntro(); })
-  );
+  wireTabs();
   root.querySelector("#startName").addEventListener("click", () => startRound("name"));
   root.querySelector("#startFormula").addEventListener("click", () => startRound("formula"));
 }
@@ -428,6 +434,7 @@ function renderPlay() {
   const nudgeHtml = (!checked && nudge) ? `<p class="cap-nudge">${nudge}</p>` : "";
   const verb = isFormula ? "Built" : "Named";
   root.innerHTML = `
+    ${levelTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ How ${level().label} names work</button>
     <div class="formula-card">
       <span class="card-tag">Ionic · ${level().label}${isFormula ? " · name → formula" : ""}</span>
@@ -448,6 +455,7 @@ function renderPlay() {
         : `<button class="action primary" id="checkBtn" ${typed.trim() ? "" : "disabled"}>Check</button>`}
     </div>`;
 
+  wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
 
   const input = root.querySelector("#answerInput");
@@ -480,18 +488,24 @@ function renderDone() {
       </div>`
     : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} ${did} with no hints. 🎉</p>`;
 
+  const nextLevel = levelIndex < LEVELS.length - 1 ? LEVELS[levelIndex + 1] : null;
   root.innerHTML = `
     ${levelTabs()}
     <p class="prompt">Round done — ${roundTotal} compounds, ${cleanSolves} ${did} hint-free.</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
-    <p class="done-next">Go again below — or switch level above.</p>
-    ${startControls(direction)}`;
+    <div class="controls two-up done-nav">
+      ${nextLevel ? `<button class="action primary" id="nextLevelBtn">Next topic: ${nextLevel.label} →</button>` : ""}
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${level().label}</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
+    ${startControls(direction)}
+    <p class="done-next"><a class="home-link" href="../../">⌂ All Chem Games</a></p>`;
 
-  // switch level → that level's intro (pick a direction there)
-  root.querySelectorAll(".level-tab").forEach((b) =>
-    b.addEventListener("click", () => { levelIndex = Number(b.dataset.level); mode = "intro"; render(); })
-  );
+  wireTabs();
+  const nextLevelBtn = root.querySelector("#nextLevelBtn");
+  if (nextLevelBtn) nextLevelBtn.addEventListener("click", () => { levelIndex += 1; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => {
     queue = missedThisRound.slice();

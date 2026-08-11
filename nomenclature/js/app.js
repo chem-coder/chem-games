@@ -87,7 +87,7 @@ function check() {
 
 function next() {
   queue = requeue(queue, graded.allCorrect);
-  if (queue.length === 0) renderDone();
+  if (queue.length === 0) { mode = "done"; render(); }
   else resetCard();
 }
 
@@ -99,6 +99,7 @@ function setDirection(d) {
 // ── rendering ──
 function render() {
   if (mode === "intro") return renderIntro();
+  if (mode === "done") return renderDone();
   renderCard();
 }
 
@@ -333,16 +334,31 @@ function renderDone() {
       </div>`
     : `<p class="feedback ok">Clean run — no stumbles. 🎉</p>`;
 
+  // Last deck graduates to the Name Builder — the decks are its vocabulary.
+  const nextDeck = deckIndex < ION_DECKS.length - 1 ? ION_DECKS[deckIndex + 1] : null;
   root.innerHTML = `
     <p class="prompt">Stack cleared — all ${roundTotal} ions in “${deck().label}” recalled.</p>
     ${missedBlock}
     <p class="progress-line">Saved progress: mastered <strong>${done} of ${total}</strong> in this set all-time.</p>
+    ${missed.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Drill the ${missed.length} you missed →</button></div>` : ""}
+    <div class="controls two-up done-nav">
+      ${nextDeck
+        ? `<button class="action primary" id="nextDeckBtn">Next topic: ${nextDeck.label} →</button>`
+        : `<button class="action primary" id="builderBtn">Next up: the Name Builder →</button>`}
+      <button class="action ghost" id="revisitBtn">↩ Revisit ${deck().label.toLowerCase()}</button>
+    </div>
+    <p class="done-next">Or run another stack:</p>
     <div class="controls">
-      ${missed.length ? `<button class="action primary" id="reviewBtn">Drill the ${missed.length} you missed →</button>` : ""}
       <button class="action ${missed.length ? "ghost" : "primary"}" id="againBtn">Shuffle &amp; go again</button>
       <button class="reset-link" id="resetBtn" type="button">Reset saved progress</button>
-    </div>`;
+    </div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
 
+  const nextDeckBtn = root.querySelector("#nextDeckBtn");
+  if (nextDeckBtn) nextDeckBtn.addEventListener("click", () => loadDeck(deckIndex + 1));
+  const builderBtn = root.querySelector("#builderBtn");
+  if (builderBtn) builderBtn.addEventListener("click", () => { window.location.href = "builder/"; });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", reviewMissed);
   root.querySelector("#againBtn").addEventListener("click", startStack);
