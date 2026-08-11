@@ -328,6 +328,7 @@
         onSelectLevel: handleSelectLevel,
         onStartReviewMode: handleStartReviewMode,
         onExitReviewMode: handleExitReviewMode,
+        onReplaySet: handleReplaySet,
         onRestart: handleResetAll
       });
     }
@@ -507,6 +508,17 @@
 
       isComplete = false;
       loadReaction(index, record.status === "review");
+      render();
+    }
+
+    // Fresh run of the SAME set: wipe just these levels' records and start from the top.
+    function handleReplaySet() {
+      storage.resetLevels(reactions.map((reaction) => reaction.id));
+      progress = storage.getProgress();
+      isComplete = false;
+      reviewMode = false;
+      solutionShown = false;
+      loadReaction(0, false);
       render();
     }
 

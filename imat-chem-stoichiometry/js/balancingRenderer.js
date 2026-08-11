@@ -567,20 +567,25 @@
       actions.appendChild(review);
     }
 
-    const restart = createElement(
+    const replay = createElement(
       "button",
       state.reviewCount > 0 ? "secondary-button" : "primary-button",
-      "Reset progress"
+      "Replay this set"
     );
-    restart.type = "button";
-    restart.addEventListener("click", state.onRestart);
-    actions.appendChild(restart);
+    replay.type = "button";
+    replay.addEventListener("click", state.onReplaySet);
+    actions.appendChild(replay);
 
     const chooseSet = createElement("button", "secondary-button", "Choose another set");
     chooseSet.type = "button";
     chooseSet.addEventListener("click", state.onChooseSet);
     actions.appendChild(chooseSet);
     complete.appendChild(actions);
+
+    const restart = createElement("button", "text-button", "Reset progress");
+    restart.type = "button";
+    restart.addEventListener("click", state.onRestart);
+    complete.appendChild(restart);
 
     shell.appendChild(complete);
     root.appendChild(shell);

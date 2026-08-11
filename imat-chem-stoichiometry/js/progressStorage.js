@@ -147,6 +147,16 @@
     writeState({ ...EMPTY_STATE });
   }
 
+  // Forget the given levels entirely (fresh replay of a set) without touching the active set.
+  function resetLevels(reactionIds) {
+    const state = getProgress();
+    reactionIds.forEach((id) => {
+      delete state.levels[id];
+    });
+    state.currentIndex = 0;
+    writeState(state);
+  }
+
   window.ChemGames.ProgressStorage = {
     getProgress,
     saveCurrentIndex,
@@ -158,6 +168,7 @@
     markComplete,
     markReview,
     resetLevelAttempt,
+    resetLevels,
     resetProgress
   };
 })(window);
