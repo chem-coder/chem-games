@@ -3,7 +3,7 @@ import {
   checkGrid,
   buildTileBank
 } from "./builder.js";
-import { ROUNDS } from "../data/problems.js?v=20260621-builder";
+import { ROUNDS } from "../data/problems.js?v=20260811-nav";
 
 const root = document.querySelector("#game");
 const switcher = document.querySelector("#roundSwitcher");
@@ -237,13 +237,16 @@ function renderDone() {
   renderSwitcher();
   root.innerHTML = `
     <p class="prompt">Nice work — you solved ${solvedSet.size} of ${totalQuestions} conversions. Given any one amount, you found all the others. Tap any tile in the map above to revisit one.</p>
-    <div class="controls">
-      <button class="action primary" id="againBtn">Start over</button>
-    </div>`;
+    <div class="controls two-up done-nav">
+      <button class="action primary" id="againBtn">Start over from the top</button>
+      <button class="action ghost" id="conveyorBtn">↩ Warm up on the Conveyor</button>
+    </div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
   root.querySelector("#againBtn").addEventListener("click", () => {
     solvedSet.clear();
     goTo(0);
   });
+  root.querySelector("#conveyorBtn").addEventListener("click", () => { window.location.href = "../conversion-conveyor/"; });
 }
 
 goTo(0);
