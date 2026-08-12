@@ -5,6 +5,7 @@ This folder is for internal project documentation: goals, decisions, implementat
 ## Active Internal Docs
 
 - `PRODUCT_STRATEGY.md` - **START HERE. The north-star doc (2026-07-27).** The shift from web learning library to a commercial indie chemistry puzzle game on Steam: first product scope (the Nomenclature bundle), the three-shells-one-codebase rule, free-vs-paid line, the mobile audit, go-to-market, and the current sequence. Supersedes `ROADMAP.md` wherever they disagree.
+- `TOPIC_UNIVERSE_PLAN.md` - **the web library's organizing plan (2026-08-12).** Chapter → Topic → Ladder-tab hierarchy for the whole site, the 11 chapters with topics/games/ladders mapped to Dalia's course sections, tracks (IMAT first) as pathways over the universe, decisions log, and rollout order.
 - `PROJECT_REVIEW.md` - current project inventory, goals, documentation status, database plan, and working process.
 - `Chem_Games_Project_Brief.md` - high-level product brief for the IMAT chemistry / stoichiometry trainer direction.
 - `ARCHITECTURE.md` - durable technical-decisions blueprint: standard game module pattern, light shared foundation, shared content spine, chemistry-correctness safety net, and deploy. Fills the slot earlier reserved for `TECHNICAL_DECISIONS.md`.
