@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../shared/css/tokens.css">
-  <link rel="stylesheet" href="css/landing.css?v=20260811-nav">
+  <link rel="stylesheet" href="../shared/css/topic-screen.css?v=20260812-topic1">
 </head>
 <body>
   <main class="app-shell">
@@ -19,24 +19,35 @@
       <p class="lede">How a gas answers to temperature, pressure, and volume &mdash; one law at a time, each with its own lab.</p>
     </header>
 
-    <section class="game">
-      <!-- One tab today; Boyle and Gay-Lussac join this strip as their labs are built. -->
-      <div class="level-tabs" role="tablist">
-        <button class="level-tab is-active" type="button" role="tab" aria-selected="true">Charles&rsquo;s Law</button>
-      </div>
-
-      <div class="concept">
-        <h2>Charles&rsquo;s Law &mdash; volume follows temperature</h2>
-        <p>At constant pressure, the volume of a gas is proportional to its temperature: warm a balloon and it swells, chill it and it shrinks. The particles inside don&rsquo;t change &mdash; they just push harder or softer.</p>
-        <p class="law-formula">V<sub>1</sub> / T<sub>1</sub> = V<sub>2</sub> / T<sub>2</sub></p>
-        <p class="law-note">Temperatures in <strong>kelvin</strong> &mdash; the proportionality only holds from absolute zero. (T in K = &deg;C + 273.15)</p>
-        <div class="controls">
-          <a class="action primary" href="charles-law/">Open the Balloon Temperature Lab &rarr;</a>
-        </div>
-      </div>
-
-      <p class="coming-note">More labs are coming to this strip &mdash; Boyle&rsquo;s law (pressure &times; volume) and Gay-Lussac&rsquo;s law (pressure vs. temperature) will appear as tabs here.</p>
-    </section>
+    <section class="game" id="topic"></section>
   </main>
+
+  <!-- First topic screen on the shared template (TOPIC_UNIVERSE_PLAN.md). The data
+       below IS the page: add a law by adding a tab, no markup surgery required. -->
+  <script type="module">
+    import { renderTopicScreen } from "../shared/js/topic-screen.js?v=20260812-topic1";
+
+    renderTopicScreen(document.getElementById("topic"), {
+      tabs: [
+        {
+          id: "charles", label: "Charles’s Law",
+          card: `
+            <h2>Charles&rsquo;s Law &mdash; volume follows temperature</h2>
+            <p>At constant pressure, the volume of a gas is proportional to its temperature: warm a balloon and it swells, chill it and it shrinks. The particles inside don&rsquo;t change &mdash; they just push harder or softer.</p>
+            <p class="law-formula">V<sub>1</sub> / T<sub>1</sub> = V<sub>2</sub> / T<sub>2</sub></p>
+            <p class="law-note">Temperatures in <strong>kelvin</strong> &mdash; the proportionality only holds from absolute zero. (T in K = &deg;C + 273.15)</p>`,
+          games: [{ label: "Open the Balloon Temperature Lab →", href: "charles-law/" }],
+        },
+        {
+          id: "boyle", label: "Boyle’s Law",
+          soon: "P₁V₁ = P₂V₂ — squeeze a gas into half the space and it pushes back twice as hard. Temperature sits this one out.",
+        },
+        {
+          id: "gay-lussac", label: "Gay-Lussac’s Law",
+          soon: "P₁/T₁ = P₂/T₂ — heat a sealed can and the pressure climbs. Volume sits this one out.",
+        },
+      ],
+    });
+  </script>
 </body>
 </html>
