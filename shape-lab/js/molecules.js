@@ -115,10 +115,11 @@ function buildPolarityEntry(spec) {
 
 export const POLARITY_BANK = POLARITY_SPECS.map(buildPolarityEntry);
 
-// The Model Kit's v1 build bank — neutral molecules only, where every bond takes
-// exactly one electron from each side and nobody has to hand an electron over.
-// Ions (nitrate!) join once the Kit learns electron transfer; the charge question
-// is asked from day one so the mechanic is already in the student's hands.
+// The Model Kit's build bank. Neutral molecules bond by strict dot-pairing;
+// ions add the electron tray (charge grants or demands electrons) and
+// atom-to-atom hand-overs — which is exactly where formal charge comes from:
+// the donor ends up +1, the receiver −1. resNote appears on success when the
+// built ion has equivalent resonance forms.
 export const BUILD_BANK = [
   { f: "H2O", atoms: ["O", "H", "H"], charge: 0 },
   { f: "CH4", atoms: ["C", "H", "H", "H", "H"], charge: 0 },
@@ -132,4 +133,17 @@ export const BUILD_BANK = [
   { f: "H2S", atoms: ["S", "H", "H"], charge: 0 },
   { f: "N2", atoms: ["N", "N"], charge: 0 },
   { f: "BeF2", atoms: ["Be", "F", "F"], charge: 0 },
+  // ── ions ──
+  { f: "OH-", atoms: ["O", "H"], charge: -1 },
+  { f: "CN-", atoms: ["C", "N"], charge: -1 },
+  { f: "NH4+", atoms: ["N", "H", "H", "H", "H"], charge: 1 },
+  { f: "H3O+", atoms: ["O", "H", "H", "H"], charge: 1 },
+  { f: "NO2-", atoms: ["N", "O", "O"], charge: -1,
+    resNote: "The double bond could sit on either O — both drawings are right, and the real bonds are each 1½." },
+  { f: "NO3-", atoms: ["N", "O", "O", "O"], charge: -1,
+    resNote: "Any of the three O's could hold the double bond — your version is one of three equal drawings, and every N–O bond is really 1⅓. (The favorite, built by hand.)" },
+  { f: "CO3^2-", atoms: ["C", "O", "O", "O"], charge: -2,
+    resNote: "Three equivalent drawings again — carbonate is nitrate's story with a kinder central atom." },
+  { f: "SO4^2-", atoms: ["S", "O", "O", "O", "O"], charge: -2,
+    resNote: "The two doubles can sit on any pair of O's — six equivalent drawings, S allowed its expanded octet." },
 ];

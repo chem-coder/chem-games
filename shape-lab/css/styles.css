@@ -181,6 +181,7 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 }
 .nudge-list { margin: 6px auto 0; padding: 0 0 0 20px; max-width: 60ch; color: var(--danger); font-size: 0.9rem; }
 .nudge-list li { margin-bottom: 4px; }
+.res-note { display: inline-block; margin-top: 6px; color: var(--plum-dark); font-weight: 500; font-size: 0.9rem; }
 
 /* ── click-through card player ── */
 .card-modal { display: block; max-width: 560px; width: 100%; }

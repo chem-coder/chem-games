@@ -515,10 +515,11 @@ function renderBuildIntro() {
         <li><span class="step-num">1</span><span class="step-text"><strong>Drag atoms</strong> anywhere on the bench — they glide.</span></li>
         <li><span class="step-num">2</span><span class="step-text"><strong>Drag a dot onto another atom's dot</strong> to share a pair — that's a bond. Do it again for a double, once more for a triple.</span></li>
         <li><span class="step-num">3</span><span class="step-text"><strong>Double-click a bond</strong> to hand the electrons back.</span></li>
-        <li><span class="step-num">4</span><span class="step-text"><strong>Answer the charge</strong> — a non-zero answer wraps the ion in its brackets.</span></li>
-        <li><span class="step-num">5</span><span class="step-text"><strong>Check.</strong> Right: the molecule turns 3D and spins. Wrong: the Kit tells you which atom is unhappy, and why.</span></li>
+        <li><span class="step-num">4</span><span class="step-text"><strong>Answer the charge</strong> — brackets appear, and the <strong>electron tray</strong> opens: a negative ion grants spare electrons for you to place; a positive ion demands some back — drag them to the tray.</span></li>
+        <li><span class="step-num">5</span><span class="step-text"><strong>Hand electrons over</strong> when an atom needs one: drag a dot onto another atom's <em>body</em> (not its dots — that makes a bond). The donor goes +1, the receiver −1 — that's formal charge happening under your fingers.</span></li>
+        <li><span class="step-num">6</span><span class="step-text"><strong>Check.</strong> Right: the molecule turns 3D and spins. Wrong: the Kit tells you which atom is unhappy, and why.</span></li>
       </ol>
-      <p class="stub-note">Remember the octet rebels: H wants 2, Be is content with 4, B with 6 — and a row-2 atom can never hold more than 8.</p>
+      <p class="stub-note">Remember the octet rebels: H wants 2, Be is content with 4, B with 6 — and a row-2 atom can never hold more than 8. The electron count from step 1 is the law, and formal charges above ±1 don't survive Check.</p>
     </div>
     <div class="controls two-up"><button class="action primary" id="startBtn">Open the Model Kit →</button></div>
     <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
@@ -589,7 +590,7 @@ function renderBuildPlay() {
     const pose = kit.derive3D();
     kit.freeze(); kit.destroy(); kit = null;
     nudges.innerHTML = "";
-    feedback.innerHTML = `Bonded and balanced — this is <strong>${fmtFormula(buildProblem.f)}</strong> in three dimensions. 🎉`;
+    feedback.innerHTML = `Bonded and balanced — this is <strong>${fmtFormula(buildProblem.f)}</strong> in three dimensions. 🎉${buildProblem.resNote ? `<br><span class="res-note">${buildProblem.resNote}</span>` : ""}`;
     feedback.className = "feedback ok";
     if (pose) {
       const spinner = makeSpinner(canvas, pose, { startAngle: 0.5 });

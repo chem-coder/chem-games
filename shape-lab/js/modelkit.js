@@ -62,15 +62,43 @@ export function createKit(canvas, atomEls, opts = {}) {
   fit();
   const bonds = []; // {a, b, order}
   let charge = 0;
+  let tray = 0;          // electrons currently sitting in the tray
+  let extraGranted = 0;  // electrons the negative charge has granted so far
   let frozen = false;
-  let drag = null;   // {kind:"atom"|"bond", id, px, py}
+  let drag = null;   // {kind:"atom"|"bond"|"trayDot", id, px, py}
   let raf = null;
 
   const bondsOf = (id) => bonds.filter((b) => b.a === id || b.b === id);
   const orderSum = (id) => bondsOf(id).reduce((s, b) => s + b.order, 0);
   const partner = (b, id) => (b.a === id ? b.b : b.a);
+  const TOTAL_VALENCE = atomEls.reduce((s, el) => s + (VALENCE[el] ?? 0), 0);
 
-  function setCharge(q) { charge = q; }
+  // The charge answer opens the electron tray: a negative ion GRANTS electrons
+  // (they appear in the tray, to be placed by hand); a positive ion DEMANDS them
+  // (the tray becomes the exit — drag electrons in until the books balance).
+  function setCharge(q) {
+    charge = q;
+    const newExtra = q < 0 ? -q : 0;
+    tray = Math.max(0, tray + newExtra - extraGranted);
+    extraGranted = newExtra;
+  }
+
+  // Electron moves — fungible bookkeeping, the validator polices the chemistry.
+  function transfer(from, to) {
+    if (from === to || atoms[from].lone < 1) return;
+    atoms[from].lone -= 1; atoms[to].lone += 1;
+    opts.onChange?.();
+  }
+  function toTray(from) {
+    if (charge === 0 || atoms[from].lone < 1) return; // the tray only exists for ions
+    atoms[from].lone -= 1; tray += 1;
+    opts.onChange?.();
+  }
+  function fromTray(to) {
+    if (tray < 1) return;
+    tray -= 1; atoms[to].lone += 1;
+    opts.onChange?.();
+  }
 
   // ── dot choreography: bonds claim their headings, lone dots take the freest slots ──
   function dotTargets(atom) {
@@ -125,11 +153,13 @@ export function createKit(canvas, atomEls, opts = {}) {
         ctx.lineWidth = 2.6; ctx.strokeStyle = "#897f6d"; ctx.lineCap = "round"; ctx.stroke();
       }
     });
-    // rubber band while bonding
-    if (drag?.kind === "bond") {
-      const A = atoms[drag.id];
-      ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(drag.px, drag.py);
-      ctx.setLineDash([5, 5]); ctx.lineWidth = 2; ctx.strokeStyle = "#1e7268"; ctx.stroke();
+    // rubber band while an electron is in hand
+    if (drag?.kind === "bond" || drag?.kind === "trayDot") {
+      const from = drag.kind === "bond" ? atoms[drag.id] : { x: TRAY.x + TRAY.w / 2, y: TRAY.y + TRAY.h / 2 };
+      ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(drag.px, drag.py);
+      ctx.setLineDash([5, 5]); ctx.lineWidth = 2;
+      ctx.strokeStyle = drag.kind === "bond" ? "#1e7268" : "#835f7d";
+      ctx.stroke();
       ctx.setLineDash([]);
     }
     // atoms + their dots
@@ -151,6 +181,47 @@ export function createKit(canvas, atomEls, opts = {}) {
         return { x, y };
       });
     });
+    // hover hints while an electron is in hand: teal = bond target, plum = hand-over
+    if (drag && (drag.kind === "bond" || drag.kind === "trayDot")) {
+      const p = { x: drag.px, y: drag.py };
+      const overDot = hitDot(p);
+      const overAtom = hitAtom(p, 14);
+      if (drag.kind === "bond" && overDot !== null && overDot !== drag.id) {
+        const at = atoms[overDot];
+        ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 14, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(30,114,104,0.6)"; ctx.lineWidth = 2; ctx.stroke();
+      } else if (overAtom !== null && overAtom !== drag.id) {
+        const at = atoms[overAtom];
+        ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 6, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(131,95,125,0.65)"; ctx.lineWidth = 2.4; ctx.stroke();
+      } else if (drag.kind === "bond" && charge !== 0 && inTray(p)) {
+        ctx.strokeStyle = "rgba(131,95,125,0.85)"; ctx.lineWidth = 2.4;
+        ctx.strokeRect(TRAY.x, TRAY.y, TRAY.w, TRAY.h);
+      }
+    }
+    // the electron tray — only ions have one
+    trayDotPos = [];
+    if (charge !== 0 || tray > 0) {
+      ctx.save();
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = "#835f7d"; ctx.lineWidth = 1.6;
+      ctx.fillStyle = "rgba(236,225,234,0.75)";
+      ctx.beginPath();
+      ctx.roundRect(TRAY.x, TRAY.y, TRAY.w, TRAY.h, 9);
+      ctx.fill(); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#6b4d68";
+      ctx.font = "600 11px Lexend, sans-serif";
+      ctx.textAlign = "left"; ctx.textBaseline = "top";
+      ctx.fillText(charge < 0 ? "spare e⁻ — place them" : "remove e⁻ — drop here", TRAY.x + 10, TRAY.y + 6);
+      for (let i = 0; i < tray; i++) {
+        const x = TRAY.x + 14 + i * 13, y = TRAY.y + TRAY.h - 13;
+        ctx.beginPath(); ctx.arc(x, y, DOT_R + 0.6, 0, Math.PI * 2);
+        ctx.fillStyle = "#134f48"; ctx.fill();
+        trayDotPos.push({ x, y });
+      }
+      ctx.restore();
+    }
     // ion brackets, live as soon as a non-zero charge is picked
     if (charge !== 0) {
       const xs = atoms.map((a) => a.x), ys = atoms.map((a) => a.y);
@@ -177,9 +248,18 @@ export function createKit(canvas, atomEls, opts = {}) {
   }
 
   // ── pointer interaction ──
+  const TRAY = { x: 12, y: 12, w: 158, h: 46 };
+  let trayDotPos = [];
+  const inTray = (p) => p.x >= TRAY.x && p.x <= TRAY.x + TRAY.w && p.y >= TRAY.y && p.y <= TRAY.y + TRAY.h;
+
   function pos(e) {
     const r = canvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+  function hitTrayDot(p) {
+    for (const d of trayDotPos)
+      if (Math.hypot(p.x - d.x, p.y - d.y) < 10) return true;
+    return false;
   }
   function hitDot(p) {
     for (const at of atoms)
@@ -219,6 +299,7 @@ export function createKit(canvas, atomEls, opts = {}) {
     if (frozen) return;
     try { canvas.setPointerCapture?.(e.pointerId); } catch { /* synthetic events have no live pointer */ }
     const p = pos(e);
+    if (hitTrayDot(p)) { drag = { kind: "trayDot", px: p.x, py: p.y }; return; }
     const dotAtom = hitDot(p);
     if (dotAtom !== null) { drag = { kind: "bond", id: dotAtom, px: p.x, py: p.y }; return; }
     const atomId = hitAtom(p);
@@ -232,10 +313,20 @@ export function createKit(canvas, atomEls, opts = {}) {
   }
   function onUp(e) {
     if (frozen || !drag) return;
+    const p = pos(e);
     if (drag.kind === "bond") {
-      const p = pos(e);
+      // dot → dot: share a pair (bond). dot → atom body: hand the electron over.
+      // dot → tray: remove it from the molecule (ions only).
+      const targetDot = hitDot(p);
+      if (targetDot !== null) tryBond(drag.id, targetDot);
+      else {
+        const targetAtom = hitAtom(p, 14);
+        if (targetAtom !== null) transfer(drag.id, targetAtom);
+        else if (inTray(p)) toTray(drag.id);
+      }
+    } else if (drag.kind === "trayDot") {
       const target = hitDot(p) ?? hitAtom(p, 14);
-      tryBond(drag.id, target);
+      if (target !== null) fromTray(target);
     }
     drag = null;
   }
@@ -258,6 +349,16 @@ export function createKit(canvas, atomEls, opts = {}) {
   function check(targetCharge) {
     const issues = [];
     if (charge !== targetCharge) issues.push("That's not this molecule's charge — count again.");
+    // Step 1 is the law: the drawing must hold exactly the counted electrons.
+    const inDrawing = atoms.reduce((s, a) => s + a.lone, 0) + 2 * bonds.reduce((s, b) => s + b.order, 0);
+    const required = TOTAL_VALENCE - targetCharge;
+    if (charge < 0 && tray > 0) {
+      issues.push(`The charge granted ${extraGranted === 1 ? "an extra electron" : "extra electrons"} and ${tray === 1 ? "one is" : tray + " are"} still in the tray — every electron must land on an atom.`);
+    } else if (inDrawing !== required) {
+      issues.push(inDrawing > required
+        ? `The drawing holds ${inDrawing} electrons, but the count says ${required} — ${inDrawing - required} too many. ${targetCharge > 0 ? "A positive ion gives electrons up — drag them to the tray." : "Recount step 1."}`
+        : `The drawing holds ${inDrawing} electrons, but the count says ${required} — ${required - inDrawing} missing.`);
+    }
     if (bonds.length < atoms.length - 1) issues.push("Some atoms are still floating free — every atom must connect to the rest.");
     else {
       const seen = new Set([0]), stack = [0];
@@ -265,6 +366,13 @@ export function createKit(canvas, atomEls, opts = {}) {
         [b.a, b.b].forEach((id) => { if (!seen.has(id)) { seen.add(id); stack.push(id); } });
       });
       if (seen.size < atoms.length) issues.push("Some atoms are still floating free — every atom must connect to the rest.");
+    }
+    // Step 5 is law too: |FC| ≥ 2 means the drawing is lying.
+    for (const at of atoms) {
+      const fc = (VALENCE[at.el] ?? 0) - at.lone - orderSum(at.id);
+      if (Math.abs(fc) >= 2 && orderSum(at.id) > 0) {
+        issues.push(`This ${at.el} carries a formal charge of ${fc > 0 ? "+" + fc : fc} — too big to be real. ${ROW3PLUS.has(at.el) ? "Row 3 can expand: trade lone pairs on the neighbors for double bonds." : "Rebalance who keeps which electrons."}`);
+      }
     }
     for (const at of atoms) {
       const shell = 2 * orderSum(at.id) + at.lone;
@@ -308,13 +416,14 @@ export function createKit(canvas, atomEls, opts = {}) {
   function clear() {
     bonds.length = 0;
     atoms.forEach((at) => { at.lone = VALENCE[at.el] ?? 0; });
+    tray = extraGranted && charge < 0 ? extraGranted : 0; // granted electrons return to the tray
     opts.onChange?.();
   }
 
   loop();
   return {
     setCharge, check, derive3D, clear,
-    debug: { atoms, bonds, tryBond }, // dev handle, same spirit as organic's window.__lab
+    debug: { atoms, bonds, tryBond, transfer, toTray, fromTray, trayCount: () => tray }, // dev handle
     freeze() { frozen = true; },
     destroy() {
       if (raf !== null) cancelAnimationFrame(raf);
