@@ -1,0 +1,233 @@
+// Shape Lab — Lewis structures & formal charge content.
+// Dalia's six steps (from "How to Draw Lewis Structures", Heritage Ch 10), the
+// worked walkthroughs, and the formal-charge drill bank. Scenes are tiny
+// declarative drawings rendered to SVG — atoms, bonds, dots, labels, brackets.
+
+// ── scene renderer ──
+const EL_FILL = {
+  C: "#322e27", O: "#c0492f", H: "#e6dac2", N: "#436074", S: "#ce9b22",
+  P: "#b4502f", F: "#7a9a52", Cl: "#7a9a52", Br: "#8a5a3a", I: "#835f7d",
+  B: "#c9a06a", Be: "#a8b8a0", Xe: "#6b8f9c",
+};
+const LIGHT_INK = new Set(["C", "N", "P", "I", "O", "Br", "Xe"]);
+const COMPASS = [-90, 0, 90, 180];
+const rad = (d) => (d * Math.PI) / 180;
+
+// Distribute an atom's lone electrons into compass slots that stay clear of bonds.
+function loneSlots(atom, scene) {
+  const dirs = (scene.bonds || [])
+    .filter((b) => b.a === atom.i || b.b === atom.i)
+    .map((b) => {
+      const o = scene.atoms[b.a === atom.i ? b.b : b.a];
+      return (Math.atan2(o.y - atom.y, o.x - atom.x) * 180) / Math.PI;
+    });
+  const slots = COMPASS
+    .map((s) => ({ s, d: dirs.length ? Math.min(...dirs.map((x) => Math.abs(((s - x + 540) % 360) - 180))) : 999 }))
+    .filter((x) => x.d > 30).sort((a, b) => b.d - a.d).map((x) => x.s);
+  if (!slots.length) slots.push(...COMPASS);
+  const counts = slots.map(() => 0);
+  for (let i = 0; i < (atom.lone || 0); i++) counts[i % slots.length] < 2 ? counts[i % slots.length]++ : counts[(i + 1) % slots.length]++;
+  const out = [];
+  slots.forEach((s, i) => {
+    if (counts[i] === 1) out.push(s);
+    else if (counts[i] === 2) out.push(s - 12, s + 12);
+  });
+  return out;
+}
+
+export function sceneSvg(scene, w = 340, h = 230) {
+  const R = scene.atomR || 17;
+  const parts = [];
+  scene.atoms.forEach((a, i) => { a.i = i; });
+  (scene.bonds || []).forEach((b) => {
+    const A = scene.atoms[b.a], B = scene.atoms[b.b];
+    const ang = Math.atan2(B.y - A.y, B.x - A.x);
+    for (let k = 0; k < (b.order || 1); k++) {
+      const off = (k - ((b.order || 1) - 1) / 2) * 6;
+      const px = Math.cos(ang + Math.PI / 2) * off, py = Math.sin(ang + Math.PI / 2) * off;
+      const rA = A.ghost ? 2 : R, rB = B.ghost ? 2 : R;
+      parts.push(`<line x1="${A.x + Math.cos(ang) * rA + px}" y1="${A.y + Math.sin(ang) * rA + py}" x2="${B.x - Math.cos(ang) * rB + px}" y2="${B.y - Math.sin(ang) * rB + py}" stroke="#897f6d" stroke-width="2.4" stroke-linecap="round"/>`);
+    }
+  });
+  scene.atoms.forEach((a) => {
+    if (a.ghost) return;
+    const fill = EL_FILL[a.el] || "#d8c9a8";
+    parts.push(`<circle cx="${a.x}" cy="${a.y}" r="${R}" fill="${fill}" stroke="rgba(45,42,35,0.4)" stroke-width="1.2"/>`);
+    parts.push(`<text x="${a.x}" y="${a.y + 1}" text-anchor="middle" dominant-baseline="middle" font-family="Lexend,sans-serif" font-weight="700" font-size="${a.el.length > 1 ? 12 : 14}" fill="${LIGHT_INK.has(a.el) ? "#fffdf8" : "#2d2a23"}">${a.el}</text>`);
+    for (const s of loneSlots(a, scene)) {
+      const x = a.x + Math.cos(rad(s)) * (R + 8), y = a.y + Math.sin(rad(s)) * (R + 8);
+      parts.push(`<circle cx="${x}" cy="${y}" r="2.8" fill="#134f48"/>`);
+    }
+    if (a.fc !== undefined) {
+      parts.push(`<text x="${a.x + R + 10}" y="${a.y - R - 2}" text-anchor="middle" font-family="Lexend,sans-serif" font-weight="700" font-size="12" fill="${a.fc.startsWith("−") ? "#b4502f" : a.fc === "0" ? "#897f6d" : "#835f7d"}">${a.fc}</text>`);
+    }
+  });
+  (scene.labels || []).forEach((l) => {
+    parts.push(`<text x="${l.x}" y="${l.y}" text-anchor="middle" font-family="Lexend,sans-serif" font-weight="${l.bold ? 700 : 500}" font-size="${l.size || 13}" fill="${l.color || "#2d2a23"}">${l.t}</text>`);
+  });
+  if (scene.bracket) {
+    const { x0, y0, x1, y1, q } = scene.bracket;
+    parts.push(`<path d="M ${x0 + 10} ${y0} H ${x0} V ${y1} H ${x0 + 10}" fill="none" stroke="#835f7d" stroke-width="2.2"/>`);
+    parts.push(`<path d="M ${x1 - 10} ${y0} H ${x1} V ${y1} H ${x1 - 10}" fill="none" stroke="#835f7d" stroke-width="2.2"/>`);
+    parts.push(`<text x="${x1 + 8}" y="${y0 + 4}" font-family="Lexend,sans-serif" font-weight="700" font-size="14" fill="#835f7d">${q}</text>`);
+  }
+  return `<svg viewBox="${-w / 2} ${-h / 2} ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img">${parts.join("")}</svg>`;
+}
+
+// A lone atom with n bond stubs and its dots — the formal-charge sketch.
+export function fcScene(item) {
+  const atoms = [{ el: item.el, x: 0, y: 0, lone: item.lp * 2 }];
+  const bonds = [];
+  const start = item.lp ? 90 : -90; // stubs lean away from where dots want to sit
+  for (let i = 0; i < item.bonds; i++) {
+    const a = rad(start + (i * 360) / Math.max(item.bonds, 2) + (item.bonds === 1 ? 0 : 20));
+    atoms.push({ el: "", ghost: true, x: Math.cos(a) * 62, y: Math.sin(a) * 62 });
+    bonds.push({ a: 0, b: atoms.length - 1 });
+  }
+  return { atoms, bonds };
+}
+
+// ── formal charge ──
+export const FC_RULES = [
+  "Zero and ±1 are welcome. Bigger charges (±2, ±3) mean the structure is lying — redraw it.",
+  "Negative formal charges belong on the atoms of GREATER electronegativity.",
+  "The formal charges must add up to the ion's total charge (zero for a neutral molecule).",
+];
+
+// Click-through examples (shown before the drill).
+export const FC_EXAMPLES = [
+  {
+    title: "The O in water",
+    item: { el: "O", v: 6, bonds: 2, lp: 2 },
+    text: "O brings 6 valence electrons. In the drawing it keeps 4 dots and holds 2 sticks: FC = 6 − 4 − 2 = <strong>0</strong>. Content.",
+  },
+  {
+    title: "A single-bonded O in nitrate",
+    item: { el: "O", v: 6, bonds: 1, lp: 3 },
+    text: "6 valence, but 6 dots and only 1 stick: FC = 6 − 6 − 1 = <strong>−1</strong>. This is where nitrate's charge actually lives — on oxygen, the more electronegative atom, exactly where it belongs.",
+  },
+  {
+    title: "The N in nitrate",
+    item: { el: "N", v: 5, bonds: 4, lp: 0 },
+    text: "5 valence, no dots, 4 sticks: FC = 5 − 0 − 4 = <strong>+1</strong>. A +1 on nitrogen and two −1s on oxygens: net −1, matching the ion. The bookkeeping closes.",
+  },
+];
+
+// The drill bank. answer = valence − 2·lp − bonds.
+export const FC_BANK = [
+  { el: "O", v: 6, bonds: 2, lp: 2, ctx: "the O in water" },
+  { el: "O", v: 6, bonds: 1, lp: 3, ctx: "a single-bonded O in nitrate" },
+  { el: "O", v: 6, bonds: 2, lp: 2, ctx: "the double-bonded O in nitrate" },
+  { el: "N", v: 5, bonds: 4, lp: 0, ctx: "the N in ammonium" },
+  { el: "N", v: 5, bonds: 3, lp: 1, ctx: "the N in ammonia" },
+  { el: "C", v: 4, bonds: 4, lp: 0, ctx: "the C in methane" },
+  { el: "C", v: 4, bonds: 3, lp: 1, ctx: "the C in carbon monoxide" },
+  { el: "O", v: 6, bonds: 3, lp: 1, ctx: "the O in hydronium" },
+  { el: "B", v: 3, bonds: 4, lp: 0, ctx: "the B in BF₄⁻" },
+  { el: "Cl", v: 7, bonds: 1, lp: 3, ctx: "the Cl in HCl" },
+  { el: "S", v: 6, bonds: 6, lp: 0, ctx: "the S in SF₆" },
+  { el: "N", v: 5, bonds: 2, lp: 2, ctx: "the N in an (incorrectly drawn) nitrite — spot the problem" },
+];
+export const fcAnswer = (i) => i.v - 2 * i.lp - i.bonds;
+
+// ── Dalia's six steps, lightly polished ──
+export const LEWIS_STEPS = [
+  { title: "1 · Count the valence electrons",
+    body: "Add up every atom's valence electrons. Then the charge: <strong>add</strong> one electron per negative charge, <strong>remove</strong> one per positive. This number is the law — the final drawing must contain exactly this many." },
+  { title: "2 · Draw the skeletal structure",
+    body: "Pick the central atom: the one that <strong>needs the most bonds</strong> to be stable, with the <strong>lower electronegativity</strong> as the tiebreak (never H). Arrange the others symmetrically around it and connect with single bonds — each line is one shared pair. Ions get [square brackets] and their charge." },
+  { title: "3 · Add electrons to satisfy octets",
+    body: "Give every atom its octet as dots — except H and He, who follow the <strong>duet rule</strong> and are full at 2. Don't count the total yet; this is the trial structure." },
+  { title: "4 · Count, then compare to step 1",
+    body: "Count the electrons in the trial drawing.<br>• <strong>Equal</strong> to the step-1 total → done, go verify.<br>• <strong>Too many</strong> → erase two lone pairs, draw one more bond (that's how doubles and triples are born).<br>• <strong>Too few</strong> → add lone pairs to the central atom — but a row-2 center can never exceed 8." },
+  { title: "5 · Minimize the formal charge",
+    body: "FC = valence − dots − sticks, for every atom. Keep everything at 0 or ±1, put the negatives on the more electronegative atoms, and if you see ±2 — the structure is wrong, go back a step." },
+  { title: "6 · Verify",
+    body: "Duets on every H. Octets on every row-2 atom (Be and B may hold less; radicals excepted). The <strong>exact</strong> electron count from step 1. Small formal charges, negatives on the electronegative atoms. All five true? You have a Lewis structure." },
+];
+
+// ── worked walkthroughs ──
+const wH = (x, y) => ({ el: "H", x, y });
+export const WALKTHROUGHS = [
+  {
+    id: "no3", f: "NO3-", name: "Nitrate — the favorite", ready: true,
+    steps: [
+      { t: "Count: N brings 5, each O brings 6, and the −1 charge donates one more electron: 5 + 18 + 1 = <strong>24 electrons</strong>. The brackets and the charge go up now — they're part of the drawing.",
+        scene: { atoms: [{ el: "N", x: 0, y: 6, lone: 5 }, { el: "O", x: 0, y: -80, lone: 6 }, { el: "O", x: -82, y: 58, lone: 6 }, { el: "O", x: 82, y: 58, lone: 6 }], bracket: { x0: -128, y0: -108, x1: 128, y1: 100, q: "−" }, labels: [{ x: 0, y: 108, t: "5 + 6·3 + 1 = 24 e⁻", bold: true }] } },
+      { t: "Skeleton: N is the central atom — it needs the most bonds and is less electronegative than O. Three single bonds, arranged symmetrically.",
+        scene: { atoms: [{ el: "N", x: 0, y: 6 }, { el: "O", x: 0, y: -80 }, { el: "O", x: -82, y: 58 }, { el: "O", x: 82, y: 58 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }, { a: 0, b: 3 }], bracket: { x0: -128, y0: -108, x1: 128, y1: 100, q: "−" }, labels: [{ x: 0, y: 108, t: "3 bonds = 6 e⁻ used" }] } },
+      { t: "Octets everywhere: three lone pairs on each O, and N takes a pair to reach 8 too. This is the trial structure.",
+        scene: { atoms: [{ el: "N", x: 0, y: 6, lone: 2 }, { el: "O", x: 0, y: -80, lone: 6 }, { el: "O", x: -82, y: 58, lone: 6 }, { el: "O", x: 82, y: 58, lone: 6 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }, { a: 0, b: 3 }], bracket: { x0: -128, y0: -108, x1: 128, y1: 100, q: "−" }, labels: [{ x: 0, y: 108, t: "trial: 6 + 18 + 2 = 26 e⁻ — two too many!", bold: true, color: "#b4502f" }] } },
+      { t: "26 &gt; 24, so erase two lone pairs and draw one more bond: one N–O becomes N=O. Count again: 8 in bonds + 16 in dots = <strong>24</strong>. ✓",
+        scene: { atoms: [{ el: "N", x: 0, y: 6 }, { el: "O", x: 0, y: -80, lone: 4 }, { el: "O", x: -82, y: 58, lone: 6 }, { el: "O", x: 82, y: 58, lone: 6 }], bonds: [{ a: 0, b: 1, order: 2 }, { a: 0, b: 2 }, { a: 0, b: 3 }], bracket: { x0: -128, y0: -108, x1: 128, y1: 100, q: "−" }, labels: [{ x: 0, y: 108, t: "8 + 16 = 24 ✓", bold: true, color: "#356b45" }] } },
+      { t: "Formal charges: N is 5−0−4 = <strong>+1</strong>; each single-bonded O is 6−6−1 = <strong>−1</strong>; the double-bonded O is 6−4−2 = <strong>0</strong>. Net: +1 −1 −1 = <strong>−1</strong> — exactly the ion's charge, with the negatives sitting on oxygen, the more electronegative atom. This is as small as the charges can get.",
+        scene: { atoms: [{ el: "N", x: 0, y: 6, fc: "+1" }, { el: "O", x: 0, y: -80, lone: 4, fc: "0" }, { el: "O", x: -82, y: 58, lone: 6, fc: "−1" }, { el: "O", x: 82, y: 58, lone: 6, fc: "−1" }], bonds: [{ a: 0, b: 1, order: 2 }, { a: 0, b: 2 }, { a: 0, b: 3 }], bracket: { x0: -128, y0: -108, x1: 128, y1: 100, q: "−" } } },
+      { t: "One more thing — <strong>which</strong> O gets the double bond? Any of them. Three equally valid drawings, connected with double-headed arrows. The truth is in between: every N–O bond is really <strong>1⅓</strong>. We can't draw thirds of a bond without losing track of formal charges and electron counts — so we draw all three. And notice: N ends with exactly 8. Row 2 never expands — that's why nitrogen is such a good teacher.",
+        scene: { atomR: 9, atoms: [
+          { el: "N", x: -110, y: 10 }, { el: "O", x: -110, y: -38 }, { el: "O", x: -148, y: 40 }, { el: "O", x: -72, y: 40 },
+          { el: "N", x: 0, y: 10 }, { el: "O", x: 0, y: -38 }, { el: "O", x: -38, y: 40 }, { el: "O", x: 38, y: 40 },
+          { el: "N", x: 110, y: 10 }, { el: "O", x: 110, y: -38 }, { el: "O", x: 72, y: 40 }, { el: "O", x: 148, y: 40 },
+        ], bonds: [
+          { a: 0, b: 1, order: 2 }, { a: 0, b: 2 }, { a: 0, b: 3 },
+          { a: 4, b: 5 }, { a: 4, b: 6, order: 2 }, { a: 4, b: 7 },
+          { a: 8, b: 9 }, { a: 8, b: 10 }, { a: 8, b: 11, order: 2 },
+        ], labels: [{ x: -55, y: 10, t: "⟷", size: 18 }, { x: 55, y: 10, t: "⟷", size: 18 }, { x: 0, y: 85, t: "three drawings, one ion — each bond is really 1⅓", size: 12, color: "#897f6d" }] } },
+    ],
+  },
+  {
+    id: "h2o", f: "H2O", name: "Water — the gentle start", ready: true,
+    steps: [
+      { t: "Count: O brings 6, each H brings 1: 6 + 1 + 1 = <strong>8 electrons</strong>.",
+        scene: { atoms: [{ el: "O", x: 0, y: -14, lone: 6 }, wH(-84, 48), wH(84, 48)], labels: [{ x: 0, y: 95, t: "6 + 1 + 1 = 8 e⁻", bold: true }], } },
+      { t: "Skeleton: H can never be central (one electron, one bond, that's its whole story) — so O takes the middle. Two single bonds.",
+        scene: { atoms: [{ el: "O", x: 0, y: -8 }, wH(-76, 46), wH(76, 46)], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 92, t: "2 bonds = 4 e⁻ used, 4 left" }] } },
+      { t: "Octets: both H are already full — the duet rule, 2 each from their bonds. O has 4 from bonds and takes the remaining 4 electrons as two lone pairs.",
+        scene: { atoms: [{ el: "O", x: 0, y: -8, lone: 4 }, wH(-76, 46), wH(76, 46)], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 92, t: "O: 4 + 4 = 8 ✓" }] } },
+      { t: "Count and compare: 4 in bonds + 4 in dots = <strong>8 = 8</strong>. Done — no multiple bonds needed today.",
+        scene: { atoms: [{ el: "O", x: 0, y: -8, lone: 4 }, wH(-76, 46), wH(76, 46)], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 92, t: "4 + 4 = 8 ✓", bold: true, color: "#356b45" }] } },
+      { t: "Formal charges: O is 6−4−2 = 0, each H is 1−0−1 = 0. Nothing to minimize.",
+        scene: { atoms: [{ el: "O", x: 0, y: -8, lone: 4, fc: "0" }, { el: "H", x: -76, y: 46, fc: "0" }, { el: "H", x: 76, y: 46, fc: "0" }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }] } },
+      { t: "Verify: duets on both H ✓, octet on O ✓, exactly 8 electrons ✓, all formal charges zero ✓. This bent little drawing is why rung 3 will call water <em>bent</em> — two lone pairs already waiting to squeeze.",
+        scene: { atoms: [{ el: "O", x: 0, y: -8, lone: 4 }, wH(-76, 46), wH(76, 46)], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 92, t: "✓ ✓ ✓", bold: true, color: "#356b45" }] } },
+    ],
+  },
+  {
+    id: "co2", f: "CO2", name: "Carbon dioxide — doubles are born", ready: true,
+    steps: [
+      { t: "Count: C brings 4, each O brings 6: 4 + 6 + 6 = <strong>16 electrons</strong>.",
+        scene: { atoms: [{ el: "C", x: 0, y: 0, lone: 4 }, { el: "O", x: -96, y: 0, lone: 6 }, { el: "O", x: 96, y: 0, lone: 6 }], labels: [{ x: 0, y: 85, t: "4 + 6 + 6 = 16 e⁻", bold: true }] } },
+      { t: "Skeleton: C is central (needs 4 bonds, less electronegative). Two singles to start.",
+        scene: { atoms: [{ el: "C", x: 0, y: 0 }, { el: "O", x: -96, y: 0 }, { el: "O", x: 96, y: 0 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 85, t: "2 bonds = 4 e⁻ used" }] } },
+      { t: "Octets for everyone: three pairs on each O, two pairs on C. The trial structure.",
+        scene: { atoms: [{ el: "C", x: 0, y: 0, lone: 4 }, { el: "O", x: -96, y: 0, lone: 6 }, { el: "O", x: 96, y: 0, lone: 6 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 85, t: "trial: 4 + 12 + 4 = 20 e⁻ — four too many!", bold: true, color: "#b4502f" }] } },
+      { t: "20 &gt; 16 by four — so erase two pairs and draw a bond, <strong>twice</strong>. Both singles become doubles: O=C=O. Count: 8 in bonds + 8 in dots = <strong>16</strong>. ✓",
+        scene: { atoms: [{ el: "C", x: 0, y: 0 }, { el: "O", x: -96, y: 0, lone: 4 }, { el: "O", x: 96, y: 0, lone: 4 }], bonds: [{ a: 0, b: 1, order: 2 }, { a: 0, b: 2, order: 2 }], labels: [{ x: 0, y: 85, t: "8 + 8 = 16 ✓", bold: true, color: "#356b45" }] } },
+      { t: "Formal charges: C is 4−0−4 = 0, each O is 6−4−2 = 0. Perfect bookkeeping.",
+        scene: { atoms: [{ el: "C", x: 0, y: 0, fc: "0" }, { el: "O", x: -96, y: 0, lone: 4, fc: "0" }, { el: "O", x: 96, y: 0, lone: 4, fc: "0" }], bonds: [{ a: 0, b: 1, order: 2 }, { a: 0, b: 2, order: 2 }] } },
+      { t: "Verify: octets all round ✓, exactly 16 ✓, charges zero ✓. Two double bonds, no lone pairs on C — which is why CO₂ stands perfectly straight at 180°, and why its two polar bonds cancel to a nonpolar molecule.",
+        scene: { atoms: [{ el: "C", x: 0, y: 0 }, { el: "O", x: -96, y: 0, lone: 4 }, { el: "O", x: 96, y: 0, lone: 4 }], bonds: [{ a: 0, b: 1, order: 2 }, { a: 0, b: 2, order: 2 }], labels: [{ x: 0, y: 85, t: "✓ ✓ ✓", bold: true, color: "#356b45" }] } },
+    ],
+  },
+  {
+    id: "bef2", f: "BeF2", name: "Beryllium fluoride — the rebel", ready: true,
+    steps: [
+      { t: "Count: Be brings 2, each F brings 7: 2 + 7 + 7 = <strong>16 electrons</strong>.",
+        scene: { atoms: [{ el: "Be", x: 0, y: 0, lone: 2 }, { el: "F", x: -96, y: 0, lone: 7 }, { el: "F", x: 96, y: 0, lone: 7 }], labels: [{ x: 0, y: 85, t: "2 + 7 + 7 = 16 e⁻", bold: true }] } },
+      { t: "Skeleton: Be central (lower electronegativity — F is the most electronegative element there is). Two singles.",
+        scene: { atoms: [{ el: "Be", x: 0, y: 0 }, { el: "F", x: -96, y: 0 }, { el: "F", x: 96, y: 0 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 85, t: "2 bonds = 4 e⁻ used, 12 left" }] } },
+      { t: "Octets: the twelve remaining electrons complete both fluorines — three pairs each. Nothing is left for Be.",
+        scene: { atoms: [{ el: "Be", x: 0, y: 0 }, { el: "F", x: -96, y: 0, lone: 6 }, { el: "F", x: 96, y: 0, lone: 6 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 85, t: "4 + 12 = 16 — every electron placed" }] } },
+      { t: "Count and compare: 4 + 12 = <strong>16 = 16</strong>, exactly. The arithmetic says we're done — even though Be is sitting there with only 4 electrons.",
+        scene: { atoms: [{ el: "Be", x: 0, y: 0 }, { el: "F", x: -96, y: 0, lone: 6 }, { el: "F", x: 96, y: 0, lone: 6 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 85, t: "16 = 16 ✓ — trust the count", bold: true, color: "#356b45" }] } },
+      { t: "Formal charges: Be is 2−0−2 = 0, each F is 7−6−1 = 0. All zero — don't be tempted to force doubles onto Be to \"fix\" its octet; that would put a −1 on Be and +1 on F, the wrong way around entirely.",
+        scene: { atoms: [{ el: "Be", x: 0, y: 0, fc: "0" }, { el: "F", x: -96, y: 0, lone: 6, fc: "0" }, { el: "F", x: 96, y: 0, lone: 6, fc: "0" }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }] } },
+      { t: "Verify: exact count ✓, charges zero ✓, octets — <strong>Be waives the rule</strong>. Be is content with 4 (as B is with 6). The octet rule is a rule, not a law, and Be signs the waiver.",
+        scene: { atoms: [{ el: "Be", x: 0, y: 0 }, { el: "F", x: -96, y: 0, lone: 6 }, { el: "F", x: 96, y: 0, lone: 6 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }], labels: [{ x: 0, y: 85, t: "the rebel rests ✓", bold: true, color: "#356b45" }] } },
+    ],
+  },
+  { id: "co3", f: "CO3^2-", name: "Carbonate", ready: false },
+  { id: "so3", f: "SO3", name: "Sulfur trioxide", ready: false },
+  { id: "xeo2f2", f: "XeO2F2", name: "Xenon dioxydifluoride", ready: false },
+  { id: "sf4", f: "SF4", name: "Sulfur tetrafluoride", ready: false },
+  { id: "bbr3", f: "BBr3", name: "Boron tribromide", ready: false },
+];

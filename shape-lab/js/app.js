@@ -6,22 +6,22 @@ import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula } from "./geometry.js";
 import { makeSpinner } from "./render3d.js";
 import { MOLECULES, BUILD_BANK } from "./molecules.js";
 import { createKit } from "./modelkit.js";
+import { sceneSvg, fcScene, FC_RULES, FC_EXAMPLES, FC_BANK, fcAnswer, LEWIS_STEPS, WALKTHROUGHS } from "./lewis.js";
 
 const root = document.getElementById("game");
 const ROUND_SIZE = 8;
 const BUILD_ROUND_SIZE = 5;
+const FC_ROUND_SIZE = 6;
 
 const TIERS = [
-  { id: "formal-charge", label: "Formal charge", built: false,
-    blurb: "The bookkeeping skill: FC = valence e⁻ − (dots + sticks). Zero and ±1 are welcome, negative charges belong on the more electronegative atom, and ±2/±3 mean you've drawn something nature won't keep. Intro cards, click-through examples, and a practice quiz." },
-  { id: "lewis", label: "Lewis structures", built: false,
-    blurb: "Dalia's six steps, one card each — then a clickable table of examples (nitrate first, of course) where every molecule walks you through its own construction, brackets and charges included." },
+  { id: "formal-charge", label: "Formal charge", built: true },
+  { id: "lewis", label: "Lewis structures", built: true },
   { id: "geometries", label: "Geometries", built: true },
   { id: "build", label: "Build molecules", built: true },
   { id: "polarity", label: "Polarity", built: false,
     blurb: "Rotating molecules wrapped in semitransparent electron clouds, red→blue from the negative end to the positive one. See why CO₂ cancels and H₂O doesn't." },
 ];
-let tierIndex = 2; // land on the built rung while the ladder fills in
+let tierIndex = 0; // the ladder starts at formal charge — Dalia's order
 const tier = () => TIERS[tierIndex];
 let mode = "intro"; // intro (the catalog) | play | done
 
@@ -73,6 +73,12 @@ function render() {
     if (mode === "done") return renderBuildDone();
     return renderBuildIntro();
   }
+  if (tier().id === "formal-charge") {
+    if (mode === "play") return renderFCPlay();
+    if (mode === "done") return renderFCDone();
+    return renderFCIntro();
+  }
+  if (tier().id === "lewis") return renderLewisIntro();
   if (mode === "play") return renderPlay();
   if (mode === "done") return renderDone();
   renderGeometries();
@@ -253,6 +259,226 @@ function renderPlay() {
     spinner.start();
     activeSpinners.push(spinner);
   }
+}
+
+// ── shared click-through card player (six steps, FC examples, walkthroughs) ──
+function openCards(cards, opts = {}) {
+  closeModal();
+  let idx = 0;
+  modal = document.createElement("div");
+  modal.className = "geo-modal";
+  const paint = () => {
+    modal.innerHTML = `
+      <div class="geo-modal-card card-modal" role="dialog" aria-label="${opts.label || "cards"}">
+        <button class="geo-close" type="button" aria-label="Close">✕</button>
+        <div class="card-body">${cards[idx]}</div>
+        <div class="card-nav">
+          <button class="action ghost card-prev" type="button" ${idx === 0 ? "disabled" : ""}>← Back</button>
+          <span class="step-dots">${cards.map((_, i) => `<span class="dot${i === idx ? " on" : ""}"></span>`).join("")}</span>
+          ${idx < cards.length - 1
+            ? `<button class="action primary card-next" type="button">Next →</button>`
+            : `<button class="action primary card-next" type="button" data-done="1">Done ✓</button>`}
+        </div>
+      </div>`;
+    modal.querySelector(".geo-close").addEventListener("click", closeModal);
+    modal.querySelector(".card-prev").addEventListener("click", () => { if (idx > 0) { idx -= 1; paint(); } });
+    modal.querySelector(".card-next").addEventListener("click", (e) => {
+      if (e.currentTarget.dataset.done) closeModal();
+      else { idx += 1; paint(); }
+    });
+  };
+  paint();
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", onModalKey);
+  document.body.appendChild(modal);
+}
+
+// ── the Formal Charge rung ──
+let fcTyped = "", fcChecked = false, fcCorrect = false, fcNudge = null, fcHintsShown = 0;
+
+const fcCard = (ex) => `
+  <p class="card-title">${ex.title}</p>
+  <div class="fc-sketch">${sceneSvg(fcScene(ex.item), 260, 170)}</div>
+  <p class="card-text">${ex.text}</p>`;
+
+function startFCRound(cards) {
+  queue = cards ? cards.slice() : shuffle(FC_BANK).slice(0, FC_ROUND_SIZE);
+  roundTotal = queue.length;
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  mode = "play";
+  loadFCCard();
+}
+function loadFCCard() {
+  problem = queue[0];
+  fcTyped = ""; fcChecked = false; fcCorrect = false; fcNudge = null; fcHintsShown = 0;
+  render();
+}
+
+const fmtFC = (v) => (v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : "0");
+
+function parseFC(s) {
+  const t = s.trim().replace(/−/g, "-");
+  if (/^[0-3][+-]$/.test(t)) return { nudge: "Right idea — but write the sign first: " + t[1] + t[0] + ", not " + t + "." };
+  const m = t.match(/^([+-]?)([0-3])$/);
+  if (!m) return { nudge: "Formal charges here run from −3 to +3 — a small signed number." };
+  if (!m[1] && m[2] !== "0") return { nudge: "Nonzero charges carry their sign — write it first (+1, −2, …)." };
+  return { value: (m[1] === "-" ? -1 : 1) * Number(m[2]) };
+}
+
+function fcCheck() {
+  if (!fcTyped.trim() || fcChecked) return;
+  const p = parseFC(fcTyped);
+  if (p.nudge) { fcNudge = p.nudge; render(); return; }
+  fcNudge = null;
+  fcChecked = true;
+  fcCorrect = p.value === fcAnswer(problem);
+  if (fcCorrect) { solvedThisRound += 1; if (fcHintsShown === 0) cleanSolves += 1; }
+  else if (!missedThisRound.includes(problem)) missedThisRound.push(problem);
+  render();
+}
+function fcNext() {
+  if (fcCorrect) queue.shift();
+  else queue.push(queue.shift());
+  if (queue.length === 0) { mode = "done"; render(); } else loadFCCard();
+}
+
+function renderFCIntro() {
+  root.innerHTML = `
+    ${tierTabs()}
+    <div class="intro">
+      <p class="intro-eyebrow">Shape Lab · formal charge</p>
+      <p class="intro-lede">Every atom in a drawing gets a bookkeeping score:</p>
+      <p class="fc-formula">FC&nbsp;=&nbsp;valence e⁻&nbsp;−&nbsp;dots&nbsp;−&nbsp;sticks</p>
+      <p class="intro-lede">Count the electrons the atom <em>brought</em>, subtract the lone-pair dots it keeps and the bonds it holds. The score tells you whether your Lewis structure is honest — and it comes back again and again: in resonance, in organic, everywhere.</p>
+      <ol class="steps">
+        ${FC_RULES.map((r, i) => `<li><span class="step-num">${i + 1}</span><span class="step-text">${r}</span></li>`).join("")}
+      </ol>
+    </div>
+    <div class="controls two-up">
+      <button class="action ghost" id="examplesBtn">Walk through 3 examples</button>
+      <button class="action primary" id="startBtn">Start the drill →</button>
+    </div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+  wireTabs();
+  root.querySelector("#examplesBtn").addEventListener("click", () => openCards(FC_EXAMPLES.map(fcCard), { label: "Formal charge examples" }));
+  root.querySelector("#startBtn").addEventListener("click", () => startFCRound());
+}
+
+function renderFCPlay() {
+  const hints = [
+    `FC = valence − dots − sticks. ${problem.el} brings <strong>${problem.v}</strong> valence electrons.`,
+    `Here it keeps <strong>${problem.lp * 2}</strong> dots and holds <strong>${problem.bonds}</strong> stick${problem.bonds === 1 ? "" : "s"}: ${problem.v} − ${problem.lp * 2} − ${problem.bonds}.`,
+  ];
+  const shown = hints.slice(0, fcHintsShown).map((h) => `<li>${h}</li>`).join("");
+  const hintBlock = fcChecked ? "" : `<div class="hints">
+      ${fcHintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
+      ${fcHintsShown < hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${fcHintsShown ? "Another hint" : "Need a hint?"}</button>` : ""}
+    </div>`;
+
+  const answerArea = fcChecked
+    ? `<div class="answer-built ${fcCorrect ? "ok" : "no"}"><span>${fmtFC(fcAnswer(problem))}</span></div>`
+    : `<input class="answer-input" id="answerInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="+1  or  −2  or  0" value="${fcTyped.replace(/"/g, "&quot;")}">`;
+
+  const feedback = !fcChecked ? `<p class="feedback">&nbsp;</p>`
+    : fcCorrect
+      ? `<p class="feedback ok">${fcHintsShown ? "Correct." : "Correct — no hints. 💪"} It leaves the stack.</p>`
+      : `<p class="feedback no">Not quite — ${problem.el}: ${problem.v} − ${problem.lp * 2} − ${problem.bonds} = ${fmtFC(fcAnswer(problem))}. It comes back around.</p>`;
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <button class="intro-link" id="introBtn" type="button">↩ How formal charge works</button>
+    <div class="formula-card">
+      <span class="card-tag">Formal charge</span>
+      <div class="fc-sketch">${sceneSvg(fcScene(problem), 260, 150)}</div>
+      <p class="shape-ask">${problem.ctx}: <strong>${problem.bonds}</strong> bond${problem.bonds === 1 ? "" : "s"}, <strong>${problem.lp}</strong> lone pair${problem.lp === 1 ? "" : "s"}. Formal charge?</p>
+    </div>
+    <div class="answer-row">${answerArea}</div>
+    ${fcNudge ? `<p class="ox-nudge">${fcNudge}</p>` : ""}
+    ${hintBlock}
+    ${feedback}
+    <div class="controls">
+      <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+      ${fcChecked
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !fcCorrect ? "Next →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn" ${fcTyped.trim() ? "" : "disabled"}>Check</button>`}
+    </div>`;
+
+  wireTabs();
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const input = root.querySelector("#answerInput");
+  if (input) {
+    input.addEventListener("input", () => { fcTyped = input.value; const b = root.querySelector("#checkBtn"); if (b) b.disabled = !fcTyped.trim(); });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); fcCheck(); } });
+    input.focus();
+  }
+  const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", () => { fcHintsShown += 1; render(); });
+  const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", fcCheck);
+  const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", fcNext); nextBtn.focus(); }
+}
+
+function renderFCDone() {
+  const missedChips = missedThisRound.map((m) => `<span class="chip">${m.ctx}</span>`).join("");
+  const missedBlock = missedThisRound.length
+    ? `<div class="missed-block"><p class="missed-label">Worth another pass — you stumbled on ${missedThisRound.length}:</p><div class="chips">${missedChips}</div></div>`
+    : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} with no hints. 🎉</p>`;
+  const nextTier = TIERS[tierIndex + 1];
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <p class="prompt">Round done — ${roundTotal} atoms scored, ${cleanSolves} hint-free.</p>
+    ${missedBlock}
+    ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
+    <div class="controls two-up done-nav">
+      <button class="action primary" id="nextTierBtn">Next topic: ${nextTier.label} →</button>
+      <button class="action ghost" id="revisitBtn">↩ Revisit formal charge</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Start the drill →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+
+  wireTabs();
+  root.querySelector("#nextTierBtn").addEventListener("click", () => { tierIndex += 1; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const reviewBtn = root.querySelector("#reviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", () => startFCRound(missedThisRound));
+  root.querySelector("#startBtn").addEventListener("click", () => startFCRound());
+}
+
+// ── the Lewis Structures rung ──
+function walkthroughCards(w) {
+  return w.steps.map((s, i) => `
+    <p class="card-title">${fmtFormula(w.f)} · step ${i + 1} of ${w.steps.length}</p>
+    <div class="fc-sketch walk-scene">${sceneSvg(s.scene, 340, 240)}</div>
+    <p class="card-text">${s.t}</p>`);
+}
+
+function renderLewisIntro() {
+  const rows = WALKTHROUGHS.map((w) => `
+    <button class="lew-row${w.ready ? "" : " soon"}" data-walk="${w.id}" type="button" ${w.ready ? "" : "disabled"}>
+      <span class="lew-formula">${fmtFormula(w.f)}</span>
+      <span class="lew-name">${w.name}</span>
+      <span class="lew-go">${w.ready ? "walk through it →" : "coming soon"}</span>
+    </button>`).join("");
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <div class="intro">
+      <p class="intro-eyebrow">Shape Lab · Lewis structures</p>
+      <p class="intro-lede">Six steps, always the same six, and any molecule on the syllabus comes out right: count, sketch, fill, compare, minimize, verify. Learn the steps once — then watch real molecules walk themselves through them below, and take the method to the Model Kit.</p>
+    </div>
+    <div class="controls two-up"><button class="action primary" id="stepsBtn">The six steps, card by card →</button></div>
+    <p class="lew-table-label">Or pick a molecule and watch the method run:</p>
+    <div class="lew-table">${rows}</div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+
+  wireTabs();
+  root.querySelector("#stepsBtn").addEventListener("click", () =>
+    openCards(LEWIS_STEPS.map((s) => `<p class="card-title">${s.title}</p><p class="card-text">${s.body}</p>`), { label: "The six steps" }));
+  root.querySelectorAll(".lew-row[data-walk]:not(.soon)").forEach((row) =>
+    row.addEventListener("click", () => {
+      const w = WALKTHROUGHS.find((x) => x.id === row.dataset.walk);
+      openCards(walkthroughCards(w), { label: w.name });
+    }));
 }
 
 // ── the Build rung: the Model Kit ──
