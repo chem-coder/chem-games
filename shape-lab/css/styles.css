@@ -233,6 +233,19 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .lew-go { flex: 0 0 auto; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
 .lew-row.soon .lew-go { color: var(--muted); }
 
+/* ── polarity rung ── */
+.pol-grid { justify-content: center; }
+.pol-verdict { margin: 0 0 8px; font-weight: 800; font-size: 0.95rem; letter-spacing: 0.03em; }
+.pol-verdict.is-polar { color: var(--danger); }
+.pol-verdict.is-nonpolar { color: var(--success); }
+.pol-legend { margin: 12px 0 0; color: var(--muted); font-size: 0.85rem; }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; }
+.swatch.neg { background: radial-gradient(circle, rgba(180,80,47,0.8), rgba(180,80,47,0.15)); }
+.swatch.pos { background: radial-gradient(circle, rgba(67,96,116,0.8), rgba(67,96,116,0.15)); }
+.big-ask { font-size: 1.02rem; margin-bottom: 14px; }
+.pol-reveal { color: var(--ink); max-width: 64ch; }
+.pol-reveal li { margin-bottom: 6px; }
+
 /* ── shared bottom nav line ── */
 .done-next { margin: 26px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
 

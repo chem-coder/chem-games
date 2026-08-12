@@ -1,3 +1,5 @@
+import { GEO_BY_ID } from "./geometry.js";
+
 // Shape Lab — the quiz molecule bank.
 // Each entry: formula (fmtFormula notation), central atom, bonded-atom count,
 // lone pairs ON THE CENTER, and the geometry id it resolves to. The quiz
@@ -45,6 +47,73 @@ export const MOLECULES = [
   { f: "IF5", center: "I", bonds: 5, lps: 1, geo: "square-pyramidal" },
   { f: "XeF4", center: "Xe", bonds: 4, lps: 2, geo: "square-planar" },
 ];
+
+// ── polarity ──
+// Pauling electronegativities. Partial charges and the net dipole are COMPUTED
+// from EN differences and the real 3D pose — polar/nonpolar emerges from the
+// same physics the student is learning, not from a hand-typed answer key.
+export const EN = {
+  H: 2.2, Be: 1.57, B: 2.04, C: 2.55, N: 3.04, O: 3.44, F: 3.98,
+  P: 2.19, S: 2.58, Cl: 3.16, Br: 2.96, I: 2.66, Xe: 2.6,
+};
+// A lone pair acts as a small negative region of its own — smaller than a full
+// EN-unit bond dipole (0.8 wrongly cancels SO2's bond dipoles; 0.4 gets every
+// molecule in the bank right, SO2's dipole correctly pointing toward the oxygens).
+const LP_PULL = 0.4;
+
+const HF_GEO = {
+  coords: [[1, 0, 0]],
+  lpCoords: [[-0.6, 0.7, 0], [-0.9, 0, 0], [-0.6, -0.7, 0]],
+};
+
+const POLARITY_SPECS = [
+  { f: "H2O", geo: "bent-4", center: "O", outer: ["H", "H"],
+    note: "Bent leaves both O–H dipoles pointing the same way — and the lone pairs pile onto the negative end. Water's whole personality." },
+  { f: "CO2", geo: "linear-2", center: "C", outer: ["O", "O"],
+    note: "Two strongly polar C=O bonds, perfectly opposed. They cancel to exactly zero — shape beats bond polarity." },
+  { f: "NH3", geo: "trigonal-pyramidal", center: "N", outer: ["H", "H", "H"],
+    note: "Three N–H dipoles lean toward N, and the lone pair caps the negative end. That cap is where the proton lands when ammonia acts as a base." },
+  { f: "CH4", geo: "tetrahedral", center: "C", outer: ["H", "H", "H", "H"],
+    note: "Four identical bonds in perfect tetrahedral symmetry — nothing to add up." },
+  { f: "CH3Cl", geo: "tetrahedral", center: "C", outer: ["Cl", "H", "H", "H"],
+    note: "Swap a single H for Cl and the tetrahedron's cancellation breaks. One substitution, instant dipole." },
+  { f: "CH2Cl2", geo: "tetrahedral", center: "C", outer: ["Cl", "Cl", "H", "H"],
+    note: "A real IMAT favorite: two Cl on one side, two H on the other — the dipoles add instead of cancelling." },
+  { f: "CCl4", geo: "tetrahedral", center: "C", outer: ["Cl", "Cl", "Cl", "Cl"],
+    note: "Four strong C–Cl dipoles — and perfect symmetry cancels every one of them. Polar bonds ≠ polar molecule." },
+  { f: "BF3", geo: "trigonal-planar", center: "B", outer: ["F", "F", "F"],
+    note: "Three of the most polar bonds chemistry can offer, at 120° in a flat triangle: net zero." },
+  { f: "SO2", geo: "bent-3", center: "S", outer: ["O", "O"],
+    note: "Bent again — the two S=O dipoles cooperate instead of cancelling. Compare with CO₂ and you have the whole lesson." },
+  { f: "HF", custom: HF_GEO, center: "F", outer: ["H"],
+    note: "The biggest EN gap on the syllabus. One bond, one dipole, nothing to cancel it — and hydrogen bonding follows." },
+  { f: "SF4", geo: "seesaw", center: "S", outer: ["F", "F", "F", "F"],
+    note: "The lone pair takes an equatorial seat and breaks the bipyramid's balance — see-saws are always polar." },
+  { f: "XeF4", geo: "square-planar", center: "Xe", outer: ["F", "F", "F", "F"],
+    note: "The exam trap: four polar bonds AND two lone pairs — and every one of them has an exact opposite. Flat, square, nonpolar." },
+];
+
+function buildPolarityEntry(spec) {
+  const base = spec.custom || GEO_BY_ID[spec.geo];
+  const geo = { coords: base.coords, lpCoords: base.lpCoords, demo: { center: spec.center, outer: spec.outer } };
+  // Per-atom partial charges from EN differences (sign is what the clouds show).
+  const outerQ = spec.outer.map((el) => EN[el] - EN[spec.center]);
+  const centerQ = -outerQ.reduce((s, q) => s + q, 0) / Math.max(1, spec.outer.length);
+  // Net dipole: bond contributions point toward the more electronegative atom;
+  // each lone pair pulls the negative end toward itself.
+  const mu = [0, 0, 0];
+  geo.coords.forEach((v, i) => { for (let k = 0; k < 3; k++) mu[k] += v[k] * outerQ[i]; });
+  geo.lpCoords.forEach((v) => { for (let k = 0; k < 3; k++) mu[k] += v[k] * LP_PULL; });
+  const muLen = Math.hypot(...mu);
+  const polar = muLen > 0.15;
+  return {
+    f: spec.f, geo, note: spec.note, polar,
+    clouds: { center: centerQ, outer: outerQ, lp: LP_PULL },
+    dipole: polar ? mu.map((x) => x / muLen) : null,
+  };
+}
+
+export const POLARITY_BANK = POLARITY_SPECS.map(buildPolarityEntry);
 
 // The Model Kit's v1 build bank — neutral molecules only, where every bond takes
 // exactly one electron from each side and nobody has to hand an electron over.

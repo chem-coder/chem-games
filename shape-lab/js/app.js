@@ -4,7 +4,7 @@
 
 import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula } from "./geometry.js";
 import { makeSpinner } from "./render3d.js";
-import { MOLECULES, BUILD_BANK } from "./molecules.js";
+import { MOLECULES, BUILD_BANK, POLARITY_BANK } from "./molecules.js";
 import { createKit } from "./modelkit.js";
 import { sceneSvg, fcScene, FC_RULES, FC_EXAMPLES, FC_BANK, fcAnswer, LEWIS_STEPS, WALKTHROUGHS } from "./lewis.js";
 
@@ -18,8 +18,7 @@ const TIERS = [
   { id: "lewis", label: "Lewis structures", built: true },
   { id: "geometries", label: "Geometries", built: true },
   { id: "build", label: "Build molecules", built: true },
-  { id: "polarity", label: "Polarity", built: false,
-    blurb: "Rotating molecules wrapped in semitransparent electron clouds, red→blue from the negative end to the positive one. See why CO₂ cancels and H₂O doesn't." },
+  { id: "polarity", label: "Polarity", built: true },
 ];
 let tierIndex = 0; // the ladder starts at formal charge — Dalia's order
 const tier = () => TIERS[tierIndex];
@@ -79,6 +78,11 @@ function render() {
     return renderFCIntro();
   }
   if (tier().id === "lewis") return renderLewisIntro();
+  if (tier().id === "polarity") {
+    if (mode === "play") return renderPolarityPlay();
+    if (mode === "done") return renderPolarityDone();
+    return renderPolarityIntro();
+  }
   if (mode === "play") return renderPlay();
   if (mode === "done") return renderDone();
   renderGeometries();
@@ -625,6 +629,157 @@ function renderBuildDone() {
   const reviewBtn = root.querySelector("#reviewBtn");
   if (reviewBtn) reviewBtn.addEventListener("click", () => startBuildRound(missedThisRound));
   root.querySelector("#startBtn").addEventListener("click", () => startBuildRound());
+}
+
+// ── the Polarity rung ──
+const POLARITY_ROUND_SIZE = 5;
+let polPicked = new Set(), polChecked = false, polCorrect = false;
+
+function startPolarityRound(panels) {
+  // a "card" here is a panel of four molecules: pick every polar one
+  queue = panels ? panels.slice() : Array.from({ length: POLARITY_ROUND_SIZE }, () => shuffle(POLARITY_BANK).slice(0, 4));
+  roundTotal = queue.length;
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  mode = "play";
+  loadPolarityCard();
+}
+function loadPolarityCard() {
+  problem = queue[0];
+  polPicked = new Set(); polChecked = false; polCorrect = false;
+  render();
+}
+
+function renderPolarityIntro() {
+  root.innerHTML = `
+    ${tierTabs()}
+    <div class="intro">
+      <p class="intro-eyebrow">Shape Lab · polarity</p>
+      <p class="intro-lede">Two questions, always in this order: <strong>are the bonds polar?</strong> (an electronegativity difference makes a bond dipole) — and then the one that decides everything: <strong>does the shape let them cancel?</strong> Symmetry erases even ferociously polar bonds (CCl₄); a bend or a lone pair saves them (H₂O). <strong>Click any molecule</strong> to see its electron cloud — red where it's δ−, blue where it's δ+ — and its net dipole arrow, if it earned one.</p>
+    </div>
+    <div class="geo-row pol-grid">${POLARITY_BANK.map((e, i) => `
+      <button class="geo-cell" data-pol="${i}" type="button" aria-label="${e.f}">
+        <canvas class="geo-thumb" width="120" height="110"></canvas>
+        <span class="geo-name">${fmtFormula(e.f)}</span>
+        <span class="geo-angle">${e.polar ? "polar" : "nonpolar"}</span>
+      </button>`).join("")}
+    </div>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Start the dipole hunt →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+
+  wireTabs();
+  root.querySelectorAll(".geo-cell").forEach((cell) => {
+    const e = POLARITY_BANK[Number(cell.dataset.pol)];
+    makeSpinner(cell.querySelector(".geo-thumb"), e.geo, { small: true, clouds: e.clouds }).drawFrame(0.6);
+    cell.addEventListener("click", () => openPolarityModal(e));
+  });
+  root.querySelector("#startBtn").addEventListener("click", () => startPolarityRound());
+}
+
+function openPolarityModal(e) {
+  closeModal();
+  modal = document.createElement("div");
+  modal.className = "geo-modal";
+  modal.innerHTML = `
+    <div class="geo-modal-card" role="dialog" aria-label="${e.f}">
+      <button class="geo-close" type="button" aria-label="Close">✕</button>
+      <canvas class="geo-stage" width="360" height="320"></canvas>
+      <div class="geo-info">
+        <h2>${fmtFormula(e.f)}</h2>
+        <p class="pol-verdict ${e.polar ? "is-polar" : "is-nonpolar"}">${e.polar ? "POLAR — permanent dipole" : "NONPOLAR — everything cancels"}</p>
+        <p class="geo-line">${e.note}</p>
+        <p class="pol-legend"><span class="swatch neg"></span> δ− &nbsp; <span class="swatch pos"></span> δ+ ${e.polar ? "&nbsp;·&nbsp; the arrow points to the negative end, crossed tail at the positive" : ""}</p>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  const spinner = makeSpinner(modal.querySelector(".geo-stage"), e.geo, { startAngle: 0.4, clouds: e.clouds, dipole: e.dipole });
+  spinner.drawFrame(0.4);
+  spinner.start();
+  activeSpinners.push(spinner);
+  modal.querySelector(".geo-close").addEventListener("click", closeModal);
+  modal.addEventListener("click", (ev) => { if (ev.target === modal) closeModal(); });
+  document.addEventListener("keydown", onModalKey);
+}
+
+function renderPolarityPlay() {
+  const chips = problem.map((e, i) => {
+    let cls = "opt pol-chip";
+    if (!polChecked && polPicked.has(i)) cls += " sel";
+    if (polChecked && e.polar) cls += " right";
+    if (polChecked && polPicked.has(i) && !e.polar) cls += " wrong";
+    return `<button class="${cls}" data-i="${i}" type="button" ${polChecked ? "disabled" : ""}>${fmtFormula(e.f)}</button>`;
+  }).join("");
+
+  const feedback = !polChecked ? `<p class="feedback">&nbsp;</p>`
+    : polCorrect
+      ? `<p class="feedback ok">Correct — every dipole accounted for. 💪</p>`
+      : `<p class="feedback no">Not quite — the green ones are the polar set. This panel comes back around.</p>`;
+  const reveal = polChecked ? `<ul class="nudge-list pol-reveal">${problem.map((e) =>
+    `<li><strong>${fmtFormula(e.f)}</strong> — ${e.polar ? "polar" : "nonpolar"}. ${e.note}</li>`).join("")}</ul>` : "";
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <button class="intro-link" id="introBtn" type="button">↩ Back to the cloud gallery</button>
+    <div class="formula-card">
+      <span class="card-tag">Dipole hunt</span>
+      <p class="shape-ask big-ask">Which of these have a <strong>permanent dipole</strong>? Pick all that apply — picking none is an answer too.</p>
+      <div class="opt-grid">${chips}</div>
+    </div>
+    ${reveal}
+    ${feedback}
+    <div class="controls">
+      <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+      ${polChecked
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !polCorrect ? "Next →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn">Check</button>`}
+    </div>`;
+
+  wireTabs();
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  root.querySelectorAll(".pol-chip").forEach((b) => b.addEventListener("click", () => {
+    const i = Number(b.dataset.i);
+    polPicked.has(i) ? polPicked.delete(i) : polPicked.add(i);
+    b.classList.toggle("sel", polPicked.has(i));
+  }));
+  const checkBtn = root.querySelector("#checkBtn");
+  if (checkBtn) checkBtn.addEventListener("click", () => {
+    polChecked = true;
+    polCorrect = problem.every((e, i) => e.polar === polPicked.has(i));
+    if (polCorrect) { solvedThisRound += 1; cleanSolves += 1; }
+    else if (!missedThisRound.includes(problem)) missedThisRound.push(problem);
+    render();
+  });
+  const nextBtn = root.querySelector("#nextBtn");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      if (polCorrect) queue.shift();
+      else queue.push(queue.shift());
+      if (queue.length === 0) { mode = "done"; render(); } else loadPolarityCard();
+    });
+    nextBtn.focus();
+  }
+}
+
+function renderPolarityDone() {
+  const missedBlock = missedThisRound.length
+    ? `<div class="missed-block"><p class="missed-label">${missedThisRound.length} panel${missedThisRound.length > 1 ? "s" : ""} fooled you — the gallery above the quiz is the antidote.</p></div>`
+    : `<p class="feedback ok">Clean hunt — ${cleanSolves} of ${roundTotal} first try. 🎉</p>`;
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <p class="prompt">Hunt over — ${roundTotal} panels, ${cleanSolves} solved first try.</p>
+    ${missedBlock}
+    <div class="controls two-up done-nav">
+      <button class="action primary" id="kitBtn">Back to the Model Kit →</button>
+      <button class="action ghost" id="revisitBtn">↩ Revisit the cloud gallery</button>
+    </div>
+    <p class="done-next">Or run another hunt:</p>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Start the dipole hunt →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+
+  wireTabs();
+  root.querySelector("#kitBtn").addEventListener("click", () => { tierIndex = 3; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  root.querySelector("#startBtn").addEventListener("click", () => startPolarityRound());
 }
 
 // ── the done screen (house pattern: next + revisit + play again + home) ──

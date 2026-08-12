@@ -103,9 +103,58 @@ export function makeSpinner(canvas, geo, opts = {}) {
     ctx.restore();
   }
 
+  // Semitransparent electron clouds: red where the molecule is δ−, blue where δ+.
+  // q in EN-difference units; alpha scales with |q| so weak dipoles whisper.
+  function drawCloud(p, q, r) {
+    const rad = r * p.s;
+    const a = Math.min(0.34, 0.10 + Math.abs(q) * 0.16);
+    const color = Math.abs(q) < 0.05 ? `216,201,168` : q < 0 ? `180,80,47` : `67,96,116`;
+    const g = ctx.createRadialGradient(p.x, p.y, rad * 0.1, p.x, p.y, rad);
+    g.addColorStop(0, `rgba(${color},${a})`);
+    g.addColorStop(1, `rgba(${color},0)`);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+  }
+
+  // The net dipole, drawn through the whole molecule: crossed tail at the
+  // positive end, arrowhead at the negative end. Rides the same rotation.
+  function drawDipole(angle) {
+    const v = rotate(opts.dipole, angle);
+    const head = project([v[0] * 1.45, v[1] * 1.45, v[2] * 1.45]);
+    const tail = project([-v[0] * 1.45, -v[1] * 1.45, -v[2] * 1.45]);
+    ctx.strokeStyle = "#6b4d68"; ctx.lineWidth = 2.2; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(tail.x, tail.y); ctx.lineTo(head.x, head.y); ctx.stroke();
+    const a = Math.atan2(head.y - tail.y, head.x - tail.x);
+    ctx.beginPath();
+    ctx.moveTo(head.x, head.y);
+    ctx.lineTo(head.x - 10 * Math.cos(a - 0.45), head.y - 10 * Math.sin(a - 0.45));
+    ctx.moveTo(head.x, head.y);
+    ctx.lineTo(head.x - 10 * Math.cos(a + 0.45), head.y - 10 * Math.sin(a + 0.45));
+    ctx.stroke();
+    // the crossed tail (the "+" of the convention)
+    const c = 6;
+    ctx.beginPath();
+    ctx.moveTo(tail.x - c * Math.cos(a), tail.y - c * Math.sin(a));
+    ctx.lineTo(tail.x + c * Math.cos(a), tail.y + c * Math.sin(a));
+    ctx.moveTo(tail.x - c * Math.cos(a + Math.PI / 2), tail.y - c * Math.sin(a + Math.PI / 2));
+    ctx.lineTo(tail.x + c * Math.cos(a + Math.PI / 2), tail.y + c * Math.sin(a + Math.PI / 2));
+    ctx.stroke();
+  }
+
   function drawFrame(angle) {
     fit();
     ctx.clearRect(0, 0, cssW, cssH);
+    if (opts.clouds) {
+      const clouds = [{ v: [0, 0, 0], q: opts.clouds.center }];
+      geo.coords.forEach((v, i) => clouds.push({ v, q: opts.clouds.outer[i] ?? 0 }));
+      geo.lpCoords.forEach((v) => clouds.push({ v: [v[0] * 0.8, v[1] * 0.8, v[2] * 0.8], q: -(opts.clouds.lp ?? 0.8) }));
+      clouds
+        .map((c) => ({ ...c, p: project(rotate(c.v, angle)) }))
+        .sort((a, b) => a.p.z - b.p.z)
+        .forEach((c) => drawCloud(c.p, c.q, atomR * 2.6));
+    }
     const items = [];
     geo.coords.forEach((v, i) => {
       const rv = rotate(v, angle);
@@ -137,6 +186,7 @@ export function makeSpinner(canvas, geo, opts = {}) {
         drawAtom(c0, centerR, center);
       }
     }
+    if (opts.dipole) drawDipole(angle);
   }
 
   let raf = null, t0 = null;
