@@ -103,7 +103,7 @@ Main name: **CHEM GAMES** (also acceptable as chem-games / Chem-Games / ChemGame
 
 ## OU materials mining plan (CHEM 1315/1415)
 
-Each course: 8 chapters, 4 exams with rolling coverage — E1: ch 1–2 · E2: ch 1–4 · E3: ch 3–6 · E4: ch 5–8. Start with **1315 Exam 1 (chapters 1–2)** and work forward gradually. **Caveat from Dalia: this material is a lot harder than anything from the IMAT or Heritage** — it feeds the advanced bands of the ladders (and eventually the MCAT track), never the entry rungs.
+Each course: 8 **units** (not textbook chapters — confirmed from the course's own exam index), 4 exams with rolling coverage — E1: units 1–2 · E2: units 1–4 · E3: units 3–6 · E4: units 5–8. **E1 mined 2026-08-12 → see `OU_MINING.md`**: ~200 keyed items (plus ~200 more in the E2 papers' unit-1/2 halves), spanning universe chapters 1–4 + Solutions; an OU question bank with stable item IDs already exists behind the papers. **Caveat from Dalia: this material is a lot harder than anything from the IMAT or Heritage** — it feeds the advanced bands of the ladders (and eventually the MCAT track), never the entry rungs.
 
 ## Open items
 
