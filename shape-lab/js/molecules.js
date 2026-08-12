@@ -45,3 +45,22 @@ export const MOLECULES = [
   { f: "IF5", center: "I", bonds: 5, lps: 1, geo: "square-pyramidal" },
   { f: "XeF4", center: "Xe", bonds: 4, lps: 2, geo: "square-planar" },
 ];
+
+// The Model Kit's v1 build bank — neutral molecules only, where every bond takes
+// exactly one electron from each side and nobody has to hand an electron over.
+// Ions (nitrate!) join once the Kit learns electron transfer; the charge question
+// is asked from day one so the mechanic is already in the student's hands.
+export const BUILD_BANK = [
+  { f: "H2O", atoms: ["O", "H", "H"], charge: 0 },
+  { f: "CH4", atoms: ["C", "H", "H", "H", "H"], charge: 0 },
+  { f: "NH3", atoms: ["N", "H", "H", "H"], charge: 0 },
+  { f: "HF", atoms: ["F", "H"], charge: 0 },
+  { f: "CO2", atoms: ["C", "O", "O"], charge: 0 },
+  { f: "HCN", atoms: ["C", "H", "N"], charge: 0 },
+  { f: "BF3", atoms: ["B", "F", "F", "F"], charge: 0 },
+  { f: "PCl3", atoms: ["P", "Cl", "Cl", "Cl"], charge: 0 },
+  { f: "OF2", atoms: ["O", "F", "F"], charge: 0 },
+  { f: "H2S", atoms: ["S", "H", "H"], charge: 0 },
+  { f: "N2", atoms: ["N", "N"], charge: 0 },
+  { f: "BeF2", atoms: ["Be", "F", "F"], charge: 0 },
+];

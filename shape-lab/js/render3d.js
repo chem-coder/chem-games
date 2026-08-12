@@ -28,14 +28,23 @@ function rotate([x, y, z], angle) {
 export function makeSpinner(canvas, geo, opts = {}) {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
-  const cssW = canvas.clientWidth || canvas.width, cssH = canvas.clientHeight || canvas.height;
-  canvas.width = cssW * dpr; canvas.height = cssH * dpr;
-  ctx.scale(dpr, dpr);
+  let cssW = 0, cssH = 0, cx = 0, cy = 0, R = 0, atomR = 0, centerR = 0;
 
-  const cx = cssW / 2, cy = cssH / 2;
-  const R = Math.min(cssW, cssH) * 0.30;             // bond length in px
-  const atomR = opts.small ? R * 0.30 : R * 0.26;    // peripheral atom radius
-  const centerR = atomR * 1.25;
+  // Adopt the canvas's current CSS size — re-checked every frame, because a canvas
+  // created while the tab/pane is hidden measures 0×0 and would otherwise stay blank.
+  function fit() {
+    const w = canvas.clientWidth || canvas.width / dpr || 120;
+    const h = canvas.clientHeight || canvas.height / dpr || 110;
+    if (Math.abs(w - cssW) < 1 && Math.abs(h - cssH) < 1) return;
+    cssW = w; cssH = h;
+    canvas.width = cssW * dpr; canvas.height = cssH * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = cssW / 2; cy = cssH / 2;
+    R = Math.min(cssW, cssH) * 0.30;                 // bond length in px
+    atomR = opts.small ? R * 0.30 : R * 0.26;        // peripheral atom radius
+    centerR = atomR * 1.25;
+  }
+  fit();
   const center = geo.demo?.center || "";
   const outers = geo.demo?.outer || [];
   const showLabels = !opts.small;
@@ -95,6 +104,7 @@ export function makeSpinner(canvas, geo, opts = {}) {
   }
 
   function drawFrame(angle) {
+    fit();
     ctx.clearRect(0, 0, cssW, cssH);
     const items = [];
     geo.coords.forEach((v, i) => {

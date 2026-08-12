@@ -4,10 +4,12 @@
 
 import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula } from "./geometry.js";
 import { makeSpinner } from "./render3d.js";
-import { MOLECULES } from "./molecules.js";
+import { MOLECULES, BUILD_BANK } from "./molecules.js";
+import { createKit } from "./modelkit.js";
 
 const root = document.getElementById("game");
 const ROUND_SIZE = 8;
+const BUILD_ROUND_SIZE = 5;
 
 const TIERS = [
   { id: "formal-charge", label: "Formal charge", built: false,
@@ -15,8 +17,7 @@ const TIERS = [
   { id: "lewis", label: "Lewis structures", built: false,
     blurb: "Dalia's six steps, one card each — then a clickable table of examples (nitrate first, of course) where every molecule walks you through its own construction, brackets and charges included." },
   { id: "geometries", label: "Geometries", built: true },
-  { id: "build", label: "Build molecules", built: false,
-    blurb: "The Model Kit: pick atoms, watch their valence electrons settle at the compass points, drag dot to dot to bond, then Check — and a correct molecule snaps into 3D and slowly turns." },
+  { id: "build", label: "Build molecules", built: true },
   { id: "polarity", label: "Polarity", built: false,
     blurb: "Rotating molecules wrapped in semitransparent electron clouds, red→blue from the negative end to the positive one. See why CO₂ cancels and H₂O doesn't." },
 ];
@@ -59,10 +60,19 @@ function wireTabs() {
     b.addEventListener("click", () => { tierIndex = Number(b.dataset.tier); mode = "intro"; render(); }));
 }
 
+let kit = null;
+function destroyKit() { if (kit) { kit.destroy(); kit = null; } }
+
 function render() {
   stopSpinners();
+  destroyKit();
   closeModal();
   if (!tier().built) return renderStub();
+  if (tier().id === "build") {
+    if (mode === "play") return renderBuildPlay();
+    if (mode === "done") return renderBuildDone();
+    return renderBuildIntro();
+  }
   if (mode === "play") return renderPlay();
   if (mode === "done") return renderDone();
   renderGeometries();
@@ -243,6 +253,152 @@ function renderPlay() {
     spinner.start();
     activeSpinners.push(spinner);
   }
+}
+
+// ── the Build rung: the Model Kit ──
+let buildProblem = null;
+let buildFailed = false;   // failed a Check on this card (for clean-solve tracking)
+let buildSolved = false;
+let chargePicked = null;
+
+function startBuildRound(cards) {
+  queue = cards ? cards.slice() : shuffle(BUILD_BANK).slice(0, BUILD_ROUND_SIZE);
+  roundTotal = queue.length;
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  mode = "play";
+  loadBuildCard();
+}
+
+function loadBuildCard() {
+  buildProblem = queue[0];
+  buildFailed = false; buildSolved = false; chargePicked = null;
+  render();
+}
+
+function renderBuildIntro() {
+  root.innerHTML = `
+    ${tierTabs()}
+    <div class="intro">
+      <p class="intro-eyebrow">Shape Lab · the Model Kit</p>
+      <p class="intro-lede">Every atom arrives carrying its own valence electrons — little dots resting at the compass points. Your job: share them into bonds until every atom is satisfied. Get it right, and the flat drawing snaps into its true 3D shape and turns.</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text"><strong>Drag atoms</strong> anywhere on the bench — they glide.</span></li>
+        <li><span class="step-num">2</span><span class="step-text"><strong>Drag a dot onto another atom's dot</strong> to share a pair — that's a bond. Do it again for a double, once more for a triple.</span></li>
+        <li><span class="step-num">3</span><span class="step-text"><strong>Double-click a bond</strong> to hand the electrons back.</span></li>
+        <li><span class="step-num">4</span><span class="step-text"><strong>Answer the charge</strong> — a non-zero answer wraps the ion in its brackets.</span></li>
+        <li><span class="step-num">5</span><span class="step-text"><strong>Check.</strong> Right: the molecule turns 3D and spins. Wrong: the Kit tells you which atom is unhappy, and why.</span></li>
+      </ol>
+      <p class="stub-note">Remember the octet rebels: H wants 2, Be is content with 4, B with 6 — and a row-2 atom can never hold more than 8.</p>
+    </div>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Open the Model Kit →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+  wireTabs();
+  root.querySelector("#startBtn").addEventListener("click", () => startBuildRound());
+}
+
+function renderBuildPlay() {
+  const chargeBtns = [-3, -2, -1, 0, 1, 2, 3].map((q) =>
+    `<button class="charge-btn${chargePicked === q ? " sel" : ""}" data-q="${q}" type="button" ${buildSolved ? "disabled" : ""}>${q === 0 ? "0" : (Math.abs(q) === 1 ? "" : Math.abs(q)) + (q > 0 ? "+" : "−")}</button>`
+  ).join("");
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <button class="intro-link" id="introBtn" type="button">↩ Kit guide</button>
+    <div class="build-head">
+      <p class="build-title">Build: <span class="build-formula">${fmtFormula(buildProblem.f)}</span></p>
+      <div class="charge-ask"><span>What's the charge?</span><div class="charge-row">${chargeBtns}</div></div>
+    </div>
+    <canvas class="kit-canvas" id="kitCanvas"></canvas>
+    <p class="feedback" id="buildFeedback">&nbsp;</p>
+    <ul class="nudge-list" id="nudgeList"></ul>
+    <div class="controls">
+      <p class="score">Built ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+      <button class="action ghost" id="clearBtn" type="button">Clear the bench</button>
+      <button class="action primary" id="checkBtn" ${chargePicked === null ? "disabled" : ""}>Check</button>
+    </div>`;
+
+  wireTabs();
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+
+  const canvas = root.querySelector("#kitCanvas");
+  kit = createKit(canvas, buildProblem.atoms);
+  window.__kit = kit; // dev handle
+
+  const feedback = root.querySelector("#buildFeedback");
+  const nudges = root.querySelector("#nudgeList");
+  const checkBtn = root.querySelector("#checkBtn");
+
+  root.querySelectorAll(".charge-btn").forEach((b) => b.addEventListener("click", () => {
+    if (buildSolved) return;
+    chargePicked = Number(b.dataset.q);
+    kit.setCharge(chargePicked);
+    root.querySelectorAll(".charge-btn").forEach((x) => x.classList.toggle("sel", Number(x.dataset.q) === chargePicked));
+    checkBtn.disabled = false;
+  }));
+
+  root.querySelector("#clearBtn").addEventListener("click", () => { if (!buildSolved) { kit.clear(); nudges.innerHTML = ""; feedback.innerHTML = "&nbsp;"; feedback.className = "feedback"; } });
+
+  checkBtn.addEventListener("click", () => {
+    if (buildSolved) { // acting as Next
+      queue.shift();
+      if (queue.length === 0) { mode = "done"; render(); } else loadBuildCard();
+      return;
+    }
+    const result = kit.check(buildProblem.charge);
+    if (!result.ok) {
+      if (!buildFailed) { buildFailed = true; if (!missedThisRound.includes(buildProblem)) missedThisRound.push(buildProblem); }
+      feedback.textContent = "Not yet — the bench disagrees:";
+      feedback.className = "feedback no";
+      nudges.innerHTML = result.issues.map((i) => `<li>${i}</li>`).join("");
+      return;
+    }
+    // Solved: the reward. The Kit freezes, and the same canvas becomes the 3D stage.
+    buildSolved = true;
+    solvedThisRound += 1;
+    if (!buildFailed) cleanSolves += 1;
+    const pose = kit.derive3D();
+    kit.freeze(); kit.destroy(); kit = null;
+    nudges.innerHTML = "";
+    feedback.innerHTML = `Bonded and balanced — this is <strong>${fmtFormula(buildProblem.f)}</strong> in three dimensions. 🎉`;
+    feedback.className = "feedback ok";
+    if (pose) {
+      const spinner = makeSpinner(canvas, pose, { startAngle: 0.5 });
+      spinner.drawFrame(0.5);
+      spinner.start();
+      activeSpinners.push(spinner);
+    }
+    checkBtn.textContent = queue.length > 1 ? "Next →" : "Finish";
+    root.querySelectorAll(".charge-btn").forEach((x) => { x.disabled = true; });
+  });
+}
+
+function renderBuildDone() {
+  const missedChips = missedThisRound.map((m) => `<span class="chip">${fmtFormula(m.f)}</span>`).join("");
+  const missedBlock = missedThisRound.length
+    ? `<div class="missed-block"><p class="missed-label">The bench argued with you on ${missedThisRound.length} — worth a rebuild:</p><div class="chips">${missedChips}</div></div>`
+    : `<p class="feedback ok">Clean bench — every molecule built first try. 🎉</p>`;
+  const nextTier = tierIndex < TIERS.length - 1 ? TIERS[tierIndex + 1] : null;
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <p class="prompt">Bench cleared — ${roundTotal} molecules built, ${cleanSolves} first-try.</p>
+    ${missedBlock}
+    ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Rebuild the ${missedThisRound.length} that fought back →</button></div>` : ""}
+    <div class="controls two-up done-nav">
+      ${nextTier ? `<button class="action primary" id="nextTierBtn">Next topic: ${nextTier.label} →</button>` : ""}
+      <button class="action ghost" id="revisitBtn">↩ Revisit the Kit guide</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Open the Model Kit →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+
+  wireTabs();
+  const nextTierBtn = root.querySelector("#nextTierBtn");
+  if (nextTierBtn) nextTierBtn.addEventListener("click", () => { tierIndex += 1; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const reviewBtn = root.querySelector("#reviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", () => startBuildRound(missedThisRound));
+  root.querySelector("#startBtn").addEventListener("click", () => startBuildRound());
 }
 
 // ── the done screen (house pattern: next + revisit + play again + home) ──

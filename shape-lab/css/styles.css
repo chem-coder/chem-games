@@ -148,6 +148,40 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .missed-label { margin: 0 0 8px; color: var(--muted); font-size: 0.92rem; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 
+/* ── numbered steps (house pattern: green circles, text keeps its own line) ── */
+.steps { list-style: none; margin: 14px 0 0; padding: 0; }
+.steps li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.step-num {
+  flex: 0 0 auto; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--success); color: #fff; font-size: 0.8rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.step-text { font-size: 0.93rem; }
+
+/* ── the Model Kit bench ── */
+.build-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+.build-title { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.build-formula { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--accent-dark); }
+.charge-ask { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.charge-ask > span { color: var(--muted); font-size: 0.88rem; font-weight: 600; }
+.charge-row { display: flex; gap: 4px; }
+.charge-btn {
+  min-width: 34px; padding: 6px 6px; border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--ink); font-family: var(--font-body);
+  font-size: 0.88rem; font-weight: 700; cursor: pointer;
+}
+.charge-btn:hover:not(:disabled) { border-color: var(--plum); }
+.charge-btn.sel { background: var(--plum); border-color: var(--plum); color: #fff; }
+.charge-btn:disabled { opacity: 0.6; cursor: default; }
+
+.kit-canvas {
+  display: block; width: 100%; height: 380px;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
+  touch-action: none; cursor: grab;
+}
+.nudge-list { margin: 6px auto 0; padding: 0 0 0 20px; max-width: 60ch; color: var(--danger); font-size: 0.9rem; }
+.nudge-list li { margin-bottom: 4px; }
+
 /* ── shared bottom nav line ── */
 .done-next { margin: 26px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
 
