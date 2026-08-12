@@ -1,0 +1,92 @@
+/* Shape Lab — styles. Shared True Autumn tokens come from ../shared/css/tokens.css. */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+.app-shell { max-width: 880px; margin: 0 auto; padding: 26px 18px 64px; }
+.app-header { margin-bottom: 18px; }
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow { margin: 14px 0 2px; color: var(--muted); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+h1 { margin: 0 0 6px; font-family: var(--font-display); font-size: 2rem; color: var(--accent-dark); }
+.lede { margin: 0; color: var(--muted); max-width: 60ch; }
+
+/* House rule: formula subscripts stay readable — ≥50% size, slightly lowered. */
+sub { font-size: 0.62em; vertical-align: -0.18em; }
+sup { font-size: 0.62em; vertical-align: 0.42em; }
+
+/* ── tier tabs (house pattern: on every screen) ── */
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 20px; }
+.level-tab {
+  padding: 8px 14px; border: 1.5px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--muted); font-family: var(--font-body);
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+}
+.level-tab:hover:not(.is-active) { border-color: var(--accent); color: var(--accent); }
+.level-tab.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── intro blocks ── */
+.intro { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px; }
+.intro-eyebrow { margin: 0 0 6px; color: var(--plum); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.intro-lede { margin: 0; }
+.stub-note { margin: 12px 0 0; color: var(--muted); font-size: 0.9rem; font-style: italic; }
+
+/* ── the geometry table ── */
+.geo-group { margin-bottom: 18px; }
+.geo-group-label { margin: 0 0 8px; color: var(--muted); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.geo-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.geo-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  width: 150px; padding: 10px 8px 12px;
+  background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
+  cursor: pointer; font-family: var(--font-body); color: var(--ink);
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.geo-cell:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--shadow); }
+.geo-thumb { width: 120px; height: 110px; }
+.geo-name { font-weight: 700; font-size: 0.9rem; color: var(--accent-dark); }
+.geo-meta { font-size: 0.76rem; color: var(--muted); }
+.geo-angle { font-size: 0.8rem; font-weight: 600; color: var(--plum); }
+
+/* ── the popup ── */
+.geo-modal {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(45, 42, 35, 0.45);
+  display: flex; align-items: center; justify-content: center; padding: 18px;
+}
+.geo-modal-card {
+  position: relative; display: flex; gap: 18px; flex-wrap: wrap;
+  max-width: 780px; max-height: 90vh; overflow-y: auto;
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 24px;
+}
+.geo-close {
+  position: absolute; top: 10px; right: 12px;
+  border: 0; background: none; color: var(--muted); font-size: 1.15rem; cursor: pointer;
+}
+.geo-close:hover { color: var(--danger); }
+.geo-stage { width: 360px; height: 320px; flex: 0 0 auto; }
+.geo-info { flex: 1 1 280px; min-width: 260px; }
+.geo-info h2 { margin: 0 0 8px; font-family: var(--font-display); color: var(--accent-dark); }
+.geo-line { margin: 0 0 6px; font-size: 0.95rem; }
+.geo-facts { margin: 10px 0; padding-left: 20px; }
+.geo-facts li { margin-bottom: 7px; font-size: 0.92rem; }
+.geo-examples { margin: 12px 0 0; font-size: 0.92rem; color: var(--muted); }
+.chip {
+  display: inline-block; padding: 2px 10px; margin: 2px 2px 2px 0;
+  background: var(--surface-soft); border: 1px solid var(--line); border-radius: 999px;
+  color: var(--ink); font-size: 0.9rem;
+}
+
+/* ── shared bottom nav line ── */
+.done-next { margin: 26px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+@media (max-width: 640px) {
+  .geo-cell { width: calc(50% - 6px); }
+  .geo-stage { width: 100%; height: 260px; }
+}

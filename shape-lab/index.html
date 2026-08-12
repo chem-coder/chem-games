@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shape Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260812-shape1">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Home</a>
+      <p class="eyebrow">Bonding &amp; Structure &middot; Shapes</p>
+      <h1>Shape Lab</h1>
+      <p class="lede">Count the electron regions, place the lone pairs, and the molecule takes its shape &mdash; then watch it turn in 3D.</p>
+    </header>
+
+    <section id="game" class="game" aria-live="polite"></section>
+  </main>
+
+  <!-- Cache-busting lives HERE, in ONE place (same convention as pH Lab). -->
+  <script type="importmap">
+  {
+    "imports": {
+      "./js/geometry.js": "./js/geometry.js?v=20260812-shape1",
+      "./js/render3d.js": "./js/render3d.js?v=20260812-shape1"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260812-shape1"></script>
+</body>
+</html>
