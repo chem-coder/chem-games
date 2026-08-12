@@ -300,10 +300,13 @@ function openCards(cards, opts = {}) {
 // ── the Formal Charge rung ──
 let fcTyped = "", fcChecked = false, fcCorrect = false, fcNudge = null, fcHintsShown = 0;
 
-const fcCard = (ex) => `
-  <p class="card-title">${ex.title}</p>
-  <div class="fc-sketch">${sceneSvg(fcScene(ex.item), 260, 170)}</div>
-  <p class="card-text">${ex.text}</p>`;
+const fcExampleCard = (ex) => `
+  <div class="fc-ex-card">
+    <p class="fc-ex-title">${ex.title}</p>
+    <div class="fc-sketch">${sceneSvg(fcScene(ex.item), 220, 130)}</div>
+    <p class="fc-ex-calc">${ex.calc}</p>
+    <p class="fc-ex-text">${ex.text}</p>
+  </div>`;
 
 function startFCRound(cards) {
   queue = cards ? cards.slice() : shuffle(FC_BANK).slice(0, FC_ROUND_SIZE);
@@ -351,20 +354,21 @@ function renderFCIntro() {
     ${tierTabs()}
     <div class="intro">
       <p class="intro-eyebrow">Shape Lab · formal charge</p>
-      <p class="intro-lede">Every atom in a drawing gets a bookkeeping score:</p>
+      <p class="intro-lede">Every atom in a Lewis structure carries a <strong>formal charge</strong>: the difference between the electrons the atom owns on its own (its valence electrons, straight from the periodic table) and the electrons assigned to it in the drawing.</p>
       <p class="fc-formula">FC&nbsp;=&nbsp;valence e⁻&nbsp;−&nbsp;dots&nbsp;−&nbsp;sticks</p>
-      <p class="intro-lede">Count the electrons the atom <em>brought</em>, subtract the lone-pair dots it keeps and the bonds it holds. The score tells you whether your Lewis structure is honest — and it comes back again and again: in resonance, in organic, everywhere.</p>
+      <p class="intro-lede">Count the valence electrons the atom brought. Subtract the lone-pair electrons it keeps (the dots) and one electron per bond stick it holds. A double bond is drawn as two sticks, so it counts as two.</p>
+      <p class="intro-lede">The concept of formal charge is important, and you will see it again: in resonance structures, in organic chemistry, and throughout inorganic chemistry.</p>
+      <div class="fc-ex-row">${FC_EXAMPLES.map(fcExampleCard).join("")}</div>
+      <p class="intro-lede">Calculating the formal charge is a tool for deciding whether a proposed chemical structure is stable. It is especially useful when choosing between several possible electron arrangements while proposing Lewis structures and molecular geometries. A few guidelines worth following:</p>
       <ol class="steps">
         ${FC_RULES.map((r, i) => `<li><span class="step-num">${i + 1}</span><span class="step-text">${r}</span></li>`).join("")}
       </ol>
     </div>
     <div class="controls two-up">
-      <button class="action ghost" id="examplesBtn">Walk through 3 examples</button>
       <button class="action primary" id="startBtn">Start the drill →</button>
     </div>
     <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
   wireTabs();
-  root.querySelector("#examplesBtn").addEventListener("click", () => openCards(FC_EXAMPLES.map(fcCard), { label: "Formal charge examples" }));
   root.querySelector("#startBtn").addEventListener("click", () => startFCRound());
 }
 

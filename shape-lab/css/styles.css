@@ -202,6 +202,14 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 }
 .fc-sketch { text-align: center; }
 .fc-sketch svg { max-width: 100%; height: auto; }
+.fc-ex-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+.fc-ex-card {
+  flex: 1 1 200px; min-width: 190px; padding: 12px 12px 10px; text-align: center;
+  background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
+.fc-ex-title { margin: 0 0 4px; font-size: 0.85rem; font-weight: 700; color: var(--accent-dark); }
+.fc-ex-calc { margin: 4px 0 2px; font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); }
+.fc-ex-text { margin: 0; font-size: 0.8rem; color: var(--muted); }
 .walk-scene svg { width: 340px; max-width: 100%; }
 .answer-row { display: flex; justify-content: center; margin-top: 14px; }
 .answer-input {

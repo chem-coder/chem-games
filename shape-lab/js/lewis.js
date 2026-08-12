@@ -89,27 +89,30 @@ export function fcScene(item) {
 
 // ── formal charge ──
 export const FC_RULES = [
-  "Zero and ±1 are welcome. Bigger charges (±2, ±3) mean the structure is lying — redraw it.",
+  "Zero and ±1 are acceptable. Bigger charges (±2, ±3) mark an unstable arrangement: redraw it.",
   "Negative formal charges belong on the atoms of GREATER electronegativity.",
   "The formal charges must add up to the ion's total charge (zero for a neutral molecule).",
 ];
 
-// Click-through examples (shown before the drill).
+// The three illustrated cases on the intro page: negative, neutral, positive.
 export const FC_EXAMPLES = [
   {
-    title: "The O in water",
-    item: { el: "O", v: 6, bonds: 2, lp: 2 },
-    text: "O brings 6 valence electrons. In the drawing it keeps 4 dots and holds 2 sticks: FC = 6 − 4 − 2 = <strong>0</strong>. Content.",
-  },
-  {
-    title: "A single-bonded O in nitrate",
+    title: "Negative: a single-bonded O in nitrate",
     item: { el: "O", v: 6, bonds: 1, lp: 3 },
-    text: "6 valence, but 6 dots and only 1 stick: FC = 6 − 6 − 1 = <strong>−1</strong>. This is where nitrate's charge actually lives — on oxygen, the more electronegative atom, exactly where it belongs.",
+    calc: "FC = 6 − 6 − 1 = <strong>−1</strong>",
+    text: "6 valence electrons, 6 dots kept, 1 stick held.",
   },
   {
-    title: "The N in nitrate",
+    title: "Neutral: the O in water",
+    item: { el: "O", v: 6, bonds: 2, lp: 2 },
+    calc: "FC = 6 − 4 − 2 = <strong>0</strong>",
+    text: "6 valence electrons, 4 dots kept, 2 sticks held.",
+  },
+  {
+    title: "Positive: the N in ammonium",
     item: { el: "N", v: 5, bonds: 4, lp: 0 },
-    text: "5 valence, no dots, 4 sticks: FC = 5 − 0 − 4 = <strong>+1</strong>. A +1 on nitrogen and two −1s on oxygens: net −1, matching the ion. The bookkeeping closes.",
+    calc: "FC = 5 − 0 − 4 = <strong>+1</strong>",
+    text: "5 valence electrons, no dots kept, 4 sticks held.",
   },
 ];
 
