@@ -46,6 +46,23 @@ export const MOLECULES = [
   { f: "BrF5", center: "Br", bonds: 5, lps: 1, geo: "square-pyramidal" , st: { cl: 2, parts: [["F",1,6,5]] } },
   { f: "IF5", center: "I", bonds: 5, lps: 1, geo: "square-pyramidal" , st: { cl: 2, parts: [["F",1,6,5]] } },
   { f: "XeF4", center: "Xe", bonds: 4, lps: 2, geo: "square-planar" , st: { cl: 4, parts: [["F",1,6,4]] } },
+  // ── round two: more of every shape, for replay value ──
+  { f: "BeH2", center: "Be", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["H",1,0,2]] } },
+  { f: "CS2", center: "C", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["S",2,4,2]] } },
+  { f: "BCl3", center: "B", bonds: 3, lps: 0, geo: "trigonal-planar", st: { cl: 0, parts: [["Cl",1,6,3]] } },
+  { f: "SiH4", center: "Si", bonds: 4, lps: 0, geo: "tetrahedral", st: { cl: 0, parts: [["H",1,0,4]] } },
+  { f: "SiF4", center: "Si", bonds: 4, lps: 0, geo: "tetrahedral", st: { cl: 0, parts: [["F",1,6,4]] } },
+  { f: "SiCl4", center: "Si", bonds: 4, lps: 0, geo: "tetrahedral", st: { cl: 0, parts: [["Cl",1,6,4]] } },
+  { f: "ClO4-", center: "Cl", bonds: 4, lps: 0, geo: "tetrahedral", st: { cl: 0, parts: [["O",2,4,3],["O",1,6,1]] }, charge: -1 },
+  { f: "PH3", center: "P", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["H",1,0,3]] } },
+  { f: "NF3", center: "N", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["F",1,6,3]] } },
+  { f: "PF3", center: "P", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["F",1,6,3]] } },
+  { f: "PBr3", center: "P", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["Br",1,6,3]] } },
+  { f: "SO3^2-", center: "S", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["O",2,4,1],["O",1,6,2]] }, charge: -2 },
+  { f: "ClO3-", center: "Cl", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["O",2,4,2],["O",1,6,1]] }, charge: -1 },
+  { f: "XeO3", center: "Xe", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["O",2,4,3]] } },
+  { f: "ICl2-", center: "I", bonds: 2, lps: 3, geo: "linear-5", st: { cl: 6, parts: [["Cl",1,6,2]] }, charge: -1 },
+  { f: "IF4-", center: "I", bonds: 4, lps: 2, geo: "square-planar", st: { cl: 4, parts: [["F",1,6,4]] }, charge: -1 },
 ];
 
 // ── polarity ──

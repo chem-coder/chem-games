@@ -2,7 +2,7 @@
 // valence electrons as dots that live at the compass points (N/E/S/W) and settle
 // there when that's the easiest thing in the world — but under strain they slide
 // like beads on a ring, compass points as the preferred rest positions.
-// Drag dot → dot to bond (again for double/triple); double-click a bond to break it.
+// Drop atom onto atom to bond; click a bond to cycle single → double → triple → gone.
 
 import { GEOMETRIES } from "./geometry.js";
 
@@ -160,12 +160,12 @@ export function createKit(canvas, atomEls, opts = {}) {
         ctx.lineWidth = 2.6; ctx.strokeStyle = "#897f6d"; ctx.lineCap = "round"; ctx.stroke();
       }
     });
-    // rubber band while an electron is in hand
-    if (drag?.kind === "bond" || drag?.kind === "trayDot") {
-      const from = drag.kind === "bond" ? atoms[drag.id] : { x: TRAY.x + TRAY.w / 2, y: TRAY.y + TRAY.h / 2 };
+    // rubber band while an electron is in hand (tray traffic only)
+    if (drag?.kind === "dot" || drag?.kind === "trayDot") {
+      const from = drag.kind === "dot" ? atoms[drag.id] : { x: TRAY.x + TRAY.w / 2, y: TRAY.y + TRAY.h / 2 };
       ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(drag.px, drag.py);
       ctx.setLineDash([5, 5]); ctx.lineWidth = 2;
-      ctx.strokeStyle = drag.kind === "bond" ? "#1e7268" : "#835f7d";
+      ctx.strokeStyle = "#835f7d";
       ctx.stroke();
       ctx.setLineDash([]);
     }
@@ -188,23 +188,24 @@ export function createKit(canvas, atomEls, opts = {}) {
         return { x, y };
       });
     });
-    // hover hints while an electron is in hand: teal = bond target, plum = hand-over
-    if (drag && (drag.kind === "bond" || drag.kind === "trayDot")) {
-      const p = { x: drag.px, y: drag.py };
-      const overDot = hitDot(p);
-      const overAtom = hitAtom(p, 14);
-      if (drag.kind === "bond" && overDot !== null && overDot !== drag.id) {
-        const at = atoms[overDot];
-        ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 14, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(30,114,104,0.6)"; ctx.lineWidth = 2; ctx.stroke();
-      } else if (overAtom !== null && overAtom !== drag.id) {
-        const at = atoms[overAtom];
-        ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 6, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(131,95,125,0.65)"; ctx.lineWidth = 2.4; ctx.stroke();
-      } else if (drag.kind === "bond" && charge !== 0 && inTray(p)) {
-        ctx.strokeStyle = "rgba(131,95,125,0.85)"; ctx.lineWidth = 2.4;
-        ctx.strokeRect(TRAY.x, TRAY.y, TRAY.w, TRAY.h);
+    // hover hints: dragging an atom over a bondable partner rings it teal;
+    // an electron headed for the tray lights the tray.
+    if (drag?.kind === "atom" && drag.moved) {
+      const M = atoms[drag.id];
+      for (const at of atoms) {
+        if (at.id === drag.id) continue;
+        if (Math.hypot(M.x - at.x, M.y - at.y) < ATOM_R * 2 + 4) {
+          const bonded = bonds.some((b) => (b.a === drag.id && b.b === at.id) || (b.b === drag.id && b.a === at.id));
+          const can = !bonded && atoms[drag.id].lone > 0 && at.lone > 0;
+          ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 8, 0, Math.PI * 2);
+          ctx.strokeStyle = can ? "rgba(30,114,104,0.7)" : "rgba(137,127,109,0.5)";
+          ctx.lineWidth = 2.4; ctx.stroke();
+          break;
+        }
       }
+    } else if (drag?.kind === "dot" && charge !== 0 && inTray({ x: drag.px, y: drag.py })) {
+      ctx.strokeStyle = "rgba(131,95,125,0.85)"; ctx.lineWidth = 2.4;
+      ctx.strokeRect(TRAY.x, TRAY.y, TRAY.w, TRAY.h);
     }
     // the electron tray — only ions have one
     trayDotPos = [];
@@ -292,14 +293,41 @@ export function createKit(canvas, atomEls, opts = {}) {
     return null;
   }
 
+  // ── Dalia's gesture grammar (2026-08-12) ──
+  // Drop an atom ONTO another atom → a single bond forms (two unpaired electrons
+  // become the pair), only if they aren't bonded yet. Click a bond → it cycles
+  // single → double → triple → gone, consuming/returning one electron per atom
+  // per step. Dots are NOT draggable between atoms — electrons only move through
+  // the ion tray.
   function tryBond(a, b) {
-    if (a === b || a === null || b === null) return;
-    if (atoms[a].lone < 1 || atoms[b].lone < 1) return; // no spare electrons, no bond
+    if (a === b || a === null || b === null) return false;
+    if (atoms[a].lone < 1 || atoms[b].lone < 1) return false;
     const ex = bonds.find((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a));
-    if (ex) { if (ex.order >= 3) return; ex.order += 1; }
-    else bonds.push({ a, b, order: 1 });
+    if (ex) return false; // already bonded — the bond itself is the control now
+    bonds.push({ a, b, order: 1 });
     atoms[a].lone -= 1; atoms[b].lone -= 1;
     opts.onChange?.();
+    return true;
+  }
+
+  function cycleBond(b) {
+    if (b.order < 3 && atoms[b.a].lone > 0 && atoms[b.b].lone > 0) {
+      b.order += 1;
+      atoms[b.a].lone -= 1; atoms[b.b].lone -= 1;
+    } else {
+      atoms[b.a].lone += b.order; atoms[b.b].lone += b.order;
+      bonds.splice(bonds.indexOf(b), 1);
+    }
+    opts.onChange?.();
+  }
+
+  // After a drop bonds two atoms, ease the dragged one to a comfortable distance.
+  function settleApart(movedId, anchorId) {
+    const M = atoms[movedId], A = atoms[anchorId];
+    let ang = Math.atan2(M.y - A.y, M.x - A.x);
+    if (Math.hypot(M.x - A.x, M.y - A.y) < 2) ang = -Math.PI / 2;
+    M.tx = A.x + Math.cos(ang) * 96;
+    M.ty = A.y + Math.sin(ang) * 96;
   }
 
   function onDown(e) {
@@ -308,49 +336,59 @@ export function createKit(canvas, atomEls, opts = {}) {
     const p = pos(e);
     if (hitTrayDot(p)) { drag = { kind: "trayDot", px: p.x, py: p.y }; return; }
     const dotAtom = hitDot(p);
-    if (dotAtom !== null) { drag = { kind: "bond", id: dotAtom, px: p.x, py: p.y }; return; }
-    const atomId = hitAtom(p);
-    if (atomId !== null) drag = { kind: "atom", id: atomId };
+    if (dotAtom !== null && charge !== 0) { drag = { kind: "dot", id: dotAtom, px: p.x, py: p.y }; return; }
+    const atomId = hitAtom(p, 4);
+    if (atomId !== null) { drag = { kind: "atom", id: atomId, moved: false }; return; }
   }
   function onMove(e) {
     if (frozen || !drag) return;
     const p = pos(e);
-    if (drag.kind === "atom") { atoms[drag.id].tx = p.x; atoms[drag.id].ty = p.y; }
-    else { drag.px = p.x; drag.py = p.y; }
+    if (drag.kind === "atom") {
+      const at = atoms[drag.id];
+      if (Math.hypot(p.x - at.tx, p.y - at.ty) > 4) drag.moved = true;
+      at.tx = p.x; at.ty = p.y;
+    } else { drag.px = p.x; drag.py = p.y; }
   }
   function onUp(e) {
     if (frozen || !drag) return;
     const p = pos(e);
-    if (drag.kind === "bond") {
-      // dot → dot: share a pair (bond). dot → atom body: hand the electron over.
-      // dot → tray: remove it from the molecule (ions only).
-      const targetDot = hitDot(p);
-      if (targetDot !== null) tryBond(drag.id, targetDot);
-      else {
-        const targetAtom = hitAtom(p, 14);
-        if (targetAtom !== null) transfer(drag.id, targetAtom);
-        else if (inTray(p)) toTray(drag.id);
+    let acted = false;
+    if (drag.kind === "atom" && drag.moved) {
+      acted = true;
+      // dropped ON another atom? touching = bonding.
+      let target = null, best = Infinity;
+      for (const at of atoms) {
+        if (at.id === drag.id) continue;
+        const d = Math.hypot(p.x - at.x, p.y - at.y);
+        if (d < ATOM_R * 2 + 4 && d < best) { best = d; target = at.id; }
       }
+      if (target !== null) {
+        if (tryBond(drag.id, target)) settleApart(drag.id, target);
+        else settleApart(drag.id, target); // already bonded or no electrons: just un-stack
+      }
+    } else if (drag.kind === "dot") {
+      if (inTray(p)) { toTray(drag.id); acted = true; }
     } else if (drag.kind === "trayDot") {
       const target = hitDot(p) ?? hitAtom(p, 14);
-      if (target !== null) fromTray(target);
+      if (target !== null) { fromTray(target); acted = true; }
     }
+    suppressClick = acted || (drag.kind === "atom" && drag.moved);
     drag = null;
   }
-  function onDbl(e) {
+  let suppressClick = false;
+  function onClick(e) {
     if (frozen) return;
-    const b = hitBond(pos(e));
-    if (!b) return;
-    b.order -= 1;
-    atoms[b.a].lone += 1; atoms[b.b].lone += 1;
-    if (b.order === 0) bonds.splice(bonds.indexOf(b), 1);
-    opts.onChange?.();
+    if (suppressClick) { suppressClick = false; return; }
+    const p = pos(e);
+    if (hitTrayDot(p) || hitDot(p) !== null || hitAtom(p) !== null) return;
+    const b = hitBond(p);
+    if (b) cycleBond(b);
   }
 
   canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointermove", onMove);
   canvas.addEventListener("pointerup", onUp);
-  canvas.addEventListener("dblclick", onDbl);
+  canvas.addEventListener("click", onClick);
 
   // ── the Lewis judge ──
   function check(targetCharge) {
@@ -430,14 +468,14 @@ export function createKit(canvas, atomEls, opts = {}) {
   loop();
   return {
     setCharge, check, derive3D, clear,
-    debug: { atoms, bonds, tryBond, transfer, toTray, fromTray, trayCount: () => tray }, // dev handle
+    debug: { atoms, bonds, tryBond, cycleBond, transfer, toTray, fromTray, trayCount: () => tray }, // dev handle
     freeze() { frozen = true; },
     destroy() {
       if (raf !== null) cancelAnimationFrame(raf);
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
-      canvas.removeEventListener("dblclick", onDbl);
+      canvas.removeEventListener("click", onClick);
     },
   };
 }

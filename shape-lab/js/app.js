@@ -551,10 +551,10 @@ function renderBuildIntro() {
       <p class="intro-lede">Every atom arrives carrying its own valence electrons — little dots resting at the compass points. Your job: share them into bonds until every atom is satisfied. Get it right, and the flat drawing snaps into its true 3D shape and turns.</p>
       <ol class="steps">
         <li><span class="step-num">1</span><span class="step-text"><strong>Drag atoms</strong> anywhere on the bench — they glide.</span></li>
-        <li><span class="step-num">2</span><span class="step-text"><strong>Drag a dot onto another atom's dot</strong> to share a pair — that's a bond. Do it again for a double, once more for a triple.</span></li>
-        <li><span class="step-num">3</span><span class="step-text"><strong>Double-click a bond</strong> to hand the electrons back.</span></li>
+        <li><span class="step-num">2</span><span class="step-text"><strong>Drop an atom onto another atom</strong>: two unpaired electrons become a single bond. Touching is bonding (as long as they aren't bonded already).</span></li>
+        <li><span class="step-num">3</span><span class="step-text"><strong>Click a bond to cycle it</strong>: single, double, triple, gone. Each step up consumes one electron from each atom; cycling past triple hands them all back.</span></li>
         <li><span class="step-num">4</span><span class="step-text"><strong>Answer the charge</strong> — brackets appear, and the <strong>electron tray</strong> opens: a negative ion grants spare electrons for you to place; a positive ion demands some back — drag them to the tray.</span></li>
-        <li><span class="step-num">5</span><span class="step-text"><strong>Hand electrons over</strong> when an atom needs one: drag a dot onto another atom's <em>body</em> (not its dots — that makes a bond). The donor goes +1, the receiver −1 — that's formal charge happening under your fingers.</span></li>
+        <li><span class="step-num">5</span><span class="step-text"><strong>Redistribute through the tray</strong> when an ion needs it: drag a dot to the tray, then from the tray onto the atom that needs it. The donor goes +1, the receiver −1 — formal charge happening under your fingers.</span></li>
         <li><span class="step-num">6</span><span class="step-text"><strong>Check.</strong> Right: the molecule turns 3D and spins. Wrong: the Kit tells you which atom is unhappy, and why.</span></li>
       </ol>
       <p class="stub-note">Remember the octet rebels: H wants 2, Be is content with 4, B with 6 — and a row-2 atom can never hold more than 8. The electron count from step 1 is the law, and formal charges above ±1 don't survive Check.</p>
