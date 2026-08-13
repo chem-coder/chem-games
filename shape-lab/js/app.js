@@ -408,7 +408,7 @@ function renderFCPlay() {
 
   const answerArea = fcChecked
     ? `<div class="answer-built ${fcCorrect ? "ok" : "no"}"><span>${fmtFC(fcAnswer(problem))}</span></div>`
-    : `<input class="answer-input" id="answerInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="+1  or  −2  or  0" value="${fcTyped.replace(/"/g, "&quot;")}">`;
+    : `<input class="answer-input" id="answerInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="charge, sign first" value="${fcTyped.replace(/"/g, "&quot;")}">`;
 
   const feedback = !fcChecked ? `<p class="feedback">&nbsp;</p>`
     : fcCorrect
