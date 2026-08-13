@@ -495,7 +495,16 @@ function renderLewisIntro() {
     ${tierTabs()}
     <div class="intro">
       <p class="intro-eyebrow">Shape Lab · Lewis structures</p>
-      <p class="intro-lede">Six steps, always the same six, and any molecule on the syllabus comes out right: count, sketch, fill, compare, minimize, verify. Learn the steps once — then watch real molecules walk themselves through them below, and take the method to the Model Kit.</p>
+      <p class="intro-lede">Six steps, always the same six, and any molecule on the syllabus comes out right:</p>
+      <ul class="lew-word-list">
+        <li><span class="lew-word">Count</span><span class="lew-word-text">all the valence electrons, the ion's charge included.</span></li>
+        <li><span class="lew-word">Sketch</span><span class="lew-word-text">the skeleton: central atom, single bonds around it.</span></li>
+        <li><span class="lew-word">Fill</span><span class="lew-word-text">every octet with dots (H takes just 2).</span></li>
+        <li><span class="lew-word">Compare</span><span class="lew-word-text">the drawing to the count: too many, trade pairs for bonds; too few, add to the center.</span></li>
+        <li><span class="lew-word">Minimize</span><span class="lew-word-text">the formal charges, down to 0 or ±1.</span></li>
+        <li><span class="lew-word">Verify</span><span class="lew-word-text">exact count, full octets, small charges. Done.</span></li>
+      </ul>
+      <p class="intro-lede">Learn the steps once. Then watch real molecules walk themselves through them below, and take the method to the Model Kit.</p>
     </div>
     <div class="controls two-up"><button class="action primary" id="stepsBtn">The six steps, card by card →</button></div>
     <p class="lew-table-label">Or pick a molecule and watch the method run:</p>
