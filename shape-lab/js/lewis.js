@@ -34,6 +34,14 @@ function loneSlots(atom, scene) {
   // from it. BONDED atoms draw their remaining electrons as lone pairs on the
   // freest sides — textbook Lewis convention.
   if (dirs.length) {
+    // Bonded atoms may carry more pairs than the compass has free sides
+    // (XeF2's center holds three) — diagonals join the candidate list, ranked
+    // by distance from the bonds, and pairs fill the clearest sides first.
+    slots = [...COMPASS, -45, 45, 135, -135]
+      .map((s2) => ({ s: s2, d: Math.min(...dirs.map((x) => angDist(s2, x))) }))
+      .sort((a, b) => b.d - a.d)
+      .map((x) => x.s);
+    counts.length = slots.length; counts.fill(0);
     let rem = atom.lone || 0;
     for (let i = 0; i < slots.length && rem > 0; i++) { const take = Math.min(2, rem); counts[i] = take; rem -= take; }
   } else if (atom.face !== undefined) {
@@ -105,6 +113,33 @@ export function sceneSvg(scene, w = 340, h = 230) {
     parts.push(`<text x="${x1 + 6}" y="${y0 + 2}" font-family="Lexend,sans-serif" font-weight="700" font-size="17" fill="#835f7d">${q}</text>`);
   }
   return `<svg viewBox="${-w / 2} ${-h / 2} ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img">${parts.join("")}</svg>`;
+}
+
+
+// Generate a ready-made 2D Lewis structure from a quiz molecule's st data —
+// what the geometry quiz shows so the student reads structure, not formula.
+const PERIPH_ANGLES = {
+  1: [0], 2: [0, 180], 3: [-90, 30, 150], 4: [-45, 45, 135, -135],
+  5: [-90, -18, 54, 126, 198], 6: [-90, -30, 30, 90, 150, 210],
+};
+export function genScene(m) {
+  const atoms = [{ el: m.center, x: 0, y: 0, lone: m.st.cl || 0 }];
+  const bonds = [];
+  const list = [];
+  m.st.parts.forEach(([el, order, lone, count]) => { for (let i = 0; i < count; i++) list.push({ el, order, lone }); });
+  const angles = PERIPH_ANGLES[list.length];
+  const RADIUS = 76;
+  list.forEach((pp, i) => {
+    const a = rad(angles[i]);
+    atoms.push({ el: pp.el, x: Math.round(Math.cos(a) * RADIUS), y: Math.round(Math.sin(a) * RADIUS), lone: pp.lone });
+    bonds.push({ a: 0, b: i + 1, order: pp.order });
+  });
+  const scene = { atoms, bonds };
+  if (m.charge) {
+    const q = Math.abs(m.charge) === 1 ? "" : String(Math.abs(m.charge));
+    scene.bracket = { x0: -122, y0: -112, x1: 122, y1: 108, q: q + (m.charge > 0 ? "+" : "\u2212") };
+  }
+  return scene;
 }
 
 // A lone atom with n bond stubs and its dots — the formal-charge sketch.

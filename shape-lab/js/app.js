@@ -6,7 +6,7 @@ import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula } from "./geometry.js";
 import { makeSpinner } from "./render3d.js";
 import { MOLECULES, BUILD_BANK, POLARITY_BANK } from "./molecules.js";
 import { createKit } from "./modelkit.js";
-import { sceneSvg, fcScene, FC_RULES, FC_EXAMPLES, FC_BANK, fcAnswer, FC_RULE1_FIG, FC_CYANIDE_FIG, LEWIS_STEPS, WALKTHROUGHS } from "./lewis.js";
+import { sceneSvg, fcScene, genScene, FC_RULES, FC_EXAMPLES, FC_BANK, fcAnswer, FC_RULE1_FIG, FC_CYANIDE_FIG, LEWIS_STEPS, WALKTHROUGHS } from "./lewis.js";
 
 const root = document.getElementById("game");
 const ROUND_SIZE = 8;
@@ -231,7 +231,8 @@ function renderPlay() {
     <div class="formula-card">
       <span class="card-tag">Shape quiz</span>
       <p class="formula">${fmtFormula(problem.f)}</p>
-      <p class="shape-ask">what shape does this molecule take?</p>
+      <div class="fc-sketch quiz-structure">${sceneSvg(genScene(problem), 300, 250)}</div>
+      <p class="shape-ask">read the Lewis structure — what shape does this molecule take?</p>
     </div>
     <div class="opt-grid">${optionBtns}</div>
     ${hintBlock}
@@ -572,17 +573,21 @@ function renderBuildPlay() {
   root.innerHTML = `
     ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ Kit guide</button>
-    <div class="build-head">
-      <p class="build-title">Build: <span class="build-formula">${fmtFormula(buildProblem.f)}</span></p>
-      <div class="charge-ask"><span>What's the charge?</span><div class="charge-row">${chargeBtns}</div></div>
-    </div>
-    <canvas class="kit-canvas" id="kitCanvas"></canvas>
-    <p class="feedback" id="buildFeedback">&nbsp;</p>
-    <ul class="nudge-list" id="nudgeList"></ul>
-    <div class="controls">
-      <p class="score">Built ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
-      <button class="action ghost" id="clearBtn" type="button">Clear the bench</button>
-      <button class="action primary" id="checkBtn" ${chargePicked === null ? "disabled" : ""}>Check</button>
+    <div class="duo">
+      <div class="duo-left">
+        <canvas class="kit-canvas" id="kitCanvas"></canvas>
+      </div>
+      <div class="duo-right">
+        <p class="build-title">Build: <span class="build-formula">${fmtFormula(buildProblem.f)}</span></p>
+        <div class="charge-ask"><span>What's the charge?</span><div class="charge-row">${chargeBtns}</div></div>
+        <p class="feedback" id="buildFeedback">&nbsp;</p>
+        <ul class="nudge-list" id="nudgeList"></ul>
+        <p class="score">Built ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+        <div class="controls build-controls">
+          <button class="action ghost" id="clearBtn" type="button">Clear the bench</button>
+          <button class="action primary" id="checkBtn" ${chargePicked === null ? "disabled" : ""}>Check</button>
+        </div>
+      </div>
     </div>`;
 
   wireTabs();
@@ -757,22 +762,39 @@ function renderPolarityPlay() {
   root.innerHTML = `
     ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ Back to the cloud gallery</button>
-    <div class="formula-card">
-      <span class="card-tag">Dipole hunt</span>
-      <p class="shape-ask big-ask">Which of these have a <strong>permanent dipole</strong>? Pick all that apply — picking none is an answer too.</p>
-      <div class="opt-grid">${chips}</div>
-    </div>
-    ${reveal}
-    ${feedback}
-    <div class="controls">
-      <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
-      ${polChecked
-        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !polCorrect ? "Next →" : "Finish"}</button>`
-        : `<button class="action primary" id="checkBtn">Check</button>`}
+    <div class="duo">
+      <div class="duo-left">
+        <canvas class="kit-canvas" id="polKitCanvas"></canvas>
+        <div class="bench-load"><span class="bench-label">Unsure? Sketch one on the bench:</span>${problem.map((e, i) =>
+          `<button class="bench-chip" data-load="${i}" type="button">${fmtFormula(e.f)}</button>`).join("")}</div>
+      </div>
+      <div class="duo-right">
+        <div class="formula-card">
+          <span class="card-tag">Dipole hunt</span>
+          <p class="shape-ask big-ask">Which of these have a <strong>permanent dipole</strong>? Pick all that apply — picking none is an answer too.</p>
+          <div class="opt-grid">${chips}</div>
+        </div>
+        ${reveal}
+        ${feedback}
+        <div class="controls">
+          <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+          ${polChecked
+            ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !polCorrect ? "Next →" : "Finish"}</button>`
+            : `<button class="action primary" id="checkBtn">Check</button>`}
+        </div>
+      </div>
     </div>`;
 
   wireTabs();
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  root.querySelectorAll(".bench-chip").forEach((b) => b.addEventListener("click", () => {
+    const e = problem[Number(b.dataset.load)];
+    destroyKit();
+    kit = createKit(root.querySelector("#polKitCanvas"), [e.geo.demo.center, ...e.geo.demo.outer]);
+    kit.setCharge(0);
+    window.__kit = kit; // dev handle
+    root.querySelectorAll(".bench-chip").forEach((x) => x.classList.toggle("sel", x === b));
+  }));
   root.querySelectorAll(".pol-chip").forEach((b) => b.addEventListener("click", () => {
     const i = Number(b.dataset.i);
     polPicked.has(i) ? polPicked.delete(i) : polPicked.add(i);

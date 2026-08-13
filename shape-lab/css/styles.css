@@ -179,6 +179,28 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
   background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
   touch-action: none; cursor: grab;
 }
+
+/* Board on the LEFT, questions on the RIGHT — Dalia's layout for Build and Polarity. */
+.duo { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.duo-left { flex: 3 1 380px; min-width: 320px; }
+.duo-left .kit-canvas { height: 440px; }
+.duo-right { flex: 2 1 260px; min-width: 250px; display: flex; flex-direction: column; gap: 10px; }
+.duo-right .build-title { margin: 0; }
+.duo-right .charge-row { flex-wrap: wrap; }
+.duo-right .controls { justify-content: flex-start; margin-top: 4px; }
+.duo-right .feedback { text-align: left; }
+.duo-right .opt-grid { justify-content: flex-start; }
+.bench-load { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.bench-label { color: var(--muted); font-size: 0.85rem; }
+.bench-chip {
+  padding: 6px 12px; border: 1.5px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--accent-dark); font-family: var(--font-body);
+  font-size: 0.85rem; font-weight: 600; cursor: pointer;
+}
+.bench-chip:hover { border-color: var(--accent); }
+.bench-chip.sel { background: var(--accent-soft); border-color: var(--accent); }
+.quiz-structure { margin: 8px 0 4px; }
+.quiz-structure svg { width: 300px; max-width: 100%; }
 .nudge-list { margin: 6px auto 0; padding: 0 0 0 20px; max-width: 60ch; color: var(--danger); font-size: 0.9rem; }
 .nudge-list li { margin-bottom: 4px; }
 .res-note { display: inline-block; margin-top: 6px; color: var(--plum-dark); font-weight: 500; font-size: 0.9rem; }
