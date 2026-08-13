@@ -389,4 +389,10 @@ export const WALKTHROUGHS = [
         scene: { atoms: [{ el: "B", x: 0, y: 6 }, { el: "Br", x: 0, y: -80, lone: 6, face: 90 }, { el: "Br", x: -82, y: 58, lone: 6, face: -32 }, { el: "Br", x: 82, y: 58, lone: 6, face: -148 }], bonds: [{ a: 0, b: 1 }, { a: 0, b: 2 }, { a: 0, b: 3 }], labels: [{ x: 0, y: 116, t: "the other rebel rests ✓", bold: true, color: "#356b45" }] } },
     ],
   },
-];
+]
+
+// Teaching order: increasing complexity (Dalia's ruling — water first, the
+// rebels early, doubles before the ions that need them, the boss fight last).
+const WALK_ORDER = ["h2o", "bef2", "bbr3", "co2", "no3", "co3", "so3", "sf4", "xeo2f2"];
+WALKTHROUGHS.sort((a, b) => WALK_ORDER.indexOf(a.id) - WALK_ORDER.indexOf(b.id));
+
