@@ -476,10 +476,11 @@ function renderFCDone() {
 }
 
 // ── the Lewis Structures rung ──
+const STEP_WORDS = ["Count", "Sketch", "Fill", "Compare", "Minimize", "Verify"];
 function walkthroughCards(w) {
   return w.steps.map((s, i) => `
-    <p class="card-title">${fmtFormula(w.f)} · step ${i + 1} of ${w.steps.length}</p>
-    <div class="fc-sketch walk-scene">${sceneSvg(s.scene, 340, 240)}</div>
+    <p class="card-title">${fmtFormula(w.f)} · step ${i + 1} of ${w.steps.length} · <span class="lew-step-word">${s.word ?? STEP_WORDS[i]}</span></p>
+    <div class="fc-sketch walk-scene">${sceneSvg(s.scene, 340, 250)}</div>
     <p class="card-text">${s.t}</p>`);
 }
 

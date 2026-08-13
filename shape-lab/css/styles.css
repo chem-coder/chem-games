@@ -249,6 +249,7 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
   color: var(--accent);
 }
 .lew-word-text { font-size: 0.92rem; color: var(--ink); }
+.lew-step-word { color: var(--plum); }
 
 /* ── Lewis rung: the example table ── */
 .lew-table-label { margin: 20px 0 8px; text-align: center; color: var(--muted); font-size: 0.9rem; }
