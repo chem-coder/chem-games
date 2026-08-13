@@ -2,8 +2,8 @@
  "title": "IMAT Chemistry Question Bank 2011-2024",
  "built": "2026-08-10",
  "source": "_teaching-materials/IMAT Past Exams by AcadIMAT/",
- "total_questions": 169,
- "note": "Official past-exam questions: for private teaching/analysis only, NOT for verbatim inclusion in shipped/paid products.",
+ "total_questions": 184,
+ "note": "Official past-exam questions: for private teaching/analysis only, NOT for verbatim inclusion in shipped/paid products. 2025 added 2026-08-14: transcribed from the AcadIMAT shuffled paper; answers independently solved, then verified 15/15 against the official key.",
  "years": [
   {
    "year": 2011,
@@ -102,6 +102,13 @@
    "source_key": "2024 IMAT Shuffled Answer Key - AcadIMAT.pdf",
    "count": 15,
    "notes": "Exam PDF is image-based; all questions transcribed from 120dpi page renders (pages 7-9). Chemistry section runs Q33-47 (15 questions), before Physics and Mathematics (starts Q48). In the shuffled PDF, Q33 renders as 'a pressure of 2.4 atm 222 on the walls' - the stray '222' is drifted subscript digits from N2, CO2 and O2; cross-checked against the original unshuffled 2024 exam, which reads '0.3 mol of N2, 0.5 mol of CO2, and 0.4 mol of O2 exerts a pressure of 2.4 atm'. Transcribed with corrected formulas."
+  },
+  {
+   "year": 2025,
+   "source_exam": "IMAT Past Exams by AcadIMAT/2025 IMAT Shuffled Exam - AcadIMAT.pdf",
+   "source_key": "IMAT Past Exams by AcadIMAT/2025 IMAT Shuffled Answer Key - AcadIMAT.pdf",
+   "count": 15,
+   "notes": "Chemistry section is Q33-47 (15 questions) in the AcadIMAT shuffled paper, transcribed from page images (pages 7-9). Answers were first derived by independent solving, then verified against the official shuffled key (added same day): 15/15 agree."
   }
  ],
  "questions": [
@@ -2639,6 +2646,246 @@
    "answer": "D",
    "topic": "acids-bases",
    "subtopic": "Bronsted-Lowry definitions"
+  },
+  {
+   "year": 2025,
+   "number": 33,
+   "topic": "gas-laws",
+   "subtopic": "ideal gas law",
+   "answer": "B",
+   "text": "The equation of state for ideal gases is:",
+   "options": {
+    "A": "nV = PRT",
+    "B": "PV = nRT",
+    "C": "V = RT/(Pn)",
+    "D": "V = Pn/(RT)",
+    "E": "Pn = VRT"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 34,
+   "topic": "redox-electrochem",
+   "subtopic": "oxidation number assignment",
+   "answer": "A",
+   "text": "In which of these compounds does Cl have an oxidation number of +3?",
+   "options": {
+    "A": "HClO2",
+    "B": "Cl2",
+    "C": "HCl",
+    "D": "HClO",
+    "E": "HClO3"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 35,
+   "topic": "redox-electrochem",
+   "subtopic": "oxidation number concept",
+   "answer": "C",
+   "text": "An oxidation number cannot be:",
+   "options": {
+    "A": "a positive number",
+    "B": "a negative number",
+    "C": "an irrational number",
+    "D": "a number with a decimal point",
+    "E": "zero"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 36,
+   "topic": "chemical-bond",
+   "subtopic": "solid types",
+   "answer": "D",
+   "text": "What kind of solid is NaCl?",
+   "options": {
+    "A": "Covalent network",
+    "B": "Molecular",
+    "C": "Metallic",
+    "D": "Ionic",
+    "E": "Amorphous"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 37,
+   "topic": "periodic-table",
+   "subtopic": "atomic radius trend",
+   "answer": "B",
+   "text": "In the periodic table, the atomic radius increases going:",
+   "options": {
+    "A": "from left to right and from top to bottom",
+    "B": "from right to left and from top to bottom",
+    "C": "from right to left and from bottom to top",
+    "D": "from left to right and from bottom to top",
+    "E": "from top to bottom but horizontally in a very irregularly way"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 38,
+   "topic": "chemical-bond",
+   "subtopic": "bond polarity",
+   "answer": "C",
+   "text": "A pure covalent bond is a bond that forms between:",
+   "options": {
+    "A": "two atoms with very different electronegativity",
+    "B": "two atoms with quite similar electronegativity",
+    "C": "two atoms of the same element",
+    "D": "two atoms with no electronegativity",
+    "E": "two identical ions"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 39,
+   "topic": "acids-bases",
+   "subtopic": "weak acid pH",
+   "answer": "B",
+   "text": "The pH of an aqueous solution of a monoprotic weak acid with the constant Ka = 1.0 × 10⁻⁵ and concentration 0.001 M is",
+   "options": {
+    "A": "3",
+    "B": "4",
+    "C": "10⁻⁸",
+    "D": "8",
+    "E": "5.5"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 40,
+   "topic": "acids-bases",
+   "subtopic": "salt solutions",
+   "answer": "B",
+   "text": "What is the pH of a 0.7 M aqueous solution of KBr?",
+   "options": {
+    "A": "0.7",
+    "B": "7",
+    "C": "13.3",
+    "D": "10⁻⁷",
+    "E": "10⁻⁰·⁷"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 41,
+   "topic": "equilibrium",
+   "subtopic": "Le Chatelier",
+   "answer": "D",
+   "text": "Given the equilibrium Heat + 2FeCl3 (s) → 2FeCl2 (s) + Cl2 (g). Which of the following options is correct:",
+   "options": {
+    "A": "to shift the equilibrium to the right, it is necessary to cool the reaction.",
+    "B": "to shift the equilibrium to the left, it is necessary to increase the concentration of FeCl2 (s).",
+    "C": "to shift the equilibrium to the left, it is necessary to remove FeCl3 (s).",
+    "D": "to shift the equilibrium to the left, it is necessary to increase the concentration of Cl2.",
+    "E": "to shift the equilibrium to the right, it is necessary to increase the concentration of FeCl3 (s)."
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 42,
+   "topic": "kinetics",
+   "subtopic": "activation energy",
+   "answer": "E",
+   "text": "The activation energy of a reaction represents:",
+   "options": {
+    "A": "the energy that is released only in the initial phase of any reaction in solution",
+    "B": "the difference between the energy of the products and that of the reactants",
+    "C": "the difference between the kinetic energy and the potential energy of the reactants",
+    "D": "the energy released during the progress of a reaction",
+    "E": "the energy barrier that the reactants must overcome to transform into products"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 43,
+   "topic": "organic-structure",
+   "subtopic": "benzene hybridization",
+   "answer": "E",
+   "text": "In benzene:",
+   "options": {
+    "A": "three carbon atoms are sp³ hybridized and three atoms are sp² hybridized",
+    "B": "all the carbon atoms are sp³ hybridized and the molecule has a planar structure",
+    "C": "all the carbon atoms are sp² hybridized and the molecule has a chair or boat structure",
+    "D": "all the carbon atoms are sp hybridized",
+    "E": "all the carbon atoms are sp² hybridized and the molecule has a planar structure"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 44,
+   "topic": "organic-structure",
+   "subtopic": "biomolecules",
+   "answer": "C",
+   "text": "Glycogen:",
+   "options": {
+    "A": "is a disaccharide",
+    "B": "is a heteropolysaccharide",
+    "C": "is a homopolysaccharide",
+    "D": "is a storage molecule present in both animal and plant cells",
+    "E": "is a polypeptide"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 45,
+   "topic": "inorganic-nomenclature",
+   "subtopic": "classical names",
+   "answer": "A",
+   "text": "The compound FeCO3 is:",
+   "options": {
+    "A": "ferrous carbonate",
+    "B": "ferric carbonate",
+    "C": "iron oxide",
+    "D": "iron pentacarbonyl",
+    "E": "none of the other answers is correct"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 46,
+   "topic": "atomic-structure",
+   "subtopic": "orbitals and spin",
+   "answer": "D",
+   "text": "How many electrons can occupy an orbital?",
+   "options": {
+    "A": "Just one",
+    "B": "Two with parallel spins",
+    "C": "Three",
+    "D": "Two with antiparallel spins",
+    "E": "Four"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2025,
+   "number": 47,
+   "topic": "organic-structure",
+   "subtopic": "biomolecules",
+   "answer": "A",
+   "text": "Which of the following statements about amino acids is true?",
+   "options": {
+    "A": "They contain an amine group and a carboxyl group",
+    "B": "They are normally poorly soluble in water",
+    "C": "They dissolve well in hexane",
+    "D": "They are one of the main constituents of carbohydrates",
+    "E": "They have no acid/base activity"
+   },
+   "key_status": "verified"
   }
  ]
 }
