@@ -26,7 +26,16 @@ function loneSlots(atom, scene) {
     .filter((x) => x.d > 30).sort((a, b) => b.d - a.d).map((x) => x.s);
   if (!slots.length) slots.push(...COMPASS);
   const counts = slots.map(() => 0);
-  for (let i = 0; i < (atom.lone || 0); i++) counts[i % slots.length] < 2 ? counts[i % slots.length]++ : counts[(i + 1) % slots.length]++;
+  // Dalia's rule: singles-first spreading is for FREE atoms (showing valence).
+  // Once an atom has bonds, its remaining electrons are lone PAIRS and draw as
+  // pairs, filling the freest sides first — textbook Lewis convention (cyanide's
+  // pair sits opposite the triple bond, not scattered as two singles).
+  if (dirs.length) {
+    let rem = atom.lone || 0;
+    for (let i = 0; i < slots.length && rem > 0; i++) { const take = Math.min(2, rem); counts[i] = take; rem -= take; }
+  } else {
+    for (let i = 0; i < (atom.lone || 0); i++) counts[i % slots.length] < 2 ? counts[i % slots.length]++ : counts[(i + 1) % slots.length]++;
+  }
   const out = [];
   slots.forEach((s, i) => {
     if (counts[i] === 1) out.push(s);
@@ -69,7 +78,7 @@ export function sceneSvg(scene, w = 340, h = 230) {
     const { x0, y0, x1, y1, q } = scene.bracket;
     parts.push(`<path d="M ${x0 + 10} ${y0} H ${x0} V ${y1} H ${x0 + 10}" fill="none" stroke="#835f7d" stroke-width="2.2"/>`);
     parts.push(`<path d="M ${x1 - 10} ${y0} H ${x1} V ${y1} H ${x1 - 10}" fill="none" stroke="#835f7d" stroke-width="2.2"/>`);
-    parts.push(`<text x="${x1 + 8}" y="${y0 + 4}" font-family="Lexend,sans-serif" font-weight="700" font-size="14" fill="#835f7d">${q}</text>`);
+    parts.push(`<text x="${x1 + 6}" y="${y0 + 2}" font-family="Lexend,sans-serif" font-weight="700" font-size="17" fill="#835f7d">${q}</text>`);
   }
   return `<svg viewBox="${-w / 2} ${-h / 2} ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img">${parts.join("")}</svg>`;
 }
@@ -150,17 +159,20 @@ export const FC_RULE1_FIG = [
   },
 ];
 
-// Guidelines 2 & 3: the cyanide ion, wrong on the left, correct on the right.
+// Guidelines 2 & 3: the cyanide ion [CN]⁻, wrong on the left, correct on the
+// right. Dalia's counterexample: FC 0 on C and −1 on N puts the negative on the
+// more electronegative atom (guideline 2 approves!) — but it forces unpaired
+// electrons on both atoms and breaks both octets. Chemistry vetoes nice charges.
 const CN_BRACKET = { x0: -100, y0: -52, x1: 100, y1: 46, q: "−" };
 export const FC_CYANIDE_FIG = [
   {
-    scene: { atoms: [{ el: "C", x: -45, y: 0, lone: 4, fc: "−3" }, { el: "N", x: 45, y: 0, lone: 0, fc: "+2" }], bonds: [{ a: 0, b: 1, order: 3 }], bracket: CN_BRACKET },
-    caption: "Both lone pairs on C: the charges do add up to −1, but −3 and +2 are far too big, and the negative sits on the less electronegative atom. Wrong twice over.",
+    scene: { atoms: [{ el: "C", x: -45, y: 0, lone: 1, fc: "0" }, { el: "N", x: 45, y: 0, lone: 3, fc: "−1" }], bonds: [{ a: 0, b: 1, order: 3 }], bracket: CN_BRACKET },
+    caption: "FC 0 on C and −1 on N: the negative sits on the more electronegative atom, just as guideline 2 asks. But both atoms now carry unpaired electrons, and the octets are broken (7 around C, 9 around N). Unfavorable chemistry.",
     good: false,
   },
   {
     scene: { atoms: [{ el: "C", x: -45, y: 0, lone: 2, fc: "−1" }, { el: "N", x: 45, y: 0, lone: 2, fc: "0" }], bonds: [{ a: 0, b: 1, order: 3 }], bracket: CN_BRACKET },
-    caption: "One lone pair each: the smallest possible charges, and −1 + 0 = −1, exactly the ion's charge.",
+    caption: "A lone pair on each element: complete octets (8 and 8), paired electrons, and −1 + 0 = −1, exactly the ion's charge.",
     good: true,
   },
 ];

@@ -376,13 +376,14 @@ function renderFCIntro() {
         </li>
         <li>
           <div class="step-line"><span class="step-num">3</span><span class="step-text">${FC_RULES[2]}</span></div>
+          <p class="rule-fig-label">Guidelines 2 and 3 in action — the <strong>cyanide ion, [CN]<sup>−</sup></strong>: one triple bond and four nonbonding electrons to place. Two ways to place them:</p>
           <div class="rule-fig">${FC_CYANIDE_FIG.map((f) => `
             <div class="rule-card ${f.good ? "good" : "bad"}">
-              <div class="fc-sketch">${sceneSvg(f.scene, 220, 120)}</div>
+              <div class="fc-sketch">${sceneSvg(f.scene, 264, 130)}</div>
               <p class="fc-ex-text">${f.caption}</p>
             </div>`).join("")}
           </div>
-          <p class="rule-note">The cyanide ion also shows why guideline 1 outranks guideline 2: keeping the charges small wins, so the −1 ends up on carbon — one of chemistry's famous exceptions.</p>
+          <p class="rule-note">Technically, placing the −1 on nitrogen looks better: nitrogen is more electronegative than carbon. But that arrangement creates unpaired electrons and violates the octet rule, so cyanide keeps a lone pair on each element and the −1 stays on carbon. When guidelines collide, complete octets and paired electrons win.</p>
         </li>
       </ol>
     </div>

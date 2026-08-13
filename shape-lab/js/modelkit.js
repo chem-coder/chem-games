@@ -113,9 +113,16 @@ export function createKit(canvas, atomEls, opts = {}) {
       .sort((a, b) => b.score - a.score)
       .map((x) => x.s);
     if (!slots.length) slots.push(...COMPASS);
-    // Round-robin the lone dots into the slots (singles first, then pairing — Hund would approve).
+    // Dalia's rule: free atoms spread singles-first (showing valence, Hund-style);
+    // bonded atoms draw their remaining electrons as lone PAIRS on the freest
+    // sides — textbook Lewis convention. Keep in sync with lewis.js loneSlots.
     const counts = slots.map(() => 0);
-    for (let i = 0; i < atom.lone; i++) counts[i % slots.length] < 2 ? counts[i % slots.length]++ : counts[(i + 1) % slots.length]++;
+    if (bondDirs.length) {
+      let rem = atom.lone;
+      for (let i = 0; i < slots.length && rem > 0; i++) { const take = Math.min(2, rem); counts[i] = take; rem -= take; }
+    } else {
+      for (let i = 0; i < atom.lone; i++) counts[i % slots.length] < 2 ? counts[i % slots.length]++ : counts[(i + 1) % slots.length]++;
+    }
     const targets = [];
     slots.forEach((s, i) => {
       if (counts[i] === 1) targets.push(s);
