@@ -299,6 +299,23 @@ export function createKit(canvas, atomEls, opts = {}) {
   // single → double → triple → gone, consuming/returning one electron per atom
   // per step. Dots are NOT draggable between atoms — electrons only move through
   // the ion tray.
+  // Spread an atom's bonded neighbors evenly around it — new arrivals drift
+  // apart on their own instead of huddling where they were dropped.
+  function relax(id) {
+    const at = atoms[id];
+    const nbrs = bondsOf(id).map((b) => atoms[partner(b, id)]);
+    if (nbrs.length < 2) return;
+    const withAngle = nbrs.map((n) => ({ n, a: Math.atan2(n.y - at.y, n.x - at.x) }))
+      .sort((p, q) => p.a - q.a);
+    const spacing = (Math.PI * 2) / withAngle.length;
+    const start = withAngle[0].a;
+    withAngle.forEach((p, i) => {
+      const ang = start + i * spacing;
+      p.n.tx = at.x + Math.cos(ang) * 96;
+      p.n.ty = at.y + Math.sin(ang) * 96;
+    });
+  }
+
   function tryBond(a, b) {
     if (a === b || a === null || b === null) return false;
     if (atoms[a].lone < 1 || atoms[b].lone < 1) return false;
@@ -306,6 +323,7 @@ export function createKit(canvas, atomEls, opts = {}) {
     if (ex) return false; // already bonded — the bond itself is the control now
     bonds.push({ a, b, order: 1 });
     atoms[a].lone -= 1; atoms[b].lone -= 1;
+    relax(a); relax(b);
     opts.onChange?.();
     return true;
   }

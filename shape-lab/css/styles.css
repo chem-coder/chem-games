@@ -301,6 +301,12 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .pol-reveal { color: var(--ink); max-width: 64ch; }
 .pol-reveal li { margin-bottom: 6px; }
 
+/* ── build rung: the geometry question ── */
+.geo-ask { margin-top: 10px; }
+.geo-ask > span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.88rem; font-weight: 600; }
+.geo-ask-grid { justify-content: flex-start; margin: 0; gap: 6px; }
+.geo-ask-grid .opt { padding: 7px 12px; font-size: 0.84rem; }
+
 /* ── shared bottom nav line ── */
 .done-next { margin: 26px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
 

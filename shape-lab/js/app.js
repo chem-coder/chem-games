@@ -525,6 +525,7 @@ function renderLewisIntro() {
 
 // ── the Build rung: the Model Kit ──
 let buildProblem = null;
+let geoPicked = null;
 let buildFailed = false;   // failed a Check on this card (for clean-solve tracking)
 let buildSolved = false;
 let chargePicked = null;
@@ -539,7 +540,8 @@ function startBuildRound(cards) {
 
 function loadBuildCard() {
   buildProblem = queue[0];
-  buildFailed = false; buildSolved = false; chargePicked = null;
+  if (buildProblem.geo) buildProblem.geoOptions = makeOptions(buildProblem); // fresh traps every visit
+  buildFailed = false; buildSolved = false; chargePicked = null; geoPicked = null;
   render();
 }
 
@@ -580,12 +582,14 @@ function renderBuildPlay() {
       <div class="duo-right">
         <p class="build-title">Build: <span class="build-formula">${fmtFormula(buildProblem.f)}</span></p>
         <div class="charge-ask"><span>What's the charge?</span><div class="charge-row">${chargeBtns}</div></div>
+        ${buildProblem.geo ? `<div class="geo-ask"><span>And once it's built — what shape will it take?</span><div class="opt-grid geo-ask-grid">${buildProblem.geoOptions.map((id) =>
+          `<button class="opt geo-opt${geoPicked === id ? " sel" : ""}" data-geo="${id}" type="button" ${buildSolved ? "disabled" : ""}>${GEO_BY_ID[id].name}</button>`).join("")}</div></div>` : ""}
         <p class="feedback" id="buildFeedback">&nbsp;</p>
         <ul class="nudge-list" id="nudgeList"></ul>
         <p class="score">Built ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
         <div class="controls build-controls">
           <button class="action ghost" id="clearBtn" type="button">Clear the bench</button>
-          <button class="action primary" id="checkBtn" ${chargePicked === null ? "disabled" : ""}>Check</button>
+          <button class="action primary" id="checkBtn" ${chargePicked === null || (buildProblem.geo && !geoPicked) ? "disabled" : ""}>Check</button>
         </div>
       </div>
     </div>`;
@@ -601,12 +605,19 @@ function renderBuildPlay() {
   const nudges = root.querySelector("#nudgeList");
   const checkBtn = root.querySelector("#checkBtn");
 
+  const gate = () => { checkBtn.disabled = chargePicked === null || (buildProblem.geo && !geoPicked); };
   root.querySelectorAll(".charge-btn").forEach((b) => b.addEventListener("click", () => {
     if (buildSolved) return;
     chargePicked = Number(b.dataset.q);
     kit.setCharge(chargePicked);
     root.querySelectorAll(".charge-btn").forEach((x) => x.classList.toggle("sel", Number(x.dataset.q) === chargePicked));
-    checkBtn.disabled = false;
+    gate();
+  }));
+  root.querySelectorAll(".geo-opt").forEach((b) => b.addEventListener("click", () => {
+    if (buildSolved) return;
+    geoPicked = b.dataset.geo;
+    root.querySelectorAll(".geo-opt").forEach((x) => x.classList.toggle("sel", x.dataset.geo === geoPicked));
+    gate();
   }));
 
   root.querySelector("#clearBtn").addEventListener("click", () => { if (!buildSolved) { kit.clear(); nudges.innerHTML = ""; feedback.innerHTML = "&nbsp;"; feedback.className = "feedback"; } });
@@ -618,6 +629,10 @@ function renderBuildPlay() {
       return;
     }
     const result = kit.check(buildProblem.charge);
+    if (buildProblem.geo && geoPicked !== buildProblem.geo) {
+      result.ok = false;
+      result.issues = [...result.issues, "The shape answer is off — count the electron regions around the central atom of YOUR structure, then let the lone pairs take their seats."].slice(0, 2);
+    }
     if (!result.ok) {
       if (!buildFailed) { buildFailed = true; if (!missedThisRound.includes(buildProblem)) missedThisRound.push(buildProblem); }
       feedback.textContent = "Not yet — the bench disagrees:";
@@ -632,7 +647,7 @@ function renderBuildPlay() {
     const pose = kit.derive3D();
     kit.freeze(); kit.destroy(); kit = null;
     nudges.innerHTML = "";
-    feedback.innerHTML = `Bonded and balanced — this is <strong>${fmtFormula(buildProblem.f)}</strong> in three dimensions. 🎉${buildProblem.resNote ? `<br><span class="res-note">${buildProblem.resNote}</span>` : ""}`;
+    feedback.innerHTML = `Bonded, balanced${buildProblem.geo ? `, and <strong>${GEO_BY_ID[buildProblem.geo].name.toLowerCase()}</strong> it is` : ""} — here is <strong>${fmtFormula(buildProblem.f)}</strong> in three dimensions. 🎉${buildProblem.resNote ? `<br><span class="res-note">${buildProblem.resNote}</span>` : ""}`;
     feedback.className = "feedback ok";
     if (pose) {
       const spinner = makeSpinner(canvas, pose, { startAngle: 0.5 });
@@ -641,7 +656,7 @@ function renderBuildPlay() {
       activeSpinners.push(spinner);
     }
     checkBtn.textContent = queue.length > 1 ? "Next →" : "Finish";
-    root.querySelectorAll(".charge-btn").forEach((x) => { x.disabled = true; });
+    root.querySelectorAll(".charge-btn, .geo-opt").forEach((x) => { x.disabled = true; });
   });
 }
 
