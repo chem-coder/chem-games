@@ -552,12 +552,12 @@ function renderBuildIntro() {
       <p class="intro-eyebrow">Shape Lab · the Model Kit</p>
       <p class="intro-lede">Every atom arrives carrying its own valence electrons — little dots resting at the compass points. Your job: share them into bonds until every atom is satisfied. Get it right, and the flat drawing snaps into its true 3D shape and turns.</p>
       <ol class="steps">
-        <li><span class="step-num">1</span><span class="step-text"><strong>Drag atoms</strong> anywhere on the bench — they glide.</span></li>
-        <li><span class="step-num">2</span><span class="step-text"><strong>Drop an atom onto another atom</strong>: two unpaired electrons become a single bond. Touching is bonding (as long as they aren't bonded already).</span></li>
+        <li><span class="step-num">1</span><span class="step-text"><strong>Fetch your parts</strong>: drag elements from the periodic table at the bottom onto the bench. Same table every question — it's your kit's box of parts.</span></li>
+        <li><span class="step-num">2</span><span class="step-text"><strong>Touching is bonding</strong>: drag one atom close to another and release — two unpaired electrons become a single bond. No need to stack them; edges near is enough (watch for the ring).</span></li>
         <li><span class="step-num">3</span><span class="step-text"><strong>Click a bond to cycle it</strong>: single, double, triple, gone. Each step up consumes one electron from each atom; cycling past triple hands them all back.</span></li>
-        <li><span class="step-num">4</span><span class="step-text"><strong>Answer the charge</strong> — brackets appear, and the <strong>electron tray</strong> opens: a negative ion grants spare electrons for you to place; a positive ion demands some back — drag them to the tray.</span></li>
-        <li><span class="step-num">5</span><span class="step-text"><strong>Redistribute through the tray</strong> when an ion needs it: drag a dot to the tray, then from the tray onto the atom that needs it. The donor goes +1, the receiver −1 — formal charge happening under your fingers.</span></li>
-        <li><span class="step-num">6</span><span class="step-text"><strong>Check.</strong> Right: the molecule turns 3D and spins. Wrong: the Kit tells you which atom is unhappy, and why.</span></li>
+        <li><span class="step-num">4</span><span class="step-text"><strong>Electrons come from the e⁻ dispenser</strong> next to the table: drag one out and drop it on an atom that needs it; drag a dot down to the dispenser to give one back. Ions gain or lose electrons this way — the Check counts every one.</span></li>
+        <li><span class="step-num">5</span><span class="step-text"><strong>Answer the charge and the shape</strong> — brackets appear when the charge is not zero, and Check stays off until both answers are in.</span></li>
+        <li><span class="step-num">6</span><span class="step-text"><strong>Wrong turn? Throw it out</strong>: drop any atom back onto the table and its whole molecule leaves the bench — no need to break bonds first. Then Check: right, and the molecule turns 3D and spins; wrong, and the Kit names the unhappy atom.</span></li>
       </ol>
       <p class="stub-note">Remember the octet rebels: H wants 2, Be is content with 4, B with 6 — and a row-2 atom can never hold more than 8. The electron count from step 1 is the law, and formal charges above ±1 don't survive Check.</p>
     </div>

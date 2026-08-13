@@ -1,121 +1,191 @@
-// Shape Lab — the Model Kit. The digital ball-and-stick kit: atoms carry their
-// valence electrons as dots that live at the compass points (N/E/S/W) and settle
-// there when that's the easiest thing in the world — but under strain they slide
-// like beads on a ring, compass points as the preferred rest positions.
-// Drop atom onto atom to bond; click a bond to cycle single → double → triple → gone.
+// Shape Lab — the Model Kit. The digital ball-and-stick kit: a fixed periodic-
+// table inventory (main groups, rows 1–4 — the same for every question, like a
+// real kit's box of parts), a free-electron dispenser, and a bench. Drag
+// elements from the table onto the bench; atoms bond when they touch; click a
+// bond to cycle single → double → triple → gone. Drop any atom back onto the
+// inventory to throw its whole molecule out. Electrons come from and return to
+// the dispenser — the Check does the bookkeeping.
 
 import { GEOMETRIES } from "./geometry.js";
 
 export const VALENCE = {
-  H: 1, Be: 2, B: 3, C: 4, N: 5, O: 6, F: 7,
-  P: 5, S: 6, Cl: 7, Br: 7, I: 7, Xe: 8,
+  H: 1, He: 2,
+  Li: 1, Be: 2, B: 3, C: 4, N: 5, O: 6, F: 7, Ne: 8,
+  Na: 1, Mg: 2, Al: 3, Si: 4, P: 5, S: 6, Cl: 7, Ar: 8,
+  K: 1, Ca: 2, Ga: 3, Ge: 4, As: 5, Se: 6, Br: 7, Kr: 8,
+  I: 7, Xe: 8,
 };
-const ROW3PLUS = new Set(["P", "S", "Cl", "Br", "I", "Xe"]);
+const ROW3PLUS = new Set(["Al", "Si", "P", "S", "Cl", "Ar", "Ga", "Ge", "As", "Se", "Br", "Kr", "I", "Xe"]);
+
+// The inventory: main-group periodic table, rows 1–4 (Dalia's 4×8 matrix).
+const PT_ROWS = [
+  ["H", null, null, null, null, null, null, "He"],
+  ["Li", "Be", "B", "C", "N", "O", "F", "Ne"],
+  ["Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar"],
+  ["K", "Ca", "Ga", "Ge", "As", "Se", "Br", "Kr"],
+];
 
 const ATOM_R = 24;
 const DOT_RING = ATOM_R + 10;
 const DOT_R = 3.4;
-const COMPASS = [-90, 0, 90, 180]; // N, E, S, W in canvas degrees
+const COMPASS = [-90, 0, 90, 180];
 const LERP_POS = 0.16, LERP_ANG = 0.14;
+const TOUCH_GAP = 22; // atoms bond when their edges come within this — no full overlap needed
 
 const EL_FILL = {
   C: "#322e27", O: "#c0492f", H: "#e6dac2", N: "#436074", S: "#ce9b22",
   P: "#b4502f", F: "#7a9a52", Cl: "#7a9a52", Br: "#8a5a3a", I: "#835f7d",
-  B: "#c9a06a", Be: "#a8b8a0", Xe: "#6b8f9c",
+  B: "#c9a06a", Be: "#a8b8a0", Xe: "#6b8f9c", Si: "#8a7f66",
 };
-const LIGHT_INK = new Set(["C", "N", "P", "I", "O", "Br", "Xe"]);
+const LIGHT_INK = new Set(["C", "N", "P", "I", "O", "Br", "Xe", "Si"]);
 
 const deg = (r) => (r * 180) / Math.PI;
 const rad = (d) => (d * Math.PI) / 180;
 const angDiff = (a, b) => { let d = ((a - b + 540) % 360) - 180; return d; };
 
-export function createKit(canvas, atomEls, opts = {}) {
+// createKit(canvas, targetEls, opts): targetEls is the composition the Check
+// expects (null for a free-play bench). The bench always starts EMPTY — parts
+// come from the inventory.
+export function createKit(canvas, targetEls, opts = {}) {
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   let W = 0, H = 0;
 
-  // Spawn on a loose ring, shuffled so the layout never gives the structure away.
-  const order = atomEls.map((_, i) => i).sort(() => Math.random() - 0.5);
-  const atoms = atomEls.map((el, i) => ({ id: i, el, lone: VALENCE[el] ?? 0, x: 0, y: 0, tx: 0, ty: 0, dots: [] }));
+  const target = targetEls ? targetEls.slice() : null;
+  const TARGET_VALENCE = target ? target.reduce((s, el) => s + (VALENCE[el] ?? 0), 0) : 0;
 
-  function scatter() {
-    atoms.forEach((at, i) => {
-      const k = order[i], n = atoms.length;
-      const a = (k / n) * Math.PI * 2 - Math.PI / 2;
-      const rx = Math.min(W * 0.30, 150), ry = Math.min(H * 0.30, 110);
-      at.tx = W / 2 + Math.cos(a) * rx; at.ty = H / 2 + Math.sin(a) * ry;
-      if (at.x === 0 && at.y === 0) { at.x = at.tx; at.y = at.ty; }
-    });
-  }
-
-  // Adopt the current CSS size each frame — a bench created while the pane is
-  // hidden measures 0×0 and must inflate (and re-scatter) once it becomes visible.
-  function fit() {
-    const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (!w || !h || (Math.abs(w - W) < 1 && Math.abs(h - H) < 1)) return;
-    const wasCollapsed = W < 50;
-    W = w; H = h;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (wasCollapsed) scatter();
-  }
-  fit();
-  const bonds = []; // {a, b, order}
+  const atoms = []; // {id, el, lone, x, y, tx, ty, dots}
+  const bonds = []; // {a, b, order} — atom IDS, not indices
+  let nextId = 1;
   let charge = 0;
-  let tray = 0;          // electrons currently sitting in the tray
-  let extraGranted = 0;  // electrons the negative charge has granted so far
   let frozen = false;
-  let drag = null;   // {kind:"atom"|"bond"|"trayDot", id, px, py}
+  let drag = null; // {kind:"atom"|"dot"|"freeDot", id, px, py, moved}
   let raf = null;
+  let suppressClick = false;
 
+  const byId = (id) => atoms.find((a) => a.id === id);
   const bondsOf = (id) => bonds.filter((b) => b.a === id || b.b === id);
   const orderSum = (id) => bondsOf(id).reduce((s, b) => s + b.order, 0);
   const partner = (b, id) => (b.a === id ? b.b : b.a);
-  const TOTAL_VALENCE = atomEls.reduce((s, el) => s + (VALENCE[el] ?? 0), 0);
 
-  // The charge answer opens the electron tray: a negative ion GRANTS electrons
-  // (they appear in the tray, to be placed by hand); a positive ion DEMANDS them
-  // (the tray becomes the exit — drag electrons in until the books balance).
-  function setCharge(q) {
-    charge = q;
-    const newExtra = q < 0 ? -q : 0;
-    tray = Math.max(0, tray + newExtra - extraGranted);
-    extraGranted = newExtra;
+  function setCharge(q) { charge = q; }
+
+  // ── inventory geometry (bottom bar of the canvas) ──
+  const INV = { cell: 27, cols: 8, rows: 4, x: 12, y: 0, dispW: 44 };
+  function invRect() {
+    INV.y = H - INV.rows * INV.cell - 10;
+    return { x: 0, y: INV.y - 8, w: W, h: H - (INV.y - 8) };
   }
+  function invCellAt(p) {
+    const c = Math.floor((p.x - INV.x) / INV.cell), r = Math.floor((p.y - INV.y) / INV.cell);
+    if (r < 0 || r >= INV.rows || c < 0 || c >= INV.cols) return null;
+    return PT_ROWS[r][c];
+  }
+  function dispenserRect() {
+    return { x: INV.x + INV.cols * INV.cell + 14, y: INV.y + 8, w: INV.dispW, h: INV.rows * INV.cell - 16 };
+  }
+  const inRect = (p, r) => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h;
 
-  // Electron moves — fungible bookkeeping, the validator polices the chemistry.
-  function transfer(from, to) {
-    if (from === to || atoms[from].lone < 1) return;
-    atoms[from].lone -= 1; atoms[to].lone += 1;
+  // ── the bench population ──
+  function spawn(el, x, y) {
+    const at = { id: nextId++, el, lone: VALENCE[el] ?? 0, x, y, tx: x, ty: y, dots: [] };
+    atoms.push(at);
+    opts.onChange?.();
+    return at;
+  }
+  // Dropping any atom back on the inventory throws out its WHOLE molecule.
+  function deleteMolecule(id) {
+    const seen = new Set([id]), stack = [id];
+    while (stack.length) bondsOf(stack.pop()).forEach((b) => {
+      [b.a, b.b].forEach((x) => { if (!seen.has(x)) { seen.add(x); stack.push(x); } });
+    });
+    for (let i = bonds.length - 1; i >= 0; i--) if (seen.has(bonds[i].a) || seen.has(bonds[i].b)) bonds.splice(i, 1);
+    for (let i = atoms.length - 1; i >= 0; i--) if (seen.has(atoms[i].id)) atoms.splice(i, 1);
     opts.onChange?.();
   }
-  function toTray(from) {
-    if (charge === 0 || atoms[from].lone < 1) return; // the tray only exists for ions
-    atoms[from].lone -= 1; tray += 1;
-    opts.onChange?.();
+
+  // ── electron moves: the dispenser is the reservoir ──
+  function dispenseTo(id) {
+    const at = byId(id); if (!at) return;
+    at.lone += 1; opts.onChange?.();
   }
-  function fromTray(to) {
-    if (tray < 1) return;
-    tray -= 1; atoms[to].lone += 1;
+  function discardFrom(id) {
+    const at = byId(id); if (!at || at.lone < 1) return;
+    at.lone -= 1; opts.onChange?.();
+  }
+
+  // ── bonding ──
+  function relax(id) {
+    const at = byId(id); if (!at) return;
+    const nbrs = bondsOf(id).map((b) => byId(partner(b, id))).filter(Boolean);
+    if (nbrs.length < 2) return;
+    const withAngle = nbrs.map((n) => ({ n, a: Math.atan2(n.y - at.y, n.x - at.x) })).sort((p, q) => p.a - q.a);
+    const spacing = (Math.PI * 2) / withAngle.length;
+    const start = withAngle[0].a;
+    withAngle.forEach((p, i) => {
+      const ang = start + i * spacing;
+      p.n.tx = at.x + Math.cos(ang) * 96;
+      p.n.ty = at.y + Math.sin(ang) * 96;
+    });
+  }
+
+  function tryBond(a, b) {
+    if (a === b || a == null || b == null) return false;
+    const A = byId(a), B = byId(b);
+    if (!A || !B || A.lone < 1 || B.lone < 1) return false;
+    if (bonds.some((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a))) return false;
+    bonds.push({ a, b, order: 1 });
+    A.lone -= 1; B.lone -= 1;
+    relax(a); relax(b);
+    opts.onChange?.();
+    return true;
+  }
+
+  function cycleBond(b) {
+    const A = byId(b.a), B = byId(b.b);
+    if (b.order < 3 && A.lone > 0 && B.lone > 0) {
+      b.order += 1; A.lone -= 1; B.lone -= 1;
+    } else {
+      A.lone += b.order; B.lone += b.order;
+      bonds.splice(bonds.indexOf(b), 1);
+    }
     opts.onChange?.();
   }
 
-  // ── dot choreography: bonds claim their headings, lone dots take the freest slots ──
+  function settleApart(movedId, anchorId) {
+    const M = byId(movedId), A = byId(anchorId);
+    if (!M || !A) return;
+    let ang = Math.atan2(M.y - A.y, M.x - A.x);
+    if (Math.hypot(M.x - A.x, M.y - A.y) < 2) ang = -Math.PI / 2;
+    M.tx = A.x + Math.cos(ang) * 96;
+    M.ty = A.y + Math.sin(ang) * 96;
+  }
+
+  // nearest bondable neighbor of a dragged atom, by EDGE distance (touch, not overlap)
+  function touchTarget(id) {
+    const M = byId(id); if (!M) return null;
+    let best = null, bestD = Infinity;
+    for (const at of atoms) {
+      if (at.id === id) continue;
+      const d = Math.hypot(M.x - at.x, M.y - at.y);
+      if (d < ATOM_R * 2 + TOUCH_GAP && d < bestD) { bestD = d; best = at.id; }
+    }
+    return best;
+  }
+
+  // ── dot choreography ──
   function dotTargets(atom) {
     const bondDirs = bondsOf(atom.id).map((b) => {
-      const p = atoms[partner(b, atom.id)];
+      const p = byId(partner(b, atom.id));
       return deg(Math.atan2(p.y - atom.y, p.x - atom.x));
     });
-    // Score compass slots by distance from the nearest bond heading — freest first.
     const slots = COMPASS
       .map((s) => ({ s, score: bondDirs.length ? Math.min(...bondDirs.map((d) => Math.abs(angDiff(s, d)))) : 999 }))
       .filter((x) => x.score > 28)
       .sort((a, b) => b.score - a.score)
       .map((x) => x.s);
     if (!slots.length) slots.push(...COMPASS);
-    // Dalia's rule: free atoms spread singles-first (showing valence, Hund-style);
-    // bonded atoms draw their remaining electrons as lone PAIRS on the freest
-    // sides — textbook Lewis convention. Keep in sync with lewis.js loneSlots.
+    // Free atoms spread singles first (showing valence); bonded atoms draw PAIRS.
     const counts = slots.map(() => 0);
     if (bondDirs.length) {
       let rem = atom.lone;
@@ -135,8 +205,18 @@ export function createKit(canvas, atomEls, opts = {}) {
     const targets = dotTargets(atom);
     while (atom.dots.length < targets.length) atom.dots.push({ a: targets[atom.dots.length] });
     atom.dots.length = targets.length;
-    atom.dots.forEach((d, i) => { d.a += angDiff(targets[i], d.a) * LERP_ANG; }); // beads on the ring
+    atom.dots.forEach((d, i) => { d.a += angDiff(targets[i], d.a) * LERP_ANG; });
   }
+
+  // ── sizing ──
+  function fit() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h || (Math.abs(w - W) < 1 && Math.abs(h - H) < 1)) return;
+    W = w; H = h;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  fit();
 
   // ── drawing ──
   function edgePoint(from, to, offset) {
@@ -148,11 +228,65 @@ export function createKit(canvas, atomEls, opts = {}) {
     };
   }
 
+  function drawAtomBall(x, y, el, r) {
+    const fill = EL_FILL[el] || "#d8c9a8";
+    const g = ctx.createRadialGradient(x - r / 3, y - r / 2.7, r / 6, x, y, r);
+    g.addColorStop(0, "rgba(255,255,255,0.5)"); g.addColorStop(0.3, fill); g.addColorStop(1, fill);
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.lineWidth = 1.2; ctx.strokeStyle = "rgba(45,42,35,0.4)"; ctx.stroke();
+    ctx.fillStyle = LIGHT_INK.has(el) ? "#fffdf8" : "#2d2a23";
+    ctx.font = `700 ${el.length > 1 ? r * 0.58 : r * 0.7}px Lexend, sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(el, x, y + 1);
+  }
+
+  function drawInventory() {
+    const bar = invRect();
+    ctx.fillStyle = "rgba(247,241,230,0.92)";
+    ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
+    ctx.strokeStyle = "#e5dbc9"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(bar.x, bar.y); ctx.lineTo(bar.x + bar.w, bar.y); ctx.stroke();
+    // the PT matrix
+    for (let r = 0; r < INV.rows; r++) for (let c = 0; c < INV.cols; c++) {
+      const el = PT_ROWS[r][c];
+      if (!el) continue;
+      const x = INV.x + c * INV.cell, y = INV.y + r * INV.cell;
+      ctx.fillStyle = "#fffdf8";
+      ctx.strokeStyle = "#e5dbc9"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.roundRect(x + 1, y + 1, INV.cell - 2, INV.cell - 2, 5);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#2d2a23";
+      ctx.font = `600 ${el.length > 1 ? 10.5 : 12}px Lexend, sans-serif`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(el, x + INV.cell / 2, y + INV.cell / 2 + 0.5);
+    }
+    // the electron dispenser
+    const d = dispenserRect();
+    ctx.setLineDash([5, 4]);
+    ctx.strokeStyle = "#835f7d"; ctx.lineWidth = 1.6;
+    ctx.fillStyle = "rgba(236,225,234,0.75)";
+    ctx.beginPath(); ctx.roundRect(d.x, d.y, d.w, d.h, 9);
+    ctx.fill(); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#134f48";
+    ctx.beginPath(); ctx.arc(d.x + d.w / 2, d.y + d.h / 2 - 8, DOT_R + 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#6b4d68";
+    ctx.font = "600 11px Lexend, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.fillText("e⁻", d.x + d.w / 2, d.y + d.h / 2 + 2);
+    // a quiet label for the throw-out affordance
+    ctx.fillStyle = "#897f6d";
+    ctx.font = "500 10px Lexend, sans-serif";
+    ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillText("atoms: drag from the table · electrons: drag from e⁻ · drop an atom here to throw its molecule out", d.x + d.w + 12, INV.y + 6);
+  }
+
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    // bonds — parallel lines for double/triple
+    // bonds
     bonds.forEach((b) => {
-      const A = atoms[b.a], B = atoms[b.b];
+      const A = byId(b.a), B = byId(b.b);
       for (let k = 0; k < b.order; k++) {
         const off = (k - (b.order - 1) / 2) * 6;
         const e = edgePoint(A, B, off);
@@ -160,27 +294,37 @@ export function createKit(canvas, atomEls, opts = {}) {
         ctx.lineWidth = 2.6; ctx.strokeStyle = "#897f6d"; ctx.lineCap = "round"; ctx.stroke();
       }
     });
-    // rubber band while an electron is in hand (tray traffic only)
-    if (drag?.kind === "dot" || drag?.kind === "trayDot") {
-      const from = drag.kind === "dot" ? atoms[drag.id] : { x: TRAY.x + TRAY.w / 2, y: TRAY.y + TRAY.h / 2 };
-      ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(drag.px, drag.py);
-      ctx.setLineDash([5, 5]); ctx.lineWidth = 2;
-      ctx.strokeStyle = "#835f7d";
-      ctx.stroke();
-      ctx.setLineDash([]);
+    // rubber band for electron traffic
+    if (drag?.kind === "dot" || drag?.kind === "freeDot") {
+      const disp = dispenserRect();
+      const from = drag.kind === "dot" ? byId(drag.id) : { x: disp.x + disp.w / 2, y: disp.y + disp.h / 2 };
+      if (from) {
+        ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(drag.px, drag.py);
+        ctx.setLineDash([5, 5]); ctx.lineWidth = 2; ctx.strokeStyle = "#835f7d"; ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
-    // atoms + their dots
+    // touch hint: ring the atom a dragged atom would bond with
+    if (drag?.kind === "atom" && drag.moved) {
+      const t = touchTarget(drag.id);
+      if (t !== null) {
+        const at = byId(t), M = byId(drag.id);
+        const bonded = bonds.some((b) => (b.a === drag.id && b.b === t) || (b.b === drag.id && b.a === t));
+        const can = !bonded && M.lone > 0 && at.lone > 0;
+        ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 8, 0, Math.PI * 2);
+        ctx.strokeStyle = can ? "rgba(30,114,104,0.7)" : "rgba(137,127,109,0.5)";
+        ctx.lineWidth = 2.4; ctx.stroke();
+      }
+      // deleting? tint the inventory bar
+      if (inRect({ x: drag.px, y: drag.py }, invRect())) {
+        const bar = invRect();
+        ctx.fillStyle = "rgba(180,80,47,0.08)";
+        ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
+      }
+    }
+    // atoms + dots
     atoms.forEach((at) => {
-      const fill = EL_FILL[at.el] || "#d8c9a8";
-      const g = ctx.createRadialGradient(at.x - 8, at.y - 9, 4, at.x, at.y, ATOM_R);
-      g.addColorStop(0, "rgba(255,255,255,0.5)"); g.addColorStop(0.3, fill); g.addColorStop(1, fill);
-      ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R, 0, Math.PI * 2);
-      ctx.fillStyle = g; ctx.fill();
-      ctx.lineWidth = 1.2; ctx.strokeStyle = "rgba(45,42,35,0.4)"; ctx.stroke();
-      ctx.fillStyle = LIGHT_INK.has(at.el) ? "#fffdf8" : "#2d2a23";
-      ctx.font = `700 ${at.el.length > 1 ? 15 : 17}px Lexend, sans-serif`;
-      ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.fillText(at.el, at.x, at.y + 1);
+      drawAtomBall(at.x, at.y, at.el, ATOM_R);
       at.render = at.dots.map((d) => {
         const x = at.x + Math.cos(rad(d.a)) * DOT_RING, y = at.y + Math.sin(rad(d.a)) * DOT_RING;
         ctx.beginPath(); ctx.arc(x, y, DOT_R, 0, Math.PI * 2);
@@ -188,53 +332,11 @@ export function createKit(canvas, atomEls, opts = {}) {
         return { x, y };
       });
     });
-    // hover hints: dragging an atom over a bondable partner rings it teal;
-    // an electron headed for the tray lights the tray.
-    if (drag?.kind === "atom" && drag.moved) {
-      const M = atoms[drag.id];
-      for (const at of atoms) {
-        if (at.id === drag.id) continue;
-        if (Math.hypot(M.x - at.x, M.y - at.y) < ATOM_R * 2 + 4) {
-          const bonded = bonds.some((b) => (b.a === drag.id && b.b === at.id) || (b.b === drag.id && b.a === at.id));
-          const can = !bonded && atoms[drag.id].lone > 0 && at.lone > 0;
-          ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 8, 0, Math.PI * 2);
-          ctx.strokeStyle = can ? "rgba(30,114,104,0.7)" : "rgba(137,127,109,0.5)";
-          ctx.lineWidth = 2.4; ctx.stroke();
-          break;
-        }
-      }
-    } else if (drag?.kind === "dot" && charge !== 0 && inTray({ x: drag.px, y: drag.py })) {
-      ctx.strokeStyle = "rgba(131,95,125,0.85)"; ctx.lineWidth = 2.4;
-      ctx.strokeRect(TRAY.x, TRAY.y, TRAY.w, TRAY.h);
-    }
-    // the electron tray — only ions have one
-    trayDotPos = [];
-    if (charge !== 0 || tray > 0) {
-      ctx.save();
-      ctx.setLineDash([5, 4]);
-      ctx.strokeStyle = "#835f7d"; ctx.lineWidth = 1.6;
-      ctx.fillStyle = "rgba(236,225,234,0.75)";
-      ctx.beginPath();
-      ctx.roundRect(TRAY.x, TRAY.y, TRAY.w, TRAY.h, 9);
-      ctx.fill(); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#6b4d68";
-      ctx.font = "600 11px Lexend, sans-serif";
-      ctx.textAlign = "left"; ctx.textBaseline = "top";
-      ctx.fillText(charge < 0 ? "spare e⁻ — place them" : "remove e⁻ — drop here", TRAY.x + 10, TRAY.y + 6);
-      for (let i = 0; i < tray; i++) {
-        const x = TRAY.x + 14 + i * 13, y = TRAY.y + TRAY.h - 13;
-        ctx.beginPath(); ctx.arc(x, y, DOT_R + 0.6, 0, Math.PI * 2);
-        ctx.fillStyle = "#134f48"; ctx.fill();
-        trayDotPos.push({ x, y });
-      }
-      ctx.restore();
-    }
-    // ion brackets, live as soon as a non-zero charge is picked
-    if (charge !== 0) {
+    // ion brackets around the bench (kept above the inventory bar)
+    if (charge !== 0 && atoms.length) {
       const xs = atoms.map((a) => a.x), ys = atoms.map((a) => a.y);
       const x0 = Math.min(...xs) - 52, x1 = Math.max(...xs) + 52;
-      const y0 = Math.min(...ys) - 52, y1 = Math.max(...ys) + 52;
+      const y0 = Math.max(10, Math.min(...ys) - 52), y1 = Math.min(invRect().y - 6, Math.max(...ys) + 52);
       ctx.lineWidth = 2.4; ctx.strokeStyle = "#835f7d";
       ctx.beginPath(); ctx.moveTo(x0 + 12, y0); ctx.lineTo(x0, y0); ctx.lineTo(x0, y1); ctx.lineTo(x0 + 12, y1); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(x1 - 12, y0); ctx.lineTo(x1, y0); ctx.lineTo(x1, y1); ctx.lineTo(x1 - 12, y1); ctx.stroke();
@@ -242,6 +344,7 @@ export function createKit(canvas, atomEls, opts = {}) {
       const q = Math.abs(charge) === 1 ? "" : String(Math.abs(charge));
       ctx.fillText(q + (charge > 0 ? "+" : "−"), x1 + 5, y0 + 6);
     }
+    drawInventory();
   }
 
   function loop() {
@@ -256,18 +359,9 @@ export function createKit(canvas, atomEls, opts = {}) {
   }
 
   // ── pointer interaction ──
-  const TRAY = { x: 12, y: 12, w: 158, h: 46 };
-  let trayDotPos = [];
-  const inTray = (p) => p.x >= TRAY.x && p.x <= TRAY.x + TRAY.w && p.y >= TRAY.y && p.y <= TRAY.y + TRAY.h;
-
   function pos(e) {
     const r = canvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
-  function hitTrayDot(p) {
-    for (const d of trayDotPos)
-      if (Math.hypot(p.x - d.x, p.y - d.y) < 10) return true;
-    return false;
   }
   function hitDot(p) {
     for (const at of atoms)
@@ -282,7 +376,7 @@ export function createKit(canvas, atomEls, opts = {}) {
   }
   function hitBond(p) {
     for (const b of bonds) {
-      const A = atoms[b.a], B = atoms[b.b];
+      const A = byId(b.a), B = byId(b.b);
       const L2 = (B.x - A.x) ** 2 + (B.y - A.y) ** 2;
       if (!L2) continue;
       let t = ((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y)) / L2;
@@ -293,68 +387,19 @@ export function createKit(canvas, atomEls, opts = {}) {
     return null;
   }
 
-  // ── Dalia's gesture grammar (2026-08-12) ──
-  // Drop an atom ONTO another atom → a single bond forms (two unpaired electrons
-  // become the pair), only if they aren't bonded yet. Click a bond → it cycles
-  // single → double → triple → gone, consuming/returning one electron per atom
-  // per step. Dots are NOT draggable between atoms — electrons only move through
-  // the ion tray.
-  // Spread an atom's bonded neighbors evenly around it — new arrivals drift
-  // apart on their own instead of huddling where they were dropped.
-  function relax(id) {
-    const at = atoms[id];
-    const nbrs = bondsOf(id).map((b) => atoms[partner(b, id)]);
-    if (nbrs.length < 2) return;
-    const withAngle = nbrs.map((n) => ({ n, a: Math.atan2(n.y - at.y, n.x - at.x) }))
-      .sort((p, q) => p.a - q.a);
-    const spacing = (Math.PI * 2) / withAngle.length;
-    const start = withAngle[0].a;
-    withAngle.forEach((p, i) => {
-      const ang = start + i * spacing;
-      p.n.tx = at.x + Math.cos(ang) * 96;
-      p.n.ty = at.y + Math.sin(ang) * 96;
-    });
-  }
-
-  function tryBond(a, b) {
-    if (a === b || a === null || b === null) return false;
-    if (atoms[a].lone < 1 || atoms[b].lone < 1) return false;
-    const ex = bonds.find((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a));
-    if (ex) return false; // already bonded — the bond itself is the control now
-    bonds.push({ a, b, order: 1 });
-    atoms[a].lone -= 1; atoms[b].lone -= 1;
-    relax(a); relax(b);
-    opts.onChange?.();
-    return true;
-  }
-
-  function cycleBond(b) {
-    if (b.order < 3 && atoms[b.a].lone > 0 && atoms[b.b].lone > 0) {
-      b.order += 1;
-      atoms[b.a].lone -= 1; atoms[b.b].lone -= 1;
-    } else {
-      atoms[b.a].lone += b.order; atoms[b.b].lone += b.order;
-      bonds.splice(bonds.indexOf(b), 1);
-    }
-    opts.onChange?.();
-  }
-
-  // After a drop bonds two atoms, ease the dragged one to a comfortable distance.
-  function settleApart(movedId, anchorId) {
-    const M = atoms[movedId], A = atoms[anchorId];
-    let ang = Math.atan2(M.y - A.y, M.x - A.x);
-    if (Math.hypot(M.x - A.x, M.y - A.y) < 2) ang = -Math.PI / 2;
-    M.tx = A.x + Math.cos(ang) * 96;
-    M.ty = A.y + Math.sin(ang) * 96;
-  }
-
   function onDown(e) {
     if (frozen) return;
-    try { canvas.setPointerCapture?.(e.pointerId); } catch { /* synthetic events have no live pointer */ }
+    try { canvas.setPointerCapture?.(e.pointerId); } catch { /* synthetic events */ }
     const p = pos(e);
-    if (hitTrayDot(p)) { drag = { kind: "trayDot", px: p.x, py: p.y }; return; }
+    if (inRect(p, dispenserRect())) { drag = { kind: "freeDot", px: p.x, py: p.y }; return; }
+    const cellEl = invCellAt(p);
+    if (cellEl) {
+      const at = spawn(cellEl, p.x, p.y);
+      drag = { kind: "atom", id: at.id, moved: true, fresh: true };
+      return;
+    }
     const dotAtom = hitDot(p);
-    if (dotAtom !== null && charge !== 0) { drag = { kind: "dot", id: dotAtom, px: p.x, py: p.y }; return; }
+    if (dotAtom !== null) { drag = { kind: "dot", id: dotAtom, px: p.x, py: p.y }; return; }
     const atomId = hitAtom(p, 4);
     if (atomId !== null) { drag = { kind: "atom", id: atomId, moved: false }; return; }
   }
@@ -362,9 +407,10 @@ export function createKit(canvas, atomEls, opts = {}) {
     if (frozen || !drag) return;
     const p = pos(e);
     if (drag.kind === "atom") {
-      const at = atoms[drag.id];
+      const at = byId(drag.id); if (!at) { drag = null; return; }
       if (Math.hypot(p.x - at.tx, p.y - at.ty) > 4) drag.moved = true;
       at.tx = p.x; at.ty = p.y;
+      drag.px = p.x; drag.py = p.y;
     } else { drag.px = p.x; drag.py = p.y; }
   }
   function onUp(e) {
@@ -373,32 +419,29 @@ export function createKit(canvas, atomEls, opts = {}) {
     let acted = false;
     if (drag.kind === "atom" && drag.moved) {
       acted = true;
-      // dropped ON another atom? touching = bonding.
-      let target = null, best = Infinity;
-      for (const at of atoms) {
-        if (at.id === drag.id) continue;
-        const d = Math.hypot(p.x - at.x, p.y - at.y);
-        if (d < ATOM_R * 2 + 4 && d < best) { best = d; target = at.id; }
-      }
-      if (target !== null) {
-        if (tryBond(drag.id, target)) settleApart(drag.id, target);
-        else settleApart(drag.id, target); // already bonded or no electrons: just un-stack
+      if (inRect(p, invRect())) {
+        deleteMolecule(drag.id); // back in the box — the whole molecule leaves
+      } else {
+        const t = touchTarget(drag.id);
+        if (t !== null) {
+          if (tryBond(drag.id, t)) settleApart(drag.id, t);
+          else settleApart(drag.id, t); // already bonded / no electrons: just un-stack
+        }
       }
     } else if (drag.kind === "dot") {
-      if (inTray(p)) { toTray(drag.id); acted = true; }
-    } else if (drag.kind === "trayDot") {
-      const target = hitDot(p) ?? hitAtom(p, 14);
-      if (target !== null) { fromTray(target); acted = true; }
+      if (inRect(p, invRect())) { discardFrom(drag.id); acted = true; } // back to the dispenser
+    } else if (drag.kind === "freeDot") {
+      const t = hitDot(p) ?? hitAtom(p, 14);
+      if (t !== null) { dispenseTo(t); acted = true; }
     }
     suppressClick = acted || (drag.kind === "atom" && drag.moved);
     drag = null;
   }
-  let suppressClick = false;
   function onClick(e) {
     if (frozen) return;
     if (suppressClick) { suppressClick = false; return; }
     const p = pos(e);
-    if (hitTrayDot(p) || hitDot(p) !== null || hitAtom(p) !== null) return;
+    if (inRect(p, invRect()) || hitDot(p) !== null || hitAtom(p) !== null) return;
     const b = hitBond(p);
     if (b) cycleBond(b);
   }
@@ -412,19 +455,33 @@ export function createKit(canvas, atomEls, opts = {}) {
   function check(targetCharge) {
     const issues = [];
     if (charge !== targetCharge) issues.push("That's not this molecule's charge — count again.");
+    // Composition first: the bench must hold exactly the recipe.
+    if (target) {
+      const want = {}, have = {};
+      target.forEach((el) => { want[el] = (want[el] || 0) + 1; });
+      atoms.forEach((a) => { have[a.el] = (have[a.el] || 0) + 1; });
+      const missing = [], extra = [];
+      for (const el of new Set([...Object.keys(want), ...Object.keys(have)])) {
+        const d = (want[el] || 0) - (have[el] || 0);
+        if (d > 0) missing.push(`${d}× ${el}`);
+        if (d < 0) extra.push(`${-d}× ${el}`);
+      }
+      if (missing.length) issues.push(`The bench is missing ${missing.join(", ")} — fetch what's needed from the table.`);
+      if (extra.length) issues.push(`${extra.join(", ")} on the bench ${extra.length > 1 ? "don't" : "doesn't"} belong to this formula — drop the surplus back on the table.`);
+      if (issues.length) return { ok: false, issues: issues.slice(0, 2) };
+    }
+    if (!atoms.length) return { ok: false, issues: ["The bench is empty — drag atoms down from the table."] };
     // Step 1 is the law: the drawing must hold exactly the counted electrons.
     const inDrawing = atoms.reduce((s, a) => s + a.lone, 0) + 2 * bonds.reduce((s, b) => s + b.order, 0);
-    const required = TOTAL_VALENCE - targetCharge;
-    if (charge < 0 && tray > 0) {
-      issues.push(`The charge granted ${extraGranted === 1 ? "an extra electron" : "extra electrons"} and ${tray === 1 ? "one is" : tray + " are"} still in the tray — every electron must land on an atom.`);
-    } else if (inDrawing !== required) {
+    const required = (target ? TARGET_VALENCE : atoms.reduce((s, a) => s + (VALENCE[a.el] ?? 0), 0)) - targetCharge;
+    if (inDrawing !== required) {
       issues.push(inDrawing > required
-        ? `The drawing holds ${inDrawing} electrons, but the count says ${required} — ${inDrawing - required} too many. ${targetCharge > 0 ? "A positive ion gives electrons up — drag them to the tray." : "Recount step 1."}`
-        : `The drawing holds ${inDrawing} electrons, but the count says ${required} — ${required - inDrawing} missing.`);
+        ? `The drawing holds ${inDrawing} electrons, but the count says ${required} — ${inDrawing - required} too many. Return some to the dispenser.`
+        : `The drawing holds ${inDrawing} electrons, but the count says ${required} — ${required - inDrawing} missing. The dispenser has plenty.`);
     }
-    if (bonds.length < atoms.length - 1) issues.push("Some atoms are still floating free — every atom must connect to the rest.");
-    else {
-      const seen = new Set([0]), stack = [0];
+    // connectivity
+    if (atoms.length > 1) {
+      const seen = new Set([atoms[0].id]), stack = [atoms[0].id];
       while (stack.length) bondsOf(stack.pop()).forEach((b) => {
         [b.a, b.b].forEach((id) => { if (!seen.has(id)) { seen.add(id); stack.push(id); } });
       });
@@ -437,6 +494,7 @@ export function createKit(canvas, atomEls, opts = {}) {
         issues.push(`This ${at.el} carries a formal charge of ${fc > 0 ? "+" + fc : fc} — too big to be real. ${ROW3PLUS.has(at.el) ? "Row 3 can expand: trade lone pairs on the neighbors for double bonds." : "Rebalance who keeps which electrons."}`);
       }
     }
+    // octets
     for (const at of atoms) {
       const shell = 2 * orderSum(at.id) + at.lone;
       if (at.el === "H") {
@@ -446,7 +504,7 @@ export function createKit(canvas, atomEls, opts = {}) {
       } else if (at.el === "B") {
         if (shell !== 6 && shell !== 8) issues.push(`B is an octet rebel — 6 electrons is its happy place.`);
       } else if (ROW3PLUS.has(at.el)) {
-        if (shell !== 8 && shell !== 10 && shell !== 12) issues.push(`This ${at.el} has ${shell} electrons around it — aim for a full octet.`);
+        if (![8, 10, 12, 14].includes(shell)) issues.push(`This ${at.el} has ${shell} electrons around it — aim for a full octet.`);
       } else if (shell !== 8) {
         issues.push(shell < 8
           ? `This ${at.el} has only ${shell} electrons around it — it wants a full 8. Share more.`
@@ -456,14 +514,14 @@ export function createKit(canvas, atomEls, opts = {}) {
     return { ok: issues.length === 0, issues: [...new Set(issues)].slice(0, 2) };
   }
 
-  // ── the reward: derive the built molecule's real 3D pose from the catalog ──
+  // ── the reward: the built molecule's real 3D pose ──
   function derive3D() {
+    if (!atoms.length) return null;
     let center = atoms[0];
     for (const at of atoms) if (orderSum(at.id) > orderSum(center.id)) center = at;
-    const nbrs = bondsOf(center.id).map((b) => atoms[partner(b, center.id)].el);
+    const nbrs = bondsOf(center.id).map((b) => byId(partner(b, center.id)).el);
     const lps = Math.floor(center.lone / 2);
     if (nbrs.length === 1) {
-      // diatomic pose — bond east, center's lone pairs fanned west
       const lpCoords = [];
       for (let i = 0; i < lps; i++) {
         const a = Math.PI - 0.85 + (i * 1.7) / Math.max(1, lps - 1 || 1);
@@ -478,15 +536,14 @@ export function createKit(canvas, atomEls, opts = {}) {
 
   function clear() {
     bonds.length = 0;
-    atoms.forEach((at) => { at.lone = VALENCE[at.el] ?? 0; });
-    tray = extraGranted && charge < 0 ? extraGranted : 0; // granted electrons return to the tray
+    atoms.length = 0;
     opts.onChange?.();
   }
 
   loop();
   return {
     setCharge, check, derive3D, clear,
-    debug: { atoms, bonds, tryBond, cycleBond, transfer, toTray, fromTray, trayCount: () => tray }, // dev handle
+    debug: { atoms, bonds, spawn, tryBond, cycleBond, dispenseTo, discardFrom, deleteMolecule },
     freeze() { frozen = true; },
     destroy() {
       if (raf !== null) cancelAnimationFrame(raf);

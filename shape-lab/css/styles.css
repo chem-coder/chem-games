@@ -175,7 +175,7 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .charge-btn:disabled { opacity: 0.6; cursor: default; }
 
 .kit-canvas {
-  display: block; width: 100%; height: 380px;
+  display: block; width: 100%; height: 520px;
   background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
   touch-action: none; cursor: grab;
 }
@@ -183,7 +183,7 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 /* Board on the LEFT, questions on the RIGHT — Dalia's layout for Build and Polarity. */
 .duo { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
 .duo-left { flex: 3 1 380px; min-width: 320px; }
-.duo-left .kit-canvas { height: 440px; }
+.duo-left .kit-canvas { height: 520px; }
 .duo-right { flex: 2 1 260px; min-width: 250px; display: flex; flex-direction: column; gap: 10px; }
 .duo-right .build-title { margin: 0; }
 .duo-right .charge-row { flex-wrap: wrap; }
