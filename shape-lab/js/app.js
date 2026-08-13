@@ -6,7 +6,7 @@ import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula } from "./geometry.js";
 import { makeSpinner } from "./render3d.js";
 import { MOLECULES, BUILD_BANK, POLARITY_BANK } from "./molecules.js";
 import { createKit } from "./modelkit.js";
-import { sceneSvg, fcScene, FC_RULES, FC_EXAMPLES, FC_BANK, fcAnswer, LEWIS_STEPS, WALKTHROUGHS } from "./lewis.js";
+import { sceneSvg, fcScene, FC_RULES, FC_EXAMPLES, FC_BANK, fcAnswer, FC_RULE1_FIG, FC_CYANIDE_FIG, LEWIS_STEPS, WALKTHROUGHS } from "./lewis.js";
 
 const root = document.getElementById("game");
 const ROUND_SIZE = 8;
@@ -360,8 +360,30 @@ function renderFCIntro() {
       <p class="intro-lede">The concept of formal charge is important, and you will see it again: in resonance structures, in organic chemistry, and throughout inorganic chemistry.</p>
       <div class="fc-ex-row">${FC_EXAMPLES.map(fcExampleCard).join("")}</div>
       <p class="intro-lede">Calculating the formal charge is a tool for deciding whether a proposed chemical structure is stable. It is especially useful when choosing between several possible electron arrangements while proposing Lewis structures and molecular geometries. A few guidelines worth following:</p>
-      <ol class="steps">
-        ${FC_RULES.map((r, i) => `<li><span class="step-num">${i + 1}</span><span class="step-text">${r}</span></li>`).join("")}
+      <ol class="steps steps-figured">
+        <li>
+          <div class="step-line"><span class="step-num">1</span><span class="step-text">${FC_RULES[0]}</span></div>
+          <div class="rule-fig">${FC_RULE1_FIG.map((f) => `
+            <div class="rule-card ${f.good ? "good" : "bad"}">
+              <div class="fc-sketch">${sceneSvg(fcScene(f.item), 200, 110)}</div>
+              <p class="fc-ex-calc">${f.calc}</p>
+              <p class="fc-ex-text">${f.caption}</p>
+            </div>`).join("")}
+          </div>
+        </li>
+        <li>
+          <div class="step-line"><span class="step-num">2</span><span class="step-text">${FC_RULES[1]}</span></div>
+        </li>
+        <li>
+          <div class="step-line"><span class="step-num">3</span><span class="step-text">${FC_RULES[2]}</span></div>
+          <div class="rule-fig">${FC_CYANIDE_FIG.map((f) => `
+            <div class="rule-card ${f.good ? "good" : "bad"}">
+              <div class="fc-sketch">${sceneSvg(f.scene, 220, 120)}</div>
+              <p class="fc-ex-text">${f.caption}</p>
+            </div>`).join("")}
+          </div>
+          <p class="rule-note">The cyanide ion also shows why guideline 1 outranks guideline 2: keeping the charges small wins, so the −1 ends up on carbon — one of chemistry's famous exceptions.</p>
+        </li>
       </ol>
     </div>
     <div class="controls two-up">

@@ -210,6 +210,18 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .fc-ex-title { margin: 0 0 4px; font-size: 0.85rem; font-weight: 700; color: var(--accent-dark); }
 .fc-ex-calc { margin: 4px 0 2px; font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); }
 .fc-ex-text { margin: 0; font-size: 0.8rem; color: var(--muted); }
+
+/* Guideline figures: the step keeps its green circle; the figure sits below it. */
+.steps-figured li { display: block; margin-bottom: 16px; }
+.steps-figured .step-line { display: flex; align-items: flex-start; gap: 10px; }
+.rule-fig { display: flex; gap: 12px; flex-wrap: wrap; margin: 10px 0 0 32px; }
+.rule-card {
+  flex: 1 1 200px; min-width: 190px; padding: 10px 12px; text-align: center;
+  background: var(--surface-soft); border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+}
+.rule-card.bad { border-color: var(--danger-line); background: var(--danger-soft); }
+.rule-card.good { border-color: var(--success-line); background: var(--success-soft); }
+.rule-note { margin: 10px 0 0 32px; font-size: 0.82rem; font-style: italic; color: var(--muted); }
 .walk-scene svg { width: 340px; max-width: 100%; }
 .answer-row { display: flex; justify-content: center; margin-top: 14px; }
 .answer-input {

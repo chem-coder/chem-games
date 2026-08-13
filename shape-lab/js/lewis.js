@@ -133,6 +133,38 @@ export const FC_BANK = [
 ];
 export const fcAnswer = (i) => i.v - 2 * i.lp - i.bonds;
 
+// Visual examples for the three guidelines (Dalia's spec, 2026-08-12).
+// Guideline 1: the same oxygen drawn wrong (+2) and right (0), side by side.
+export const FC_RULE1_FIG = [
+  {
+    item: { el: "O", v: 6, bonds: 2, lp: 1 },
+    calc: "FC = 6 − 2 − 2 = <strong>+2</strong>",
+    caption: "One lone pair and two sticks: +2 is too big. Unstable — redraw it.",
+    good: false,
+  },
+  {
+    item: { el: "O", v: 6, bonds: 2, lp: 2 },
+    calc: "FC = 6 − 4 − 2 = <strong>0</strong>",
+    caption: "Two lone pairs and two sticks: zero. Stable.",
+    good: true,
+  },
+];
+
+// Guidelines 2 & 3: the cyanide ion, wrong on the left, correct on the right.
+const CN_BRACKET = { x0: -100, y0: -52, x1: 100, y1: 46, q: "−" };
+export const FC_CYANIDE_FIG = [
+  {
+    scene: { atoms: [{ el: "C", x: -45, y: 0, lone: 4, fc: "−3" }, { el: "N", x: 45, y: 0, lone: 0, fc: "+2" }], bonds: [{ a: 0, b: 1, order: 3 }], bracket: CN_BRACKET },
+    caption: "Both lone pairs on C: the charges do add up to −1, but −3 and +2 are far too big, and the negative sits on the less electronegative atom. Wrong twice over.",
+    good: false,
+  },
+  {
+    scene: { atoms: [{ el: "C", x: -45, y: 0, lone: 2, fc: "−1" }, { el: "N", x: 45, y: 0, lone: 2, fc: "0" }], bonds: [{ a: 0, b: 1, order: 3 }], bracket: CN_BRACKET },
+    caption: "One lone pair each: the smallest possible charges, and −1 + 0 = −1, exactly the ion's charge.",
+    good: true,
+  },
+];
+
 // ── Dalia's six steps, lightly polished ──
 export const LEWIS_STEPS = [
   { title: "1 · Count the valence electrons",
