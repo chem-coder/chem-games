@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IMAT Decks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260814-decks2">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Home</a>
+      <p class="eyebrow">IMAT &middot; Past-Paper Practice</p>
+      <h1>IMAT Decks</h1>
+      <p class="lede">Every chemistry question from the official 2011&ndash;2025 papers, sorted by topic &mdash; plus extra practice where the exams run thin. Pick a deck and drill.</p>
+    </header>
+
+    <section id="game" class="game" aria-live="polite"></section>
+  </main>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "./data/decks.js": "./data/decks.js?v=20260814-decks2"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260814-decks2"></script>
+</body>
+</html>
