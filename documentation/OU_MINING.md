@@ -8,8 +8,11 @@ Working through Dalia's OU materials per the plan in `TOPIC_UNIVERSE_PLAN.md`: e
 |---|---|---|
 | 1315 E1 (units 1–2) | ✅ below | 2026-08-12 |
 | 1315 E2 (units 3–4 new content) | ✅ below | 2026-08-12 |
-| 1315 E3–E4 | not yet | |
+| 1315 E3 (units 5–6 new content) | ✅ below | 2026-08-14 |
+| 1315 E4 (units 7–8 new content) | ✅ below | 2026-08-14 |
 | 1415 | not yet | |
+
+**CHEM 1315 is now fully mined: all eight units, ~540 keyed items across E1–E4** (plus ~60 more locked in the image-only SP13 papers if ever OCR'd).
 
 ## Correction to the working model
 
@@ -85,6 +88,74 @@ Splits cleanly across the two cards: **Atomic Structure** takes ~46 items (photo
 - **Atomic Structure:** `Ch 8 .../Video Quiz - Attribute of Light.docx` = conceptual wave-particle entry rung (OU never provides one) — but the folder is thin against unit 4's ~46 quantum items: **the biggest teaching-material coverage gap found so far.**
 - **Periodic System:** `Ch 9 .../Atomic Sizes Activity.docx` = a ready-made isoelectronic drag-sort deck (N³⁻ O²⁻ Na⁺ Mg²⁺ F⁻ Al³⁺ Ne …); Ch 9 notes/review/study guide all present.
 
+---
+
+# E3 mining (units 5–6), 2026-08-14
+
+**Structure:** Q21–30 = unit 5 (Molecular Structure & Bonding), Q31–40 = unit 6 (Gases), verified against printed headers in all 9 text papers (`E3 SP13` image-only, skipped). **180 keyed items** (~170 distinct — `E3 SP12` is another two-version scramble whose v2 key exposes the exact permutation with answer letters preserved). ⚠ **Importer warning:** the keys' unit column means different things per year — FA08/FA09/SP09/SP10 use position indices 1–4, FA10/FA11/SP11/SP12 use true unit numbers 5/6, FA12 has no unit column at all.
+
+## Unit 5 — Molecular Structure & Bonding (90 items): Shape Lab's home turf
+
+Census: VSEPR geometry (~20, incl. the signature electron-domain-vs-molecular-shape pair on one exam, abstract **AXE-notation** items, and count-it-yourself species like SCl₃F), ionic/covalent character & EN ordering (~19 — **no EN table is printed anywhere**: pure recalled trend; an OU-faithful advanced band should not show one), hybridization (~12, incl. sp³d/sp³d² and negated pairing grids), polarity (~11, incl. the five-molecule multi-select and the SF₂/SF₄/SF₆ family sweep), σ/π counting on drawn skeletons (8), resonance-form counting (8), formal charge (6 — CO's −1/+1 via the triple bond; NO₂'s three-atom 0/+1/−1 three-slot answer), octet-violation spotting (~5), structure→identity reverse reads (3). **Zero items on IMFs (that's unit 7), MO theory, bond order, or lattice energy.**
+
+**Feeds Shape Lab directly, tier by tier:** formal-charge advanced (CO, H₃N–BH₃, ozone's central O, NO₂ three-slot); lewis advanced (octet-violation multi-selects, "which structure is incorrect", resonance-form counting, lone-pair counts — all new *scoring modes* over the existing engine); geometries advanced (the full expanded-octet family incl. **AXE-notation cards**, which no current tier offers); polarity advanced (multi-selects incl. an "all of these are non-polar" key). **~19 species to add to molecules.js:** AsF₅, SbF₅, AsH₃, SF₅⁻, BrF₂⁻, ICl₄⁻, SCl₃F, POCl₃, ClCN, COS, N₃⁻, COCl₂, HCO₂⁻, CNO⁻, IF₃, SeF₄, NO₂⁺, BF₂⁻, ClO₂⁻. **Missing tier: hybridization** (~12 items want it; slots naturally between geometries and polarity). Several items are image-dependent (drawn Lewis candidates, π-count skeletons) — redraw with sceneSvg, don't extract.
+
+## Unit 6 — Gases (90 items)
+
+Census: manometers/pressure conversion (12 — the single most-repeated OU stem, incl. nonvolatile-liquid columns needing density rescaling), two-state combined-gas (12, incl. the beautiful numberless "×6 pressure, ÷2 volume → new T?" factor item), KMT + rms-speed ordering (~12 — orderings needing real molar masses, CO₂-vs-F₂), Dalton/mole fraction (~11 — incl. the dry-ice-into-helium partial-pressure trap), molar mass/density↔identity in both directions (~11), gas stoichiometry incl. collection over water (~10, vapor pressure handed inline), Graham effusion (9 — "0.411× as fast as neon → CHCl₃"), single-state PV=nRT (~8), real-gas deviation conditions (~8). Difficulty signature: the demanded unit rotates (torr/atm/kPa/K/g/g·L⁻¹) and distractors are precisely the sign flip, the K↔°C slip, and the reciprocal. Feeds chem-gas-laws' unbuilt tabs almost one-to-one; heaviest unbuilt slots = pressure/manometers and KMT.
+
+## New mechanics (15–18)
+
+15. **Manometer sandbox** — drag the column, sign decides add-or-subtract, swap working liquids (density rescale), rotate the output unit. One widget = 12 items.
+16. **Drag-to-order ranking strip** — OU's "increasing X" items are five permutations of one set; grade the permutation, serves Bonding AND Gases.
+17. **Ideal-vs-real conditions dial** — T/P sliders, "least/most ideal"; wrong answers become visible regions.
+18. **Structure → identity reverse read** — a drawn Lewis structure IS the question ("this is ___ with geometry ___"); reuses Shape Lab's renderer inverted.
+(Re-skins, not new: σ/π tally = #11 with different buckets; density/effusion→gas = #3; triple-slot answers = #12 widened.)
+
+## Repeats, data, errors (E3)
+
+- Third live shuffle-and-reindex proof: the nonvolatile-liquid manometer is word-identical in FA10/FA11 keyed A vs B. The neon manometer re-skins by *demanded unit* (torr vs atm). One stem's option list was *edited* between years (SP10 vs SP12 Q40) — ingest as distinct items.
+- Same front-matter constants as E1/E2 + (units 3–4 still on board) the ΔH°f and bond tables — **with the same baked-in ΔH°f errors** (C₄H₁₀ −888.0 verified in E3 FA08). `E3 FA10` again ships no tables — the deliberate "no-reference-sheet" variant.
+- Oddities: SP10 Q21 lists CO₂ as two different options; "Ru₂O" appears as a distractor; FA09 Q23 keys BF₂⁻'s angle as 120° despite the lone pair ("approximately" doing heavy lifting); FA08 Q24's drawn structures collide with the option text (page image only).
+
+## Heritage pairings (units 5–6)
+
+- **Ch 10 Covalent Bonding/** = the richest Heritage folder for this unit — the Lewis six-step handout and FC formulas Shape Lab already teaches, plus an exam-practice ladder Dalia clearly mined when designing the game (it ends in XeO₃ all-zero-FC and XeO₂F₂ minimize-FC — the boss fight's provenance). The geometry worksheets + KEYs = ready mid-band decks below OU level.
+- **Ch 11/** practice set goes where OU never does: **MO diagrams, bond order, para/diamagnetism** — the only source if the universe wants a bond-order rung.
+- **Ch 12/** (IMFs) is ready and waiting, but OU E3 gives IMFs nothing — that card stays Heritage-only until E4's unit 7.
+- **Ch 7 Gases/** is thin (2 files) against unit 6's 90 items — **coverage gap #2** after quantum; though its van der Waals item goes beyond OU.
+
+---
+
+# E4 mining (units 7–8), 2026-08-14
+
+**Structure:** Q21–30 = unit 7 (Liquids, Solids & Solutions), Q31–40 = unit 8 (Organic), printed headers verified. 9 of 10 papers text-extractable (`E4 SP13` image-only) → **90 + 90 keyed items**. FA10 and SP12 each pack **four shuffled versions** in one PDF with per-version permutation keys. Same importer warning as E3: key unit-columns are relative in FA08–SP10, true numbers in FA10–SP12, absent in FA12. ⚠ **SP12's printed unit-7 header is wrong in all four versions** (copy-pasted "Molecular Structure & Bonding"); content is correct.
+
+## Unit 7 — Liquids, Solids & Solutions (90 items)
+
+**The surprise: ZERO colligative properties.** No molality, mass %, mole fraction, Raoult, Henry, Clausius–Clapeyron, or heating-curve math anywhere in 10 papers. OU's "Solutions" third (~29 items) is **solubility rules + electrolytes + net ionic equations** — universe chapter-4 material, not the Solutions card. The Solutions card's colligative band gets NOTHING from OU; Heritage Ch 13 (WS 1–3 with keys: molality, Raoult, ΔT_b/ΔT_f, van't Hoff) is its only source.
+
+Census: IMF identification & bp ranking (~26 — incl. the signature mispairing grids: "which are INCORRECTLY paired with their predominant IMF"), liquid properties (~15 — vapor pressure/viscosity/surface tension sign-flip grids), crystalline solids & unit cells (~18 — fcc/bcc facts, corner/face ion counting to an empirical formula), phase diagrams (exactly 1/paper, all image-dependent — read boundaries, name point-to-point processes), like-dissolves-like (~8, the water-vs-benzene set verbatim across years), electrolytes (~7), precipitation & net ionic (~14 — Hg₂²⁺ the recurring trap; **no solubility table is ever provided** despite 14 items needing the rules — deliberate; Heritage Ch 4's solubility chart is the withheld reference). Least computational unit in the course: only the unit-cell counts involve arithmetic; the discriminating skill is holding four property claims in mind at once.
+
+## Unit 8 — Organic (90 items): the organic suite's advanced band
+
+Census: IUPAC naming structure→name (~22 — wrong-parent-chain and wrong-numbering-direction distractors, exactly the errors the shipped rungs teach), functional-group ID (~15, incl. aspirin/acetaminophen circled-group items — ready flavor), reaction classification (~11), isomer counting (~10 — **the most repeated idea**: C₅H₁₀ → 11, C₄H₈ → 6, C₄H₉Cl → 4, C₄H₁₀O alcohols → 4), chirality (~9, incl. fully-generatable name-only variants), cis-trans (~9, text-only), organic-dressed hybridization/σπ (~8 — unit 5 in costume, atenolol as canvas), polymers (~7, incl. repeat-unit→monomers reverse reads), **"your name is drawable but violates IUPAC" correction items** (3 — sharing a reusable distractor block across years). ⚠ ~55–60% of unit-8 items are drawn-structure image-dependent — redraw with sceneSvg, never extract. ⚠ The same esterification is keyed "condensation" one year and "esterification" another — a generator must pick one label taxonomy. FA09 Q30 ships malformed formulas (PbBr, PbNO₃) — do not ingest as-is.
+
+**Feeds:** Organic Nomenclature suite = **the strongest fit of the whole mining effort** — maps ~1:1 onto ORGANIC_EXERCISE_LIST.md's ladder (branching, mixing, 1°/2°/3° classify — which OU extends to amines, isomer discrimination); OU is precisely the missing advanced band, and its distractor taxonomy is the misconception list for the mixing rungs. Structure & Isomerism card ← isomer counting + relationship items. Reactions Lab ← classification + polymers. **IMF card ← ~41 items** — completing the shape → polarity → IMF → boiling-point chain that Shape Lab carries only to polarity; unit 7 is the ready advanced content for the chain's last leg.
+
+## New mechanics (19–21)
+
+19. **Unit-cell counter** — rotatable cube, assign ions to corner/edge/face/body sites, the ⅛/¼/½/1 tally becomes the formula. Self-verifying, infinitely re-skinnable; nothing in the repo does this.
+20. **Phase-diagram trace** — drag a point across P–T; the crossings name themselves (or the student must produce the sequence). One interaction covers all five OU phase-diagram shapes.
+21. **Monomer retrosynthesis** — polymer repeat unit shown, pick the two monomers (Kevlar, polyester). Reverse-direction reasoning Reactions Lab lacks.
+(Strong sibling, not new: the IMF mispairing grid and "incorrectly assigned functional group" = mechanic 2's error-spotting with new content.)
+
+## Heritage pairings (units 7–8)
+
+- **Ch 12 Liquids and Solids/ = the best Heritage pairing found so far**: the one-page IMF nesting diagram (`Intermolecular Forces Summary.pdf`) is ready art for the IMF card's explanation panel and is exactly the mental model the OU grids test; Worksheet 2's rationalize-the-bp pairs include **the identical Br₂-vs-ICl data behind OU SP12 Q23** (Heritage = open-ended version, OU = the MCQ — a perfect ladder pair); Worksheet 3 has the construct-the-phase-diagram counterpart to OU's read-it items. Caveat: Ch 12 also goes beyond OU (Bragg, density-from-unit-cell) — higher rung, not the OU band.
+- **Ch 13 Solutions/** = the colligative band's only source (see above). **Ch 4/** = the solubility chart + net-ionic mid band for unit 7's reactions third.
+- **Unit 8 has NO Heritage material at all** — no organic chapter exists in the Heritage tree. **The largest teaching-material gap found, bigger than the quantum gap** — except the repo's own organic-nomenclature suite (9 shipped rungs) IS the entry/mid band; OU E4 simply becomes its advanced tier. `_teaching-materials/IMAT Organic Topics` is the other non-OU organic source.
+
 ## Next mining passes
 
-1315 E3 (units 5–6: bonding, gases — E3 = units 3–6, so units 5–6 are the new content) → E4 (units 7–8) → 1415. Read Dalia's Exam 4 draft notes before authoring any advanced quiz content.
+1315 is complete. Next: **1415** (second-semester course — kinetics, equilibrium, acids-bases, thermo, electrochem at OU depth), and optionally OCR the four image-only SP13 papers (~80 items). Read Dalia's Exam 4 draft notes (`OU/CHEM1315/C1315/1335 Exam 4 Draft 3.review check.docx`) before authoring any advanced quiz content.
