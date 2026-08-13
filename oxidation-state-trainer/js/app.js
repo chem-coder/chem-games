@@ -266,7 +266,7 @@ function renderPlay() {
     answerArea = checked
       ? `<div class="answer-built ${graded.correct ? "ok" : "no"}"><span>${Number.isNaN(graded.value) ? "—" : graded.value} e⁻ · ${pickedDir || "—"}</span></div>`
       : `<div class="hr-inputs">
-          <label class="hr-elabel"><input class="answer-input hr-enum" id="answerInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="?" value="${typed.replace(/"/g, "&quot;")}"><span>e⁻</span></label>
+          <label class="hr-elabel"><input class="answer-input hr-enum" id="answerInput" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="${typed.replace(/"/g, "&quot;")}"><span>e⁻</span></label>
           <div class="hr-dir" role="group" aria-label="direction">
             <button type="button" class="hr-dir-btn${pickedDir === "oxidation" ? " sel" : ""}" data-dir="oxidation">Oxidation<span>lost</span></button>
             <button type="button" class="hr-dir-btn${pickedDir === "reduction" ? " sel" : ""}" data-dir="reduction">Reduction<span>gained</span></button>
@@ -277,7 +277,7 @@ function renderPlay() {
     canCheck = !!typed.trim();
     answerArea = checked
       ? `<div class="answer-built ${graded.correct ? "ok" : "no"}"><span>${graded.correct ? problem.answer : (Number.isNaN(graded.value) ? "—" : signedOx(graded.value))}</span></div>`
-      : `<input class="answer-input" id="answerInput" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="+7  or  −2" value="${typed.replace(/"/g, "&quot;")}">`;
+      : `<input class="answer-input" id="answerInput" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${typed.replace(/"/g, "&quot;")}">`;
   }
 
   // ── hints (shared) ──
