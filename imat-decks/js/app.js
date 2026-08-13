@@ -38,6 +38,109 @@ function fmt(s) {
     .replace(/([A-Za-z)\]])(\d+)/g, "$1<sub>$2</sub>");
 }
 
+// ── question-body formatting ──
+// The bank stores everything as flat text (transcription of the original papers):
+// tables flattened to "Row 1: …" prose, figures to [FIGURE: description], data
+// given as [Atomic numbers: …]. The DATA stays verbatim; the renderer restores
+// the original layouts: real tables, drawn figures where we have them, styled
+// description boxes where we don't, and line breaks for numbered statements.
+
+// Hand-drawn figures for specific questions (keyed by source).
+function ptFragment(periods, placements) {
+  const C = 30, exists = (p, g) => (p === 1 ? g === 1 || g === 8 : p === 7 ? g <= 2 : true);
+  let cells = "";
+  for (let p = 1; p <= periods; p++) for (let g = 1; g <= 8; g++) {
+    if (!exists(p, g)) continue;
+    cells += `<rect x="${(g - 1) * C + 1}" y="${(p - 1) * C + 1}" width="${C - 2}" height="${C - 2}" rx="3" fill="#fffdf8" stroke="#d8cfbc"/>`;
+  }
+  for (const [el, [p, g]] of Object.entries(placements)) {
+    cells += `<text x="${(g - 1) * C + C / 2}" y="${(p - 1) * C + C / 2 + 1}" text-anchor="middle" dominant-baseline="middle" font-family="Lexend,sans-serif" font-weight="600" font-size="12" fill="#2d2a23">${el}</text>`;
+  }
+  return `<svg viewBox="0 0 ${8 * C + 2} ${periods * C + 2}" width="${8 * C + 2}" xmlns="http://www.w3.org/2000/svg" role="img">${cells}</svg>`;
+}
+const FIGURES = {
+  "IMAT 2011 · Q64": () => ptFragment(4, { H: [1, 1], He: [1, 8], Li: [2, 1], C: [2, 4], Ne: [2, 8], Na: [3, 1], S: [3, 6], Cl: [3, 7], Br: [4, 7], Kr: [4, 8] }),
+  "IMAT 2012 · Q66": () => ptFragment(5, { Li: [2, 1], Be: [2, 2], Na: [3, 1], Mg: [3, 2], K: [4, 1], Ca: [4, 2], Rb: [5, 1], Sr: [5, 2], C: [2, 4], O: [2, 6], Si: [3, 4], S: [3, 6], Cl: [3, 7], Br: [4, 7], I: [5, 7] }),
+  "IMAT 2013 · Q49": () => ptFragment(7, Object.fromEntries([
+    ["H",[1,1]],["He",[1,8]],
+    ...["Li","Be","B","C","N","O","F","Ne"].map((e,i)=>[e,[2,i+1]]),
+    ...["Na","Mg","Al","Si","P","S","Cl","Ar"].map((e,i)=>[e,[3,i+1]]),
+    ...["K","Ca","Ga","Ge","As","Se","Br","Kr"].map((e,i)=>[e,[4,i+1]]),
+    ...["Rb","Sr","In","Sn","Sb","Te","I","Xe"].map((e,i)=>[e,[5,i+1]]),
+    ...["Cs","Ba","Tl","Pb","Bi","Po","At","Rn"].map((e,i)=>[e,[6,i+1]]),
+    ["Fr",[7,1]],["Ra",[7,2]],
+  ])),
+  "IMAT 2023 · Q33": () => `<svg viewBox="0 0 120 64" width="120" xmlns="http://www.w3.org/2000/svg" role="img">
+    <text x="58" y="40" font-family="Outfit,sans-serif" font-weight="700" font-size="34" fill="#2d2a23">A</text>
+    <text x="52" y="22" text-anchor="end" font-family="Lexend,sans-serif" font-weight="600" font-size="14" fill="#2d2a23">2x+2</text>
+    <text x="52" y="56" text-anchor="end" font-family="Lexend,sans-serif" font-weight="600" font-size="14" fill="#2d2a23">x</text>
+    <text x="86" y="22" font-family="Lexend,sans-serif" font-weight="600" font-size="14" fill="#2d2a23">2+</text>
+  </svg>`,
+};
+
+function rowsTable(rows) {
+  return `<table class="q-table"><tbody>${rows.map(([label, content]) =>
+    `<tr><th>${esc(label)}</th>${content.split("; ").map((c) => `<td>${fmt(c)}</td>`).join("")}</tr>`
+  ).join("")}</tbody></table>`;
+}
+
+function breakEnumerations(t) {
+  if (/\sII\.\s/.test(t)) t = t.replace(/\s(I{1,3}\.|IV\.|V\.)\s/g, "<br>$1 ");
+  if (/\s1\.\s/.test(t) && /\s2\.\s/.test(t)) t = t.replace(/\s([1-6]\.)\s(?=[A-Za-z])/g, "<br>$1 ");
+  return t;
+}
+
+function questionBody(card) {
+  const parts = [];
+  // split off bracketed blocks, keeping order
+  const tokens = card.text.split(/(\[[^\]]+\])/);
+  let pendingRows = [];
+  const flushRows = () => { if (pendingRows.length) { parts.push(rowsTable(pendingRows)); pendingRows = []; } };
+  for (const tok of tokens) {
+    if (!tok.trim()) continue;
+    if (tok.startsWith("[FIGURE")) {
+      flushRows();
+      const desc = tok.replace(/^\[FIGURE:?\s*/, "").replace(/\]$/, "");
+      const draw = FIGURES[card.src];
+      parts.push(draw
+        ? `<figure class="q-fig">${draw()}</figure>`
+        : `<figure class="q-fig q-fig-desc"><span class="fig-tag">figure</span> ${fmt(desc)}</figure>`);
+    } else if (tok.startsWith("[TABLE")) {
+      flushRows();
+      const body = tok.replace(/^\[TABLE:?\s*/, "").replace(/\]$/, "");
+      const rows = body.split(/;?\s*rows?\s*(\d+):\s*/i);
+      const pairs = [];
+      for (let i = 1; i < rows.length; i += 2) pairs.push([`Row ${rows[i]}`, rows[i + 1].split(", ").join("; ")]);
+      parts.push(rowsTable(pairs));
+    } else if (tok.startsWith("[")) {
+      flushRows();
+      parts.push(`<p class="data-note">${fmt(tok.slice(1, -1))}</p>`);
+    } else {
+      // plain text: pull out "Row N: …" lines as table rows
+      for (const line of tok.split("\n")) {
+        const m = line.match(/^\s*rows?\s*(\d+):\s*(.+)$/i);
+        if (m) pendingRows.push([`Row ${m[1]}`, m[2]]);
+        else if (line.trim()) { flushRows(); parts.push(`<p class="q-text">${breakEnumerations(fmt(line))}</p>`); }
+      }
+    }
+  }
+  flushRows();
+  return parts.join("");
+}
+
+// Options whose texts all share the same "label: value; label: value" skeleton
+// were tables in the original paper — render them as one.
+function optionTableLabels(card) {
+  const opts = Object.values(card.options);
+  const labelsOf = (o) => {
+    const segs = o.split("; ").filter((s) => s.includes(": "));
+    return segs.length >= 2 ? segs.map((s) => s.split(": ")[0].trim()) : null;
+  };
+  const first = labelsOf(opts[0]);
+  if (!first) return null;
+  return opts.every((o) => JSON.stringify(labelsOf(o)) === JSON.stringify(first)) ? first : null;
+}
+
 function render() {
   if (mode === "play") return renderPlay();
   if (mode === "done") return renderDone();
@@ -89,7 +192,17 @@ function loadCard() {
 // ── the drill ──
 function renderPlay() {
   const letters = ["A", "B", "C", "D", "E"].filter((L) => card.options[L] !== undefined);
-  const opts = letters.map((L) => {
+  const tableLabels = optionTableLabels(card);
+  const opts = tableLabels ? `
+    <table class="opt-table"><thead><tr><th></th>${tableLabels.map((l) => `<th>${esc(l)}</th>`).join("")}</tr></thead>
+    <tbody>${letters.map((L) => {
+      let cls = "opt-row";
+      if (!checked && picked === L) cls += " sel";
+      if (checked && L === card.answer) cls += " right";
+      if (checked && picked === L && L !== card.answer) cls += " wrong";
+      const cells = card.options[L].split("; ").map((seg) => `<td>${fmt(seg.includes(": ") ? seg.split(": ").slice(1).join(": ") : seg)}</td>`).join("");
+      return `<tr class="${cls}" data-l="${L}"><th>${L}</th>${cells}</tr>`;
+    }).join("")}</tbody></table>` : letters.map((L) => {
     let cls = "answer-opt";
     if (!checked && picked === L) cls += " sel";
     if (checked && L === card.answer) cls += " right";
@@ -108,7 +221,7 @@ function renderPlay() {
   root.innerHTML = `
     <button class="intro-link" id="listBtn" type="button">↩ All decks</button>
     <p class="deck-head">${deck().name} · ${solved} of ${roundTotal} solved · ${queue.length} left</p>
-    <div class="q-card"><p class="q-text">${fmt(card.text)}</p></div>
+    <div class="q-card">${questionBody(card)}</div>
     <div class="answers">${opts}</div>
     ${src}
     ${feedback}
@@ -119,10 +232,10 @@ function renderPlay() {
     </div>`;
 
   root.querySelector("#listBtn").addEventListener("click", () => { mode = "list"; render(); });
-  root.querySelectorAll(".answer-opt").forEach((b) => b.addEventListener("click", () => {
+  root.querySelectorAll(".answer-opt, .opt-row").forEach((b) => b.addEventListener("click", () => {
     if (checked) return;
     picked = b.dataset.l;
-    root.querySelectorAll(".answer-opt").forEach((x) => x.classList.toggle("sel", x.dataset.l === picked));
+    root.querySelectorAll(".answer-opt, .opt-row").forEach((x) => x.classList.toggle("sel", x.dataset.l === picked));
     root.querySelector("#checkBtn").disabled = false;
   }));
   const checkBtn = root.querySelector("#checkBtn");
@@ -173,3 +286,6 @@ function renderDone() {
 }
 
 render();
+
+// dev helper: jump straight to a question by source fragment, e.g. __jump("2012 · Q66")
+window.__jump = (frag) => { const di = DECKS.findIndex((d) => d.questions.some((q) => q.src.includes(frag))); if (di < 0) return "not found"; const q = DECKS[di].questions.find((q) => q.src.includes(frag)); startDeck(di, [q]); return q.src; };

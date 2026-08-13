@@ -61,6 +61,31 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .opt-letter { flex: 0 0 auto; font-weight: 700; color: var(--plum); }
 .opt-text { flex: 1 1 auto; }
 
+/* ── restored question layouts ── */
+.q-text + .q-text { margin-top: 8px; }
+.q-table { margin: 12px auto 4px; border-collapse: collapse; font-size: 0.92rem; }
+.q-table th, .q-table td { border: 1px solid var(--line); padding: 6px 12px; text-align: left; }
+.q-table th { background: var(--surface-soft); color: var(--plum-dark); font-weight: 700; white-space: nowrap; }
+.q-fig { margin: 12px auto; text-align: center; }
+.q-fig svg { max-width: 100%; }
+.q-fig-desc {
+  max-width: 56ch; padding: 10px 14px; text-align: left;
+  background: var(--surface-soft); border: 1px dashed var(--line); border-radius: var(--radius-sm);
+  color: var(--muted); font-size: 0.88rem; font-style: italic;
+}
+.fig-tag { font-style: normal; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--plum); margin-right: 6px; }
+.data-note { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
+
+.opt-table { width: 100%; margin: 14px 0 4px; border-collapse: collapse; font-size: 0.93rem; }
+.opt-table thead th { border-bottom: 2px solid var(--line); padding: 6px 12px; text-align: left; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.opt-table tbody th { color: var(--plum); font-weight: 700; width: 2.2em; }
+.opt-table tbody td, .opt-table tbody th { border: 1px solid var(--line); padding: 8px 12px; text-align: left; background: var(--surface); }
+.opt-table tbody tr { cursor: pointer; }
+.opt-table tbody tr:hover td, .opt-table tbody tr:hover th { border-color: var(--accent); }
+.opt-table tbody tr.sel td, .opt-table tbody tr.sel th { background: var(--accent-soft); }
+.opt-table tbody tr.right td, .opt-table tbody tr.right th { background: var(--success-soft); }
+.opt-table tbody tr.wrong td, .opt-table tbody tr.wrong th { background: var(--danger-soft); }
+
 .src-line { margin: 8px 0 0; text-align: right; color: var(--muted); font-size: 0.82rem; font-style: italic; }
 
 .feedback { margin: 10px 0 0; text-align: center; font-weight: 600; min-height: 1.4em; }
