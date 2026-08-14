@@ -63,6 +63,26 @@ export const MOLECULES = [
   { f: "XeO3", center: "Xe", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["O",2,4,3]] } },
   { f: "ICl2-", center: "I", bonds: 2, lps: 3, geo: "linear-5", st: { cl: 6, parts: [["Cl",1,6,2]] }, charge: -1 },
   { f: "IF4-", center: "I", bonds: 4, lps: 2, geo: "square-planar", st: { cl: 4, parts: [["F",1,6,4]] }, charge: -1 },
+  // ── round three: the OU E3 advanced band (documentation/OU_MINING.md, unit 5) ──
+  { f: "COS", center: "C", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["O",2,4,1],["S",2,4,1]] } },
+  { f: "ClCN", center: "C", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["Cl",1,6,1],["N",3,2,1]] } },
+  { f: "N3-", center: "N", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["N",2,4,2]] }, charge: -1 },
+  { f: "CNO-", center: "N", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["C",3,2,1],["O",1,6,1]] }, charge: -1 },
+  { f: "NO2+", center: "N", bonds: 2, lps: 0, geo: "linear-2", st: { cl: 0, parts: [["O",2,4,2]] }, charge: 1 },
+  { f: "COCl2", center: "C", bonds: 3, lps: 0, geo: "trigonal-planar", st: { cl: 0, parts: [["O",2,4,1],["Cl",1,6,2]] } },
+  { f: "HCO2-", center: "C", bonds: 3, lps: 0, geo: "trigonal-planar", st: { cl: 0, parts: [["O",2,4,1],["O",1,6,1],["H",1,0,1]] }, charge: -1 },
+  { f: "BF2-", center: "B", bonds: 2, lps: 1, geo: "bent-3", st: { cl: 2, parts: [["F",1,6,2]] }, charge: -1 },
+  { f: "ClO2-", center: "Cl", bonds: 2, lps: 2, geo: "bent-4", st: { cl: 4, parts: [["O",2,4,1],["O",1,6,1]] }, charge: -1 },
+  { f: "POCl3", center: "P", bonds: 4, lps: 0, geo: "tetrahedral", st: { cl: 0, parts: [["O",2,4,1],["Cl",1,6,3]] } },
+  { f: "AsH3", center: "As", bonds: 3, lps: 1, geo: "trigonal-pyramidal", st: { cl: 2, parts: [["H",1,0,3]] } },
+  { f: "AsF5", center: "As", bonds: 5, lps: 0, geo: "trigonal-bipyramidal", st: { cl: 0, parts: [["F",1,6,5]] } },
+  { f: "SbF5", center: "Sb", bonds: 5, lps: 0, geo: "trigonal-bipyramidal", st: { cl: 0, parts: [["F",1,6,5]] } },
+  { f: "SCl3F", center: "S", bonds: 4, lps: 1, geo: "seesaw", st: { cl: 2, parts: [["Cl",1,6,3],["F",1,6,1]] } },
+  { f: "SeF4", center: "Se", bonds: 4, lps: 1, geo: "seesaw", st: { cl: 2, parts: [["F",1,6,4]] } },
+  { f: "IF3", center: "I", bonds: 3, lps: 2, geo: "t-shape", st: { cl: 4, parts: [["F",1,6,3]] } },
+  { f: "BrF2-", center: "Br", bonds: 2, lps: 3, geo: "linear-5", st: { cl: 6, parts: [["F",1,6,2]] }, charge: -1 },
+  { f: "SF5-", center: "S", bonds: 5, lps: 1, geo: "square-pyramidal", st: { cl: 2, parts: [["F",1,6,5]] }, charge: -1 },
+  { f: "ICl4-", center: "I", bonds: 4, lps: 2, geo: "square-planar", st: { cl: 4, parts: [["Cl",1,6,4]] }, charge: -1 },
 ];
 
 // ── polarity ──

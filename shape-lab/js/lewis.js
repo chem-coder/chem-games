@@ -8,8 +8,9 @@ const EL_FILL = {
   C: "#322e27", O: "#c0492f", H: "#e6dac2", N: "#436074", S: "#ce9b22",
   P: "#b4502f", F: "#7a9a52", Cl: "#7a9a52", Br: "#8a5a3a", I: "#835f7d",
   B: "#c9a06a", Be: "#a8b8a0", Xe: "#6b8f9c",
+  As: "#9c7a4a", Sb: "#7f7668", Se: "#c07a35",
 };
-const LIGHT_INK = new Set(["C", "N", "P", "I", "O", "Br", "Xe"]);
+const LIGHT_INK = new Set(["C", "N", "P", "I", "O", "Br", "Xe", "As", "Sb", "Se"]);
 const COMPASS = [-90, 0, 90, 180];
 const rad = (d) => (d * Math.PI) / 180;
 

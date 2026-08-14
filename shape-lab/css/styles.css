@@ -288,6 +288,16 @@ sup { font-size: 0.62em; vertical-align: 0.42em; }
 .lew-go { flex: 0 0 auto; font-size: 0.85rem; font-weight: 600; color: var(--accent); }
 .lew-row.soon .lew-go { color: var(--muted); }
 
+/* ── hybridization rung ── */
+.hy-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+.hy-table th, .hy-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--line); font-size: 0.92rem; }
+.hy-table th { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.hy-name { font-family: var(--font-display); font-weight: 700; color: var(--accent-dark); }
+
+/* ── AXE notation ── */
+.geo-axe { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+.axe-formula { letter-spacing: 0.02em; }
+
 /* ── polarity rung ── */
 .pol-grid { justify-content: center; }
 .pol-verdict { margin: 0 0 8px; font-weight: 800; font-size: 0.95rem; letter-spacing: 0.03em; }

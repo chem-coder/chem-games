@@ -2,7 +2,7 @@
 // v0.1: the Geometries rung (visual table + rotating 3D popups). The other rungs are
 // designed and stubbed — their intros say what's coming, and the tabs never dead-end.
 
-import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula } from "./geometry.js";
+import { GEOMETRIES, GEO_BY_ID, GEO_GROUPS, fmtFormula, axeHtml, HYBRIDS } from "./geometry.js";
 import { makeSpinner } from "./render3d.js";
 import { MOLECULES, BUILD_BANK, POLARITY_BANK } from "./molecules.js";
 import { createKit } from "./modelkit.js";
@@ -17,6 +17,7 @@ const TIERS = [
   { id: "formal-charge", label: "Formal charge", built: true },
   { id: "lewis", label: "Lewis structures", built: true },
   { id: "geometries", label: "Geometries", built: true },
+  { id: "hybridization", label: "Hybridization", built: true },
   { id: "build", label: "Build molecules", built: true },
   { id: "polarity", label: "Polarity", built: true },
 ];
@@ -78,6 +79,11 @@ function render() {
     return renderFCIntro();
   }
   if (tier().id === "lewis") return renderLewisIntro();
+  if (tier().id === "hybridization") {
+    if (mode === "play") return renderHyPlay();
+    if (mode === "done") return renderHyDone();
+    return renderHyIntro();
+  }
   if (tier().id === "polarity") {
     if (mode === "play") return renderPolarityPlay();
     if (mode === "done") return renderPolarityDone();
@@ -89,8 +95,16 @@ function render() {
 }
 
 // ── quiz round mechanics ──
+// Each round mixes structure cards with two abstract AXE cards (OU E3's
+// signature item): no molecule at all, just the notation, name the shape.
+const AXE_PER_ROUND = 2;
 function startRound(cards) {
-  queue = cards ? cards.slice() : shuffle(MOLECULES).slice(0, ROUND_SIZE);
+  if (cards) queue = cards.slice();
+  else {
+    const mols = shuffle(MOLECULES).slice(0, ROUND_SIZE - AXE_PER_ROUND);
+    const axes = shuffle(GEOMETRIES).slice(0, AXE_PER_ROUND).map((g) => ({ kind: "axe", geo: g.id }));
+    queue = shuffle([...mols, ...axes]);
+  }
   queue.forEach((m) => { m.options = makeOptions(m); }); // fresh lineup every round
   roundTotal = queue.length;
   solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
@@ -115,6 +129,10 @@ function loadCard() {
 
 function hintsFor(m) {
   const g = GEO_BY_ID[m.geo];
+  if (m.kind === "axe") return [
+    `Read the notation: A is the central atom, the X subscript counts the bonded atoms, the E subscript counts the lone pairs.`,
+    `So: <strong>${g.bonds}</strong> bonded atom${g.bonds > 1 ? "s" : ""} + <strong>${g.lonePairs}</strong> lone pair${g.lonePairs === 1 ? "" : "s"} = <strong>${g.regions} regions</strong> → electron geometry <strong>${g.eGeo}</strong>. Let the lone pairs take their seats.`,
+  ];
   return [
     `Around ${m.center}: <strong>${m.bonds}</strong> bonded atom${m.bonds > 1 ? "s" : ""} and <strong>${m.lps}</strong> lone pair${m.lps === 1 ? "" : "s"} — bonds of any order count once.`,
     `That's <strong>${g.regions} regions</strong> → electron geometry <strong>${g.eGeo}</strong>. Now let the lone pairs take their seats and read what the atoms trace.`,
@@ -123,7 +141,9 @@ function hintsFor(m) {
 
 function reasoning(m) {
   const g = GEO_BY_ID[m.geo];
-  return `${m.center}: ${m.bonds} bonded atom${m.bonds > 1 ? "s" : ""} + ${m.lps} lone pair${m.lps === 1 ? "" : "s"} = ${g.regions} regions → ${g.eGeo}${g.lonePairs ? " with the lone pair" + (g.lonePairs > 1 ? "s" : "") + " seated" : ""} → <strong>${g.name}</strong>.`;
+  const head = m.kind === "axe" ? axeHtml(g) : m.center;
+  const seated = g.lonePairs ? " with the lone pair" + (g.lonePairs > 1 ? "s" : "") + " seated" : "";
+  return `${head}: ${g.bonds} bonded atom${g.bonds > 1 ? "s" : ""} + ${g.lonePairs} lone pair${g.lonePairs === 1 ? "" : "s"} = ${g.regions} regions → ${g.eGeo}${seated} → <strong>${g.name}</strong>.`;
 }
 
 function check() {
@@ -167,6 +187,7 @@ function geoCell(id) {
     <canvas class="geo-thumb" width="120" height="110"></canvas>
     <span class="geo-name">${g.name}</span>
     <span class="geo-meta">${g.bonds} bond${g.bonds > 1 ? "s" : ""}${g.lonePairs ? ` · ${g.lonePairs} lone pair${g.lonePairs > 1 ? "s" : ""}` : ""}</span>
+    <span class="geo-axe">${axeHtml(g)}</span>
     <span class="geo-angle">${g.angle}</span>
   </button>`;
 }
@@ -177,6 +198,7 @@ function renderGeometries() {
     <div class="intro">
       <p class="intro-eyebrow">Shape Lab · the geometry catalog</p>
       <p class="intro-lede">Count the <strong>electron density regions</strong> around the central atom — bonds of any order count once, lone pairs count once. The count picks the row; the lone pairs slide you rightward along it. <strong>Click any shape</strong> to see it turn in 3D with its angles and its quirks.</p>
+      <p class="intro-lede" style="margin-top:8px">Each cell also carries its <strong>AXE notation</strong>, the shorthand exams use for this exact count: A is the central atom, the subscript on X counts the bonded atoms, the subscript on E counts the lone pairs. AX<sub>2</sub>E<sub>2</sub> says two bonded atoms and two lone pairs — bent, like water. The quiz will hand you bare AXE cards with no molecule attached.</p>
     </div>
     ${GEO_GROUPS.map((grp) => `
       <div class="geo-group">
@@ -228,12 +250,18 @@ function renderPlay() {
   root.innerHTML = `
     ${tierTabs()}
     <button class="intro-link" id="introBtn" type="button">↩ Back to the geometry catalog</button>
+    ${problem.kind === "axe" ? `
+    <div class="formula-card">
+      <span class="card-tag">Shape quiz · AXE notation</span>
+      <p class="formula axe-formula">${axeHtml(g)}</p>
+      <p class="shape-ask">no molecule this time, just the notation — what molecular geometry is this?</p>
+    </div>` : `
     <div class="formula-card">
       <span class="card-tag">Shape quiz</span>
       <p class="formula">${fmtFormula(problem.f)}</p>
       <div class="fc-sketch quiz-structure">${sceneSvg(genScene(problem), 300, 250)}</div>
       <p class="shape-ask">read the Lewis structure — what shape does this molecule take?</p>
-    </div>
+    </div>`}
     <div class="opt-grid">${optionBtns}</div>
     ${hintBlock}
     ${reveal}
@@ -521,6 +549,190 @@ function renderLewisIntro() {
       const w = WALKTHROUGHS.find((x) => x.id === row.dataset.walk);
       openCards(walkthroughCards(w), { label: w.name });
     }));
+}
+
+// ── the Hybridization rung ──
+const HY_ROUND_SIZE = 8;
+let hyTyped = "", hyChecked = false, hyCorrect = false, hyNudge = null, hyHintsShown = 0;
+
+const hyRegions = (m) => m.bonds + m.lps;
+const hyFor = (m) => HYBRIDS[hyRegions(m)];
+const hyMol = (f) => MOLECULES.find((m) => m.f === f);
+
+// The four inline examples: the plain case, the double-bond trap, the
+// lone-pair trap, and the expanded octet.
+const HY_EXAMPLES = [
+  { f: "CH4", text: "4 bonded atoms + 0 lone pairs = <strong>4 regions</strong>", trap: "The plain case: four single bonds, four hybrid orbitals." },
+  { f: "CO2", text: "2 bonded atoms + 0 lone pairs = <strong>2 regions</strong>", trap: "Each double bond counts ONCE — two regions, not four." },
+  { f: "H2O", text: "2 bonded atoms + 2 lone pairs = <strong>4 regions</strong>", trap: "Lone pairs count — sp³, not sp." },
+  { f: "SF6", text: "6 bonded atoms + 0 lone pairs = <strong>6 regions</strong>", trap: "Six regions need d orbitals — row 3 and below only." },
+];
+
+function startHyRound(cards) {
+  queue = cards ? cards.slice() : shuffle(MOLECULES).slice(0, HY_ROUND_SIZE);
+  roundTotal = queue.length;
+  solvedThisRound = 0; cleanSolves = 0; missedThisRound = [];
+  mode = "play";
+  loadHyCard();
+}
+function loadHyCard() {
+  problem = queue[0];
+  hyTyped = ""; hyChecked = false; hyCorrect = false; hyNudge = null; hyHintsShown = 0;
+  render();
+}
+
+// Normalize a typed answer: sp3d2, sp³d², SP3 D2, sp^3d^2 all mean the same.
+function parseHy(s) {
+  const t = s.trim().toLowerCase().replace(/[\s^()]/g, "").replace(/¹/g, "1").replace(/²/g, "2").replace(/³/g, "3");
+  if (!t) return {};
+  if (!/^[spd123]+$/.test(t)) return { nudge: "Answer with the orbital mix, written like sp3 or sp3d2." };
+  return { value: t.replace(/([spd])1/g, "$1") };
+}
+
+function hyCheck() {
+  if (!hyTyped.trim() || hyChecked) return;
+  const p = parseHy(hyTyped);
+  if (p.nudge) { hyNudge = p.nudge; render(); return; }
+  hyNudge = null;
+  hyChecked = true;
+  hyCorrect = p.value === hyFor(problem).name;
+  if (hyCorrect) { solvedThisRound += 1; if (hyHintsShown === 0) cleanSolves += 1; }
+  else if (!missedThisRound.includes(problem)) missedThisRound.push(problem);
+  render();
+}
+function hyNext() {
+  if (hyCorrect) queue.shift();
+  else queue.push(queue.shift());
+  if (queue.length === 0) { mode = "done"; render(); } else loadHyCard();
+}
+
+function renderHyIntro() {
+  const exCards = HY_EXAMPLES.map((ex) => {
+    const m = hyMol(ex.f);
+    return `<div class="fc-ex-card">
+      <p class="fc-ex-title">${fmtFormula(ex.f)} — ${hyFor(m).html}</p>
+      <div class="fc-sketch">${sceneSvg(genScene(m), 230, 200)}</div>
+      <p class="fc-ex-calc">${ex.text} → <strong>${hyFor(m).html}</strong></p>
+      <p class="fc-ex-text">${ex.trap}</p>
+    </div>`;
+  }).join("");
+
+  const tableRows = [2, 3, 4, 5, 6].map((n) => {
+    const geos = GEOMETRIES.filter((x) => x.regions === n);
+    return `<tr>
+      <td><strong>${n}</strong></td>
+      <td class="hy-name">${HYBRIDS[n].html}</td>
+      <td>${HYBRIDS[n].recipe}</td>
+      <td>${geos[0].eGeo}</td>
+    </tr>`;
+  }).join("");
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <div class="intro">
+      <p class="intro-eyebrow">Shape Lab · hybridization</p>
+      <p class="intro-lede">An atom's valence orbitals come in different shapes: one spherical s orbital, three dumbbell-shaped p orbitals, and from row 3 on, d orbitals too. <strong>Hybridization</strong> is the mixing of these orbitals into a new set of identical hybrid orbitals — one for each electron density region around the atom, all the same shape and energy, pointing where the regions point.</p>
+      <p class="fc-formula">number of electron density regions&nbsp;=&nbsp;number of hybrid orbitals</p>
+      <p class="intro-lede">The name of the hybridization is the recipe. In sp<sup>3</sup>, one s orbital and three p orbitals were mixed, giving four hybrid orbitals. In sp<sup>3</sup>d<sup>2</sup>, one s, three p and two d give six. The superscript counts how many orbitals of that kind went into the mix, and the superscripts plus the unwritten 1s add up to the number of regions.</p>
+      <table class="hy-table">
+        <thead><tr><th>regions</th><th>hybridization</th><th>the mix</th><th>electron geometry</th></tr></thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+      <p class="intro-lede">Hybridization returns constantly in organic chemistry: every alkane carbon is sp<sup>3</sup>, a double-bonded carbon is sp<sup>2</sup>, a triple-bonded carbon is sp. Name the hybridization and you have named the bond angles.</p>
+      <div class="fc-ex-row">${exCards}</div>
+      <p class="intro-lede">Determining the hybridization is a tool for connecting a Lewis structure to the orbitals underneath it. It is especially useful for predicting bond angles and for describing double and triple bonds. The count has two traps worth naming:</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text"><strong>Count the electron density regions</strong> around the central atom: every bonded atom counts once, and every lone pair counts once. Lone pairs live in hybrid orbitals too — that is why the O in water is sp<sup>3</sup>, not sp.</span></li>
+        <li><span class="step-num">2</span><span class="step-text"><strong>A double or triple bond still counts as ONE region.</strong> Only the first bond between two atoms — the <strong>sigma bond (σ)</strong> — uses a hybrid orbital. The second and third lines of a double or triple bond are <strong>pi bonds (π)</strong>, made from the unmixed p orbitals left over. One neighbor, one region, however many lines connect it.</span></li>
+        <li><span class="step-num">3</span><span class="step-text"><strong>Match the count to the mix</strong>: 2 → sp, 3 → sp<sup>2</sup>, 4 → sp<sup>3</sup>, 5 → sp<sup>3</sup>d, 6 → sp<sup>3</sup>d<sup>2</sup>. Five or six regions need d orbitals, so the central atom must be row 3 or lower — the same expanded-octet law the Lewis rung taught.</span></li>
+      </ol>
+    </div>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Start the drill →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+  wireTabs();
+  root.querySelector("#startBtn").addEventListener("click", () => startHyRound());
+}
+
+function renderHyPlay() {
+  const n = hyRegions(problem);
+  const hints = [
+    `Count the electron density regions around ${problem.center}: every bonded atom counts once (doubles and triples too), every lone pair counts once.`,
+    `${problem.bonds} bonded atom${problem.bonds > 1 ? "s" : ""} + ${problem.lps} lone pair${problem.lps === 1 ? "" : "s"} = <strong>${n} regions</strong> → ${n} hybrid orbitals: ${HYBRIDS[n].recipe}.`,
+  ];
+  const shown = hints.slice(0, hyHintsShown).map((h) => `<li>${h}</li>`).join("");
+  const hintBlock = hyChecked ? "" : `<div class="hints">
+      ${hyHintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
+      ${hyHintsShown < hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${hyHintsShown ? "Another hint" : "Need a hint?"}</button>` : ""}
+    </div>`;
+
+  const answerArea = hyChecked
+    ? `<div class="answer-built ${hyCorrect ? "ok" : "no"}"><span>${hyFor(problem).html}</span></div>`
+    : `<input class="answer-input" id="answerInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" value="${hyTyped.replace(/"/g, "&quot;")}">`;
+
+  const feedback = !hyChecked ? `<p class="feedback">&nbsp;</p>`
+    : hyCorrect
+      ? `<p class="feedback ok">${hyHintsShown ? "Correct." : "Correct — no hints. 💪"} It leaves the stack.</p>`
+      : `<p class="feedback no">Not quite — ${problem.center}: ${problem.bonds} bonded atom${problem.bonds > 1 ? "s" : ""} + ${problem.lps} lone pair${problem.lps === 1 ? "" : "s"} = ${n} regions → ${hyFor(problem).html}. It comes back around.</p>`;
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <button class="intro-link" id="introBtn" type="button">↩ How hybridization works</button>
+    <div class="formula-card">
+      <span class="card-tag">Hybridization</span>
+      <p class="formula">${fmtFormula(problem.f)}</p>
+      <div class="fc-sketch quiz-structure">${sceneSvg(genScene(problem), 300, 250)}</div>
+      <p class="shape-ask">what is the hybridization of the central atom, ${problem.center}?</p>
+    </div>
+    <div class="answer-row">${answerArea}</div>
+    ${hyNudge ? `<p class="ox-nudge">${hyNudge}</p>` : ""}
+    ${hintBlock}
+    ${feedback}
+    <div class="controls">
+      <p class="score">Solved ${solvedThisRound} of ${roundTotal} &middot; ${queue.length} left</p>
+      ${hyChecked
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !hyCorrect ? "Next →" : "Finish"}</button>`
+        : `<button class="action primary" id="checkBtn" ${hyTyped.trim() ? "" : "disabled"}>Check</button>`}
+    </div>`;
+
+  wireTabs();
+  root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const input = root.querySelector("#answerInput");
+  if (input) {
+    input.addEventListener("input", () => { hyTyped = input.value; const b = root.querySelector("#checkBtn"); if (b) b.disabled = !hyTyped.trim(); });
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); hyCheck(); } });
+    input.focus();
+  }
+  const hintBtn = root.querySelector("#hintBtn"); if (hintBtn) hintBtn.addEventListener("click", () => { hyHintsShown += 1; render(); });
+  const checkBtn = root.querySelector("#checkBtn"); if (checkBtn) checkBtn.addEventListener("click", hyCheck);
+  const nextBtn = root.querySelector("#nextBtn"); if (nextBtn) { nextBtn.addEventListener("click", hyNext); nextBtn.focus(); }
+}
+
+function renderHyDone() {
+  const missedChips = missedThisRound.map((m) => `<span class="chip">${fmtFormula(m.f)}</span>`).join("");
+  const missedBlock = missedThisRound.length
+    ? `<div class="missed-block"><p class="missed-label">Worth another pass — you stumbled on ${missedThisRound.length}:</p><div class="chips">${missedChips}</div></div>`
+    : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} with no hints. 🎉</p>`;
+  const nextTier = TIERS[tierIndex + 1];
+
+  root.innerHTML = `
+    ${tierTabs()}
+    <p class="prompt">Round done — ${roundTotal} central atoms named, ${cleanSolves} hint-free.</p>
+    ${missedBlock}
+    ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
+    <div class="controls two-up done-nav">
+      <button class="action primary" id="nextTierBtn">Next topic: ${nextTier.label} →</button>
+      <button class="action ghost" id="revisitBtn">↩ Revisit hybridization</button>
+    </div>
+    <p class="done-next">Or run another round:</p>
+    <div class="controls two-up"><button class="action primary" id="startBtn">Start the drill →</button></div>
+    <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
+
+  wireTabs();
+  root.querySelector("#nextTierBtn").addEventListener("click", () => { tierIndex += 1; mode = "intro"; render(); });
+  root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
+  const reviewBtn = root.querySelector("#reviewBtn");
+  if (reviewBtn) reviewBtn.addEventListener("click", () => startHyRound(missedThisRound));
+  root.querySelector("#startBtn").addEventListener("click", () => startHyRound());
 }
 
 // ── the Build rung: the Model Kit ──
@@ -852,14 +1064,14 @@ function renderPolarityDone() {
     <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
 
   wireTabs();
-  root.querySelector("#kitBtn").addEventListener("click", () => { tierIndex = 3; mode = "intro"; render(); });
+  root.querySelector("#kitBtn").addEventListener("click", () => { tierIndex = TIERS.findIndex((t) => t.id === "build"); mode = "intro"; render(); });
   root.querySelector("#revisitBtn").addEventListener("click", () => { mode = "intro"; render(); });
   root.querySelector("#startBtn").addEventListener("click", () => startPolarityRound());
 }
 
 // ── the done screen (house pattern: next + revisit + play again + home) ──
 function renderDone() {
-  const missedChips = missedThisRound.map((m) => `<span class="chip">${fmtFormula(m.f)}</span>`).join("");
+  const missedChips = missedThisRound.map((m) => `<span class="chip">${m.kind === "axe" ? axeHtml(GEO_BY_ID[m.geo]) : fmtFormula(m.f)}</span>`).join("");
   const missedBlock = missedThisRound.length
     ? `<div class="missed-block"><p class="missed-label">Worth another pass — you stumbled on ${missedThisRound.length}:</p><div class="chips">${missedChips}</div></div>`
     : `<p class="feedback ok">Clean run — ${cleanSolves} of ${roundTotal} with no hints. 🎉</p>`;
@@ -867,7 +1079,7 @@ function renderDone() {
 
   root.innerHTML = `
     ${tierTabs()}
-    <p class="prompt">Round done — ${roundTotal} molecules, ${cleanSolves} solved hint-free.</p>
+    <p class="prompt">Round done — ${roundTotal} cards, ${cleanSolves} solved hint-free.</p>
     ${missedBlock}
     ${missedThisRound.length ? `<div class="controls"><button class="action ghost" id="reviewBtn">Redrill the ${missedThisRound.length} you missed →</button></div>` : ""}
     <div class="controls two-up done-nav">
@@ -909,6 +1121,7 @@ function openModal(g) {
       <div class="geo-info">
         <h2>${g.name}</h2>
         <p class="geo-line"><strong>${g.regions} regions</strong> · ${g.bonds} bonding, ${g.lonePairs} lone pair${g.lonePairs === 1 ? "" : "s"} · electron geometry: <strong>${g.eGeo}</strong></p>
+        <p class="geo-line">AXE notation: <strong>${axeHtml(g)}</strong> · central-atom hybridization: <strong>${HYBRIDS[g.regions].html}</strong></p>
         <p class="geo-line">Bond angle${g.angle.includes("·") ? "s" : ""}: <strong>${g.angle}</strong></p>
         <ul class="geo-facts">${g.facts.map((f) => `<li>${f}</li>`).join("")}</ul>
         <p class="geo-examples">Examples: ${g.examples.map((e) => `<span class="chip">${fmtFormula(e)}</span>`).join(" ")}</p>

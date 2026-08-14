@@ -191,6 +191,31 @@ export const GEO_GROUPS = [
   { label: "6 regions — octahedral", ids: ["octahedral", "square-pyramidal", "square-planar"] },
 ];
 
+// ── AXE notation ──
+// A = the central atom, X = bonded atoms, E = lone pairs. Subscript 1 is
+// omitted and E drops out entirely at zero, textbook convention: AX2, AX4E2.
+export function axeHtml(g) {
+  const x = g.bonds > 1 ? `X<sub>${g.bonds}</sub>` : "X";
+  const e = g.lonePairs === 0 ? "" : g.lonePairs === 1 ? "E" : `E<sub>${g.lonePairs}</sub>`;
+  return `A${x}${e}`;
+}
+export function axeText(g) {
+  const x = g.bonds > 1 ? `X${g.bonds}` : "X";
+  const e = g.lonePairs === 0 ? "" : g.lonePairs === 1 ? "E" : `E${g.lonePairs}`;
+  return `A${x}${e}`;
+}
+
+// ── hybridization ──
+// Regions of electron density → the orbital mix of the central atom. The name
+// is the recipe: sp3d = one s + three p + one d, five hybrid orbitals.
+export const HYBRIDS = {
+  2: { name: "sp", html: "sp", recipe: "one s + one p" },
+  3: { name: "sp2", html: "sp<sup>2</sup>", recipe: "one s + two p" },
+  4: { name: "sp3", html: "sp<sup>3</sup>", recipe: "one s + three p" },
+  5: { name: "sp3d", html: "sp<sup>3</sup>d", recipe: "one s + three p + one d" },
+  6: { name: "sp3d2", html: "sp<sup>3</sup>d<sup>2</sup>", recipe: "one s + three p + two d" },
+};
+
 // Formula strings above use plain digits ("CO2"), trailing charges ("NO3-", "NH4+"),
 // or caret charges ("SO4^2-"); render with proper sub/superscripts.
 export function fmtFormula(s) {
