@@ -3,6 +3,14 @@
 Lithium-ion battery technologies section — one trainer per part of the cell.
 Hub page: `index.html` (live cards link to trainers; hatched cards are planned).
 
+## Roadmap (approved 2026-08-14)
+
+1. **Full-Cell Builder** — SHIPPED (see below)
+2. **Numbers rung** — cell voltage, Wh/kg, N/P ratio, C-rate, areal capacity
+3. **Typed recall** — typed-answer rungs on the existing decks (house rule)
+4. **Electrolyte Additives** and **Electrode Recipe** decks
+5. **Voltage curves**, **degradation chains**, **history timeline**
+
 ## Shipped
 
 All three trainers share one flow (study gallery → four-shape MCQ quiz → done) and
@@ -43,6 +51,19 @@ stay **uniquely true deck-wide** — the tests enforce it.
   - `js/deck.test.js` — deck integrity + within-family option counts
     (the one-card Li-metal tab makes min(4, pool) load-bearing) + per-card
     figure distinctness.
+
+- **`cell-builder/`** — Full-Cell Builder, the capstone. Two rungs:
+  **Diagnose** (12 curated cases, predict works/fails before the reveal) and
+  **Build to order** (six customer briefs; open bench with cathode / anode /
+  salt / cyclic / linear / optional film-former slots). `js/rules.js` is a
+  pure compatibility engine — every rule is a fact the decks teach (LiTFSI+Al
+  above 3.7 V, PC vs graphite unless protected, Si needs FEC specifically,
+  Li metal needs LiFSI, LNMO fails all carbonates, LiClO₄ vetoed) — so any
+  chemically sound build passes: engine-judged, never answer-matched.
+  `data/bench.js` is a self-contained roster (no cross-game imports; games
+  stay standalone). `js/rules.test.js` brute-forces all 4,320 builds to prove
+  every brief has multiple solutions and none is trivial, and re-derives every
+  Diagnose verdict from the engine so cards and rules can never disagree.
 
 ## Planned (placeholders on the hub)
 

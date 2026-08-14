@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full-Cell Builder — Battery Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260814-cell1">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Battery Lab</a>
+      <p class="eyebrow">Battery Lab &middot; Lithium-Ion Cells</p>
+      <h1>Full-Cell Builder</h1>
+      <p class="lede">Where the three decks meet: diagnose complete cells before the reveal, then build to a customer's order — cathode, anode, and electrolyte judged together by the chemistry, not by an answer key.</p>
+    </header>
+    <section id="game" class="game" aria-live="polite"></section>
+  </main>
+  <script type="importmap">
+  {
+    "imports": {
+      "./data/bench.js": "./data/bench.js?v=20260814-cell1",
+      "./js/rules.js": "./js/rules.js?v=20260814-cell1"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260814-cell1"></script>
+</body>
+</html>
