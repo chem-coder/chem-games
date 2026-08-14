@@ -34,15 +34,22 @@ test("deck integrity: ids unique, claims unique deck-wide, shapes right", () => 
   }
 });
 
-test("every question has 4 unique options with exactly one correct", () => {
+test("within-family pools: option counts fit the tab, one correct, all unique", () => {
   const rng = seeded(19);
   for (let round = 0; round < 30; round++) {
     for (const cat of ["layered", "spinel", "olivine"]) {
-      for (const q of buildRound(byCat(cat), pool, rng)) {
-        assert.equal(q.options.length, 4);
+      const tab = byCat(cat);
+      for (const q of buildRound(tab, tab, rng)) {
+        // two-card families give 2-option card questions; claim questions
+        // fill to 4 from the donors' extra claims
+        const expected = q.type === "whoClaim" ? 4 : Math.min(4, tab.length);
+        assert.equal(q.options.length, expected, `${q.type} for ${q.cardId} in ${cat}`);
         assert.equal(q.options.filter((o) => o.correct).length, 1);
         const keys = q.options.map((o) => o.cardId ?? o.text);
-        assert.equal(new Set(keys).size, 4, `duplicate options in ${q.type} for ${q.cardId}`);
+        assert.equal(new Set(keys).size, q.options.length, `duplicate options in ${q.type} for ${q.cardId}`);
+        for (const o of q.options) {
+          if (o.cardId) assert.ok(tab.some((c) => c.id === o.cardId), `${o.cardId} leaked into the ${cat} tab`);
+        }
       }
     }
   }

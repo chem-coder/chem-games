@@ -146,8 +146,10 @@ function renderStudy() {
 
 function startQuiz(fromCards) {
   const cards = Array.isArray(fromCards) && fromCards.length ? fromCards : tierCards();
-  const queue = buildRound(cards, DECK.cards, Math.random, Math.min(10, cards.length * 2));
-  quiz = { queue, total: queue.length, solved: 0, clean: 0, missedIds: new Set(), picked: null, checked: false };
+  // pool = the active tab, so small-tab quizzes stay within-family
+  const pool = tierCards();
+  const queue = buildRound(cards, pool, Math.random, Math.min(10, cards.length * 2));
+  quiz = { queue, pool, total: queue.length, solved: 0, clean: 0, missedIds: new Set(), picked: null, checked: false };
   mode = "quiz";
   render();
 }
@@ -248,7 +250,7 @@ function check() {
     quiz.missedIds.add(q.cardId);
     // requeue with freshly generated options so position can't be memorized
     const card = cardById.get(q.cardId);
-    const retry = buildQuestion(card, DECK.cards, q.type, Math.random);
+    const retry = buildQuestion(card, quiz.pool, q.type, Math.random);
     retry.dirty = true;
     quiz.queue.push(retry);
   }

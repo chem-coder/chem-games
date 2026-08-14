@@ -16,8 +16,8 @@
 export const DECK = {
   categories: {
     salt:     { label: "Salts",     blurb: "The lithium salt supplies the Li⁺ that carries every ampere. One anion rules industry; the challengers each fix one of its flaws — and pay somewhere else." },
-    solvent:  { label: "Solvents",  blurb: "Carbonate solvents dissolve the salt and set viscosity, conductivity, and the temperature window. The art is the blend: one cyclic carbonate for dissociation, one linear for fluidity." },
-    additive: { label: "Additives", blurb: "A few percent of the recipe that decides the cell's lifetime. Additives sacrifice themselves on the first charge to build a better SEI than the solvent ever would." },
+    solvent:  { label: "Solvents",  blurb: "Carbonate solvents dissolve the salt and set viscosity, conductivity, and the temperature window. The art is the blend: one cyclic carbonate for dissociation, one linear for fluidity — and the film-forming cyclic carbonates (VC, FEC, CEC) moonlight here too: additives at heart, co-solvents in practice." },
+    additive: { label: "Additives", blurb: "A few percent of the recipe that decides the cell's lifetime. Additives sacrifice themselves on the first charge to build a better SEI than the solvent ever would — FEC's chlorinated ancestor CEC shows where the idea began." },
     all:      { label: "Full mix",  blurb: "The whole cabinet — salts, solvents, and additives shuffled together, the way a real electrolyte recipe (and a real exam) mixes them." },
   },
 
@@ -423,6 +423,7 @@ export const DECK = {
       abbr: "VC",
       name: "Vinylene carbonate",
       category: "additive",
+      also: ["solvent"],
       tagline: "The archetypal SEI additive — 1–2 % that decides the cell's lifetime.",
       formulaHtml: "C<sub>3</sub>H<sub>2</sub>O<sub>3</sub>",
       specs: ["dose 1–2 wt%", "reduces before EC", "polymerizes into the SEI"],
@@ -458,6 +459,7 @@ export const DECK = {
       abbr: "FEC",
       name: "Fluoroethylene carbonate",
       category: "additive",
+      also: ["solvent"],
       tagline: "One fluorine on EC — the additive that lets silicon anodes survive.",
       formulaHtml: "C<sub>3</sub>H<sub>3</sub>FO<sub>3</sub>",
       specs: ["LiF-rich SEI", "essential for Si anodes", "gases (HF, CO2) when hot"],
@@ -479,6 +481,41 @@ export const DECK = {
           { x: -30.4, y: 9.9, label: "O", trim: 9 },
           { x: 0, y: 68, label: "O", trim: 9 },
           { x: 38.8, y: -53.4, label: "F", trim: 9 },
+        ],
+        bonds: [
+          [0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1], [4, 0, 1],
+          [0, 5, 2, { style: "sym" }],
+          [2, 6, 1],
+        ],
+      },
+    },
+    {
+      id: "cec",
+      abbr: "CEC",
+      name: "Chloroethylene carbonate",
+      category: "additive",
+      also: ["solvent"],
+      tagline: "FEC's chlorinated ancestor — the 1990s film-former that fluorine retired.",
+      formulaHtml: "C<sub>3</sub>H<sub>3</sub>ClO<sub>3</sub>",
+      specs: ["Cl on the EC ring", "1990s SEI former", "superseded by FEC"],
+      facts: [
+        "EC carrying a single chlorine — the halogenated cyclic carbonate that came before FEC. Like its successor, it reduces ahead of the solvent and seeds a halide-rich SEI on graphite.",
+        "In the mid-1990s it showed that a small dose of a sacrificial film-former could make graphite cycle even in PC-rich electrolytes — an early proof of concept behind the whole modern additive strategy.",
+        "Fluorine retired it: reducing the C–Cl bond leaves chloride and other corrosive byproducts and costs more first-cycle capacity, so once FEC matured, CEC moved to the history section of the review papers.",
+      ],
+      claims: [
+        "EC's chlorinated sibling — the 1990s proof that a sacrificial film-former can protect graphite in PC",
+        "Retired because its reduction leaves corrosive chloride byproducts — fluorine does the same job cleaner",
+      ],
+      mol: {
+        atoms: [
+          { x: 0, y: 32 },
+          { x: 30.4, y: 9.9, label: "O", trim: 9 },
+          { x: 18.8, y: -25.9 },
+          { x: -18.8, y: -25.9 },
+          { x: -30.4, y: 9.9, label: "O", trim: 9 },
+          { x: 0, y: 68, label: "O", trim: 9 },
+          { x: 38.8, y: -53.4, label: "Cl", trim: 11 },
         ],
         bonds: [
           [0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 4, 1], [4, 0, 1],

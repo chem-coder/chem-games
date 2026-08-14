@@ -17,7 +17,8 @@ function seeded(seed) {
 }
 
 const pool = DECK.cards;
-const byCat = (k) => pool.filter((c) => c.category === k);
+// mirror the app's tab logic: dual-membership cards deal into extra tabs
+const tabCards = (k) => pool.filter((c) => c.category === k || (c.also || []).includes(k));
 
 test("deck integrity: ids unique, claims unique across deck, mol data sane", () => {
   const ids = new Set(pool.map((c) => c.id));
@@ -30,21 +31,30 @@ test("deck integrity: ids unique, claims unique across deck, mol data sane", () 
     assert.ok(c.claims.length >= 2, `${c.id} needs >=2 claims`);
     assert.equal(c.facts.length, 3, `${c.id} needs exactly 3 facts`);
     assert.equal(c.specs.length, 3, `${c.id} needs exactly 3 spec chips`);
+    for (const k of c.also || []) {
+      assert.ok(DECK.categories[k], `${c.id} 'also' points at unknown category ${k}`);
+    }
     for (const [a, b] of c.mol.bonds) {
       assert.ok(c.mol.atoms[a] && c.mol.atoms[b], `${c.id} bond points at a missing atom`);
     }
   }
 });
 
-test("every question has 4 unique options with exactly one correct", () => {
+test("within-family pools: option counts fit the tab, one correct, all unique", () => {
   const rng = seeded(7);
   for (let round = 0; round < 30; round++) {
     for (const cat of ["salt", "solvent", "additive"]) {
-      for (const q of buildRound(byCat(cat), pool, rng)) {
-        assert.equal(q.options.length, 4);
+      const tab = tabCards(cat);
+      for (const q of buildRound(tab, tab, rng)) {
+        const expected = q.type === "whoClaim" ? 4 : Math.min(4, tab.length);
+        assert.equal(q.options.length, expected, `${q.type} for ${q.cardId} in ${cat}`);
         assert.equal(q.options.filter((o) => o.correct).length, 1);
         const keys = q.options.map((o) => o.cardId ?? o.text);
-        assert.equal(new Set(keys).size, 4, `duplicate options in ${q.type} for ${q.cardId}`);
+        assert.equal(new Set(keys).size, q.options.length, `duplicate options in ${q.type} for ${q.cardId}`);
+        // within-family: every card option must belong to the tab
+        for (const o of q.options) {
+          if (o.cardId) assert.ok(tab.some((c) => c.id === o.cardId), `${o.cardId} leaked into the ${cat} tab`);
+        }
       }
     }
   }
@@ -68,14 +78,20 @@ test("correct option matches the asked card (or its claim)", () => {
 
 test("round respects the cap and covers distinct cards", () => {
   const rng = seeded(3);
-  const salts = byCat("salt");
-  const round = buildRound(salts, pool, rng, 10);
+  const salts = tabCards("salt");
+  const round = buildRound(salts, salts, rng, 10);
   assert.ok(round.length <= 10);
   assert.ok(new Set(round.map((q) => q.cardId)).size >= Math.min(salts.length, 5));
 
-  const additives = byCat("additive");
-  const small = buildRound(additives, pool, rng, 10);
+  const additives = tabCards("additive");
+  const small = buildRound(additives, additives, rng, 10);
   assert.equal(small.length, additives.length * 2);
+});
+
+test("solvents tab includes the dual-membership film-formers", () => {
+  const ids = tabCards("solvent").map((c) => c.id);
+  for (const id of ["vc", "fec", "cec"]) assert.ok(ids.includes(id), `${id} missing from solvents tab`);
+  assert.equal(tabCards("additive").length, 3);
 });
 
 test("renderer produces valid-looking svg for every card", () => {

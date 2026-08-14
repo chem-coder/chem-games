@@ -34,7 +34,10 @@ const cardById = new Map(DECK.cards.map((c) => [c.id, c]));
 
 function tierCards() {
   const key = TIERS[tierIndex].key;
-  return key === "all" ? DECK.cards : DECK.cards.filter((c) => c.category === key);
+  if (key === "all") return DECK.cards;
+  // cards can hold dual membership (e.g. VC/FEC/CEC: additives that also
+  // deal into the Solvents tab as co-solvents)
+  return DECK.cards.filter((c) => c.category === key || (c.also || []).includes(key));
 }
 
 /* ---------- formatting helpers ---------- */
@@ -88,7 +91,8 @@ function wireTabs() {
 
 function studyCard(card) {
   const open = openIds.has(card.id);
-  const showChip = TIERS[tierIndex].key === "all";
+  // chip a card whenever it's shown outside its home category
+  const showChip = card.category !== TIERS[tierIndex].key;
   const head = `
     <button class="mol-head" type="button" data-id="${card.id}" aria-expanded="${open}">
       <div class="mol-figure">${molSvg(card.mol, { aria: card.name })}</div>
@@ -147,8 +151,10 @@ function renderStudy() {
 
 function startQuiz(fromCards) {
   const cards = Array.isArray(fromCards) && fromCards.length ? fromCards : tierCards();
-  const queue = buildRound(cards, DECK.cards, Math.random, Math.min(10, cards.length * 2));
-  quiz = { queue, total: queue.length, solved: 0, clean: 0, missedIds: new Set(), picked: null, checked: false };
+  // pool = the active tab, so small-tab quizzes stay within-family
+  const pool = tierCards();
+  const queue = buildRound(cards, pool, Math.random, Math.min(10, cards.length * 2));
+  quiz = { queue, pool, total: queue.length, solved: 0, clean: 0, missedIds: new Set(), picked: null, checked: false };
   mode = "quiz";
   render();
 }
@@ -250,7 +256,7 @@ function check() {
     quiz.missedIds.add(q.cardId);
     // requeue with freshly generated options so position can't be memorized
     const card = cardById.get(q.cardId);
-    const retry = buildQuestion(card, DECK.cards, q.type, Math.random);
+    const retry = buildQuestion(card, quiz.pool, q.type, Math.random);
     retry.dirty = true;
     quiz.queue.push(retry);
   }

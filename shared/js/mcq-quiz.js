@@ -9,9 +9,11 @@
     whoClaim   — given a component, pick the claim that is true of it
 
   Question: { type, cardId, claim?, options: [{ cardId? , text?, correct }] }
-  Distractors come from the same category when possible, then the rest of
-  the pool — for the two-card additive category the cyclic-carbonate
-  solvents are chemically honest decoys.
+  Distractors come from the same category first, then the rest of the pool.
+  Apps pass the ACTIVE TAB's cards as the pool (house ruling: small-tab
+  quizzes stay within-family), so card-based questions may carry fewer than
+  4 options in a two-card family; claim-based questions round-robin extra
+  claims from the same donors to fill all 4.
 */
 
 export const QUESTION_TYPES = ["structName", "nameStruct", "claimWho", "whoClaim"];
@@ -42,11 +44,16 @@ function claimOptions(card, pool, rng) {
   const claim = card.claims[Math.floor(rng() * card.claims.length)];
   const near = pool.filter((c) => c.id !== card.id && c.category === card.category);
   const far = pool.filter((c) => c.id !== card.id && c.category !== card.category);
-  const donors = shuffled(near, rng).concat(shuffled(far, rng)).slice(0, 3);
-  const opts = donors.map((c) => ({
-    text: c.claims[Math.floor(rng() * c.claims.length)],
-    correct: false,
-  }));
+  const donors = shuffled(near, rng).concat(shuffled(far, rng));
+  // one claim per donor first, then donors' second claims, until 3 distractors
+  const lists = donors.map((d) => shuffled(d.claims, rng));
+  const texts = [];
+  for (let i = 0; texts.length < 3 && lists.some((l) => l[i] != null); i++) {
+    for (const l of lists) {
+      if (texts.length < 3 && l[i] != null) texts.push(l[i]);
+    }
+  }
+  const opts = texts.map((text) => ({ text, correct: false }));
   opts.push({ text: claim, correct: true });
   return shuffled(opts, rng);
 }
