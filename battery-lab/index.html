@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battery Lab — Chem Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; color: var(--ink); background: var(--bg); font-family: var(--font-body); }
+    sub { font-size: 0.62em; line-height: 0; vertical-align: -0.18em; }
+    sup { font-size: 0.62em; line-height: 0; vertical-align: 0.42em; }
+    main { width: min(1020px, calc(100% - 32px)); margin: 0 auto; padding: 30px 0 48px; }
+    .home-link { color: var(--accent); font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; text-decoration: none; }
+    .home-link:hover { text-decoration: underline; }
+    .eyebrow { margin: 10px 0 4px; color: var(--plum-dark); font-family: var(--font-display); font-size: 0.78rem; font-weight: 850; text-transform: uppercase; }
+    h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(1.9rem, 4.5vw, 2.7rem); line-height: 1.05; }
+    .lede { margin: 0 0 26px; max-width: 46rem; color: var(--muted); line-height: 1.5; }
+    .section-heading { margin: 28px 0 12px; font-family: var(--font-display); color: #243640; font-size: 1rem; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .card {
+      display: grid; gap: 10px; min-height: 168px; padding: 18px;
+      color: inherit; text-decoration: none;
+      background: var(--surface); border: 1px solid rgba(147, 164, 174, 0.62);
+      border-radius: 8px; box-shadow: var(--shadow);
+    }
+    a.card:hover, a.card:focus-visible { border-color: rgba(30, 114, 104, 0.7); outline: 3px solid rgba(30, 114, 104, 0.16); outline-offset: 2px; }
+    .card h2 { margin: 0; font-family: var(--font-display); font-size: 1.24rem; line-height: 1.15; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.42; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 6px; align-self: end; }
+    .tag { padding: 5px 8px; color: var(--plum-dark); background: var(--plum-soft); border: 1px solid var(--line); border-radius: 999px; font-size: 0.76rem; font-weight: 800; }
+    .card.featured { position: relative; border: 2px solid var(--accent); background: #eaf2ef; }
+    .card.featured::after { content: "★"; position: absolute; top: 10px; right: 12px; color: var(--accent); font-size: 1.05rem; line-height: 1; }
+    .placeholder { color: var(--muted); background: repeating-linear-gradient(-45deg, #ffffff, #ffffff 10px, #f4f7f8 10px, #f4f7f8 20px); }
+    .footer-note { margin-top: 24px; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+    @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } .card { min-height: 0; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <a class="home-link" href="../">&larr; All Chem Games</a>
+      <p class="eyebrow">Chem Games &middot; Electrochemistry</p>
+      <h1>Battery Lab</h1>
+      <p class="lede">Lithium-ion battery technologies, one trainer per part of the cell — the materials, the chemistry, and the facts every battery researcher carries in their head.</p>
+    </header>
+
+    <h2 class="section-heading">Trainers</h2>
+    <section class="grid" aria-label="Battery Lab trainers">
+      <a class="card featured" href="electrolytes/">
+        <h2>Electrolyte Components</h2>
+        <p>Salts, solvents, and additives as literature-style structure flashcards — LiPF<sub>6</sub> to FEC — then quizzes that mix the structures and facts until the right ones stick together.</p>
+        <div class="tag-row">
+          <span class="tag">Structures</span>
+          <span class="tag">Flashcards</span>
+          <span class="tag">Quiz</span>
+        </div>
+      </a>
+
+      <div class="card placeholder">
+        <h2>Cathode Materials</h2>
+        <p>LCO, NMC, NCA, LFP and their relatives — layered, spinel, and olivine lattices, voltages, capacities, degradation modes, and the industry stories behind them. Deck drafted, game next.</p>
+        <div class="tag-row">
+          <span class="tag">Planned</span>
+        </div>
+      </div>
+
+      <div class="card placeholder">
+        <h2>Anode Materials</h2>
+        <p>Graphite, silicon, hard carbon, LTO, lithium metal — intercalation vs alloying vs plating, and why the SEI decides everything.</p>
+        <div class="tag-row">
+          <span class="tag">Planned</span>
+        </div>
+      </div>
+
+      <div class="card placeholder">
+        <h2>Additives</h2>
+        <p>The full additive cabinet beyond VC and FEC — SEI and CEI formers, flame retardants, overcharge protectors, wetting agents — and what each percent buys.</p>
+        <div class="tag-row">
+          <span class="tag">Planned</span>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-heading">Room for more</h2>
+    <section class="grid" aria-label="Planned Battery Lab topics">
+      <div class="card placeholder">
+        <h2>Analytical Methods</h2>
+        <p>How the field actually measures things — cyclic voltammetry, EIS, XRD, coin-cell cycling, dQ/dV — matching each method to what it reveals.</p>
+        <div class="tag-row">
+          <span class="tag">Idea</span>
+        </div>
+      </div>
+
+      <div class="card placeholder">
+        <h2>Solvents Deep Dive</h2>
+        <p>Beyond the carbonates: ethers, nitriles, ionic liquids, and localized high-concentration recipes.</p>
+        <div class="tag-row">
+          <span class="tag">Idea</span>
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">Placeholder cards become links as each trainer ships — same rhythm as the rest of Chem Games: cards first, quiz after, no dead ends.</p>
+  </main>
+</body>
+</html>
