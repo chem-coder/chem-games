@@ -17,7 +17,7 @@ export const DECK = {
   categories: {
     salt:     { label: "Salts",     blurb: "The lithium salt supplies the Li⁺ that carries every ampere. One anion rules industry; the challengers each fix one of its flaws — and pay somewhere else." },
     solvent:  { label: "Solvents",  blurb: "Carbonate solvents dissolve the salt and set viscosity, conductivity, and the temperature window. The art is the blend: one cyclic carbonate for dissociation, one linear for fluidity — and the film-forming cyclic carbonates (VC, FEC, CEC) moonlight here too: additives at heart, co-solvents in practice." },
-    additive: { label: "Additives", blurb: "A few percent of the recipe that decides the cell's lifetime. Additives sacrifice themselves on the first charge to build a better SEI than the solvent ever would — FEC's chlorinated ancestor CEC shows where the idea began." },
+    additive: { label: "Film-formers", blurb: "Named by what they do, not by their dose: these cyclic carbonates sacrifice themselves on the first charge to build a better SEI than the solvent ever would. At 1–2 % they're called additives; FEC at 10–30 % in silicon and Li-metal cells is a true co-solvent — same molecule, role set by the recipe." },
     all:      { label: "Full mix",  blurb: "The whole cabinet — salts, solvents, and additives shuffled together, the way a real electrolyte recipe (and a real exam) mixes them." },
   },
 
