@@ -113,6 +113,16 @@ export function createKit(canvas, targetEls, opts = {}) {
     const at = byId(id); if (!at || at.lone < 1) return;
     at.lone -= 1; opts.onChange?.();
   }
+  // Dalia's ruling (2026-08-14): electrons hand over atom-to-atom directly —
+  // drag a dot from one atom onto another. This is where formal charge comes
+  // from: the donor ends up one short, the receiver one over.
+  function handOver(fromId, toId) {
+    const A = byId(fromId), B = byId(toId);
+    if (!A || !B || fromId === toId || A.lone < 1) return false;
+    A.lone -= 1; B.lone += 1;
+    opts.onChange?.();
+    return true;
+  }
 
   // ── bonding ──
   function relax(id) {
@@ -279,7 +289,7 @@ export function createKit(canvas, targetEls, opts = {}) {
     ctx.fillStyle = "#897f6d";
     ctx.font = "500 10px Lexend, sans-serif";
     ctx.textAlign = "left"; ctx.textBaseline = "top";
-    ctx.fillText("atoms: drag from the table · electrons: drag from e⁻ · drop an atom here to throw its molecule out", d.x + d.w + 12, INV.y + 6);
+    ctx.fillText("atoms: drag from the table · electrons: drag from e⁻, between atoms, or back · drop an atom here to throw its molecule out", d.x + d.w + 12, INV.y + 6);
   }
 
   function draw() {
@@ -294,15 +304,17 @@ export function createKit(canvas, targetEls, opts = {}) {
         ctx.lineWidth = 2.6; ctx.strokeStyle = "#897f6d"; ctx.lineCap = "round"; ctx.stroke();
       }
     });
-    // rubber band for electron traffic
+    // carried electron: the dot rides the hand, slightly enlarged — no
+    // trajectory line (Dalia's ruling: carry things, don't draw paths)
     if (drag?.kind === "dot" || drag?.kind === "freeDot") {
-      const disp = dispenserRect();
-      const from = drag.kind === "dot" ? byId(drag.id) : { x: disp.x + disp.w / 2, y: disp.y + disp.h / 2 };
-      if (from) {
-        ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(drag.px, drag.py);
-        ctx.setLineDash([5, 5]); ctx.lineWidth = 2; ctx.strokeStyle = "#835f7d"; ctx.stroke();
-        ctx.setLineDash([]);
+      const t = hitAtom({ x: drag.px, y: drag.py }, 14);
+      if (t !== null && !(drag.kind === "dot" && t === drag.id)) {
+        const at = byId(t); // plum ring: this atom would receive the electron
+        ctx.beginPath(); ctx.arc(at.x, at.y, ATOM_R + 8, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(131,95,125,0.7)"; ctx.lineWidth = 2.4; ctx.stroke();
       }
+      ctx.beginPath(); ctx.arc(drag.px, drag.py, DOT_R * 1.7, 0, Math.PI * 2);
+      ctx.fillStyle = "#134f48"; ctx.fill();
     }
     // touch hint: ring the atom a dragged atom would bond with
     if (drag?.kind === "atom" && drag.moved) {
@@ -322,13 +334,19 @@ export function createKit(canvas, targetEls, opts = {}) {
         ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
       }
     }
-    // atoms + dots
+    // atoms + dots (the grabbed thing rides the hand, ever-so-slightly enlarged)
     atoms.forEach((at) => {
-      drawAtomBall(at.x, at.y, at.el, ATOM_R);
-      at.render = at.dots.map((d) => {
-        const x = at.x + Math.cos(rad(d.a)) * DOT_RING, y = at.y + Math.sin(rad(d.a)) * DOT_RING;
-        ctx.beginPath(); ctx.arc(x, y, DOT_R, 0, Math.PI * 2);
-        ctx.fillStyle = "#134f48"; ctx.fill();
+      const held = drag?.kind === "atom" && drag.id === at.id && drag.moved;
+      const r = held ? ATOM_R * 1.08 : ATOM_R;
+      const ring = held ? DOT_RING + 2 : DOT_RING;
+      drawAtomBall(at.x, at.y, at.el, r);
+      at.render = at.dots.map((d, i) => {
+        const x = at.x + Math.cos(rad(d.a)) * ring, y = at.y + Math.sin(rad(d.a)) * ring;
+        const lifted = drag?.kind === "dot" && drag.id === at.id && drag.idx === i;
+        if (!lifted) { // the carried dot is drawn at the hand, not on its old seat
+          ctx.beginPath(); ctx.arc(x, y, DOT_R, 0, Math.PI * 2);
+          ctx.fillStyle = "#134f48"; ctx.fill();
+        }
         return { x, y };
       });
     });
@@ -364,9 +382,11 @@ export function createKit(canvas, targetEls, opts = {}) {
     return { x: e.clientX - r.left, y: e.clientY - r.top };
   }
   function hitDot(p) {
-    for (const at of atoms)
-      for (const d of at.render || [])
-        if (Math.hypot(p.x - d.x, p.y - d.y) < 11) return at.id;
+    for (const at of atoms) {
+      const rd = at.render || [];
+      for (let i = 0; i < rd.length; i++)
+        if (Math.hypot(p.x - rd[i].x, p.y - rd[i].y) < 11) return { id: at.id, idx: i };
+    }
     return null;
   }
   function hitAtom(p, generous = 0) {
@@ -387,25 +407,40 @@ export function createKit(canvas, targetEls, opts = {}) {
     return null;
   }
 
+  // The hand: open over anything grabbable, clamped while carrying — the
+  // native grab/grabbing cursors are exactly the hand-then-fist Dalia asked for.
+  function cursorFor(p) {
+    if (frozen) return "default";
+    if (hitDot(p) || hitAtom(p, 4) !== null) return "grab";
+    if (inRect(p, dispenserRect()) || invCellAt(p)) return "grab";
+    if (hitBond(p)) return "pointer";
+    return "default";
+  }
+
   function onDown(e) {
     if (frozen) return;
     try { canvas.setPointerCapture?.(e.pointerId); } catch { /* synthetic events */ }
     const p = pos(e);
-    if (inRect(p, dispenserRect())) { drag = { kind: "freeDot", px: p.x, py: p.y }; return; }
-    const cellEl = invCellAt(p);
-    if (cellEl) {
-      const at = spawn(cellEl, p.x, p.y);
-      drag = { kind: "atom", id: at.id, moved: true, fresh: true };
-      return;
+    if (inRect(p, dispenserRect())) { drag = { kind: "freeDot", px: p.x, py: p.y }; }
+    else {
+      const cellEl = invCellAt(p);
+      const dot = cellEl ? null : hitDot(p);
+      if (cellEl) {
+        const at = spawn(cellEl, p.x, p.y);
+        drag = { kind: "atom", id: at.id, moved: true, fresh: true };
+      } else if (dot) {
+        drag = { kind: "dot", id: dot.id, idx: dot.idx, px: p.x, py: p.y };
+      } else {
+        const atomId = hitAtom(p, 4);
+        if (atomId !== null) drag = { kind: "atom", id: atomId, moved: false };
+      }
     }
-    const dotAtom = hitDot(p);
-    if (dotAtom !== null) { drag = { kind: "dot", id: dotAtom, px: p.x, py: p.y }; return; }
-    const atomId = hitAtom(p, 4);
-    if (atomId !== null) { drag = { kind: "atom", id: atomId, moved: false }; return; }
+    if (drag) canvas.style.cursor = "grabbing";
   }
   function onMove(e) {
-    if (frozen || !drag) return;
+    if (frozen) return;
     const p = pos(e);
+    if (!drag) { canvas.style.cursor = cursorFor(p); return; }
     if (drag.kind === "atom") {
       const at = byId(drag.id); if (!at) { drag = null; return; }
       if (Math.hypot(p.x - at.tx, p.y - at.ty) > 4) drag.moved = true;
@@ -429,13 +464,16 @@ export function createKit(canvas, targetEls, opts = {}) {
         }
       }
     } else if (drag.kind === "dot") {
-      if (inRect(p, invRect())) { discardFrom(drag.id); acted = true; } // back to the dispenser
+      const t = hitAtom(p, 14);
+      if (t !== null && t !== drag.id) { handOver(drag.id, t); acted = true; } // atom-to-atom hand-over
+      else if (inRect(p, invRect())) { discardFrom(drag.id); acted = true; }   // back to the dispenser
     } else if (drag.kind === "freeDot") {
-      const t = hitDot(p) ?? hitAtom(p, 14);
-      if (t !== null) { dispenseTo(t); acted = true; }
+      const t = hitDot(p)?.id ?? hitAtom(p, 14);
+      if (t !== null && t !== undefined) { dispenseTo(t); acted = true; }
     }
     suppressClick = acted || (drag.kind === "atom" && drag.moved);
     drag = null;
+    canvas.style.cursor = cursorFor(p);
   }
   function onClick(e) {
     if (frozen) return;
@@ -543,7 +581,12 @@ export function createKit(canvas, targetEls, opts = {}) {
   loop();
   return {
     setCharge, check, derive3D, clear,
-    debug: { atoms, bonds, spawn, tryBond, cycleBond, dispenseTo, discardFrom, deleteMolecule },
+    debug: {
+      atoms, bonds, spawn, tryBond, cycleBond, dispenseTo, discardFrom, handOver, deleteMolecule,
+      // one manual frame — settles positions, choreographs dots, paints. Lets
+      // tests drive real pointer gestures when a hidden pane pauses rAF.
+      step() { fit(); atoms.forEach((at) => { at.x = at.tx; at.y = at.ty; stepDots(at); }); draw(); },
+    },
     freeze() { frozen = true; },
     destroy() {
       if (raf !== null) cancelAnimationFrame(raf);
