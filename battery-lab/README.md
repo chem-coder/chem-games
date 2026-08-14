@@ -6,9 +6,17 @@ Hub page: `index.html` (live cards link to trainers; hatched cards are planned).
 ## Roadmap (approved 2026-08-14)
 
 1. **Full-Cell Builder** — SHIPPED (see below)
-2. **Numbers rung** — cell voltage, Wh/kg, N/P ratio, C-rate, areal capacity
-3. **Typed recall** — typed-answer rungs on the existing decks (house rule)
-4. **Electrolyte Additives** and **Electrode Recipe** decks
+2. **Cell Numbers** — SHIPPED (`numbers/`: six typed-answer rungs of cell
+   arithmetic, pH-Lab pattern — intro steps → drill with escalating hints)
+3. **Typed recall** — SHIPPED: every card game now has a "Typed recall →"
+   mode beside its quiz. Shared logic in `shared/js/typed-recall.js`
+   (accepted-SET matching, house rule: abbr/name/aliases, never regex;
+   normalize collapses case, separators, unicode sub/superscripts; the test
+   proves no accepted string names two cards in one deck). Hint ladder:
+   family → full name → Show-me (reveals, costs the clean, requeues the card
+   flipped to the other question shape). Works on one-card tabs — typing
+   needs no distractors.
+4. **Electrolyte Additives** and **Electrode Recipe** decks — next
 5. **Voltage curves**, **degradation chains**, **history timeline**
 
 ## Shipped

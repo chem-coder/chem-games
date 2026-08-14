@@ -8,6 +8,7 @@
 import { DECK } from "../data/cards.js";
 import { figSvg } from "./fig.js";
 import { buildRound, buildQuestion } from "../../../shared/js/mcq-quiz.js";
+import { buildRecallRound, makeQuestion, matches } from "../../../shared/js/typed-recall.js";
 
 const root = document.getElementById("game");
 
@@ -25,9 +26,17 @@ const TYPE_LABELS = {
 };
 
 let tierIndex = 0;
-let mode = "study"; // study | quiz | done
+let mode = "study"; // study | quiz | recall | done
 let openIds = new Set();
 let quiz = null;
+let recall = null;
+
+/* first hint of the typed-recall ladder: the mechanism, in plain words */
+const CAT_HINT = {
+  intercalation: "It stores lithium by intercalation — a host that barely changes shape.",
+  alloying: "It stores lithium by alloying — the electrode metal itself reacts and swells.",
+  metal: "It IS the lithium — no host at all.",
+};
 
 const cardById = new Map(DECK.cards.map((c) => [c.id, c]));
 
@@ -79,6 +88,7 @@ function wireTabs() {
       tierIndex = Number(b.dataset.tier);
       mode = "study";
       quiz = null;
+      recall = null;
       openIds = new Set();
       render();
     })
@@ -133,11 +143,13 @@ function renderStudy() {
     ${cards.length >= 2
       ? `<div class="controls quiz-launch">
       <button class="action primary" id="quizBtn" type="button">Start the ${tier.label.toLowerCase()} quiz →</button>
+      <button class="action ghost" id="recallBtn" type="button">Typed recall →</button>
       <span class="quiz-note">${roundLen} questions · structures, formulas, and facts, mixed both ways</span>
     </div>`
       : `<div class="controls quiz-launch">
       <button class="action primary" id="mixBtn" type="button">Drill it in the Full mix →</button>
-      <span class="quiz-note">One card can't quiz against itself — the Full mix deals it against the whole deck</span>
+      <button class="action ghost" id="recallBtn" type="button">Typed recall →</button>
+      <span class="quiz-note">One card can't quiz against itself — but typing an answer needs no options</span>
     </div>`}`;
   wireTabs();
   root.querySelectorAll(".mol-head").forEach((b) =>
@@ -148,10 +160,150 @@ function renderStudy() {
     })
   );
   root.querySelector("#quizBtn")?.addEventListener("click", () => startQuiz());
+  root.querySelector("#recallBtn")?.addEventListener("click", startRecall);
   root.querySelector("#mixBtn")?.addEventListener("click", () => {
     tierIndex = TIERS.findIndex((t) => t.key === "all");
     startQuiz();
   });
+}
+
+/* ---------- typed recall (house rule: type the answer, no tiles) ---------- */
+
+function startRecall() {
+  const cards = tierCards();
+  recall = {
+    queue: buildRecallRound(cards, Math.random, 8),
+    total: Math.min(8, cards.length),
+    solved: 0, clean: 0, missedIds: new Set(),
+    hintLevel: 0, attempts: 0, state: "asking", // asking | right | shown
+  };
+  mode = "recall";
+  render();
+}
+
+function renderRecall() {
+  const q = recall.queue[0];
+  const card = q.card;
+  const showNext = recall.state !== "asking";
+  root.innerHTML = `
+    ${tierTabs()}
+    <div class="quiz-bar">
+      <span class="quiz-progress">Recalled ${Math.min(recall.solved, recall.total)} of ${recall.total}</span>
+      <span class="qtype-chip">typed recall</span>
+      ${q.dirty ? '<span class="qtype-chip retry">back for another try</span>' : ""}
+    </div>
+    <p class="prompt">${q.type === "figure" ? "Whose mechanism is this? Type it:" : "Which anode material does this describe? Type it:"}</p>
+    ${q.type === "figure"
+      ? `<div class="mol-stage">${figSvg(card, { aria: "mystery mechanism", className: "quiz-fig" })}</div>`
+      : `<blockquote class="claim">${chem(q.claim)}</blockquote>`}
+    <div class="answer-row">
+      <input class="answer-input answer-text" id="answerInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+        placeholder="abbreviation or name" ${showNext ? "disabled" : ""} aria-label="your answer" />
+      ${!showNext ? `<button class="action primary" id="checkBtn" type="button">Check</button>` : ""}
+    </div>
+    <div id="hintBox">
+      ${recall.hintLevel >= 1 ? `<p class="hint-line">💡 ${chem(CAT_HINT[card.category])}</p>` : ""}
+      ${recall.hintLevel >= 2 ? `<p class="hint-line">💡 Full name: ${esc(card.name)}.</p>` : ""}
+      ${recall.state === "shown" ? `<p class="hint-line worked">${esc(card.abbr)} — ${esc(card.name)}. ${chem(card.tagline)}</p>` : ""}
+    </div>
+    <div id="verdict">${recall.state === "right" ? `<p class="feedback ok">✓ ${esc(card.abbr)} — ${chem(card.tagline)}</p>` : ""}</div>
+    <div class="controls">
+      <button class="action ghost" id="backBtn" type="button">↩ Back to the cards</button>
+      ${showNext
+        ? `<button class="action primary" id="nextBtn" type="button">Next →</button>`
+        : `<button class="action ghost" id="hintBtn" type="button">${recall.hintLevel === 0 ? "Hint" : recall.hintLevel === 1 ? "Another hint" : "Show me"}</button>`}
+    </div>`;
+  wireTabs();
+  root.querySelector("#backBtn").addEventListener("click", () => {
+    mode = "study";
+    recall = null;
+    render();
+  });
+  const input = root.querySelector("#answerInput");
+  if (!showNext) {
+    input.focus();
+    const check = () => {
+      if (!input.value.trim()) return;
+      recall.attempts += 1;
+      if (matches(card, input.value)) {
+        recall.state = "right";
+        recall.solved += 1;
+        if (recall.attempts === 1 && recall.hintLevel === 0 && !q.dirty) recall.clean += 1;
+        render();
+      } else {
+        root.querySelector("#verdict").innerHTML = `<p class="feedback no">✗ Not this one — look again, or take a hint.</p>`;
+        input.classList.add("is-wrong");
+        input.select();
+        setTimeout(() => input.classList.remove("is-wrong"), 600);
+      }
+    };
+    root.querySelector("#checkBtn").addEventListener("click", check);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") check();
+    });
+    root.querySelector("#hintBtn").addEventListener("click", () => {
+      if (recall.hintLevel < 2) {
+        recall.hintLevel += 1;
+      } else {
+        recall.state = "shown";
+        recall.missedIds.add(card.id);
+        const retry = makeQuestion(card, Math.random, q.type);
+        retry.dirty = true;
+        recall.queue.push(retry);
+      }
+      render();
+      root.querySelector("#answerInput")?.focus();
+    });
+  } else {
+    root.querySelector("#nextBtn").addEventListener("click", () => {
+      recall.queue.shift();
+      recall.hintLevel = 0;
+      recall.attempts = 0;
+      recall.state = "asking";
+      if (!recall.queue.length) mode = "done";
+      render();
+    });
+  }
+}
+
+function renderRecallDone() {
+  const tier = TIERS[tierIndex];
+  const nextTier = TIERS[tierIndex + 1] || null;
+  const missed = [...recall.missedIds].map((id) => cardById.get(id));
+  const missedBlock = missed.length
+    ? `<div class="missed-block"><p class="missed-label">Worth another look:</p>
+       <div class="chips">${missed.map((c) => `<span class="chip chip-missed">${esc(c.abbr)}</span>`).join("")}</div></div>`
+    : `<p class="feedback ok">Clean run — every name came straight from memory. 🎉</p>`;
+  root.innerHTML = `
+    ${tierTabs()}
+    <p class="prompt">Recall done — ${recall.total} material${recall.total === 1 ? "" : "s"}, ${recall.clean} typed clean: no hints, first try.</p>
+    ${missedBlock}
+    <div class="controls two-up done-nav">
+      ${nextTier ? `<button class="action primary" id="nextTierBtn" type="button">Next: ${nextTier.label} →</button>` : ""}
+      <button class="action ghost" id="revisitBtn" type="button">↩ Revisit the ${tier.label.toLowerCase()} cards</button>
+    </div>
+    <p class="done-next">Or run it again:</p>
+    <div class="controls two-up">
+      <button class="action ghost" id="againBtn" type="button">Another recall round</button>
+    </div>
+    <p class="done-next"><a class="home-link" href="../">⌂ Battery Lab</a> &nbsp;·&nbsp; <a class="home-link" href="../../">⌂ All Chem Games</a></p>`;
+  wireTabs();
+  const nextBtn = root.querySelector("#nextTierBtn");
+  if (nextBtn)
+    nextBtn.addEventListener("click", () => {
+      tierIndex += 1;
+      mode = "study";
+      quiz = null;
+      recall = null;
+      openIds = new Set();
+      render();
+    });
+  root.querySelector("#revisitBtn").addEventListener("click", () => {
+    mode = "study";
+    recall = null;
+    render();
+  });
+  root.querySelector("#againBtn").addEventListener("click", startRecall);
 }
 
 /* ---------- quiz screen ---------- */
@@ -347,7 +499,8 @@ function renderDone() {
 
 function render() {
   if (mode === "quiz") renderQuiz();
-  else if (mode === "done") renderDone();
+  else if (mode === "recall") renderRecall();
+  else if (mode === "done") (recall ? renderRecallDone : renderDone)();
   else renderStudy();
 }
 

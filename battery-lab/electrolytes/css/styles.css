@@ -305,3 +305,27 @@ h1 {
   .quiz-launch { justify-content: flex-start; }
   .action { margin-left: 0; }
 }
+
+/* ── typed recall (answer row + hint ladder, numbers-rung pattern) ── */
+.answer-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.answer-input {
+  padding: 12px 14px;
+  font: inherit; font-size: 1.15rem; font-weight: 700;
+  color: var(--ink); background: var(--surface);
+  border: 2px solid var(--line); border-radius: var(--radius-sm);
+}
+.answer-input.answer-text { width: min(300px, 100%); }
+.answer-input:focus { outline: none; border-color: var(--accent); }
+.answer-input.is-wrong { border-color: var(--danger); animation: shake 0.3s; }
+.answer-input:disabled { background: var(--surface-soft); }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.hint-line {
+  margin: 12px 0 0; padding: 11px 15px;
+  background: var(--warning-soft); border: 1px solid var(--warning-line);
+  border-radius: var(--radius-sm); line-height: 1.5;
+}
+.hint-line.worked { background: var(--surface); border-color: var(--line); }
