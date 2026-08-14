@@ -1,0 +1,114 @@
+/* Battery Lab — Cell Numbers. Links ../shared/css/tokens.css first.
+   Shares the Battery Lab layout classes; adds the answer row and hint box. */
+
+* { box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--font-body);
+}
+
+/* House rule: subscripts >=50% size, slightly lowered — never the tiny default. */
+sub { font-size: 0.62em; line-height: 0; vertical-align: -0.18em; font-weight: inherit; }
+sup { font-size: 0.62em; line-height: 0; vertical-align: 0.42em; font-weight: inherit; }
+
+.app-shell { width: min(880px, calc(100% - 32px)); margin: 0 auto; padding: 30px 0 48px; }
+.app-header { margin-bottom: 20px; }
+.home-link { color: var(--accent); font-family: var(--font-display); font-weight: 600; font-size: 0.92rem; text-decoration: none; }
+.home-link:hover { text-decoration: underline; }
+.eyebrow { margin: 10px 0 4px; color: var(--plum-dark); font-family: var(--font-display); font-size: 0.78rem; font-weight: 850; text-transform: uppercase; }
+h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(1.9rem, 4.5vw, 2.7rem); line-height: 1.05; }
+.lede { margin: 0; max-width: 46rem; color: var(--muted); line-height: 1.5; }
+
+/* tabs (house pattern) */
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.level-tab {
+  padding: 8px 16px; font-family: var(--font-display); font-weight: 700; font-size: 0.9rem;
+  color: var(--accent); background: var(--surface); border: 1.5px solid var(--line);
+  border-radius: 999px; cursor: pointer;
+}
+.level-tab:hover:not(.is-active) { border-color: var(--accent); }
+.level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+
+.cat-blurb { margin: 0 0 16px; max-width: 50rem; line-height: 1.55; font-weight: 600; }
+
+/* numbered steps — green-circle list (house style). Two flex children per li. */
+.steps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; font-size: 1.02rem; }
+.steps li { display: flex; align-items: flex-start; gap: 10px; }
+.step-num {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.55em; height: 1.55em; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-family: var(--font-display); font-weight: 800; font-size: 0.82em;
+}
+.step-text { line-height: 1.55; }
+
+.worked-example {
+  margin: 0 0 8px; padding: 12px 16px;
+  background: var(--surface); border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm); line-height: 1.5;
+}
+.worked-label {
+  display: inline-block; margin-right: 8px;
+  color: var(--accent-dark); font-family: var(--font-display);
+  font-weight: 800; font-size: 0.78rem; text-transform: uppercase;
+}
+
+.quiz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 10px; }
+.quiz-progress { color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; }
+.qtype-chip { padding: 3px 10px; color: var(--accent-dark); background: var(--accent-soft); border-radius: 999px; font-family: var(--font-display); font-weight: 700; font-size: 0.74rem; }
+.qtype-chip.retry { color: var(--danger); background: var(--danger-soft); }
+
+.prompt { margin: 6px 0 16px; font-size: 1.16rem; font-weight: 600; line-height: 1.45; }
+
+/* ── answer row ── */
+.answer-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.answer-input {
+  width: 170px; padding: 12px 14px;
+  font: inherit; font-size: 1.25rem; font-weight: 700;
+  color: var(--ink); background: var(--surface);
+  border: 2px solid var(--line); border-radius: var(--radius-sm);
+}
+.answer-input:focus { outline: none; border-color: var(--accent); }
+.answer-input.is-wrong { border-color: var(--danger); animation: shake 0.3s; }
+.answer-input:disabled { background: var(--surface-soft); }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+.answer-unit { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; color: var(--muted); min-width: 60px; }
+.tol-note { margin: 8px 0 0; color: var(--muted); font-size: 0.85rem; }
+
+.hint-line {
+  margin: 12px 0 0; padding: 11px 15px;
+  background: var(--warning-soft); border: 1px solid var(--warning-line);
+  border-radius: var(--radius-sm); line-height: 1.5;
+}
+.hint-line.worked { background: var(--surface); border-color: var(--line); }
+
+/* ── controls & feedback (house pattern) ── */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+.controls.two-up { justify-content: center; margin: 20px auto 0; }
+.action {
+  padding: 12px 22px; font-family: var(--font-display); font-weight: 700; font-size: 1rem;
+  cursor: pointer; border: 0; border-radius: var(--radius-sm);
+}
+.action.primary { color: #fff; background: var(--accent); }
+.action.primary:hover { background: var(--accent-dark); }
+.action.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
+.controls .action.primary:last-child { margin-left: auto; }
+.controls.two-up .action { margin-left: 0; }
+
+.feedback { margin: 14px 0 0; padding: 12px 16px; border-radius: var(--radius-sm); font-weight: 600; line-height: 1.5; }
+.feedback.ok { color: var(--success); background: var(--success-soft); border: 1px solid var(--success-line); }
+.feedback.no { color: var(--danger); background: var(--danger-soft); border: 1px solid var(--danger-line); }
+
+.done-next { margin: 22px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+@media (max-width: 560px) {
+  .answer-input { width: 130px; }
+}
