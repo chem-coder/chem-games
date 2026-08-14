@@ -5,28 +5,34 @@ Hub page: `index.html` (live cards link to trainers; hatched cards are planned).
 
 ## Shipped
 
+Both trainers share one flow (study gallery → four-shape MCQ quiz → done) and
+one pure question generator, `shared/js/mcq-quiz.js` (structure→name,
+name→structure, fact→component, component→fact; misses requeue with fresh
+options; distractors prefer the same category). Quiz `claims` in any deck must
+stay **uniquely true deck-wide** — the tests enforce it.
+
 - **`electrolytes/`** — Electrolyte Components: 13 cards (6 salts, 5 solvents,
-  2 additives) as literature-style skeletal-structure flashcards, plus a
-  four-shape MCQ quiz (structure→name, name→structure, fact→component,
-  component→fact). Misses requeue; distractors prefer the same category.
-  - `data/cards.js` — content only: identity, tagline, 3 facts, 2–3 quiz
-    claims (each must stay **uniquely true deck-wide** — the test enforces
-    it), 3 spec chips, and `mol` drawing data.
+  2 additives) as literature-style skeletal-structure flashcards.
+  - `data/cards.js` — content: identity, tagline, 3 facts, 2–3 claims,
+    3 spec chips, `mol` drawing data.
   - `js/structures.js` — pure skeletal SVG renderer (zig-zag bonds, labeled
     heteroatoms, symmetric/ring double bonds, wedge & hash). First skeletal
     renderer in the repo; consider promoting to `shared/` if organic games
     want it.
-  - `js/quiz.js` — pure question generator; `js/quiz.test.js` runs with
-    `node --test` (deck integrity + option validity + renderer smoke test).
-  - `js/app.js` — controller (study gallery → quiz → done), house navigation.
+  - `js/quiz.test.js` — `node --test`: deck integrity + engine + renderer.
+- **`cathodes/`** — Cathode Materials: 8 cards (LCO, NMC, NCA, LMR; LMO,
+  LNMO; LFP, LMFP) drawn as **three schematic lattice archetypes** in one
+  projection style — layered slabs / spinel checkerboard / olivine tunnels —
+  whose diffusion arrows carry the 2D / 3D / 1D contrast, with per-card
+  overlays (NMC cation mixing, NCA Al pin, LMR excess Li, LNMO 1-in-4 Ni,
+  LFP antisite block, LMFP two-tone). Lattice captions teach on study cards
+  and are CSS-hidden in quiz figures so they can't give answers away.
+  - `js/lattice.js` — pure archetype renderer; `RESEARCH.md` — sources and
+    flagged numbers (market-share and LMR-capacity flags now fixed in data).
+  - `js/deck.test.js` — deck integrity + per-card overlay distinctness.
 
 ## Planned (placeholders on the hub)
 
-- **Cathode Materials** — draft deck already written at
-  `cathodes/data/cards.draft.js` (8 cards: LCO, NMC, NCA, Li-rich; LMO, LNMO;
-  LFP, LMFP) with flagged uncertainties in `cathodes/RESEARCH.md`. Structures
-  here are crystal lattices (layered / spinel / olivine), so the game needs a
-  lattice illustration approach instead of the skeletal renderer.
 - **Anode Materials** — graphite, silicon, hard carbon, LTO, Li metal.
 - **Additives** — full additive cabinet beyond VC/FEC (SEI/CEI formers, flame
   retardants, overcharge protectors, wetting agents). Requested 2026-08-14.

@@ -1,0 +1,319 @@
+/* Battery Lab — Cathode Materials. Links ../shared/css/tokens.css first.
+   Shares the electrolytes game's layout classes; adds lattice drawing colors. */
+
+* { box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: var(--font-body);
+}
+
+/* House rule: subscripts >=50% size, slightly lowered — never the tiny default. */
+sub { font-size: 0.62em; line-height: 0; vertical-align: -0.18em; font-weight: inherit; }
+sup { font-size: 0.62em; line-height: 0; vertical-align: 0.42em; font-weight: inherit; }
+
+.app-shell {
+  width: min(1020px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 30px 0 48px;
+}
+
+.app-header { margin-bottom: 20px; }
+
+.home-link {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+.home-link:hover { text-decoration: underline; }
+
+.eyebrow {
+  margin: 10px 0 4px;
+  color: var(--plum-dark);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4.5vw, 2.7rem);
+  line-height: 1.05;
+}
+
+.lede { margin: 0; max-width: 46rem; color: var(--muted); line-height: 1.5; }
+
+/* ── tabs (house pattern) ── */
+.level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.level-tab {
+  padding: 8px 18px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.level-tab:hover:not(.is-active) { border-color: var(--accent); }
+.level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }
+
+.cat-blurb { margin: 0 0 6px; max-width: 50rem; color: var(--ink); line-height: 1.55; }
+.study-hint { margin: 0 0 16px; color: var(--muted); font-size: 0.92rem; }
+
+/* ── study gallery ── */
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.mol-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.mol-card.is-open { grid-column: 1 / -1; border-color: var(--accent); }
+
+.mol-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  padding: 14px 14px 12px;
+  gap: 8px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+}
+.mol-head:hover .mol-abbr { color: var(--accent-dark); }
+
+.mol-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 128px;
+  padding: 6px 4px;
+  background: var(--surface-soft);
+  border-radius: var(--radius-sm);
+}
+.mol-figure .mol { width: 100%; max-width: 250px; height: 118px; }
+.mol-card.is-open .mol-figure { min-height: 170px; }
+.mol-card.is-open .mol-figure .mol { height: 160px; max-width: 320px; }
+
+.mol-title { display: grid; gap: 1px; }
+.mol-abbr { font-family: var(--font-display); font-weight: 800; font-size: 1.22rem; }
+.mol-formula { color: var(--accent-dark); font-weight: 600; font-size: 0.95rem; }
+.mol-name { color: var(--muted); font-size: 0.88rem; line-height: 1.3; }
+
+.mol-flip {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.cat-chip {
+  justify-self: start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+.cat-layered { color: var(--plum-dark); background: var(--plum-soft); }
+.cat-spinel { color: var(--accent-dark); background: var(--accent-soft); }
+.cat-olivine { color: #7a5a14; background: var(--warning-soft); }
+
+.mol-back { padding: 0 16px 16px; }
+.mol-tagline { margin: 2px 0 14px; font-weight: 600; }
+
+/* numbered facts — green-circle list (house style). Two flex children per li. */
+.steps { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; font-size: 1rem; }
+.steps li { display: flex; align-items: flex-start; gap: 10px; }
+.step-num {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55em;
+  height: 1.55em;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.82em;
+}
+.step-text { line-height: 1.55; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 5px 10px;
+  color: var(--plum-dark);
+  background: var(--plum-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.chip-formula { color: var(--accent-dark); background: var(--accent-soft); }
+.chip-missed { color: var(--danger); background: var(--danger-soft); border-color: var(--danger-line); }
+
+/* two-column open card on wide screens */
+@media (min-width: 760px) {
+  .mol-card.is-open .mol-head {
+    grid-template-columns: 320px 1fr;
+    align-items: center;
+    column-gap: 20px;
+  }
+  .mol-card.is-open .mol-back { padding-left: 16px; }
+}
+
+/* ── controls (house pattern) ── */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.controls.two-up { justify-content: center; margin: 20px auto 0; }
+.action {
+  margin-left: auto;
+  padding: 12px 22px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius-sm);
+}
+.controls.two-up .action { margin-left: 0; }
+.action.primary { color: #fff; background: var(--accent); }
+.action.primary:hover { background: var(--accent-dark); }
+.action.primary:disabled { background: var(--muted); cursor: not-allowed; opacity: 0.6; }
+.action.ghost { color: var(--accent); background: transparent; border: 1.5px solid var(--accent); }
+.quiz-launch { justify-content: flex-end; }
+.quiz-note { color: var(--muted); font-size: 0.88rem; }
+
+/* ── quiz ── */
+.quiz-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 10px; }
+.quiz-progress { color: var(--muted); font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; }
+.qtype-chip {
+  padding: 3px 10px;
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.74rem;
+}
+.qtype-chip.retry { color: var(--danger); background: var(--danger-soft); }
+
+.prompt { margin: 6px 0 14px; font-size: 1.18rem; font-weight: 600; line-height: 1.4; }
+
+.mol-stage {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.mol-stage .mol { width: min(360px, 100%); height: 170px; }
+
+.claim {
+  margin: 0 0 16px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-left: 4px solid var(--plum);
+  border-radius: var(--radius-sm);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.opt {
+  display: grid;
+  gap: 2px;
+  padding: 13px 16px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt.is-picked { border-color: var(--accent); outline: 3px solid rgba(30, 114, 104, 0.16); }
+.opt.is-right { border-color: var(--success-vivid); background: var(--success-vivid-soft); outline: none; }
+.opt.is-wrong { border-color: var(--danger); background: var(--danger-soft); outline: none; }
+.opt:disabled { cursor: default; }
+.opt-abbr { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.opt-name { color: var(--muted); font-size: 0.85rem; }
+.opt-claim { line-height: 1.45; font-size: 0.97rem; }
+.opts-mol .opt { justify-items: center; padding: 8px; }
+.opts-mol .mol { width: 100%; max-width: 240px; height: 110px; }
+
+.feedback { margin: 14px 0 0; padding: 12px 16px; border-radius: var(--radius-sm); font-weight: 600; }
+.feedback.ok { color: var(--success); background: var(--success-soft); border: 1px solid var(--success-line); }
+.feedback.no { color: var(--danger); background: var(--danger-soft); border: 1px solid var(--danger-line); }
+
+/* ── done ── */
+.missed-block { margin-top: 6px; }
+.missed-label { margin: 0 0 8px; color: var(--muted); font-weight: 600; }
+.done-next { margin: 22px 0 0; text-align: center; color: var(--muted); font-size: 0.9rem; }
+
+/* ── lattice drawings ── */
+.mol { display: block; }
+
+/* MO6 octahedra (diamonds), colored by metal */
+.lat-oct { stroke: rgba(255, 253, 248, 0.85); stroke-width: 1.4; }
+.lat-co { fill: var(--plum); }
+.lat-ni { fill: var(--el-nitrogen); }
+.lat-mn { fill: var(--el-sulfur); }
+.lat-fe { fill: var(--danger); }
+.lat-al { fill: var(--success); stroke: var(--ink); stroke-width: 2; }
+.lat-antisite { stroke: var(--ink); stroke-width: 2.2; }
+
+/* Li ions */
+.lat-li { fill: var(--accent-soft); stroke: var(--accent-dark); stroke-width: 1.6; }
+.lat-li-inslab { stroke-width: 2.2; }
+.lat-ni-ball { fill: var(--el-nitrogen); stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 3 2; }
+
+/* PO4 tetrahedra */
+.lat-tet { fill: var(--el-hydrogen); stroke: var(--muted); stroke-width: 1.2; }
+
+/* diffusion arrows + out-of-page glyph */
+.lat-arrow { stroke: var(--accent-dark); stroke-width: 2.4; stroke-linecap: round; opacity: 0.9; }
+.lat-arrowhead { fill: var(--accent-dark); opacity: 0.9; }
+.lat-oop { fill: none; stroke: var(--accent-dark); stroke-width: 1.8; }
+.lat-oop-dot { fill: var(--accent-dark); }
+
+/* captions teach on study cards but would give quiz answers away */
+.lat-caption { font-family: var(--font-body); font-weight: 600; font-size: 11px; fill: var(--muted); }
+.lat-x { font-family: var(--font-body); font-weight: 700; font-size: 10.5px; fill: var(--danger); }
+.quiz-fig .lat-caption { display: none; }
+
+@media (max-width: 850px) {
+  .study-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .opts { grid-template-columns: 1fr; }
+  .opts-mol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .study-grid { grid-template-columns: 1fr; }
+  .quiz-launch { justify-content: flex-start; }
+  .action { margin-left: 0; }
+}

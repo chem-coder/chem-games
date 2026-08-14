@@ -1,28 +1,27 @@
 /*
-  Battery Lab — Electrolyte Components: app controller.
-  The only module that knows about DOM, data, renderer, and quiz engine.
-  Modes: study (flashcard gallery) → quiz (MCQ round) → done.
-  House rules honored: tabs on every screen, predict-then-Check (no
-  auto-reveal), misses requeue, done screen offers next + revisit + again
-  + home.
+  Battery Lab — Cathode Materials: app controller.
+  Mirrors the electrolytes game: study (flashcard gallery) → quiz → done,
+  house rules throughout (tabs everywhere, predict-then-Check, misses
+  requeue, done screen offers next + revisit + again + home).
+  Structures here are schematic lattices (js/lattice.js), not molecules.
 */
 import { DECK } from "../data/cards.js";
-import { molSvg } from "./structures.js";
+import { latticeSvg } from "./lattice.js";
 import { buildRound, buildQuestion } from "../../../shared/js/mcq-quiz.js";
 
 const root = document.getElementById("game");
 
-const TIERS = ["salt", "solvent", "additive", "all"].map((key) => ({
+const TIERS = ["layered", "spinel", "olivine", "all"].map((key) => ({
   key,
   label: DECK.categories[key].label,
   blurb: DECK.categories[key].blurb,
 }));
 
 const TYPE_LABELS = {
-  structName: "structure → component",
-  nameStruct: "name → structure",
-  claimWho: "fact → component",
-  whoClaim: "component → fact",
+  structName: "lattice → material",
+  nameStruct: "material → lattice",
+  claimWho: "fact → material",
+  whoClaim: "material → fact",
 };
 
 let tierIndex = 0;
@@ -40,6 +39,7 @@ function tierCards() {
 /* ---------- formatting helpers ---------- */
 
 const SUBS = { "₀": 0, "₁": 1, "₂": 2, "₃": 3, "₄": 4, "₅": 5, "₆": 6, "₇": 7, "₈": 8, "₉": 9 };
+const SUPS = { "⁰": 0, "¹": 1, "²": 2, "³": 3, "⁴": 4, "⁵": 5, "⁶": 6, "⁷": 7, "⁸": 8, "⁹": 9 };
 
 function esc(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -50,12 +50,10 @@ function esc(s) {
 function chem(s) {
   return esc(s)
     .replace(/[₀-₉]+/g, (m) => `<sub>${[...m].map((ch) => SUBS[ch]).join("")}</sub>`)
-    .replace(/[⁺⁻]/g, (m) => `<sup>${m === "⁺" ? "+" : "−"}</sup>`);
-}
-
-/* "LiPF6" → LiPF<sub>6</sub> for abbreviations kept plain in data. */
-function abbrHtml(card) {
-  return esc(card.abbr).replace(/([A-Za-z)\]])(\d+)/g, "$1<sub>$2</sub>");
+    .replace(/([⁰-⁹]*)([⁺⁻])/g, (m, digits, sign) =>
+      `<sup>${[...digits].map((ch) => SUPS[ch]).join("")}${sign === "⁺" ? "+" : "−"}</sup>`
+    )
+    .replace(/[⁰-⁹]+/g, (m) => `<sup>${[...m].map((ch) => SUPS[ch]).join("")}</sup>`);
 }
 
 function catChip(card) {
@@ -91,9 +89,10 @@ function studyCard(card) {
   const showChip = TIERS[tierIndex].key === "all";
   const head = `
     <button class="mol-head" type="button" data-id="${card.id}" aria-expanded="${open}">
-      <div class="mol-figure">${molSvg(card.mol, { aria: card.name })}</div>
+      <div class="mol-figure">${latticeSvg(card, { aria: card.name })}</div>
       <div class="mol-title">
-        <span class="mol-abbr">${abbrHtml(card)}</span>
+        <span class="mol-abbr">${esc(card.abbr)}</span>
+        <span class="mol-formula">${card.formulaHtml}</span>
         <span class="mol-name">${esc(card.name)}</span>
       </div>
       ${showChip ? catChip(card) : ""}
@@ -126,11 +125,11 @@ function renderStudy() {
   root.innerHTML = `
     ${tierTabs()}
     <p class="cat-blurb">${chem(tier.blurb)}</p>
-    <p class="study-hint">Click a card to flip it open. When the structures start looking like old friends, take the quiz.</p>
+    <p class="study-hint">Click a card to flip it open. The lattice sketches share one style — 2D planes, 3D channels, 1D tunnels — so the family reads at a glance.</p>
     <div class="study-grid">${cards.map(studyCard).join("")}</div>
     <div class="controls quiz-launch">
       <button class="action primary" id="quizBtn" type="button">Start the ${tier.label.toLowerCase()} quiz →</button>
-      <span class="quiz-note">${roundLen} questions · structures and facts, mixed both ways</span>
+      <span class="quiz-note">${roundLen} questions · lattices, formulas, and facts, mixed both ways</span>
     </div>`;
   wireTabs();
   root.querySelectorAll(".mol-head").forEach((b) =>
@@ -156,35 +155,35 @@ function startQuiz(fromCards) {
 function optionInner(opt, q) {
   if (q.type === "nameStruct") {
     const c = cardById.get(opt.cardId);
-    return molSvg(c.mol, { aria: "structure option" });
+    return latticeSvg(c, { aria: "lattice option", className: "quiz-fig" });
   }
   if (q.type === "whoClaim") return `<span class="opt-claim">${chem(opt.text)}</span>`;
   const c = cardById.get(opt.cardId);
-  return `<span class="opt-abbr">${abbrHtml(c)}</span><span class="opt-name">${esc(c.name)}</span>`;
+  return `<span class="opt-abbr">${esc(c.abbr)}</span><span class="opt-name">${esc(c.name)}</span>`;
 }
 
 function questionBlock(q) {
   const card = cardById.get(q.cardId);
   if (q.type === "structName") {
     return {
-      prompt: "Which electrolyte component is this?",
-      stage: `<div class="mol-stage">${molSvg(card.mol, { aria: "mystery structure" })}</div>`,
+      prompt: "Which cathode material is this lattice?",
+      stage: `<div class="mol-stage">${latticeSvg(card, { aria: "mystery lattice", className: "quiz-fig" })}</div>`,
     };
   }
   if (q.type === "nameStruct") {
     return {
-      prompt: `Which structure is <strong>${esc(card.name)}</strong> (${abbrHtml(card)})?`,
+      prompt: `Which lattice is <strong>${esc(card.name)}</strong> (${esc(card.abbr)})?`,
       stage: "",
     };
   }
   if (q.type === "claimWho") {
     return {
-      prompt: "Which component does this describe?",
+      prompt: "Which material does this describe?",
       stage: `<blockquote class="claim">${chem(q.claim)}</blockquote>`,
     };
   }
   return {
-    prompt: `Which statement is true of <strong>${abbrHtml(card)}</strong> — ${esc(card.name)}?`,
+    prompt: `Which statement is true of <strong>${esc(card.abbr)}</strong> — ${esc(card.name)}?`,
     stage: "",
   };
 }
@@ -230,8 +229,7 @@ function renderQuiz() {
         render();
       })
     );
-    const checkBtn = root.querySelector("#checkBtn");
-    checkBtn.addEventListener("click", check);
+    root.querySelector("#checkBtn").addEventListener("click", check);
   } else {
     paintVerdict(q);
     root.querySelector("#nextBtn").addEventListener("click", next);
@@ -267,12 +265,12 @@ function paintVerdict(q) {
   });
   const verdict = root.querySelector("#verdict");
   if (right) {
-    verdict.innerHTML = `<p class="feedback ok">✓ ${abbrHtml(card)} — ${chem(card.tagline)}</p>`;
+    verdict.innerHTML = `<p class="feedback ok">✓ ${esc(card.abbr)} — ${chem(card.tagline)}</p>`;
   } else {
     const correctLine =
       q.type === "whoClaim"
         ? `the true statement is highlighted`
-        : `this ${q.type === "nameStruct" ? "one is highlighted" : `is ${abbrHtml(card)} — ${esc(card.name)}`}`;
+        : `this ${q.type === "nameStruct" ? "one is highlighted" : `is ${esc(card.abbr)} — ${esc(card.name)}`}`;
     verdict.innerHTML = `<p class="feedback no">✗ Not quite — ${correctLine}. This one comes back around.</p>`;
   }
 }
@@ -294,9 +292,9 @@ function renderDone() {
   const missedBlock = missed.length
     ? `<div class="missed-block">
         <p class="missed-label">Worth another look:</p>
-        <div class="chips">${missed.map((c) => `<span class="chip chip-missed">${abbrHtml(c)}</span>`).join("")}</div>
+        <div class="chips">${missed.map((c) => `<span class="chip chip-missed">${esc(c.abbr)}</span>`).join("")}</div>
       </div>`
-    : `<p class="feedback ok">Clean run — every structure and fact landed on the first try. 🎉</p>`;
+    : `<p class="feedback ok">Clean run — every lattice and fact landed on the first try. 🎉</p>`;
   root.innerHTML = `
     ${tierTabs()}
     <p class="prompt">Round done — ${quiz.total} questions, ${quiz.clean} solved clean on the first try.</p>

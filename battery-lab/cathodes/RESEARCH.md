@@ -1,6 +1,10 @@
 # Cathode deck — draft research notes
 
-Draft content lives in `data/cards.draft.js` (`window.LIB_CATHODES_DRAFT`), schema-matched to the electrolytes deck.
+Shipped content lives in `data/cards.js` (the earlier `cards.draft.js` was
+promoted and deleted). Review fixes applied on promotion: LFP tagline softened
+to "~40 % of the world's cathode market" (flag 2) and LMR capacity stated as
+"~250 mAh/g (lab up to 300)" everywhere (flag 7). Thermal-runaway onsets keep
+their "~" (flag 1).
 
 ## Card list rationale
 

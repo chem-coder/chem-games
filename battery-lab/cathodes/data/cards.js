@@ -1,15 +1,35 @@
-// Cathode materials deck — DRAFT content, not yet wired into the app shell.
-// Schema matches the electrolytes deck. All voltages vs Li+/Li unless stated.
-// Specs chips: [voltage, practical capacity, structure/space group] — exactly 3.
+/*
+  Battery Lab — Cathode Materials deck (content only, no logic).
+  Same shape as the electrolytes deck; `lattice` replaces `mol` and is
+  consumed by js/lattice.js (three schematic archetypes — layered / spinel /
+  olivine — with per-card overlays; the 2D / 3D / 1D diffusion-arrow
+  contrast is the load-bearing visual idea).
+  All voltages vs Li⁺/Li. Spec chips carry practical capacities.
+  Draft research notes and flagged uncertainties: ../RESEARCH.md.
+*/
 
-window.LIB_CATHODES_DRAFT = {
+export const DECK = {
   categories: {
-    layered:  { label: "Layered oxides",       color: "plum" },
-    spinel:   { label: "Spinels",              color: "teal" },
-    olivine:  { label: "Olivines / polyanion", color: "amber" },
+    layered: {
+      label: "Layered",
+      blurb: "Stacked slabs of edge-sharing MO₆ octahedra with flat lithium planes between — Li⁺ diffuses in two dimensions. Goodenough's 1980 template still carries most of the industry.",
+    },
+    spinel: {
+      label: "Spinels",
+      blurb: "A three-dimensional framework with lithium hopping through interconnected tetrahedral channels — 3D diffusion built for power, and manganese chemistry deciding the lifetime.",
+    },
+    olivine: {
+      label: "Olivines",
+      blurb: "Phosphate pillars lock the oxygen in place and leave lithium a single one-dimensional tunnel — safe and cheap, and utterly dependent on that one channel staying open.",
+    },
+    all: {
+      label: "Full mix",
+      blurb: "All three families shuffled — layered planes, spinel channels, olivine tunnels — the way a materials exam deals them.",
+    },
   },
+
   cards: [
-    // ------------------------------------------------------------ LAYERED
+    /* ---------------------------------------------------- layered ------ */
     {
       id: "lco",
       abbr: "LCO",
@@ -30,7 +50,7 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "layered",
-        note: "O3 stacking: slabs of edge-sharing CoO₆ octahedra alternate with flat Li planes (ABC oxygen stacking, R-3m). Li diffuses in 2D within the interlayer planes — show arrows confined to the Li plane.",
+        note: "O3 stacking: slabs of edge-sharing CoO₆ octahedra alternate with flat Li planes (R-3m); 2D Li diffusion within the interlayer planes.",
       },
     },
     {
@@ -53,7 +73,7 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "layered",
-        note: "Same O3 R-3m framework as LCO, but the transition-metal slab is a mixed Ni/Mn/Co occupancy (color the octahedra three ways at the chosen ratio). 2D Li diffusion between slabs. For the Ni-rich variant, show one or two Ni atoms sitting in the Li plane (cation mixing).",
+        note: "Same O3 R-3m framework as LCO with a mixed Ni/Mn/Co slab; one Ni shown sitting in the Li plane (cation mixing).",
       },
     },
     {
@@ -76,7 +96,7 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "layered",
-        note: "O3 R-3m like LCO/NMC. Slab is mostly NiO₆ octahedra with sparse Co and isolated Al octahedra — highlight one Al octahedron as a structural 'pin'. 2D Li diffusion between slabs.",
+        note: "O3 R-3m; mostly-Ni slab with sparse Co and one highlighted Al octahedron acting as a structural pin.",
       },
     },
     {
@@ -86,23 +106,24 @@ window.LIB_CATHODES_DRAFT = {
       category: "layered",
       tagline: "Extra lithium, oxygen redox, record capacity — and a voltage that fades every cycle.",
       formulaHtml: "xLi<sub>2</sub>MnO<sub>3</sub>·(1−x)LiMO<sub>2</sub>",
-      specs: ["~3.6 V avg vs Li⁺/Li (sloping)", "250–300 mAh/g practical", "R-3m + C2/m composite"],
+      specs: ["~3.6 V avg vs Li⁺/Li (sloping)", "~250 mAh/g (lab up to 300)", "R-3m + C2/m composite"],
       facts: [
-        "Written xLi₂MnO₃·(1−x)LiMO₂: the excess lithium sits inside the transition-metal layer, forming honeycomb-ordered Li₂MnO₃-like domains (monoclinic C2/m) inside the normal layered R-3m framework. The reward is 250–300 mAh/g — the highest capacity of any oxide cathode.",
+        "Written xLi₂MnO₃·(1−x)LiMO₂: the excess lithium sits inside the transition-metal layer, forming honeycomb-ordered Li₂MnO₃-like domains (monoclinic C2/m) inside the normal layered R-3m framework. The reward is about 250 mAh/g — lab cells reach 300 — the highest capacity of any oxide cathode.",
         "The extra capacity comes from oxidizing the lattice oxygen itself (anion redox), unlocked by a one-time 'activation' plateau near 4.5 V on the first charge — beyond that point the material gives more charge than its transition metals alone can account for.",
         "Its signature failure is voltage fade: transition metals migrate during cycling and the layered domains slowly convert toward spinel-like order, so the average discharge voltage drops cycle after cycle, with large charge/discharge hysteresis. This — not capacity loss — has kept LMR out of mass production for two decades.",
       ],
       claims: [
-        "Highest capacity in the deck, 250–300 mAh/g, partly supplied by oxygen (anion) redox.",
+        "Highest capacity in the deck — around 250 mAh/g — partly supplied by oxygen (anion) redox.",
         "It needs a one-time activation plateau near 4.5 V on its first charge.",
         "Voltage fade, not capacity fade, is its signature failure mode.",
       ],
       lattice: {
         kind: "layered",
-        note: "Layered slabs in which some transition-metal sites are occupied by Li, giving honeycomb LiMn₆ ordering (Li₂MnO₃ C2/m domains) coexisting with normal LiMO₂ regions. Show the honeycomb pattern in plan view of one slab, plus the usual 2D Li planes.",
+        note: "Layered slabs where some transition-metal sites hold Li (honeycomb Li₂MnO₃ C2/m domains) — excess Li drawn inside the slab.",
       },
     },
-    // ------------------------------------------------------------- SPINEL
+
+    /* ----------------------------------------------------- spinel ------ */
     {
       id: "lmo",
       abbr: "LMO",
@@ -123,7 +144,7 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "spinel",
-        note: "Fd-3m: Mn on 16d octahedral sites forming an edge-sharing Mn₂O₄ framework; Li on 8a tetrahedral sites. Show the 3D interconnected diffusion channels (8a–16c–8a) — arrows in three directions, contrasting with the layered cards' 2D planes.",
+        note: "Fd-3m: Mn₂O₄ framework of 16d octahedra with Li on tetrahedral 8a sites; interconnected 3D 8a–16c–8a diffusion channels.",
       },
     },
     {
@@ -146,16 +167,17 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "spinel",
-        note: "Same Fd-3m spinel framework as LMO, but one in four 16d octahedra is Ni (two-tone octahedra). Optionally show the ordered P4₃32 variant's Ni/Mn pattern. 3D 8a–16c Li channels as in LMO.",
+        note: "Same Fd-3m spinel framework as LMO with one in four octahedra Ni; 3D 8a–16c Li channels as in LMO.",
       },
     },
-    // ------------------------------------------------------------ OLIVINE
+
+    /* ---------------------------------------------------- olivine ------ */
     {
       id: "lfp",
       abbr: "LFP",
       name: "Lithium iron phosphate",
       category: "olivine",
-      tagline: "Written off as too slow, rescued by carbon and nano — now in roughly half of new EVs.",
+      tagline: "Written off as too slow, rescued by carbon and nano — now ~40 % of the world's cathode market.",
       formulaHtml: "LiFePO<sub>4</sub>",
       specs: ["3.4 V flat plateau vs Li⁺/Li", "~160 mAh/g practical", "Pnma olivine"],
       facts: [
@@ -170,7 +192,7 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "olivine",
-        note: "Pnma: corner-sharing FeO₆ octahedra braced by PO₄ tetrahedra pillars; Li sits in 1D channels running along [010]. Draw one channel with Li hopping along it, and show an Fe antisite defect plugging a channel to illustrate 1D fragility.",
+        note: "Pnma: FeO₆ octahedra braced by PO₄ tetrahedra; Li in 1D channels along [010]; one Fe antisite defect shown plugging a channel.",
       },
     },
     {
@@ -193,7 +215,7 @@ window.LIB_CATHODES_DRAFT = {
       ],
       lattice: {
         kind: "olivine",
-        note: "Same Pnma olivine framework as LFP with Mn and Fe mixed on the metal site — draw two-tone MO₆ octahedra plus PO₄ pillars, and the same 1D [010] Li channels.",
+        note: "Same Pnma olivine framework as LFP with Mn and Fe mixed on the metal site (two-tone octahedra); 1D [010] Li channels.",
       },
     },
   ],
