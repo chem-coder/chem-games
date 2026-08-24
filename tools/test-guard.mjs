@@ -18,8 +18,8 @@ const SUITES = [
   "nomenclature/js/triad.test.js",
   "nomenclature/builder/js/builder.test.js",
   "oxidation-state-trainer/js/oxidation.test.js",
-  "periodic-table/js/game.test.js",
-  "periodic-table/js/quiz.test.js",
+  "periodic-table/memorizer/js/game.test.js",
+  "periodic-table/memorizer/js/quiz.test.js",
   "tools/acid-base-db.test.js",
   "tools/validate-reactions.test.js"
 ];

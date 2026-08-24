@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periodic Table Memorizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260727-pt8">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; The Periodic System</a>
+      <a class="home-link" href="../../">&#8962; All Chem Games</a>
+      <p class="eyebrow">Atoms &amp; the Periodic Table &middot; The Periodic System</p>
+      <h1>Periodic Table Memorizer</h1>
+      <p class="lede">Two ways to drill the table. <strong>Fill the table</strong> — click a square, type its symbol, and it locks in (arrows navigate). Or take the <strong>Symbol ↔ Name quiz</strong>: name a symbol, or give the symbol for a name.</p>
+    </header>
+
+    <section id="game" class="game" aria-live="polite"></section>
+    <!-- Fill mode's real text field. Lives OUTSIDE #game: render() rebuilds that section's
+         innerHTML on every keystroke, and recreating the input would close the phone
+         keyboard after each letter. -->
+    <!-- autocapitalize="none": the app title-cases the symbol itself (setBuffer), so the
+         phone keyboard stays in plain lowercase instead of fighting the player's shift key. -->
+    <input id="fillInput" class="fill-input" type="text" autocomplete="off"
+           autocapitalize="none" spellcheck="false" enterkeyhint="go"
+           maxlength="3" tabindex="-1" aria-label="Element symbol">
+  </main>
+
+  <script type="module" src="js/app.js?v=20260728-pt9"></script>
+</body>
+</html>

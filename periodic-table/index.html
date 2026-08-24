@@ -3,33 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Periodic Table Memorizer</title>
+  <title>The Periodic System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../shared/css/tokens.css">
-  <link rel="stylesheet" href="css/styles.css?v=20260727-pt8">
+  <link rel="stylesheet" href="../shared/css/topic-screen.css?v=20260812-topic1">
+  <style>
+    /* The mini periodic table on the Reading tab — drawn from the Memorizer's own
+       data file, colored by the same three regions the game uses. */
+    .mini-pt {
+      display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px;
+      margin: 14px 0 6px; max-width: 640px;
+    }
+    .mini-pt .cell {
+      aspect-ratio: 1; border-radius: 3px; border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: 600;
+      font-size: clamp(0.34rem, 1.4vw, 0.62rem); color: var(--ink);
+    }
+    .mini-pt .gap { border: none; }
+    .mini-pt .type-metal, .pt-legend .type-metal { background: var(--accent-soft); border-color: var(--accent); }
+    .mini-pt .type-metalloid, .pt-legend .type-metalloid { background: var(--warning-soft); border-color: var(--warning-line); }
+    .mini-pt .type-nonmetal, .pt-legend .type-nonmetal { background: var(--plum-soft); border-color: var(--plum); }
+    .pt-legend { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 10px; }
+    .pt-legend span {
+      padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line);
+      font-size: 0.78rem; font-weight: 600; color: var(--ink);
+    }
+  </style>
 </head>
 <body>
   <main class="app-shell">
     <header class="app-header">
       <a class="home-link" href="../">&larr; Home</a>
-      <p class="eyebrow">Foundations &middot; The periodic table</p>
-      <h1>Periodic Table Memorizer</h1>
-      <p class="lede">Two ways to drill the table. <strong>Fill the table</strong> — click a square, type its symbol, and it locks in (arrows navigate). Or take the <strong>Symbol ↔ Name quiz</strong>: name a symbol, or give the symbol for a name.</p>
+      <p class="eyebrow">Atoms &amp; the Periodic Table &middot; The Periodic System</p>
+      <h1>The Periodic System</h1>
+      <p class="lede">One table holds every element &mdash; and its shape is the message. Learn to read the rows, the columns, and the trends that run across them.</p>
     </header>
 
-    <section id="game" class="game" aria-live="polite"></section>
-    <!-- Fill mode's real text field. Lives OUTSIDE #game: render() rebuilds that section's
-         innerHTML on every keystroke, and recreating the input would close the phone
-         keyboard after each letter. -->
-    <!-- autocapitalize="none": the app title-cases the symbol itself (setBuffer), so the
-         phone keyboard stays in plain lowercase instead of fighting the player's shift key. -->
-    <input id="fillInput" class="fill-input" type="text" autocomplete="off"
-           autocapitalize="none" spellcheck="false" enterkeyhint="go"
-           maxlength="3" tabindex="-1" aria-label="Element symbol">
+    <section class="game" id="topic"></section>
   </main>
 
-  <script type="module" src="js/app.js?v=20260728-pt9"></script>
+  <!-- Topic screen on the shared template (TOPIC_UNIVERSE_PLAN.md). The mini table
+       below is rendered from the Memorizer's data, so it never drifts from the game. -->
+  <script type="module">
+    import { renderTopicScreen } from "../shared/js/topic-screen.js?v=20260812-topic1";
+    import { ELEMENTS } from "./memorizer/data/pt-data.js?v=20260728-pt9";
+
+    const miniPT = `<div class="mini-pt">${ELEMENTS.map((e) =>
+      `<div class="cell type-${e.type}" style="grid-row:${e.row + 1};grid-column:${e.col + 1}" title="${e.name} (${e.z})">${e.symbol}</div>`
+    ).join("")}</div>
+    <div class="pt-legend"><span class="type-metal">Metals</span><span class="type-metalloid">Metalloids</span><span class="type-nonmetal">Nonmetals</span></div>`;
+
+    renderTopicScreen(document.getElementById("topic"), {
+      tabs: [
+        {
+          id: "reading", label: "Reading the Table",
+          card: `
+            <h2>Reading the Table &mdash; rows are periods, columns are groups</h2>
+            <p>Each horizontal row is a <strong>period</strong>: across a period, every element has the same number of electron shells. Each vertical column is a <strong>group</strong> (also called a family): elements in a group carry the same number of outer electrons, so they behave alike in reactions.</p>
+            ${miniPT}
+            <p>The table splits into three regions: <strong>metals</strong> on the left and center, <strong>nonmetals</strong> in the upper right, and the staircase of <strong>metalloids</strong> between them. The named families to know: <strong>alkali metals</strong> (group 1), <strong>alkaline earth metals</strong> (group 2), <strong>transition metals</strong> (the middle block), <strong>halogens</strong> (group 17), and <strong>noble gases</strong> (group 18).</p>`,
+          games: [
+            { label: "Open the Periodic Table Memorizer →", href: "memorizer/" },
+            { label: "Oxidation states reference table →", href: "../reference/oxidation-states/" },
+          ],
+        },
+        {
+          id: "valence", label: "Valence Electrons",
+          soon: "The electrons an atom shows the world. For the main groups, the group number tells you how many — and dot diagrams draw them.",
+        },
+        {
+          id: "trends", label: "Periodic Trends",
+          soon: "Atomic radius, ionization energy, electronegativity — three arrows that run across the table. Read the position, predict the ranking.",
+        },
+      ],
+    });
+  </script>
 </body>
 </html>
