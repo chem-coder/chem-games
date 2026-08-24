@@ -44,3 +44,6 @@ tmp/
 *.swp
 *.swo
 *~
+
+# Private student materials (past-exam derived)
+Malcolm's study guides/
