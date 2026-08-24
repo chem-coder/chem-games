@@ -94,8 +94,8 @@ Main name: **CHEM GAMES** (also acceptable as chem-games / Chem-Games / ChemGame
 
 ## Rollout
 
-1. Topic-screen template + data format in `shared/`; migrate Gas Laws onto it.
-2. **Atoms & the Periodic Table** — early, per Dalia: the PT Memorizer already splits the table into element sets; add a card/tabs for practicing properties of the elements. Atomic Structure (protons/neutrons/electrons, isotopes, ions, electron configurations, orbital diagrams) is its own separate card and can come later.
+1. ✅ Topic-screen template + data format in `shared/`; migrate Gas Laws onto it. *(shipped 2026-08-12)*
+2. **Atoms & the Periodic Table** — early, per Dalia: the PT Memorizer already splits the table into element sets; add a card/tabs for practicing properties of the elements. Atomic Structure (protons/neutrons/electrons, isotopes, ions, electron configurations, orbital diagrams) is its own separate card and can come later. *(✅ Periodic System screen shipped 2026-08-24: `periodic-table/` is now the topic screen — three tabs (Reading the Table with a mini-table rendered from the Memorizer's own data · Valence Electrons stub · Periodic Trends stub) — with the Memorizer moved to `periodic-table/memorizer/`. Pending: the trends ranking game (drag-to-order, mechanic #16; entry deck = Ch 9 Atomic Sizes Activity, advanced = OU unit-4 items) and the Atomic Structure card.)*
 3. Richest chapters next: Acids & Bases, Reactions & Stoichiometry, Compounds & Naming.
 4. **Bonding & Structure** — screens *and* the new game (see decisions log: first version before Malcolm's exam, Dalia edits from there).
 5. Redox, Organic, remaining thin/empty topics; then rewire the main page into chapter sections with the CHEM GAMES *&Quizzes* masthead and learning-type badges.
@@ -103,10 +103,11 @@ Main name: **CHEM GAMES** (also acceptable as chem-games / Chem-Games / ChemGame
 
 ## OU materials mining plan (CHEM 1315/1415)
 
-Each course: 8 **units** (not textbook chapters — confirmed from the course's own exam index), 4 exams with rolling coverage — E1: units 1–2 · E2: units 1–4 · E3: units 3–6 · E4: units 5–8. **E1 mined 2026-08-12 → see `OU_MINING.md`**: ~200 keyed items (plus ~200 more in the E2 papers' unit-1/2 halves), spanning universe chapters 1–4 + Solutions; an OU question bank with stable item IDs already exists behind the papers. **Caveat from Dalia: this material is a lot harder than anything from the IMAT or Heritage** — it feeds the advanced bands of the ladders (and eventually the MCAT track), never the entry rungs.
+**MINING COMPLETE (2026-08-24) — see `OU_MINING.md` for everything.** 1315: all eight units, ~540 keyed items from E1–E4 plus ~140 recovered from the image-only SP13 papers by OCR (`OU_SP13_TRANSCRIPTS.md`). 1415: no exam papers exist — Dalia's own lecture decks + recitation sets were mined instead (~500 items, ~300 keyed, plus the full teaching arc: her LO numbering is a ready ladder-tab spec per unit). The mining log now carries a 45-mechanic quiz-pattern catalogue and per-topic-card feed maps. **Caveat from Dalia stands: this material is a lot harder than anything from the IMAT or Heritage** — it feeds the advanced bands of the ladders (and eventually the MCAT track), never the entry rungs; the exceptions found: Nuclear (OU is the *only* source, entry rungs included) and Kinetics/Equilibrium (the 1415 lectures carry their own entry scaffolding).
 
 ## Open items
 
 - Bonding & Structure game design — needs Dalia's game idea + materials session before the first version is built (her content, my scaffolding; build window is before ~Sept 21).
 - Logo/masthead implementation — CSS realization of the Branding spec, for Dalia's visual approval.
-- OU mining — begin with 1315 E1 per the plan above.
+- Periodic Trends ranking game (drag-to-order strip) — awaiting Dalia's go; Valence Electrons tab content — awaiting her game idea.
+- OU mining — ✅ complete (both courses; see `OU_MINING.md`). Optional leftover veins listed at the end of that log.
