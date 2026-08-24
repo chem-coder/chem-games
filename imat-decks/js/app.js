@@ -4,6 +4,7 @@
 
 import { DECKS } from "../data/decks.js";
 import { GUIDES, SCHEDULE } from "../data/guides.js";
+import { GAMES, GAME_BY_SUB, GAME_BY_DECK } from "../data/games.js";
 
 const root = document.getElementById("game");
 
@@ -215,6 +216,19 @@ function loadCard() {
   render();
 }
 
+// ── the matching game, offered on the reveal ──
+// Only after Check, never before: seeing the answer is the point at which
+// "go practise this" is useful rather than a hint. Opens in a new tab so the
+// drill in progress survives.
+function gameLink(card, deckId) {
+  const key = GAME_BY_SUB[card.sub] || GAME_BY_DECK[deckId];
+  const g = key && GAMES[key];
+  if (!g) return "";
+  return `<p class="game-line">
+    <a class="game-link" href="${g.href}" target="_blank" rel="noopener">Drill this skill in ${esc(g.name)} ↗</a>
+  </p>`;
+}
+
 // ── the drill ──
 function renderPlay() {
   const letters = ["A", "B", "C", "D", "E"].filter((L) => card.options[L] !== undefined);
@@ -243,6 +257,7 @@ function renderPlay() {
       ? `<p class="feedback ok">Correct. It leaves the stack.</p>`
       : `<p class="feedback no">Not quite — the answer is ${card.answer}. This one comes back around.</p>`;
   const src = checked ? `<p class="src-line">${esc(card.src)}${card.sub ? ` · ${esc(card.sub)}` : ""}</p>` : "";
+  const game = checked ? gameLink(card, deck().id) : "";
 
   root.innerHTML = `
     <button class="intro-link" id="listBtn" type="button">↩ All decks</button>
@@ -251,6 +266,7 @@ function renderPlay() {
     <div class="answers">${opts}</div>
     ${src}
     ${feedback}
+    ${game}
     <div class="controls">
       ${checked
         ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !wasCorrect ? "Next →" : "Finish"}</button>`
