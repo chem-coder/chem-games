@@ -109,5 +109,5 @@ Main name: **CHEM GAMES** (also acceptable as chem-games / Chem-Games / ChemGame
 
 - Bonding & Structure game design — needs Dalia's game idea + materials session before the first version is built (her content, my scaffolding; build window is before ~Sept 21).
 - Logo/masthead implementation — CSS realization of the Branding spec, for Dalia's visual approval.
-- Periodic Trends ranking game (drag-to-order strip) — awaiting Dalia's go; Valence Electrons tab content — awaiting her game idea.
+- ✅ Periodic Trends ranking game — **Trend Ladder shipped 2026-08-24** at `periodic-table/trends/` (four tiers: Atomic Radius · Isoelectronic Ions · Ionization & Pull · Exam Band with real OU stems incl. the N→O dip; pH-Lab ladder gestures, values revealed only after Check). Valence Electrons tab content — still awaiting her game idea.
 - OU mining — ✅ complete (both courses; see `OU_MINING.md`). Optional leftover veins listed at the end of that log.
