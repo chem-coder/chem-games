@@ -3,6 +3,7 @@
 // offer next deck AND revisit AND home. Deck list is one click from everywhere.
 
 import { DECKS } from "../data/decks.js";
+import { GUIDES, SCHEDULE } from "../data/guides.js";
 
 const root = document.getElementById("game");
 
@@ -147,6 +148,23 @@ function render() {
   renderList();
 }
 
+// ── study guides ──
+// Each deck that has PDFs gets a collapsed disclosure under its drill button.
+// <details> keeps the open/closed state native and keyboard-accessible; the row
+// collapses back to exactly the old layout. Links open in a new tab so a drill
+// in progress is never lost.
+function guideBlock(deckId) {
+  const items = GUIDES[deckId];
+  if (!items || !items.length) return "";
+  const links = items.map((g) =>
+    `<li><a class="guide-link" href="study-guides/${g.file}" target="_blank" rel="noopener">${esc(g.label)}</a></li>`
+  ).join("");
+  return `<details class="deck-guides">
+      <summary><span class="guide-label">Study guides</span><span class="guide-count">${items.length} PDF${items.length === 1 ? "" : "s"}</span></summary>
+      <ul class="guide-links">${links}</ul>
+    </details>`;
+}
+
 // ── the deck list ──
 function renderList() {
   let lastChapter = null;
@@ -155,11 +173,14 @@ function renderList() {
     lastChapter = d.chapter;
     const extras = d.questions.filter((q) => q.src === "Extra practice").length;
     return `${head}
-      <button class="deck-row" data-deck="${i}" type="button">
-        <span class="deck-name">${d.name}</span>
-        <span class="deck-count">${d.questions.length} question${d.questions.length === 1 ? "" : "s"}${extras ? ` · ${extras} extra` : ""}</span>
-        <span class="deck-go">drill →</span>
-      </button>`;
+      <div class="deck-block">
+        <button class="deck-row" data-deck="${i}" type="button">
+          <span class="deck-name">${d.name}</span>
+          <span class="deck-count">${d.questions.length} question${d.questions.length === 1 ? "" : "s"}${extras ? ` · ${extras} extra` : ""}</span>
+          <span class="deck-go">drill →</span>
+        </button>
+        ${guideBlock(d.id)}
+      </div>`;
   }).join("");
 
   root.innerHTML = `
@@ -167,6 +188,11 @@ function renderList() {
       <p class="intro-eyebrow">the decks, in study order</p>
       <p class="intro-lede">Decks follow the IMAT track: foundations first, the Big Three in the middle, organic at the end. Every card shows its source paper on the reveal — <em>Extra practice</em> marks questions written for this trainer in the exam's style.</p>
     </div>
+    <a class="schedule-row" href="study-guides/${SCHEDULE.file}" target="_blank" rel="noopener">
+      <span class="schedule-name">${esc(SCHEDULE.label)}</span>
+      <span class="schedule-note">${esc(SCHEDULE.note)}</span>
+      <span class="schedule-go">open ↗</span>
+    </a>
     ${rows}
     <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;
 
