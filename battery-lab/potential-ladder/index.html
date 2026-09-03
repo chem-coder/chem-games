@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potential Ladder — Battery Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20260814-lad1">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&larr; Battery Lab</a>
+      <p class="eyebrow">Battery Lab &middot; Electrochemistry</p>
+      <h1>Potential Ladder</h1>
+      <p class="lede">The electrochemistry underneath everything: every species in the cell on one voltage axis, the half-reactions with honest bookkeeping, and the two metals that carry all the current while doing no chemistry — until they don't.</p>
+    </header>
+    <section id="game" class="game" aria-live="polite"></section>
+  </main>
+  <script type="importmap">
+  {
+    "imports": {
+      "./data/ladder.js": "./data/ladder.js?v=20260814-lad1",
+      "../../shared/js/typed-recall.js": "../../shared/js/typed-recall.js?v=20260814-lad1"
+    }
+  }
+  </script>
+  <script type="module" src="js/app.js?v=20260814-lad1"></script>
+</body>
+</html>

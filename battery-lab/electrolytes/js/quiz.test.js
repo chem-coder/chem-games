@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { buildRound, buildQuestion, QUESTION_TYPES } from "../../../shared/js/mcq-quiz.js";
 import { DECK } from "../data/cards.js";
-import { molSvg } from "./structures.js";
+import { molSvg } from "../../../shared/js/skeletal.js";
 
 // deterministic rng (mulberry32) so failures reproduce
 function seeded(seed) {

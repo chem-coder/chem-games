@@ -62,10 +62,10 @@ function chem(s) {
     .replace(/[₀-₉]+(?:\.[₀-₉]+)*/g, (m) =>
       `<sub>${[...m].map((ch) => (ch === "." ? "." : SUBS[ch])).join("")}</sub>`
     )
-    .replace(/([⁰-⁹]*)([⁺⁻])/g, (m, digits, sign) =>
+    .replace(/([⁰¹²³⁴-⁹]*)([⁺⁻])/g, (m, digits, sign) =>
       `<sup>${[...digits].map((ch) => SUPS[ch]).join("")}${sign === "⁺" ? "+" : "−"}</sup>`
     )
-    .replace(/[⁰-⁹]+/g, (m) => `<sup>${[...m].map((ch) => SUPS[ch]).join("")}</sup>`);
+    .replace(/[⁰¹²³⁴-⁹]+/g, (m) => `<sup>${[...m].map((ch) => SUPS[ch]).join("")}</sup>`);
 }
 
 function catChip(card) {

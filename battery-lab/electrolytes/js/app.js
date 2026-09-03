@@ -7,7 +7,7 @@
   + home.
 */
 import { DECK } from "../data/cards.js";
-import { molSvg } from "./structures.js";
+import { molSvg } from "../../../shared/js/skeletal.js";
 import { buildRound, buildQuestion } from "../../../shared/js/mcq-quiz.js";
 import { buildRecallRound, makeQuestion, matches } from "../../../shared/js/typed-recall.js";
 

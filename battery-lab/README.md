@@ -16,8 +16,24 @@ Hub page: `index.html` (live cards link to trainers; hatched cards are planned).
    family → full name → Show-me (reveals, costs the clean, requeues the card
    flipped to the other question shape). Works on one-card tabs — typing
    needs no distractors.
-4. **Electrolyte Additives** and **Electrode Recipe** decks — next
-5. **Voltage curves**, **degradation chains**, **history timeline**
+4. **Electrolyte Additives** and **Electrode Recipe** decks — SHIPPED
+   (`additives/`: 11 cards by function — SEI formers incl. PS/DTD/LiNO₃,
+   CEI & high-voltage incl. LiDFOB/LiPO₂F₂/ADN, safety incl. TMP/biphenyl;
+   `electrode-recipe/`: 9 cards — binders/carbons/collectors+NMP, mixed
+   skeletal + schematic figures). Both reuse the full card-game shell:
+   shared skeletal renderer, MCQ quiz, typed recall.
+5. **Voltage curves**, **degradation chains**, **history timeline** — next
+
+Also shipped outside the numbered lanes (owner request 2026-08-14):
+**`potential-ladder/`** — the electrochemistry game. Three rungs: place all
+ten species on one V-vs-Li⁺/Li axis (with the carbonate-window cliffs
+tinted); half-reactions with corrupted-bookkeeping MCQ decoys + typed
+who-does-the-redox questions (Li is only ever the shuttle; Mn⁴⁺ scaffolds
+NMC; LMR oxidizes lattice O); collectors & corrosion — Cu-vs-Al duty,
+overdischarge Cu dissolution, and the owner's four-step Al-corrosion
+mechanism (oxide breakdown → Al oxidation → complex formation →
+dissolution) as a step-ordering puzzle. PF₆⁻ reseals with AlF₃; TFSI's
+soluble complexes don't — the step-④ story.
 
 ## Shipped
 
