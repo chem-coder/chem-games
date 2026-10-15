@@ -9,6 +9,7 @@ This folder is for internal project documentation: goals, decisions, implementat
 - `TRACK_MAPS.md` - **pathway maps (2026-10-03).** The business process (build loop → ready gate → channels → first dollar), the single universe prerequisite graph (all topics, MCAT additions dashed), and tracks as ordered subsets of it: IMAT, draft MCAT, and gen chem by textbook (books TBD). Mermaid, renders on GitHub.
 - `BONDING_GAME_DESIGN.md` - Shape Lab spec (2026-08-12): the Bonding & Structure game — Model Kit workspace (dot-drag bonds, Check→rotating 3D), formal charge → Lewis → geometries → build → polarity ladder, side-by-side Kit+quiz layout, resonance/octet rules, build order.
 - `OU_MINING.md` - mining log for the OU CHEM 1315/1415 archives (advanced-band content, harder than IMAT/Heritage). COMPLETE: all of 1315 (E1-E4 + the four image-only SP13 papers) and all of 1415 (no exams exist - lectures + recitations), with topic-ladder feeds and a 45-mechanic quiz-pattern catalogue.
+- `GLOSSARY_EN_RU.md` - EN→RU term glossary for Russian localization (draft for Dalia's red pen); single source for term choices, beginner topics first.
 - `OU_SP13_TRANSCRIPTS.md` - full keyed transcriptions of the four image-only 1315 Spring-2013 papers (~140 items recovered by OCR), companion to the mining log.
 - `PROJECT_REVIEW.md` - current project inventory, goals, documentation status, database plan, and working process.
 - `Chem_Games_Project_Brief.md` - high-level product brief for the IMAT chemistry / stoichiometry trainer direction.
