@@ -1,8 +1,8 @@
 # EN → RU glossary (draft for Dalia's red pen)
 
-**Status:** draft, 2026-10-15. Single source for term choices in Russian localization. Scope for now: the beginner topics first in line — Periodic System, Memorizer, Trend Ladder, the Atomic Structure game — plus shared interface strings. Terms are taken from the Ch 2 / Ch 8 / Ch 9 materials and the games' current copy. Change anything; once a row is approved it is the only translation the games use.
+**Status:** draft, 2026-10-15; conventions 1–3 decided by Dalia the same day (18-group table, полуметалл, электронная формула). Single source for term choices in Russian localization. Scope for now: the beginner topics first in line — Periodic System, Memorizer, Trend Ladder, the Atomic Structure game — plus shared interface strings. Terms are taken from the Ch 2 / Ch 8 / Ch 9 materials and the games' current copy. Change anything; once a row is approved it is the only translation the games use.
 
-Conventions to decide (marked ⚠ below): school-style short-period table vs the 18-group long table; "металлоид" vs "полуметалл"; "электронная конфигурация" vs the school term "электронная формула". Decimal separator in Russian numbers: comma.
+Decided: the games use the **18-group long table**; **полуметалл**; **электронная формула** (and электронно-графическая формула for orbital diagrams). Still open (⚠): оболочка vs слой; семейство vs группа for the Memorizer scopes. Decimal separator in Russian numbers: comma.
 
 ## Periodic table
 
@@ -10,8 +10,8 @@ Conventions to decide (marked ⚠ below): school-style short-period table vs the
 |---|---|---|
 | periodic table | периодическая таблица / периодическая система | "периодическая система химических элементов Д. И. Менделеева" in full |
 | period | период | row |
-| group | группа | ⚠ Russian school tables: групп I–VIII with подгруппы А/Б (short form); modern: 18 групп. Decide which the games show. |
-| main-group element | элемент главной подгруппы | short-form convention |
+| group | группа | 18-group long table (decided); short-form подгруппы А/Б not used in the games |
+| main-group element | элемент главной группы | avoid "подгруппа" (short-form term) |
 | transition metal | переходный металл | d-элемент |
 | alkali metal | щелочной металл | |
 | alkaline earth metal | щёлочноземельный металл | |
@@ -19,7 +19,7 @@ Conventions to decide (marked ⚠ below): school-style short-period table vs the
 | noble gas | благородный газ | also "инертный газ" in older texts |
 | metal | металл | |
 | nonmetal | неметалл | |
-| metalloid | ⚠ полуметалл / металлоид | "металлоид" is rare in Russian school usage |
+| metalloid | полуметалл | decided |
 | lanthanide / actinide | лантаноид / актиноид | "лантанид/актинид" also seen |
 | element | химический элемент | |
 | symbol (of an element) | символ элемента / химический знак | symbols stay Latin |
@@ -61,7 +61,7 @@ Conventions to decide (marked ⚠ below): school-style short-period table vs the
 | shell | электронная оболочка / электронный слой | ⚠ choose one for the games |
 | sublevel | подуровень | s, p, d, f |
 | orbital | орбиталь | |
-| electron configuration | ⚠ электронная конфигурация / электронная формула | school: "электронная формула" (1s²2s²2p⁶) |
+| electron configuration | электронная формула | decided; e.g. 1s²2s²2p⁶ |
 | orbital diagram | электронно-графическая формула / схема распределения электронов по орбиталям | school term is "электронно-графическая формула" |
 | ground state | основное состояние | |
 | excited state | возбуждённое состояние | |
