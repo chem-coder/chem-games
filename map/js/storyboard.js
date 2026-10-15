@@ -81,16 +81,18 @@ const ANIMS = {
       // Capture like a landing: the minus comes in on a spiral, speeding up as the radius
       // shrinks, and by the far side of the plus it is in orbit. Then it just circles.
       const cyc = t % 9;
-      const cx = 200, cy = 120, R = 70, start = 235, T = 3.2;
+      const cx = 200, cy = 120, R = 70, start = 235, T = 2.6;
+      const SWEEP = 1.5 * Math.PI, POW = 1.8;
+      const omega = (SWEEP * POW) / T;                 // angular speed at the end of the spiral
       place(o.p, cx, cy, t, 0, 0);
       let r, a;
       if (cyc < T) {
         const u = cyc / T;
         r = R + (start - R) * Math.pow(1 - u, 1.7);   // radius closes faster near the end
-        a = 1.45 * Math.PI * Math.pow(u, 1.5);         // sweep accelerates as it falls in
+        a = SWEEP * Math.pow(u, POW);                  // sweep accelerates as it falls in
       } else {
         r = R;
-        a = 1.45 * Math.PI + (cyc - T) * 3.0;          // steady orbit at matching speed
+        a = SWEEP + (cyc - T) * omega;                 // orbit at the arrival speed, never faster
       }
       place(o.e, cx + r * Math.cos(a), cy + r * Math.sin(a), t, 1, 0.6);
     }
