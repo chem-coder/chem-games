@@ -74,3 +74,4 @@ Suggested future Markdown files, only when they become necessary:
 
 - `CLIENT_COMMUNICATION.md` - external-facing summaries, demos, or update notes.
 - `TECHNICAL_DECISIONS.md` - only if implementation decisions outgrow the project review.
+- [ATOMIC_HISTORY_STORYLINE.md](ATOMIC_HISTORY_STORYLINE.md) — the discovery of atomic structure told as one story, the narrative spine for the beginner units (Dalia's text).
