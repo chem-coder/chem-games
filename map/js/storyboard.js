@@ -1,6 +1,14 @@
 // Storyboard animations in the bubble language: a plus (proton) and minuses (electrons)
 // on a small SVG stage. Each animation is a function of time; the frame decides which one.
 const NS = "http://www.w3.org/2000/svg";
+function mulberry32(a) {
+  return () => {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 const W = 480, H = 240;
 const P = { color: "#c9583a", dark: "#8f3a24", r: 22 };
 const E = { color: "#2a8c80", dark: "#134f48", r: 8 };
@@ -98,30 +106,40 @@ const ANIMS = {
     }
   },
   repel: {
-    // Two minuses drift in from the sides, slow as they close, stop short without touching,
-    // and push back out: fast at first, then coasting. Then the same with two pluses.
+    // Two like charges come in from random points beyond the edge, each on its own straight
+    // line toward a meeting point, at a steady pace; they brake only at the end, stop short of
+    // touching, and are shoved back out along the line between them, slowing as they separate.
+    // Minuses one cycle, pluses the next. Entry points change every cycle.
     setup(svg, defs) { return { a: bubble(svg, defs, E, "−"), b: bubble(svg, defs, E, "−"), c: bubble(svg, defs, P, "+"), d: bubble(svg, defs, P, "+") }; },
     draw(o, t) {
-      const cyc = t % 9;
-      const minuses = cyc < 4.5;
-      const c = cyc % 4.5;
-      const gap = minuses ? 22 : 38;        // closest approach, half the centre distance
-      const far = 150;
+      const CYC = 4.6, T_IN = 2.1, T_OUT = 1.6;
+      const n = Math.floor(t / CYC), c = t - n * CYC;
+      const minuses = n % 2 === 0;
+      const rnd = mulberry32(n * 7919 + 13);
+      const gap = minuses ? 22 : 38;
+      // meeting point near the centre, entry points beyond the edge at roughly opposite angles
+      const mx = 240 + (rnd() - 0.5) * 120, my = 120 + (rnd() - 0.5) * 70;
+      const th = rnd() * Math.PI * 2, spread = Math.PI + (rnd() - 0.5) * 1.2;
+      const FAR = 330;
+      const ent = [th, th + spread].map((ang) => ({ x: mx + FAR * Math.cos(ang), y: my + FAR * Math.sin(ang) }));
       const [a, b, h1, h2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
-      let d; // half-distance from the centre
-      const span = far - gap, T_IN = 2.1, T_OUT = 1.5;
-      if (c < T_IN) {
-        // steady approach for most of the way; the brake only comes in the last stretch,
-        // where the push finally has force
-        const u = c / T_IN;
-        const f = u < 0.72 ? (u / 0.72) * 0.86 : 0.86 + 0.14 * easeOut((u - 0.72) / 0.28);
-        d = far - span * f;
-      } else if (c < T_IN + T_OUT) {
-        d = gap + span * easeOut((c - T_IN) / T_OUT);   // shoved out hard, slowing as they separate
-      } else d = far;
-      place(a, 240 - d, 120, t, 0);
-      place(b, 240 + d, 120, t, 1);
-      place(h1, -100, -100, t, 0, 0); place(h2, -100, -100, t, 0, 0);
+      const stops = ent.map((e) => { const L = Math.hypot(e.x - mx, e.y - my); return { x: mx + (e.x - mx) * (gap / L), y: my + (e.y - my) * (gap / L) }; });
+      [a, b].forEach((node, i) => {
+        const e = ent[i], st = stops[i], other = stops[1 - i];
+        let x, y;
+        if (c < T_IN) {
+          const u = c / T_IN;
+          const f = u < 0.72 ? (u / 0.72) * 0.86 : 0.86 + 0.14 * easeOut((u - 0.72) / 0.28);
+          x = e.x + (st.x - e.x) * f; y = e.y + (st.y - e.y) * f;
+        } else {
+          // exit straight away from the other charge
+          const dx = st.x - other.x, dy = st.y - other.y, L = Math.hypot(dx, dy) || 1;
+          const k = easeOut(clamp01((c - T_IN) / T_OUT)) * 360;
+          x = st.x + (dx / L) * k; y = st.y + (dy / L) * k;
+        }
+        place(node, x, y, t, i);
+      });
+      place(h1, -200, -200, t, 0, 0); place(h2, -200, -200, t, 0, 0);
     }
   },
   closer: {
