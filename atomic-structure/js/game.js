@@ -1,6 +1,7 @@
 // Atomic Structure — the exercise ladder. Tier 1: build an atom from Z and A.
-// Board = the renderer in build mode; a tray of dispensers; drag moves matter (grab-hand
-// carry, forgiving targets); shells enforce nothing; judged only on Check (Dalia's rulings).
+// Board = the renderer in build mode. One gesture, one meaning: tap a dispenser or an
+// energy level to add one particle there, tap a placed particle to remove it, hold to
+// repeat. Shells enforce nothing; judged only on Check (Dalia's rulings).
 import { detectLang, makeT, applyStatic, elementName } from "../../shared/js/i18n.js";
 import { ELEMENTS } from "../../periodic-table/memorizer/data/pt-data.js";
 import { NAMES_RU } from "../../periodic-table/memorizer/data/pt-names.ru.js";
@@ -71,7 +72,7 @@ function showRound() {
       <div class="tray" aria-label="${t("tray")}">
         <button type="button" class="dispenser proton" data-kind="proton"><span class="disp-bubble"><span>+</span></span><span class="disp-label">${t("legend_p")}</span></button>
         <button type="button" class="dispenser neutron" data-kind="neutron"><span class="disp-bubble"></span><span class="disp-label">${t("legend_n")}</span></button>
-        <button type="button" class="dispenser electron" data-kind="electron"><span class="disp-bubble"><span>−</span></span><span class="disp-label">${t("legend_e")}</span></button>
+        <div class="dispenser electron is-note"><span class="disp-bubble"><span>−</span></span><span class="disp-label">${t("legend_e")}</span><span class="disp-sub">${t("electron_note")}</span></div>
         <p class="tray-note">${t("tray_note")}</p>
       </div>
     </div>
@@ -88,7 +89,7 @@ function showRound() {
   state.renderer = r;
   r.setBuild({ p: 0, n: 0, shells: new Array(SHELLS).fill(0) }, sp.z * 1000 + sp.mass);
   updateCounts();
-  wireDrag(sp);
+  wireTap();
   root.querySelector("#check").addEventListener("click", () => check(sp));
   root.querySelector("#hint").addEventListener("click", showHint);
   root.querySelector("#reset").addEventListener("click", () => { r.setBuild({ p: 0, n: 0, shells: new Array(SHELLS).fill(0) }); updateCounts(); });
@@ -97,9 +98,10 @@ function showRound() {
 function updateCounts() {
   const b = state.renderer.build;
   const [lp, ln, le] = root.querySelectorAll(".counts li");
-  lp.innerHTML = `<b>${b.p}</b> ${t("protons")}`;
-  ln.innerHTML = `<b>${b.n}</b> ${t("neutrons")}`;
-  le.innerHTML = `<b>${b.shells.reduce((a, c) => a + c, 0)}</b> ${t("electrons")}`;
+  const e = b.shells.reduce((a, c) => a + c, 0);
+  lp.innerHTML = `<b>${b.p}</b> ${t("protons", { n: b.p })}`;
+  ln.innerHTML = `<b>${b.n}</b> ${t("neutrons", { n: b.n })}`;
+  le.innerHTML = `<b>${e}</b> ${t("electrons", { n: e })}`;
 }
 
 const HINTS = ["hint_1", "hint_2", "hint_3", "hint_4"];
@@ -159,75 +161,57 @@ function wireTabs() {
   root.querySelectorAll(".level-tab").forEach((b) => b.addEventListener("click", () => { state.tier = Number(b.dataset.tier); showIntro(); }));
 }
 
-// ---- drag: grab-hand carry from the tray to the board, and back off the board --------
-function wireDrag(sp) {
+// ---- tap to add, tap to remove, hold to repeat ---------------------------------------
+function wireTap() {
   const r = state.renderer;
   const stage = root.querySelector(".stage");
-  let carry = null; // { kind, fromN, el }
+  let timer = 0, interval = 0;
 
-  function startCarry(kind, ev) {
-    const ghost = document.createElement("div");
-    ghost.className = `carried ${kind}`;
-    ghost.innerHTML = `<span>${kind === "proton" ? "+" : kind === "electron" ? "−" : ""}</span>`;
-    document.body.appendChild(ghost);
-    carry = { kind, el: ghost };
-    moveCarry(ev);
-    document.body.classList.add("is-carrying");
+  function stopRepeat() { clearTimeout(timer); clearInterval(interval); timer = 0; interval = 0; }
+  function repeat(action) {
+    action();
+    stopRepeat();
+    timer = setTimeout(() => { interval = setInterval(action, 220); }, 420);
   }
-  function moveCarry(ev) {
-    if (!carry) return;
-    carry.el.style.left = ev.clientX + "px";
-    carry.el.style.top = ev.clientY + "px";
-  }
-  function endCarry(ev) {
-    if (!carry) return;
-    const q = r.toLocal(ev.clientX, ev.clientY);
-    const zone = r.zoneAt(q.x, q.y);
+  function add(kind, n) {
     const b = r.build;
-    if (zone?.zone === "nucleus" && carry.kind !== "electron") {
-      if (carry.kind === "proton") b.p++; else b.n++;
-      r.setBuild(b);
-    } else if (zone?.zone === "ring" && carry.kind === "electron") {
-      b.shells[zone.n - 1]++;
-      r.setBuild(b);
-    } else if (zone && carry.kind === "electron" && zone.zone === "nucleus") {
-      // electron dropped on the nucleus: nearest ring takes it (forgiving target)
-      b.shells[0]++;
-      r.setBuild(b);
-    }
-    // anything else: the particle goes back to the tray
-    carry.el.remove();
-    carry = null;
-    document.body.classList.remove("is-carrying");
+    if (kind === "proton") b.p++;
+    else if (kind === "neutron") b.n++;
+    else b.shells[n - 1]++;
+    r.setBuild(b);
     updateCounts();
     root.querySelector("#feedback").textContent = "";
   }
-
-  root.querySelectorAll(".dispenser").forEach((d) => {
-    d.addEventListener("pointerdown", (ev) => {
-      if (state.checked) return;
-      ev.preventDefault();
-      startCarry(d.dataset.kind, ev);
-    });
-  });
-  // pick a placed particle off the board
-  stage.addEventListener("pointerdown", (ev) => {
-    if (state.checked) return;
-    const g = ev.target.closest?.(".bubble");
-    if (!g) return;
-    const kind = g.dataset.kind;
+  function remove(g) {
     const b = r.build;
+    const kind = g.dataset.kind;
     if (kind === "electron") b.shells[Number(g.dataset.n) - 1]--;
     else if (kind === "proton") b.p--;
     else b.n--;
     r.setBuild(b);
     updateCounts();
+    root.querySelector("#feedback").textContent = "";
+  }
+
+  root.querySelectorAll("button.dispenser").forEach((d) => {
+    d.addEventListener("pointerdown", (ev) => {
+      if (state.checked) return;
+      ev.preventDefault();
+      repeat(() => add(d.dataset.kind));
+    });
+  });
+  stage.addEventListener("pointerdown", (ev) => {
+    if (state.checked) return;
     ev.preventDefault();
-    startCarry(kind, ev);
-  }, true);
-  window.addEventListener("pointermove", moveCarry);
-  window.addEventListener("pointerup", endCarry);
-  window.addEventListener("pointercancel", endCarry);
+    const g = ev.target.closest?.(".bubble");
+    if (g) { remove(g); return; }
+    const q = r.toLocal(ev.clientX, ev.clientY);
+    const zone = r.zoneAt(q.x, q.y);
+    if (zone?.zone === "ring") repeat(() => add("electron", zone.n));
+  });
+  window.addEventListener("pointerup", stopRepeat);
+  window.addEventListener("pointercancel", stopRepeat);
+  stage.addEventListener("pointerleave", stopRepeat);
 }
 
 showIntro();

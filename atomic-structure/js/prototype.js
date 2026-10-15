@@ -61,9 +61,9 @@ function panel(initialIndex) {
     r.flatten();
     r.setSpecies(sp);
     sec.querySelector(".species-name").innerHTML = symbolHtml(sp);
-    lp.innerHTML = `<b>${sp.z}</b> ${t("protons")}`;
-    ln.innerHTML = `<b>${neutronCount(sp)}</b> ${t("neutrons")}`;
-    le.innerHTML = `<b>${electronCount(sp)}</b> ${t("electrons")}`;
+    lp.innerHTML = `<b>${sp.z}</b> ${t("protons", { n: sp.z })}`;
+    ln.innerHTML = `<b>${neutronCount(sp)}</b> ${t("neutrons", { n: neutronCount(sp) })}`;
+    le.innerHTML = `<b>${electronCount(sp)}</b> ${t("electrons", { n: electronCount(sp) })}`;
     btn.textContent = t("reveal");
     btn.classList.remove("ghost");
   }

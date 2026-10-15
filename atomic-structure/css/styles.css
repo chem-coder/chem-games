@@ -30,8 +30,7 @@ h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(1.9rem,
   background: var(--surface-soft); color: var(--ink);
 }
 .species-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin-left: auto; }
-.atom-svg { display: block; width: 100%; height: auto; cursor: grab; user-select: none; }
-.atom-svg:active { cursor: grabbing; }
+.atom-svg { display: block; width: 100%; height: auto; user-select: none; }
 .counts { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0 0; padding: 0; list-style: none; font-size: 0.92rem; }
 .counts li::before { content: ""; display: inline-block; width: 0.8em; height: 0.8em; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
 .counts .p::before { background: #c9583a; }
@@ -75,18 +74,18 @@ h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(1.9rem,
 .board { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 16px; align-items: start; }
 .stage .atom-svg { max-width: 560px; margin: 0 auto; }
 .tray { display: grid; gap: 10px; padding: 12px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); }
-.dispenser { display: grid; justify-items: center; gap: 6px; padding: 10px 6px; cursor: grab; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm); font: inherit; color: var(--ink); touch-action: none; user-select: none; }
-.dispenser:active { cursor: grabbing; }
+.dispenser { display: grid; justify-items: center; gap: 6px; padding: 10px 6px; cursor: pointer; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius-sm); font: inherit; color: var(--ink); touch-action: none; user-select: none; }
+.dispenser:active { border-color: var(--accent); background: var(--accent-soft); }
+.dispenser.is-note { cursor: default; }
+.disp-sub { color: var(--muted); font-size: 0.74rem; text-align: center; line-height: 1.3; }
+.stage .atom-svg { cursor: pointer; }
 .disp-label { font-size: 0.85rem; }
-.disp-bubble, .carried { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-family: var(--font-display); font-weight: 800; box-shadow: inset -3px -4px 8px rgba(0,0,0,0.18), inset 3px 4px 8px rgba(255,255,255,0.7), 0 2px 4px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.9); }
+.disp-bubble { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-family: var(--font-display); font-weight: 800; box-shadow: inset -3px -4px 8px rgba(0,0,0,0.18), inset 3px 4px 8px rgba(255,255,255,0.7), 0 2px 4px rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.9); }
 .disp-bubble { width: 38px; height: 38px; font-size: 1.3rem; }
-.proton .disp-bubble, .carried.proton { background: #d9826a; }
-.neutron .disp-bubble, .carried.neutron { background: #b8b3aa; }
-.electron .disp-bubble, .carried.electron { width: 16px; height: 16px; font-size: 0.8rem; background: #3a9c8f; }
+.proton .disp-bubble { background: #d9826a; }
+.neutron .disp-bubble { background: #b8b3aa; }
+.electron .disp-bubble { width: 16px; height: 16px; font-size: 0.8rem; background: #3a9c8f; }
 .dispenser.electron .disp-bubble { width: 18px; height: 18px; margin: 10px 0; }
-.carried { position: fixed; z-index: 50; pointer-events: none; transform: translate(-50%, -50%) scale(1.15); }
-.carried.proton, .carried.neutron { width: 36px; height: 36px; font-size: 1.3rem; }
-body.is-carrying, body.is-carrying * { cursor: grabbing !important; }
 .tray-note { margin: 2px 0 0; color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
 .counts { margin-top: 12px; }
 .feedback { min-height: 1.4em; margin: 10px 0 0; font-weight: 600; }
