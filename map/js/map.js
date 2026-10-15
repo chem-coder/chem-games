@@ -1,6 +1,6 @@
 // Chem Games — the game shell: entry (campaign or master by skill), the storyboards, the
 // skills map with its side panel, and settings (look, music, sound, language, mode).
-import { detectLang, makeT, setLang, LANGS } from "../../shared/js/i18n.js";
+import { detectLang, makeT, setLang, hasLangChoice, LANGS } from "../../shared/js/i18n.js?v=20261016-3";
 import { THEMES, getTheme, setTheme, applyTheme } from "../../shared/js/theme.js";
 import { loadProgress, saveProgress, seeStoryboard, skillState, levelsDone, pointsOf, emptyProgress } from "../../shared/js/progress.js";
 import { SKILLS, SKILLS_BY_ID, SYMBOLS } from "../data/skills.js";
@@ -28,6 +28,17 @@ const saveAudio = () => { try { localStorage.setItem(AUDIO_KEY, JSON.stringify(a
 const GEAR = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>`;
 
 function stop() { if (stopAnim) { stopAnim(); stopAnim = null; } }
+
+// ---- language choice (the very first screen for a new visitor) ------------------------
+const LANG_NAMES = { en: "English", ru: "Русский" };
+function showLanguage() {
+  stop();
+  app.innerHTML = `<div class="entry"><div class="entry-card">
+    <h1>Chem Games · Химигра</h1>
+    <div class="modes">${LANGS.map((l) => `<button type="button" class="mode lang-pick" data-lang="${l}"><h2>${LANG_NAMES[l]}</h2></button>`).join("")}</div>
+  </div></div>`;
+  app.querySelectorAll(".lang-pick").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+}
 
 // ---- entry --------------------------------------------------------------------------
 function showEntry() {
@@ -166,4 +177,6 @@ function showSettings() {
   back.querySelector("#resetProgress").addEventListener("click", () => { if (confirm(t("reset_progress") + "?")) { progress = emptyProgress(); saveProgress(progress); selected = null; close(); showEntry(); } });
 }
 
-if (!progress.mode) showEntry(); else showMap();
+if (!hasLangChoice()) showLanguage();
+else if (!progress.mode) showEntry();
+else showMap();

@@ -22,6 +22,17 @@ export function detectLang(search, store) {
   return "en";
 }
 
+// True once the visitor has chosen a language (URL or remembered choice).
+export function hasLangChoice(search, store) {
+  const s = search ?? (typeof location !== "undefined" ? location.search : "");
+  const fromUrl = new URLSearchParams(s).get("lang");
+  if (LANGS.includes(fromUrl)) return true;
+  try {
+    const st = store ?? (typeof localStorage !== "undefined" ? localStorage : null);
+    return LANGS.includes(st?.getItem(STORE_KEY));
+  } catch { return false; }
+}
+
 export function setLang(lang) {
   if (!LANGS.includes(lang)) return;
   try { localStorage.setItem(STORE_KEY, lang); } catch { /* ignore */ }

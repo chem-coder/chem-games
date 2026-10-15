@@ -55,12 +55,18 @@ const ANIMS = {
     }
   },
   repel: {
-    setup(svg, defs) { return { a: bubble(svg, defs, E, "−"), b: bubble(svg, defs, E, "−") }; },
+    // Two minuses push apart; then two pluses do the same. Alternates every cycle.
+    setup(svg, defs) { return { a: bubble(svg, defs, E, "−"), b: bubble(svg, defs, E, "−"), c: bubble(svg, defs, P, "+"), d: bubble(svg, defs, P, "+") }; },
     draw(o, t) {
-      const cyc = t % 4;
-      const k = cyc < 1 ? 0 : ease(Math.min(1, (cyc - 1) / 1.6));
-      place(o.a, 225 - 110 * k, 120, breathe(t));
-      place(o.b, 255 + 110 * k, 120, breathe(t, 1));
+      const cyc = t % 8;
+      const minuses = cyc < 4;
+      const c = cyc % 4;
+      const k = c < 1 ? 0 : ease(Math.min(1, (c - 1) / 1.6));
+      const gap = minuses ? 15 : 30;
+      const [a, b, hidden1, hidden2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
+      place(a, 240 - gap - 110 * k, 120, breathe(t));
+      place(b, 240 + gap + 110 * k, 120, breathe(t, 1));
+      place(hidden1, -100, -100); place(hidden2, -100, -100);
     }
   },
   closer: {
