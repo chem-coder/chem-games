@@ -167,7 +167,7 @@ h1 {
 .ptable {
   display: block;
   width: 100%;
-  max-width: 520px;
+  max-width: 800px;
   height: auto;
   margin: 0 auto;
 }

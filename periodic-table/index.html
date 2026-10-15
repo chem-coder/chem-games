@@ -13,14 +13,14 @@
     /* The mini periodic table on the Reading tab — drawn from the Memorizer's own
        data file, colored by the same three regions the game uses. */
     .mini-pt {
-      display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px;
-      margin: 14px 0 6px; max-width: 640px;
+      display: grid; grid-template-columns: repeat(18, 1fr); gap: 3px;
+      margin: 14px 0 6px; max-width: 100%;
     }
     .mini-pt .cell {
       aspect-ratio: 1; border-radius: 3px; border: 1px solid var(--line);
       display: flex; align-items: center; justify-content: center;
       font-family: var(--font-display); font-weight: 600;
-      font-size: clamp(0.34rem, 1.4vw, 0.62rem); color: var(--ink);
+      font-size: clamp(0.34rem, 1.5vw, 1rem); color: var(--ink);
     }
     .mini-pt .gap { border: none; }
     .mini-pt .type-metal, .pt-legend .type-metal { background: var(--accent-soft); border-color: var(--accent); }
