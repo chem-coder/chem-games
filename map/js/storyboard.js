@@ -107,40 +107,52 @@ const ANIMS = {
     }
   },
   repel: {
-    // Two like charges come in from random points beyond the edge, each on its own straight
-    // line toward a meeting point, at a steady pace; they brake only at the end, stop short of
-    // touching, and are shoved back out along the line between them, slowing as they separate.
-    // Minuses one cycle, pluses the next. Entry points change every cycle.
-    setup(svg, defs) { return { a: bubble(svg, defs, E, "−"), b: bubble(svg, defs, E, "−"), c: bubble(svg, defs, P, "+"), d: bubble(svg, defs, P, "+") }; },
+    // Two like charges fly in from random points beyond the edge, each at its own constant
+    // speed, aimed to meet. The moment they come closer than one diameter they repel
+    // explosively, flying apart along the line between them and slowing as they go.
+    // Minuses one round, pluses the next. A small simulation: state lives in `o`.
+    setup(svg, defs) {
+      return { a: bubble(svg, defs, E, "−"), b: bubble(svg, defs, E, "−"), c: bubble(svg, defs, P, "+"), d: bubble(svg, defs, P, "+"), round: -1, sim: null, last: 0 };
+    },
     draw(o, t) {
-      const CYC = 4.6, T_IN = 2.1, T_OUT = 1.6;
-      const n = Math.floor(t / CYC), c = t - n * CYC;
-      const minuses = n % 2 === 0;
-      const rnd = mulberry32(n * 7919 + 13);
-      const gap = minuses ? 22 : 38;
-      // meeting point near the centre, entry points beyond the edge at roughly opposite angles
-      const mx = 240 + (rnd() - 0.5) * 120, my = 120 + (rnd() - 0.5) * 70;
-      const th = rnd() * Math.PI * 2, spread = Math.PI + (rnd() - 0.5) * 1.2;
-      const FAR = 330;
-      const ent = [th, th + spread].map((ang) => ({ x: mx + FAR * Math.cos(ang), y: my + FAR * Math.sin(ang) }));
-      const [a, b, h1, h2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
-      const stops = ent.map((e) => { const L = Math.hypot(e.x - mx, e.y - my); return { x: mx + (e.x - mx) * (gap / L), y: my + (e.y - my) * (gap / L) }; });
-      [a, b].forEach((node, i) => {
-        const e = ent[i], st = stops[i], other = stops[1 - i];
-        let x, y;
-        if (c < T_IN) {
-          const u = c / T_IN;
-          const f = u < 0.72 ? (u / 0.72) * 0.86 : 0.86 + 0.14 * easeOut((u - 0.72) / 0.28);
-          x = e.x + (st.x - e.x) * f; y = e.y + (st.y - e.y) * f;
-        } else {
-          // exit straight away from the other charge
-          const dx = st.x - other.x, dy = st.y - other.y, L = Math.hypot(dx, dy) || 1;
-          const k = easeOut(clamp01((c - T_IN) / T_OUT)) * 360;
-          x = st.x + (dx / L) * k; y = st.y + (dy / L) * k;
+      const dt = Math.min(0.05, Math.max(0, t - o.last)); o.last = t;
+      const startRound = () => {
+        o.round++;
+        const minuses = o.round % 2 === 0;
+        const rnd = mulberry32(o.round * 7919 + 101);
+        const r = minuses ? E.r : P.r;
+        const mx = 240 + (rnd() - 0.5) * 140, my = 120 + (rnd() - 0.5) * 80;
+        const th = rnd() * Math.PI * 2, spread = Math.PI + (rnd() - 0.5) * 1.4;
+        const T = 1.6; // both arrive at the meeting point together, at different speeds
+        const parts = [th, th + spread].map((ang) => {
+          const speed = 110 + rnd() * 110;
+          const dist = Math.max(speed * T, 330); // always from beyond the edge
+          return { x: mx + dist * Math.cos(ang), y: my + dist * Math.sin(ang), vx: -speed * Math.cos(ang), vy: -speed * Math.sin(ang) };
+        });
+        o.sim = { minuses, r, parts, phase: "in", nodes: minuses ? [o.a, o.b] : [o.c, o.d], hidden: minuses ? [o.c, o.d] : [o.a, o.b] };
+      };
+      if (!o.sim) startRound();
+      const S = o.sim;
+      const [p, q] = S.parts;
+      if (S.phase === "in") {
+        const d = Math.hypot(p.x - q.x, p.y - q.y);
+        if (d < 2 * S.r) {
+          // explosive repulsion along the line between them
+          const ux = (p.x - q.x) / (d || 1), uy = (p.y - q.y) / (d || 1);
+          const kick = 520;
+          p.vx = ux * kick; p.vy = uy * kick; q.vx = -ux * kick; q.vy = -uy * kick;
+          S.phase = "out";
         }
-        place(node, x, y, t, i);
-      });
-      place(h1, -200, -200, t, 0, 0); place(h2, -200, -200, t, 0, 0);
+      } else {
+        const damp = Math.exp(-1.6 * dt);
+        for (const b of S.parts) { b.vx *= damp; b.vy *= damp; }
+        const gone = S.parts.every((b) => b.x < -60 || b.x > W + 60 || b.y < -60 || b.y > H + 60);
+        const slow = Math.hypot(p.vx, p.vy) < 25;
+        if (gone || slow) { startRound(); return; }
+      }
+      for (const b of S.parts) { b.x += b.vx * dt; b.y += b.vy * dt; }
+      S.nodes.forEach((n, i) => place(n, S.parts[i].x, S.parts[i].y, t, i, S.phase === "out" ? 1.4 : 0.6));
+      S.hidden.forEach((n) => place(n, -200, -200, t, 0, 0));
     }
   },
   closer: {
