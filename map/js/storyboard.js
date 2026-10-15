@@ -142,8 +142,9 @@ const ANIMS = {
       const [p, q] = S.parts;
       if (S.phase === "in") {
         const d = Math.hypot(p.x - q.x, p.y - q.y);
-        if (d < 2 * S.r) {
-          // explosive repulsion along the line between them
+        if (d < 4 * S.r) {
+          // explosive repulsion along the line between them, fired while the gap between the
+          // surfaces is still one diameter wide: like charges never touch
           const ux = (p.x - q.x) / (d || 1), uy = (p.y - q.y) / (d || 1);
           const kick = 520;
           p.vx = ux * kick; p.vy = uy * kick; q.vx = -ux * kick; q.vy = -uy * kick;
