@@ -1,13 +1,13 @@
 // Chem Games — the game shell: entry (campaign or master by skill), the storyboards, the
 // skills map with its side panel, and settings (look, music, sound, language, mode).
 import { detectLang, makeT, setLang, hasLangChoice, LANGS } from "../../shared/js/i18n.js?v=20261016-3";
-import { THEMES, getTheme, setTheme, applyTheme } from "../../shared/js/theme.js";
-import { loadProgress, saveProgress, seeStoryboard, skillState, levelsDone, pointsOf, emptyProgress } from "../../shared/js/progress.js";
-import { SKILLS, SKILLS_BY_ID, SYMBOLS } from "../data/skills.js";
-import { STORYBOARDS } from "../data/storyboards.js";
-import { mountAnimation } from "./storyboard.js?v=20261016-31";
-import en from "../locale/en.js";
-import ru from "../locale/ru.js";
+import { THEMES, getTheme, setTheme, applyTheme } from "../../shared/js/theme.js?v=20261016-32";
+import { loadProgress, saveProgress, seeStoryboard, skillState, levelsDone, pointsOf, emptyProgress } from "../../shared/js/progress.js?v=20261016-32";
+import { SKILLS, SKILLS_BY_ID, SYMBOLS } from "../data/skills.js?v=20261016-32";
+import { STORYBOARDS } from "../data/storyboards.js?v=20261016-32";
+import { mountAnimation } from "./storyboard.js?v=20261016-32";
+import en from "../locale/en.js?v=20261016-32";
+import ru from "../locale/ru.js?v=20261016-32";
 
 const lang = detectLang();
 const L = { en, ru };
