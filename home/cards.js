@@ -6,6 +6,7 @@ export const SECTIONS = [
   { id: "foundations", layout: "grid", cards: [
     { id: "periodic-system", href: "periodic-table/", tags: ["elements", "memory"], ru: true },
     { id: "trend-ladder", href: "periodic-table/trends/", tags: ["trends", "imat"], ru: true },
+    { id: "atomic-structure", href: "atomic-structure/", tags: ["atoms", "new"], ru: true },
     { id: "ion-trainer", href: "nomenclature/", tags: ["ions", "memory"] },
     { id: "nomenclature", href: "nomenclature/builder/", tags: ["nomenclature", "both_directions"], featured: true }
   ] },

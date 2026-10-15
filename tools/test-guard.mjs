@@ -23,6 +23,7 @@ const SUITES = [
   "periodic-table/memorizer/js/quiz.test.js",
   "periodic-table/trends/js/game.test.js",
   "atomic-structure/js/model.test.js",
+  "atomic-structure/js/judge.test.js",
   "tools/acid-base-db.test.js",
   "tools/validate-reactions.test.js"
 ];

@@ -225,6 +225,7 @@ export function createAtomRenderer(host, opts = {}) {
   let nucleons = [];  // { kind, r, flat:{x,y}, ball:{x,y,z}, radii2d, g, body, gloss }
   let electrons = []; // { n, angle, bx, by, dx, dy, vx, vy, r, phase, g, orbit }
   let species = null;
+  let lastNucP = -1;
   let mode = "flat";  // flat | toSphere | sphere | toFlat
   let modeT0 = 0;
   let revealT0 = 0;
@@ -257,16 +258,32 @@ export function createAtomRenderer(host, opts = {}) {
     electrons = [];
   }
 
+  // The renderer draws a BUILD: { p, n, shells: [e1..e7] }. setSpecies derives one from a
+  // species; the exercise board edits a build particle by particle.
   function setSpecies(sp) {
     species = sp;
-    clear();
-    const rnd = mulberry32((sp.z * 1000 + sp.mass) * 31 + (sp.charge || 0) + 7);
-    const p = sp.z, nn = neutronCount(sp), a = p + nn;
-    const r = nucleonRadius(a);
+    setBuild({ p: sp.z, n: neutronCount(sp), shells: shellOccupancy(sp) }, (sp.z * 1000 + sp.mass) * 31 + (sp.charge || 0) + 7);
+  }
 
+  let build = { p: 0, n: 0, shells: new Array(SHELLS).fill(0) };
+  let seed = 7;
+  function setBuild(b, newSeed) {
+    build = { p: b.p, n: b.n, shells: b.shells.slice() };
+    if (newSeed !== undefined) seed = newSeed;
+    clear();
+    const rnd = mulberry32(seed);
+    const p = build.p, nn = build.n, a = p + nn;
+    const r = nucleonRadius(Math.max(a, 1));
+
+    // Same seed → same kind order and same spiral seeds, so adding one nucleon shifts the
+    // foam only a little instead of reshuffling it.
     const kinds = [];
     for (let i = 0; i < a; i++) kinds.push(i < p ? "proton" : "neutron");
-    for (let i = kinds.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [kinds[i], kinds[j]] = [kinds[j], kinds[i]]; }
+    const order = Array.from({ length: 40 }, (_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+    const slots = order.filter((i) => i < a);
+    const kindAt = new Array(a);
+    slots.forEach((slot, idx) => { kindAt[slot] = kinds[idx]; });
 
     const radii = Array.from({ length: a }, () => r * (0.94 + rnd() * 0.12));
     const flat = packFlat(a, radii, rnd);
@@ -275,6 +292,7 @@ export function createAtomRenderer(host, opts = {}) {
     flat.forEach((q, i) => { extent = Math.max(extent, Math.hypot(q.x, q.y) + radii[i]); });
     ring1 = Math.max(62, extent + 12);
     nShadow.setAttribute("r", Math.max(24, extent * 0.9));
+    nShadow.setAttribute("opacity", a ? 0.16 : 0);
 
     for (let n = 1; n <= SHELLS; n++) {
       const rr = ringRadius(n);
@@ -288,25 +306,25 @@ export function createAtomRenderer(host, opts = {}) {
     }
 
     for (let k = 0; k < a; k++) {
-      const kind = kinds[k], rk = radii[k];
-      const g = el("g", { class: `bubble ${kind}` }, gNuc);
+      const kind = kindAt[k], rk = radii[k];
+      const g = el("g", { class: `bubble ${kind}`, "data-kind": kind }, gNuc);
       const body = el("path", { fill: `url(#${kind === "proton" ? gradP : gradN})`, stroke: "#fff", "stroke-opacity": 0.9, "stroke-width": 1.1, "stroke-linejoin": "round" }, g);
       const rim = el("path", { fill: "none", stroke: kind === "proton" ? COLORS.protonDark : COLORS.neutronDark, "stroke-opacity": 0.35, "stroke-width": 0.6 }, g);
-      const gloss = el("ellipse", { cx: -rk * 0.32, cy: -rk * 0.42, rx: rk * 0.3, ry: rk * 0.16, fill: "#fff", opacity: 0.6, transform: `rotate(-30 ${-rk * 0.32} ${-rk * 0.42})` }, g);
+      el("ellipse", { cx: -rk * 0.32, cy: -rk * 0.42, rx: rk * 0.3, ry: rk * 0.16, fill: "#fff", opacity: 0.6, transform: `rotate(-30 ${-rk * 0.32} ${-rk * 0.42})` }, g);
       signLines(g, rk, kind === "proton" ? "+" : "", "#fff");
       const radii2d = faceRadii(k, flat, radii);
       const circle = new Array(FACE_POINTS).fill(rk);
-      nucleons.push({ kind, r: rk, flat: flat[k], ball: ball[k], radii2d, circle, g, body, rim, gloss });
+      nucleons.push({ kind, r: rk, flat: flat[k], ball: ball[k], radii2d, circle, g, body, rim });
       body.setAttribute("d", facePath(radii2d));
       rim.setAttribute("d", facePath(radii2d));
       g.setAttribute("transform", `translate(${(C + flat[k].x).toFixed(2)} ${(C + flat[k].y).toFixed(2)})`);
     }
+    lastNucP = -1;
 
     // Electrons on rings.
-    const occ = shellOccupancy(sp);
     const er = r / ELECTRON_RATIO;
     for (let n = 1; n <= SHELLS; n++) {
-      const count = occ[n - 1];
+      const count = build.shells[n - 1];
       const on = count > 0;
       rings[n - 1].setAttribute("stroke", on ? COLORS.ringOn : COLORS.ringOff);
       rings[n - 1].setAttribute("stroke-width", on ? 2.1 : 1);
@@ -316,6 +334,8 @@ export function createAtomRenderer(host, opts = {}) {
       const rr = ringRadius(n);
       electronAngles(count).forEach((angle) => {
         const g = makeElectron(er);
+        g.setAttribute("data-kind", "electron");
+        g.setAttribute("data-n", n);
         const inc = (0.45 + rnd() * 0.8) * (rnd() < 0.5 ? -1 : 1);
         const speed = (2 * Math.PI / (1.4 + 0.3 * (n - 1))) * (0.85 + rnd() * 0.3) * (rnd() < 0.5 ? -1 : 1);
         electrons.push({
@@ -327,6 +347,17 @@ export function createAtomRenderer(host, opts = {}) {
     }
     if (mode !== "flat") { mode = "flat"; applyModeStatics(0); }
     draw(performance.now());
+  }
+
+  // Which drop zone is a local point in: the nucleus, a ring (n), or nothing.
+  function zoneAt(x, y) {
+    const d = Math.hypot(x - C, y - C);
+    if (d < ring1 - 8) return { zone: "nucleus" };
+    const step = (RING_7 - ring1) / 6;
+    for (let n = 1; n <= SHELLS; n++) {
+      if (Math.abs(d - ringRadius(n)) < step * 0.5) return { zone: "ring", n };
+    }
+    return null;
   }
 
   // ---- electron physics ---------------------------------------------------------------
@@ -384,7 +415,6 @@ export function createAtomRenderer(host, opts = {}) {
       z: pt.x * (uz * ux * k - uy * s) + pt.y * (uz * uy * k + ux * s) + pt.z * (c + uz * uz * k)
     };
   }
-  let lastNucP = -1;
   function drawNucleus(t, p) {
     const pulse = Math.max(0, 1 - (t - pulseT0) / 450);
     if (p === 0) {
@@ -487,6 +517,10 @@ export function createAtomRenderer(host, opts = {}) {
   return {
     svg,
     setSpecies,
+    setBuild,
+    zoneAt,
+    toLocal: (clientX, clientY) => toLocal({ clientX, clientY }),
+    get build() { return { p: build.p, n: build.n, shells: build.shells.slice() }; },
     get species() { return species; },
     get revealed() { return mode === "sphere" || mode === "toSphere"; },
     reveal() {

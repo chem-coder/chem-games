@@ -1,0 +1,233 @@
+// Atomic Structure — the exercise ladder. Tier 1: build an atom from Z and A.
+// Board = the renderer in build mode; a tray of dispensers; drag moves matter (grab-hand
+// carry, forgiving targets); shells enforce nothing; judged only on Check (Dalia's rulings).
+import { detectLang, makeT, applyStatic, elementName } from "../../shared/js/i18n.js";
+import { ELEMENTS } from "../../periodic-table/memorizer/data/pt-data.js";
+import { NAMES_RU } from "../../periodic-table/memorizer/data/pt-names.ru.js";
+import { createAtomRenderer } from "./renderer.js";
+import { SHELLS } from "./model.js";
+import { judge, deal } from "./judge.js";
+import { TIERS, DECK_SIZE } from "../data/rounds.js";
+import en from "../locale/en.js";
+import ru from "../locale/ru.js";
+
+const lang = detectLang();
+const t = makeT({ en, ru }, lang);
+document.documentElement.lang = lang;
+document.title = t("title");
+applyStatic(t);
+
+const byZ = Object.fromEntries(ELEMENTS.map((e) => [e.z, e]));
+// Element names are common nouns: lowercase mid-sentence in every language.
+const nameOf = (sp) => elementName(byZ[sp.z], lang, NAMES_RU).toLowerCase();
+const root = document.querySelector("#game");
+
+const state = { tier: 0, deck: [], index: 0, solved: 0, hints: 0, checked: false, renderer: null };
+
+// ---- screens -----------------------------------------------------------------------
+function tabsHtml() {
+  return `<div class="level-tabs">${TIERS.map((tier, i) =>
+    `<button type="button" class="level-tab${i === state.tier ? " is-active" : ""}" data-tier="${i}" ${tier.soon ? "disabled" : ""}>${i + 1} · ${t("tier_" + tier.id)}${tier.soon ? ` <small>(${t("soon")})</small>` : ""}</button>`).join("")}</div>`;
+}
+
+function showIntro() {
+  root.innerHTML = `${tabsHtml()}
+    <div class="intro-card">
+      <h2>${t("intro_h2")}</h2>
+      <p class="intro-lede">${t("intro_p1")}</p>
+      <ol class="steps">
+        <li><span class="step-num">1</span><span class="step-text">${t("intro_s1")}</span></li>
+        <li><span class="step-num">2</span><span class="step-text">${t("intro_s2")}</span></li>
+        <li><span class="step-num">3</span><span class="step-text">${t("intro_s3")}</span></li>
+        <li><span class="step-num">4</span><span class="step-text">${t("intro_s4")}</span></li>
+      </ol>
+      <div class="controls"><button type="button" class="action primary" id="start">${t("start", { n: DECK_SIZE })}</button></div>
+    </div>`;
+  wireTabs();
+  root.querySelector("#start").addEventListener("click", startDeck);
+}
+
+function startDeck() {
+  state.deck = deal(TIERS[state.tier].pool, DECK_SIZE);
+  state.index = 0; state.solved = 0;
+  showRound();
+}
+
+function nuclideHtml(sp) {
+  return `<span class="nuclide"><span class="nuclide-nums"><sup>${sp.mass}</sup><sub>${sp.z}</sub></span><span class="nuclide-sym">${byZ[sp.z].symbol}</span></span>`;
+}
+
+function showRound() {
+  const sp = state.deck[state.index];
+  state.hints = 0; state.checked = false;
+  root.innerHTML = `${tabsHtml()}
+    <p class="score">${t("score", { solved: state.solved, total: DECK_SIZE, left: DECK_SIZE - state.index })}</p>
+    <div class="prompt">
+      <p class="prompt-line">${t("build_prompt", { name: nameOf(sp) })}</p>
+      <p class="prompt-nums">${nuclideHtml(sp)} <span class="prompt-sep">·</span> <span>${t("atomic_number")} <b>${sp.z}</b></span> <span class="prompt-sep">·</span> <span>${t("mass_number")} <b>${sp.mass}</b></span></p>
+    </div>
+    <div class="board">
+      <div class="stage"></div>
+      <div class="tray" aria-label="${t("tray")}">
+        <button type="button" class="dispenser proton" data-kind="proton"><span class="disp-bubble"><span>+</span></span><span class="disp-label">${t("legend_p")}</span></button>
+        <button type="button" class="dispenser neutron" data-kind="neutron"><span class="disp-bubble"></span><span class="disp-label">${t("legend_n")}</span></button>
+        <button type="button" class="dispenser electron" data-kind="electron"><span class="disp-bubble"><span>−</span></span><span class="disp-label">${t("legend_e")}</span></button>
+        <p class="tray-note">${t("tray_note")}</p>
+      </div>
+    </div>
+    <ul class="counts"><li class="p"></li><li class="n"></li><li class="e"></li></ul>
+    <p class="feedback" id="feedback"></p>
+    <div class="hint-box" id="hintBox"></div>
+    <div class="controls">
+      <button type="button" class="action primary" id="check">${t("check")}</button>
+      <button type="button" class="action ghost" id="hint">${t("hint")}</button>
+      <button type="button" class="action ghost" id="reset">${t("reset")}</button>
+    </div>`;
+  wireTabs();
+  const r = createAtomRenderer(root.querySelector(".stage"));
+  state.renderer = r;
+  r.setBuild({ p: 0, n: 0, shells: new Array(SHELLS).fill(0) }, sp.z * 1000 + sp.mass);
+  updateCounts();
+  wireDrag(sp);
+  root.querySelector("#check").addEventListener("click", () => check(sp));
+  root.querySelector("#hint").addEventListener("click", showHint);
+  root.querySelector("#reset").addEventListener("click", () => { r.setBuild({ p: 0, n: 0, shells: new Array(SHELLS).fill(0) }); updateCounts(); });
+}
+
+function updateCounts() {
+  const b = state.renderer.build;
+  const [lp, ln, le] = root.querySelectorAll(".counts li");
+  lp.innerHTML = `<b>${b.p}</b> ${t("protons")}`;
+  ln.innerHTML = `<b>${b.n}</b> ${t("neutrons")}`;
+  le.innerHTML = `<b>${b.shells.reduce((a, c) => a + c, 0)}</b> ${t("electrons")}`;
+}
+
+const HINTS = ["hint_1", "hint_2", "hint_3", "hint_4"];
+function showHint() {
+  if (state.hints >= HINTS.length) return;
+  const box = root.querySelector("#hintBox");
+  const li = document.createElement("div");
+  li.className = "hint";
+  li.innerHTML = `<span class="step-num">${state.hints + 1}</span><span class="step-text">${t(HINTS[state.hints])}</span>`;
+  box.appendChild(li);
+  state.hints++;
+  if (state.hints >= HINTS.length) root.querySelector("#hint").disabled = true;
+  else root.querySelector("#hint").textContent = t("hint_more");
+}
+
+function check(sp) {
+  if (state.checked) return;
+  const v = judge(state.renderer.build, sp);
+  const fb = root.querySelector("#feedback");
+  if (!v.ok) {
+    const pr = v.problems[0];
+    const key = pr.part === "shell" ? `wrong_shell_${pr.dir}` : `wrong_${pr.part}_${pr.dir}`;
+    fb.className = "feedback is-wrong";
+    fb.textContent = t(key, { n: pr.shell });
+    return;
+  }
+  state.checked = true;
+  state.solved++;
+  fb.className = "feedback is-right";
+  fb.textContent = state.hints ? t("ok_hints") : t("ok_clean");
+  state.renderer.reveal();
+  const controls = root.querySelector(".controls");
+  controls.innerHTML = `<button type="button" class="action primary" id="next">${state.index + 1 < DECK_SIZE ? t("next") : t("finish")}</button>`;
+  controls.querySelector("#next").addEventListener("click", () => {
+    state.index++;
+    if (state.index < DECK_SIZE) showRound(); else showDone();
+  });
+}
+
+function showDone() {
+  root.innerHTML = `${tabsHtml()}
+    <div class="intro-card">
+      <h2>${t("done_h2", { tier: t("tier_" + TIERS[state.tier].id) })}</h2>
+      <p class="done-line">${t("done_line", { solved: state.solved, total: DECK_SIZE })}</p>
+      <div class="controls two-up done-nav">
+        <button type="button" class="action primary" id="again">${t("replay")}</button>
+        <button type="button" class="action ghost" id="revisit">${t("revisit")}</button>
+      </div>
+      <p class="home-line"><a href="../periodic-table/">${t("to_topic")}</a> · <a href="../">${t("to_home")}</a></p>
+    </div>`;
+  wireTabs();
+  root.querySelector("#again").addEventListener("click", startDeck);
+  root.querySelector("#revisit").addEventListener("click", showIntro);
+}
+
+function wireTabs() {
+  root.querySelectorAll(".level-tab").forEach((b) => b.addEventListener("click", () => { state.tier = Number(b.dataset.tier); showIntro(); }));
+}
+
+// ---- drag: grab-hand carry from the tray to the board, and back off the board --------
+function wireDrag(sp) {
+  const r = state.renderer;
+  const stage = root.querySelector(".stage");
+  let carry = null; // { kind, fromN, el }
+
+  function startCarry(kind, ev) {
+    const ghost = document.createElement("div");
+    ghost.className = `carried ${kind}`;
+    ghost.innerHTML = `<span>${kind === "proton" ? "+" : kind === "electron" ? "−" : ""}</span>`;
+    document.body.appendChild(ghost);
+    carry = { kind, el: ghost };
+    moveCarry(ev);
+    document.body.classList.add("is-carrying");
+  }
+  function moveCarry(ev) {
+    if (!carry) return;
+    carry.el.style.left = ev.clientX + "px";
+    carry.el.style.top = ev.clientY + "px";
+  }
+  function endCarry(ev) {
+    if (!carry) return;
+    const q = r.toLocal(ev.clientX, ev.clientY);
+    const zone = r.zoneAt(q.x, q.y);
+    const b = r.build;
+    if (zone?.zone === "nucleus" && carry.kind !== "electron") {
+      if (carry.kind === "proton") b.p++; else b.n++;
+      r.setBuild(b);
+    } else if (zone?.zone === "ring" && carry.kind === "electron") {
+      b.shells[zone.n - 1]++;
+      r.setBuild(b);
+    } else if (zone && carry.kind === "electron" && zone.zone === "nucleus") {
+      // electron dropped on the nucleus: nearest ring takes it (forgiving target)
+      b.shells[0]++;
+      r.setBuild(b);
+    }
+    // anything else: the particle goes back to the tray
+    carry.el.remove();
+    carry = null;
+    document.body.classList.remove("is-carrying");
+    updateCounts();
+    root.querySelector("#feedback").textContent = "";
+  }
+
+  root.querySelectorAll(".dispenser").forEach((d) => {
+    d.addEventListener("pointerdown", (ev) => {
+      if (state.checked) return;
+      ev.preventDefault();
+      startCarry(d.dataset.kind, ev);
+    });
+  });
+  // pick a placed particle off the board
+  stage.addEventListener("pointerdown", (ev) => {
+    if (state.checked) return;
+    const g = ev.target.closest?.(".bubble");
+    if (!g) return;
+    const kind = g.dataset.kind;
+    const b = r.build;
+    if (kind === "electron") b.shells[Number(g.dataset.n) - 1]--;
+    else if (kind === "proton") b.p--;
+    else b.n--;
+    r.setBuild(b);
+    updateCounts();
+    ev.preventDefault();
+    startCarry(kind, ev);
+  }, true);
+  window.addEventListener("pointermove", moveCarry);
+  window.addEventListener("pointerup", endCarry);
+  window.addEventListener("pointercancel", endCarry);
+}
+
+showIntro();

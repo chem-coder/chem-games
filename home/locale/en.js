@@ -19,7 +19,7 @@ export default {
     planned: { heading: "Room for more" }
   },
   tags: {
-    elements: "Elements", memory: "Memory", trends: "Trends", imat: "IMAT", ions: "Ions", nomenclature: "Nomenclature",
+    elements: "Elements", atoms: "Atoms", memory: "Memory", trends: "Trends", imat: "IMAT", ions: "Ions", nomenclature: "Nomenclature",
     both_directions: "Both directions", balancing: "Balancing", ratios: "Ratios", limiting_parts: "Limiting Parts",
     mole_ratios: "Mole Ratios", dimensional_analysis: "Dimensional Analysis", redox: "Redox", oxidation_states: "Oxidation States",
     past_papers: "Past papers", vsepr: "VSEPR", three_d: "3D", classification: "Classification", ph: "pH", calculator: "Calculator",
@@ -31,6 +31,7 @@ export default {
   cards: {
     "periodic-system": { title: "The Periodic System", desc: "How to read the table — periods, groups, and families. The section hub: the Periodic Table Memorizer for the elements themselves, the Trend Ladder for how their properties run." },
     "trend-ladder": { title: "Trend Ladder", desc: "Drag the elements into order &mdash; by size, by grip, by pull. Four tiers: atomic radius, isoelectronic ions, ionization energy, and an exam band that saves the N&rarr;O stumble for last. The real numbers only show themselves after you check." },
+    "atomic-structure": { title: "Atomic Structure", desc: "Build an atom from its atomic number and mass number: protons and neutrons into the nucleus, electrons onto the energy levels. Checked only when you say so. More tiers follow: ions, reading structures back into symbols, electron configurations." },
     "ion-trainer": { title: "Polyatomic Ion Trainer", desc: "Flashcard drill connecting each ion's formula, name, and charge. Study a short set, then recall it both directions — name → formula and formula → name." },
     nomenclature: { title: "Chemical Nomenclature", desc: "Name any compound — ionic (Type I &amp; II), polyatomic, acids, and molecular (Greek prefixes) — or work backward from the name to the formula. Five levels, both directions, progressive hints." },
     balancer: { title: "Visual Equation Balancer", desc: "Balance chemical equations with coefficient controls and live atom-count feedback." },
