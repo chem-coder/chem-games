@@ -30,27 +30,68 @@ function bubble(svg, defs, spec, sign) {
   return node;
 }
 
-const place = (n, x, y, s = 1) => n.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${s.toFixed(3)})`);
+// ---- motion helpers ------------------------------------------------------------------
+// Animation rules used here: attraction eases IN (accelerates, like the real pull), repulsion
+// eases OUT (strong push, then coasting), moving things stretch along their velocity and
+// squash when they stop, arrivals overshoot a little and settle (follow-through).
 const breathe = (t, ph = 0) => 1 + 0.03 * Math.sin(t * 1.7 + ph);
-const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+const easeIn = (p) => Math.pow(p, 2.4);
+const easeOut = (p) => 1 - Math.pow(1 - p, 2.6);
+const clamp01 = (p) => Math.max(0, Math.min(1, p));
+// Damped overshoot after an arrival: 1 + small decaying oscillation.
+const settle = (u, amp = 0.18, freq = 9, decay = 4.5) => 1 + amp * Math.exp(-decay * u) * Math.sin(freq * u);
+
+// Place a node and give it squash-and-stretch from its own velocity (estimated from the
+// previous frame). `stretch` scales the effect; 0 disables it.
+const prev = new WeakMap();
+function place(node, x, y, t, breathPhase = 0, stretch = 1) {
+  const last = prev.get(node);
+  let sx = 1, sy = 1, ang = 0;
+  if (last && stretch > 0) {
+    const dt = Math.max(0.001, t - last.t);
+    const vx = (x - last.x) / dt, vy = (y - last.y) / dt;
+    const v = Math.hypot(vx, vy);
+    const k = Math.min(0.22, (v / 900) * 0.22) * stretch;
+    sx = 1 + k; sy = 1 - k * 0.8;
+    ang = (Math.atan2(vy, vx) * 180) / Math.PI;
+    // sudden stop (deceleration) → squash instead of stretch
+    const dv = v - last.v;
+    if (dv < -400) { const q = Math.min(0.18, (-dv / 3000) * 0.18); sx = 1 - q; sy = 1 + q; }
+    prev.set(node, { x, y, t, v });
+  } else {
+    prev.set(node, { x, y, t, v: 0 });
+  }
+  const b = breathe(t, breathPhase);
+  node.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)}) scale(${(sx * b).toFixed(3)} ${(sy / b).toFixed(3)}) rotate(${(-ang).toFixed(1)})`);
+}
 
 // Each animation: setup(svg, defs) → draw(t seconds). Loops by design.
 const ANIMS = {
   "two-apart": {
     setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") }; },
-    draw(o, t) { place(o.p, 150, 120 + 3 * Math.sin(t), breathe(t)); place(o.e, 330, 120 + 3 * Math.sin(t + 2), breathe(t, 1)); }
+    draw(o, t) {
+      // Gentle drifting arcs, nothing pulling yet.
+      place(o.p, 150 + 4 * Math.sin(t * 0.9), 120 + 3 * Math.sin(t * 1.3), t, 0, 0.3);
+      place(o.e, 330 + 5 * Math.cos(t * 1.1), 120 + 4 * Math.sin(t * 0.8 + 2), t, 1, 0.3);
+    }
   },
   attract: {
     setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") }; },
     draw(o, t) {
-      const cyc = t % 5;
-      place(o.p, 200, 120, breathe(t));
-      if (cyc < 2.2) {
-        const k = ease(cyc / 2.2);
-        place(o.e, 420 - 150 * k, 120, breathe(t, 1));
+      const cyc = t % 6;
+      place(o.p, 200, 120, t, 0, 0);
+      const R = 70, start = 430;
+      if (cyc < 2.4) {
+        // pulled in: accelerating, on a slight arc; then overshoot past the orbit and settle
+        const k = easeIn(cyc / 2.4);
+        const x = start - (start - (200 + R)) * k;
+        const y = 120 - 28 * Math.sin(Math.PI * k);
+        place(o.e, x, y, t, 1);
       } else {
-        const a = (cyc - 2.2) * 3.2;
-        place(o.e, 200 + 70 * Math.cos(a), 120 + 70 * Math.sin(a), breathe(t, 1));
+        const u = cyc - 2.4;
+        const r = R * settle(u, 0.16, 8, 3.5);
+        const a = u * 3.4;
+        place(o.e, 200 + r * Math.cos(a), 120 + r * Math.sin(a), t, 1, 0.5);
       }
     }
   },
@@ -61,20 +102,24 @@ const ANIMS = {
       const cyc = t % 8;
       const minuses = cyc < 4;
       const c = cyc % 4;
-      const k = c < 1 ? 0 : ease(Math.min(1, (c - 1) / 1.6));
       const gap = minuses ? 15 : 30;
-      const [a, b, hidden1, hidden2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
-      place(a, 240 - gap - 110 * k, 120, breathe(t));
-      place(b, 240 + gap + 110 * k, 120, breathe(t, 1));
-      place(hidden1, -100, -100); place(hidden2, -100, -100);
+      const [a, b, h1, h2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
+      let k;
+      if (c < 0.9) k = 0;                       // sitting too close: a beat of tension
+      else k = easeOut(clamp01((c - 0.9) / 1.7)); // strong push, then coasting to a stop
+      const jitter = c < 0.9 ? 1.5 * Math.sin(t * 40) : 0; // anticipation: a tiny tremble before the push
+      place(a, 240 - gap - 110 * k + jitter, 120, t, 0);
+      place(b, 240 + gap + 110 * k - jitter, 120, t, 1);
+      place(h1, -100, -100, t, 0, 0); place(h2, -100, -100, t, 0, 0);
     }
   },
   closer: {
     setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), near: bubble(svg, defs, E, "−"), far: bubble(svg, defs, E, "−") }; },
     draw(o, t) {
-      place(o.p, 180, 120, breathe(t));
-      place(o.near, 180 + 50 * Math.cos(t * 4), 120 + 50 * Math.sin(t * 4), breathe(t, 1));
-      place(o.far, 180 + 180 * Math.cos(t * 0.8), 120 + 95 * Math.sin(t * 0.8), breathe(t, 2));
+      place(o.p, 180, 120, t, 0, 0);
+      // the close one whips around fast; the far one drifts on a wide slow ellipse
+      place(o.near, 180 + 50 * Math.cos(t * 4.2), 120 + 50 * Math.sin(t * 4.2), t, 1, 0.6);
+      place(o.far, 180 + 180 * Math.cos(t * 0.7), 120 + 95 * Math.sin(t * 0.7), t, 2, 0.6);
     }
   },
   hydrogen: {
@@ -82,7 +127,10 @@ const ANIMS = {
       el("circle", { cx: 240, cy: 120, r: 80, fill: "none", stroke: "#3a3630", "stroke-opacity": 0.5, "stroke-width": 1.6 }, svg);
       return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") };
     },
-    draw(o, t) { place(o.p, 240, 120, breathe(t)); place(o.e, 240 + 80 * Math.cos(t * 2.4), 120 + 80 * Math.sin(t * 2.4), breathe(t, 1)); }
+    draw(o, t) {
+      place(o.p, 240, 120, t, 0, 0);
+      place(o.e, 240 + 80 * Math.cos(t * 2.4), 120 + 80 * Math.sin(t * 2.4), t, 1, 0.5);
+    }
   }
 };
 
