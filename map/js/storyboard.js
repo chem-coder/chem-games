@@ -78,21 +78,21 @@ const ANIMS = {
   attract: {
     setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") }; },
     draw(o, t) {
-      const cyc = t % 6;
-      place(o.p, 200, 120, t, 0, 0);
-      const R = 70, start = 430;
-      if (cyc < 2.4) {
-        // pulled in: accelerating, on a slight arc; then overshoot past the orbit and settle
-        const k = easeIn(cyc / 2.4);
-        const x = start - (start - (200 + R)) * k;
-        const y = 120 - 28 * Math.sin(Math.PI * k);
-        place(o.e, x, y, t, 1);
+      // Capture like a landing: the minus comes in on a spiral, speeding up as the radius
+      // shrinks, and by the far side of the plus it is in orbit. Then it just circles.
+      const cyc = t % 9;
+      const cx = 200, cy = 120, R = 70, start = 235, T = 3.2;
+      place(o.p, cx, cy, t, 0, 0);
+      let r, a;
+      if (cyc < T) {
+        const u = cyc / T;
+        r = R + (start - R) * Math.pow(1 - u, 1.7);   // radius closes faster near the end
+        a = 1.45 * Math.PI * Math.pow(u, 1.5);         // sweep accelerates as it falls in
       } else {
-        const u = cyc - 2.4;
-        const r = R * settle(u, 0.16, 8, 3.5);
-        const a = u * 3.4;
-        place(o.e, 200 + r * Math.cos(a), 120 + r * Math.sin(a), t, 1, 0.5);
+        r = R;
+        a = 1.45 * Math.PI + (cyc - T) * 3.0;          // steady orbit at matching speed
       }
+      place(o.e, cx + r * Math.cos(a), cy + r * Math.sin(a), t, 1, 0.6);
     }
   },
   repel: {
