@@ -174,7 +174,13 @@ function showSettings() {
   seg("music", "music"); seg("sound", "sound");
   back.querySelectorAll("#langSeg button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
   back.querySelectorAll("#modeSeg button").forEach((b) => b.addEventListener("click", () => { progress.mode = b.dataset.mode; saveProgress(progress); close(); showMap(); }));
-  back.querySelector("#resetProgress").addEventListener("click", () => { if (confirm(t("reset_progress") + "?")) { progress = emptyProgress(); saveProgress(progress); selected = null; close(); showEntry(); } });
+  // Reset = start over as a new visitor: progress gone, language forgotten, first screen again.
+  back.querySelector("#resetProgress").addEventListener("click", () => {
+    if (!confirm(t("reset_progress") + "?")) return;
+    progress = emptyProgress(); saveProgress(progress); selected = null;
+    try { localStorage.removeItem("cg-lang"); } catch { /* ignore */ }
+    location.href = location.pathname;
+  });
 }
 
 if (!hasLangChoice()) showLanguage();
