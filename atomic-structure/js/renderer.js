@@ -1,13 +1,16 @@
 // Atomic Structure — the atom renderer. Vanilla JS + SVG, no framework.
 //
-// Visual language (Dalia's brief): particles are bubbles, not granite balls. Nucleons are
-// soft, translucent, 3D-looking spheres stuck together (frog eggs / foam): a gooey SVG
-// filter merges their outlines, a radial-gradient face gives each one depth, and a small
-// spring model makes every bubble yield when the pointer presses on it. They never pop.
-// Electrons are the same material, 4–5x smaller radius, strung on thin wire rings
-// (the 7 shells, n = 1 … 7). Rings are rigid. After a correct answer, reveal() turns
-// the rings into translucent onion-layer spheres and the electrons orbit their layer
-// in 3D; the nucleus does not change.
+// Visual language (Dalia's brief, revised 2026-10-15):
+// - Particles are bubbles: translucent, 3D-looking, bright thin rims. Nucleons are
+//   bubbles pressed together like foam, sharing flat walls.
+// - The nucleus is HARD and FIXED. In the exercise view it is one flat layer (every
+//   nucleon visible and countable) and it never moves; a tap only brightens the rims.
+//   In the reveal it becomes a 3D cluster that rotates slowly about a tilted axis; its
+//   centre never shifts.
+// - Electrons are the soft part: 1/3 the nucleon radius, strung on thin wire rings
+//   (the 7 shells, n = 1 … 7). They breathe faintly, squish when touched, spring back.
+// - reveal() turns the rings into translucent onion-layer spheres with the electrons
+//   orbiting their layer in 3D.
 import { shellOccupancy, neutronCount, SHELLS } from "./model.js";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -15,10 +18,12 @@ const SIZE = 480;
 const C = SIZE / 2;
 const RING_7 = 222;
 let ring1 = 64; // grows with the nucleus so the n = 1 ring always clears it
+const ELECTRON_RATIO = 3;
+const FACE_POINTS = 48;
 const COLORS = {
   proton: "#c9583a",
   protonDark: "#8f3a24",
-  neutron: "#aaa49b",
+  neutron: "#a7a197",
   neutronDark: "#6f6a62",
   electron: "#2a8c80",
   electronDark: "#134f48",
@@ -51,38 +56,133 @@ function ringRadius(n) {
 }
 
 function nucleonRadius(a) {
-  return a <= 30 ? 10 : 10 * Math.sqrt(30 / a);
+  return a <= 30 ? 10.5 : 10.5 * Math.sqrt(30 / a);
 }
 
 // Evenly spaced electrons that never sit exactly at the north pole (the ring label lives there).
 function electronAngles(count) {
-  const out = [];
   if (count === 1) return [Math.PI / 2];
+  const out = [];
   for (let j = 0; j < count; j++) out.push(-Math.PI / 2 + Math.PI / count + (j * 2 * Math.PI) / count);
   return out;
 }
 
 const ease = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
+// ---- nucleus geometry ------------------------------------------------------------------
+
+// Flat layer: start on a Vogel spiral, then relax so every bubble presses into its
+// neighbours (centres ~0.86 of the summed radii apart: a real shared wall) while the whole
+// layer stays a compact disk. Returns [{x, y}] relative to the centre.
+function packFlat(n, radii, rnd) {
+  const pts = [];
+  const r = radii.reduce((a, b) => a + b, 0) / n;
+  for (let k = 0; k < n; k++) {
+    const rad = r * 0.95 * Math.sqrt(k);
+    const ang = k * GOLDEN + (rnd() - 0.5) * 0.3;
+    pts.push({ x: rad * Math.cos(ang), y: rad * Math.sin(ang) });
+  }
+  if (n === 1) return pts;
+  for (let it = 0; it < 90; it++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const a = pts[i], b = pts[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 0.001;
+        const target = (radii[i] + radii[j]) * 0.86;
+        if (d < target) {
+          const push = (target - d) / 2 / d;
+          a.x -= dx * push; a.y -= dy * push;
+          b.x += dx * push; b.y += dy * push;
+        }
+      }
+    }
+    for (const q of pts) { q.x *= 0.975; q.y *= 0.975; }
+  }
+  return pts;
+}
+
+// 3D ball: random start, then relax so spheres touch without overlapping much and the
+// whole thing stays compact. Deterministic for a given rnd.
+function packBall(n, r, rnd) {
+  const R0 = r * Math.cbrt(n) * 1.05;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    let x, y, z;
+    do { x = (rnd() * 2 - 1); y = (rnd() * 2 - 1); z = (rnd() * 2 - 1); } while (x * x + y * y + z * z > 1);
+    pts.push({ x: x * R0, y: y * R0, z: z * R0 });
+  }
+  const min = 2 * r * 0.9;
+  for (let it = 0; it < 80; it++) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const a = pts[i], b = pts[j];
+        const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+        const d = Math.hypot(dx, dy, dz) || 0.001;
+        if (d < min) {
+          const push = (min - d) / 2 / d;
+          a.x -= dx * push; a.y -= dy * push; a.z -= dz * push;
+          b.x += dx * push; b.y += dy * push; b.z += dz * push;
+        }
+      }
+    }
+    for (const p of pts) { p.x *= 0.985; p.y *= 0.985; p.z *= 0.985; }
+  }
+  return pts;
+}
+
+// Face outline of one flat bubble: a circle whose radius, in each direction, is cut off by
+// the wall it shares with any neighbour it overlaps (the radical line of the two circles).
+// Fixed point count so it can morph into a plain circle.
+function faceRadii(i, pts, radii) {
+  const out = new Array(FACE_POINTS);
+  const r = radii[i];
+  const walls = [];
+  for (let j = 0; j < pts.length; j++) {
+    if (j === i) continue;
+    const dx = pts[j].x - pts[i].x, dy = pts[j].y - pts[i].y;
+    const d = Math.hypot(dx, dy);
+    if (d >= r + radii[j]) continue;
+    const dist = (d * d + r * r - radii[j] * radii[j]) / (2 * d);
+    walls.push({ phi: Math.atan2(dy, dx), dist });
+  }
+  for (let k = 0; k < FACE_POINTS; k++) {
+    const th = (k / FACE_POINTS) * 2 * Math.PI;
+    let rr = r;
+    for (const w of walls) {
+      const c = Math.cos(th - w.phi);
+      if (c > 0.001) rr = Math.min(rr, w.dist / c);
+    }
+    out[k] = Math.max(rr, r * 0.35);
+  }
+  return out;
+}
+
+function facePath(radii, scale = 1) {
+  let d = "";
+  for (let k = 0; k < FACE_POINTS; k++) {
+    const th = (k / FACE_POINTS) * 2 * Math.PI;
+    const x = radii[k] * scale * Math.cos(th), y = radii[k] * scale * Math.sin(th);
+    d += (k ? "L" : "M") + x.toFixed(2) + " " + y.toFixed(2);
+  }
+  return d + "Z";
+}
+
 export function createAtomRenderer(host, opts = {}) {
-  let electronRatio = opts.electronRatio ?? 4.5;
   const svg = el("svg", { viewBox: `0 0 ${SIZE} ${SIZE}`, class: "atom-svg", role: "img" });
   svg.style.touchAction = "none";
   host.appendChild(svg);
 
   // ---- defs ---------------------------------------------------------------------------
   const defs = el("defs", {}, svg);
-  const goo = el("filter", { id: uid("goo"), x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
-  el("feGaussianBlur", { in: "SourceGraphic", stdDeviation: 3.2, result: "blur" }, goo);
-  el("feColorMatrix", { in: "blur", type: "matrix", values: "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -8", result: "goo" }, goo);
-  el("feComposite", { in: "SourceGraphic", in2: "goo", operator: "atop" }, goo);
-
   function bubbleGradient(id, color, dark) {
-    const g = el("radialGradient", { id, cx: "38%", cy: "32%", r: "68%", fx: "32%", fy: "26%" }, defs);
-    el("stop", { offset: "0", "stop-color": "#ffffff", "stop-opacity": 0.78 }, g);
-    el("stop", { offset: "0.32", "stop-color": color, "stop-opacity": 0.42 }, g);
-    el("stop", { offset: "0.78", "stop-color": color, "stop-opacity": 0.72 }, g);
-    el("stop", { offset: "1", "stop-color": dark, "stop-opacity": 0.9 }, g);
+    // Transparent body, colour gathering toward the rim, a bright highlight up-left.
+    const g = el("radialGradient", { id, cx: "40%", cy: "36%", r: "66%", fx: "34%", fy: "28%" }, defs);
+    el("stop", { offset: "0", "stop-color": "#ffffff", "stop-opacity": 0.55 }, g);
+    el("stop", { offset: "0.3", "stop-color": color, "stop-opacity": 0.22 }, g);
+    el("stop", { offset: "0.8", "stop-color": color, "stop-opacity": 0.5 }, g);
+    el("stop", { offset: "0.95", "stop-color": dark, "stop-opacity": 0.78 }, g);
+    el("stop", { offset: "1", "stop-color": "#ffffff", "stop-opacity": 0.9 }, g);
     return id;
   }
   const gradP = bubbleGradient(uid("gp"), COLORS.proton, COLORS.protonDark);
@@ -96,6 +196,8 @@ export function createAtomRenderer(host, opts = {}) {
     el("stop", { offset: "1", "stop-color": color, "stop-opacity": 0.5 }, g);
     return g.id;
   });
+  const shadow = el("filter", { id: uid("sh"), x: "-30%", y: "-30%", width: "160%", height: "160%" }, defs);
+  el("feGaussianBlur", { stdDeviation: 6 }, shadow);
 
   // ---- layers (z-order) ----------------------------------------------------------------
   const gRings = el("g", { class: "rings" }, svg);
@@ -103,52 +205,52 @@ export function createAtomRenderer(host, opts = {}) {
   const gSpheres = el("g", { class: "spheres", opacity: 0 }, svg);
   const gElecBack = el("g", { class: "electrons-back" }, svg);
   const gNucleus = el("g", { class: "nucleus" }, svg);
-  const gHalo = el("g", { filter: `url(#${goo.id})`, opacity: 0.38 }, gNucleus);
-  const gGoo = el("g", { filter: `url(#${goo.id})`, opacity: 0.5 }, gNucleus);
-  const gFaces = el("g", {}, gNucleus);
+  const nShadow = el("circle", { cx: C, cy: C, r: 40, fill: "#6f6a62", opacity: 0.16, filter: `url(#${shadow.id})` }, gNucleus);
+  const gNuc = el("g", {}, gNucleus);
   const gElec = el("g", { class: "electrons" }, svg);
 
   const rings = [], labels = [], spheres = [];
   for (let n = 1; n <= SHELLS; n++) {
-    const r = ringRadius(n);
-    rings.push(el("circle", { cx: C, cy: C, r, fill: "none" }, gRings));
-    const t = el("text", { x: C, y: C - r - 4 }, gLabels);
+    rings.push(el("circle", { cx: C, cy: C, r: 0, fill: "none" }, gRings));
+    const t = el("text", { x: C, y: 0 }, gLabels);
     t.textContent = `n = ${n}`;
     labels.push(t);
     const sg = el("g", {}, gSpheres);
-    el("circle", { cx: C, cy: C, r, fill: `url(#${sphereGrads[n - 1]})`, stroke: COLORS.sphere[n - 1], "stroke-opacity": 0.35, "stroke-width": 1 }, sg);
-    el("ellipse", { cx: C - r * 0.3, cy: C - r * 0.42, rx: r * 0.3, ry: r * 0.12, fill: "#fff", opacity: 0.16, transform: `rotate(-35 ${C - r * 0.3} ${C - r * 0.42})` }, sg);
+    el("circle", { cx: C, cy: C, r: 0, fill: `url(#${sphereGrads[n - 1]})`, stroke: COLORS.sphere[n - 1], "stroke-opacity": 0.35, "stroke-width": 1 }, sg);
+    el("ellipse", { fill: "#fff", opacity: 0.16 }, sg);
     spheres.push(sg);
   }
 
   // ---- particle state ------------------------------------------------------------------
-  let nucleons = [];  // { kind, bx, by, dx, dy, vx, vy, r, phase, body, face }
+  let nucleons = [];  // { kind, r, flat:{x,y}, ball:{x,y,z}, radii2d, g, body, gloss }
   let electrons = []; // { n, angle, bx, by, dx, dy, vx, vy, r, phase, g, orbit }
   let species = null;
   let mode = "flat";  // flat | toSphere | sphere | toFlat
   let modeT0 = 0;
   let revealT0 = 0;
-  const pointer = { x: 0, y: 0, down: false, active: false };
+  let pulseT0 = -1e9;
+  const pointer = { x: 0, y: 0, active: false };
 
-  function makeBubble(parent, kind, r, label) {
-    const g = el("g", { class: `bubble ${kind}` }, parent);
-    const grad = kind === "proton" ? gradP : kind === "neutron" ? gradN : gradE;
-    const dark = kind === "proton" ? COLORS.protonDark : kind === "neutron" ? COLORS.neutronDark : COLORS.electronDark;
-    el("circle", { r, fill: `url(#${grad})`, stroke: dark, "stroke-opacity": 0.35, "stroke-width": Math.max(0.4, r * 0.06) }, g);
-    el("ellipse", { cx: -r * 0.3, cy: -r * 0.4, rx: r * 0.34, ry: r * 0.2, fill: "#fff", opacity: 0.55, transform: `rotate(-30 ${-r * 0.3} ${-r * 0.4})` }, g);
+  function signLines(g, r, label, color) {
     if (label === "+") {
-      el("line", { x1: -r * 0.42, x2: r * 0.42, y1: 0, y2: 0, stroke: "#fff", "stroke-width": r * 0.2, "stroke-linecap": "round" }, g);
-      el("line", { y1: -r * 0.42, y2: r * 0.42, x1: 0, x2: 0, stroke: "#fff", "stroke-width": r * 0.2, "stroke-linecap": "round" }, g);
+      el("line", { x1: -r * 0.42, x2: r * 0.42, y1: 0, y2: 0, stroke: color, "stroke-width": r * 0.2, "stroke-linecap": "round" }, g);
+      el("line", { y1: -r * 0.42, y2: r * 0.42, x1: 0, x2: 0, stroke: color, "stroke-width": r * 0.2, "stroke-linecap": "round" }, g);
     } else if (label === "−") {
-      el("line", { x1: -r * 0.5, x2: r * 0.5, y1: 0, y2: 0, stroke: "#fff", "stroke-width": Math.max(0.6, r * 0.28), "stroke-linecap": "round" }, g);
+      el("line", { x1: -r * 0.5, x2: r * 0.5, y1: 0, y2: 0, stroke: color, "stroke-width": Math.max(0.8, r * 0.26), "stroke-linecap": "round" }, g);
     }
+  }
+
+  function makeElectron(r) {
+    const g = el("g", { class: "bubble electron" }, gElec);
+    el("circle", { r, fill: `url(#${gradE})`, stroke: "#fff", "stroke-opacity": 0.85, "stroke-width": Math.max(0.5, r * 0.12) }, g);
+    el("circle", { r: r * 1.02, fill: "none", stroke: COLORS.electronDark, "stroke-opacity": 0.35, "stroke-width": 0.5 }, g);
+    el("ellipse", { cx: -r * 0.3, cy: -r * 0.4, rx: r * 0.32, ry: r * 0.18, fill: "#fff", opacity: 0.6, transform: `rotate(-30 ${-r * 0.3} ${-r * 0.4})` }, g);
+    signLines(g, r, "−", "#fff");
     return g;
   }
 
   function clear() {
-    gHalo.replaceChildren();
-    gGoo.replaceChildren();
-    gFaces.replaceChildren();
+    gNuc.replaceChildren();
     gElec.replaceChildren();
     gElecBack.replaceChildren();
     nucleons = [];
@@ -162,14 +264,18 @@ export function createAtomRenderer(host, opts = {}) {
     const p = sp.z, nn = neutronCount(sp), a = p + nn;
     const r = nucleonRadius(a);
 
-    // Pack the nucleus on a sunflower spiral with overlap (stuck-together spheres), mixing
-    // protons and neutrons: interleave by a shuffled kind list.
     const kinds = [];
     for (let i = 0; i < a; i++) kinds.push(i < p ? "proton" : "neutron");
     for (let i = kinds.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [kinds[i], kinds[j]] = [kinds[j], kinds[i]]; }
-    const spacing = r * 0.82; // Vogel spiral: neighbours end up ~1.45 r apart, overlapping
-    const extent = a === 1 ? r : spacing * Math.sqrt(a - 1) + r;
+
+    const radii = Array.from({ length: a }, () => r * (0.94 + rnd() * 0.12));
+    const flat = packFlat(a, radii, rnd);
+    const ball = packBall(a, r, rnd);
+    let extent = 0;
+    flat.forEach((q, i) => { extent = Math.max(extent, Math.hypot(q.x, q.y) + radii[i]); });
     ring1 = Math.max(62, extent + 12);
+    nShadow.setAttribute("r", Math.max(24, extent * 0.9));
+
     for (let n = 1; n <= SHELLS; n++) {
       const rr = ringRadius(n);
       rings[n - 1].setAttribute("r", rr);
@@ -180,22 +286,25 @@ export function createAtomRenderer(host, opts = {}) {
       se.setAttribute("rx", rr * 0.3); se.setAttribute("ry", rr * 0.12);
       se.setAttribute("transform", `rotate(-35 ${C - rr * 0.3} ${C - rr * 0.42})`);
     }
+
     for (let k = 0; k < a; k++) {
-      const rad = spacing * Math.sqrt(k);
-      const ang = k * GOLDEN + rnd() * 0.3;
-      const bx = C + rad * Math.cos(ang) + (rnd() - 0.5) * 2.5;
-      const by = C + rad * Math.sin(ang) + (rnd() - 0.5) * 2.5;
-      const kind = kinds[k];
-      const rk = r * (0.94 + rnd() * 0.12);
-      const halo = el("circle", { cx: 0, cy: 0, r: rk * 1.22, fill: "#fff" }, gHalo);
-      const body = el("circle", { cx: 0, cy: 0, r: rk, fill: kind === "proton" ? COLORS.proton : COLORS.neutron }, gGoo);
-      const face = makeBubble(gFaces, kind, rk, kind === "proton" ? "+" : "");
-      nucleons.push({ kind, bx, by, dx: 0, dy: 0, vx: 0, vy: 0, r: rk, phase: rnd() * Math.PI * 2, halo, body, face });
+      const kind = kinds[k], rk = radii[k];
+      const g = el("g", { class: `bubble ${kind}` }, gNuc);
+      const body = el("path", { fill: `url(#${kind === "proton" ? gradP : gradN})`, stroke: "#fff", "stroke-opacity": 0.9, "stroke-width": 1.1, "stroke-linejoin": "round" }, g);
+      const rim = el("path", { fill: "none", stroke: kind === "proton" ? COLORS.protonDark : COLORS.neutronDark, "stroke-opacity": 0.35, "stroke-width": 0.6 }, g);
+      const gloss = el("ellipse", { cx: -rk * 0.32, cy: -rk * 0.42, rx: rk * 0.3, ry: rk * 0.16, fill: "#fff", opacity: 0.6, transform: `rotate(-30 ${-rk * 0.32} ${-rk * 0.42})` }, g);
+      signLines(g, rk, kind === "proton" ? "+" : "", "#fff");
+      const radii2d = faceRadii(k, flat, radii);
+      const circle = new Array(FACE_POINTS).fill(rk);
+      nucleons.push({ kind, r: rk, flat: flat[k], ball: ball[k], radii2d, circle, g, body, rim, gloss });
+      body.setAttribute("d", facePath(radii2d));
+      rim.setAttribute("d", facePath(radii2d));
+      g.setAttribute("transform", `translate(${(C + flat[k].x).toFixed(2)} ${(C + flat[k].y).toFixed(2)})`);
     }
 
     // Electrons on rings.
     const occ = shellOccupancy(sp);
-    const er = r / electronRatio;
+    const er = r / ELECTRON_RATIO;
     for (let n = 1; n <= SHELLS; n++) {
       const count = occ[n - 1];
       const on = count > 0;
@@ -205,14 +314,14 @@ export function createAtomRenderer(host, opts = {}) {
       labels[n - 1].setAttribute("font-weight", on ? 600 : 400);
       spheres[n - 1].setAttribute("opacity", on ? 1 : 0.07);
       const rr = ringRadius(n);
-      electronAngles(count).forEach((angle, j) => {
-        const g = makeBubble(gElec, "electron", er, "−");
+      electronAngles(count).forEach((angle) => {
+        const g = makeElectron(er);
         const inc = (0.45 + rnd() * 0.8) * (rnd() < 0.5 ? -1 : 1);
         const speed = (2 * Math.PI / (1.4 + 0.3 * (n - 1))) * (0.85 + rnd() * 0.3) * (rnd() < 0.5 ? -1 : 1);
         electrons.push({
           n, angle, r: er, phase: rnd() * Math.PI * 2, dx: 0, dy: 0, vx: 0, vy: 0, g,
           bx: C + rr * Math.cos(angle), by: C + rr * Math.sin(angle),
-          orbit: { rr, inc, speed, x: 0, y: 0, z: 0, fx: 0, fy: 0 }
+          orbit: { rr, inc, speed, theta: 0 }
         });
       });
     }
@@ -220,7 +329,7 @@ export function createAtomRenderer(host, opts = {}) {
     draw(performance.now());
   }
 
-  // ---- physics ------------------------------------------------------------------------
+  // ---- electron physics ---------------------------------------------------------------
   function springStep(b, dt, reach, maxPush, k, damp) {
     let tx = 0, ty = 0;
     if (pointer.active) {
@@ -258,24 +367,65 @@ export function createAtomRenderer(host, opts = {}) {
   }
 
   function applyModeStatics(p) {
-    // p: 0 = flat wires, 1 = spheres.
     gSpheres.setAttribute("opacity", p.toFixed(3));
     gRings.setAttribute("opacity", (1 - 0.92 * p).toFixed(3));
     gLabels.setAttribute("opacity", (1 - 0.6 * p).toFixed(3));
+  }
+
+  // ---- nucleus drawing ----------------------------------------------------------------
+  // p = 0: flat layer, faces cut by shared walls. p = 1: rotating 3D ball, plain spheres
+  // sorted by depth. In between, positions and outlines morph.
+  const AXIS = (() => { const v = [1, 0.55, 0.35]; const l = Math.hypot(...v); return v.map((c) => c / l); })();
+  function rotate(pt, ang) {
+    const [ux, uy, uz] = AXIS, c = Math.cos(ang), s = Math.sin(ang), k = 1 - c;
+    return {
+      x: pt.x * (c + ux * ux * k) + pt.y * (ux * uy * k - uz * s) + pt.z * (ux * uz * k + uy * s),
+      y: pt.x * (uy * ux * k + uz * s) + pt.y * (c + uy * uy * k) + pt.z * (uy * uz * k - ux * s),
+      z: pt.x * (uz * ux * k - uy * s) + pt.y * (uz * uy * k + ux * s) + pt.z * (c + uz * uz * k)
+    };
+  }
+  let lastNucP = -1;
+  function drawNucleus(t, p) {
+    const pulse = Math.max(0, 1 - (t - pulseT0) / 450);
+    if (p === 0) {
+      if (lastNucP !== 0) {
+        for (const b of nucleons) {
+          b.body.setAttribute("d", facePath(b.radii2d));
+          b.rim.setAttribute("d", facePath(b.radii2d));
+          b.g.setAttribute("transform", `translate(${(C + b.flat.x).toFixed(2)} ${(C + b.flat.y).toFixed(2)})`);
+          b.g.setAttribute("opacity", 1);
+        }
+        nucleons.forEach((b) => gNuc.appendChild(b.g)); // flat order
+      }
+      for (const b of nucleons) b.body.setAttribute("stroke-opacity", (0.9 + 0.1 * pulse).toFixed(2));
+      gNucleus.style.filter = pulse > 0 ? `brightness(${(1 + 0.12 * pulse).toFixed(3)})` : "";
+      lastNucP = 0;
+      return;
+    }
+    gNucleus.style.filter = "";
+    const ang = reduceMotion ? 0.6 : ((t - revealT0) / 1000) * 0.45;
+    const order = [];
+    for (const b of nucleons) {
+      const q = rotate(b.ball, ang);
+      const x = (1 - p) * b.flat.x + p * q.x, y = (1 - p) * b.flat.y + p * q.y, z = p * q.z;
+      const depth = z / (b.r * 3); // roughly -1 .. 1 across the ball
+      const scale = 1 + 0.18 * depth;
+      const radii = b.radii2d.map((rr, k) => (1 - p) * rr + p * b.circle[k]);
+      b.body.setAttribute("d", facePath(radii, scale));
+      b.rim.setAttribute("d", facePath(radii, scale));
+      b.g.setAttribute("transform", `translate(${(C + x).toFixed(2)} ${(C + y).toFixed(2)})`);
+      b.g.setAttribute("opacity", (0.75 + 0.25 * Math.min(1, (depth + 1) / 2)).toFixed(3));
+      order.push({ b, z });
+    }
+    order.sort((u, v) => u.z - v.z);
+    for (const o of order) gNuc.appendChild(o.b.g);
+    lastNucP = p;
   }
 
   let last = 0, raf = 0;
   function draw(t) {
     const dt = Math.min(0.034, last ? (t - last) / 1000 : 0.016);
     last = t;
-
-    for (const b of nucleons) {
-      springStep(b, dt, 24, 9, 150, 11);
-      const tr = bubbleTransform(b, b.bx + b.dx, b.by + b.dy, t, 0.035);
-      b.halo.setAttribute("transform", tr);
-      b.body.setAttribute("transform", tr);
-      b.face.setAttribute("transform", tr);
-    }
 
     let p = mode === "sphere" ? 1 : 0;
     if (mode === "toSphere" || mode === "toFlat") {
@@ -284,6 +434,8 @@ export function createAtomRenderer(host, opts = {}) {
       applyModeStatics(p);
       if (raw >= 1) mode = mode === "toSphere" ? "sphere" : "flat";
     }
+
+    drawNucleus(t, p);
 
     for (const e of electrons) {
       if (p === 0) {
@@ -296,14 +448,12 @@ export function createAtomRenderer(host, opts = {}) {
       const theta = e.orbit.speed * ((t - revealT0) / 1000) * (mode === "toSphere" ? p : 1);
       const o = orbitPoint(e, mode === "toFlat" ? e.orbit.theta : theta);
       if (mode !== "toFlat") e.orbit.theta = theta;
-      // During toFlat, glide from the frozen 3D point back to the 2D slot.
       const x = p * o.x + (1 - p) * e.bx, y = p * o.y + (1 - p) * e.by;
-      const zn = (o.z / e.orbit.rr) * p; // -1 .. 1
+      const zn = (o.z / e.orbit.rr) * p;
       const scale = 1 + 0.28 * zn;
       e.g.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${scale.toFixed(3)})`);
       e.g.setAttribute("opacity", (0.45 + 0.55 * (zn + 1) / 2).toFixed(3));
-      const back = zn < -0.02;
-      const want = back ? gElecBack : gElec;
+      const want = zn < -0.02 ? gElecBack : gElec;
       if (e.g.parentNode !== want) want.appendChild(e.g);
     }
     raf = requestAnimationFrame(draw);
@@ -324,16 +474,10 @@ export function createAtomRenderer(host, opts = {}) {
   });
   svg.addEventListener("pointerleave", () => { pointer.active = false; });
   svg.addEventListener("pointerdown", (ev) => {
-    // A tap is a poke: every nucleon near the point gets a radial impulse and the
-    // whole cluster jiggles. Nothing pops.
     const q = toLocal(ev);
     pointer.x = q.x; pointer.y = q.y; pointer.active = true;
-    for (const b of nucleons.concat(electrons)) {
-      const ddx = b.bx - q.x, ddy = b.by - q.y;
-      const d = Math.hypot(ddx, ddy) || 0.001;
-      const f = Math.max(0, 1 - d / 70) * 90;
-      b.vx += (ddx / d) * f; b.vy += (ddy / d) * f;
-    }
+    // A tap on the nucleus: the rims brighten for a moment. Nothing moves.
+    if (Math.hypot(q.x - C, q.y - C) < ring1 - 6) pulseT0 = performance.now();
     svg.setPointerCapture?.(ev.pointerId);
   });
   svg.addEventListener("pointerup", (ev) => { if (ev.pointerType !== "mouse") pointer.active = false; });
@@ -354,7 +498,6 @@ export function createAtomRenderer(host, opts = {}) {
       mode = "toFlat"; modeT0 = performance.now();
     },
     toggle() { this.revealed ? this.flatten() : this.reveal(); },
-    setElectronRatio(r) { electronRatio = r; if (species) setSpecies(species); },
     destroy() { cancelAnimationFrame(raf); svg.remove(); }
   };
 }

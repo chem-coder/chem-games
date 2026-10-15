@@ -1,5 +1,5 @@
 // Renderer prototype page: two panels (default Mg and Mg2+), a species picker each,
-// Reveal / back toggles, and an electron-size slider for the design discussion.
+// Reveal / back toggles.
 import { detectLang, makeT, applyStatic, elementName } from "../../shared/js/i18n.js";
 import { ELEMENTS } from "../../periodic-table/memorizer/data/pt-data.js";
 import { NAMES_RU } from "../../periodic-table/memorizer/data/pt-names.ru.js";
@@ -52,7 +52,7 @@ function panel(initialIndex) {
     select.appendChild(o);
   });
   select.value = initialIndex;
-  const r = createAtomRenderer(sec.querySelector(".stage"), { electronRatio: Number(ratio.value) });
+  const r = createAtomRenderer(sec.querySelector(".stage"));
   renderers.push(r);
   const btn = sec.querySelector(".reveal");
   const [lp, ln, le] = sec.querySelectorAll(".counts li");
@@ -76,14 +76,5 @@ function panel(initialIndex) {
   return sec;
 }
 
-const ratio = document.querySelector("#ratio");
-const ratioLabel = document.querySelector("#ratioLabel");
-function syncRatio() {
-  ratioLabel.textContent = t("electron_size", { n: ratio.value });
-  renderers.forEach((r) => r.setElectronRatio(Number(ratio.value)));
-}
-ratio.addEventListener("input", syncRatio);
-
 const panels = document.querySelector("#panels");
 panels.append(panel(SPECIES.findIndex((s) => s.z === 12 && s.charge === 0)), panel(SPECIES.findIndex((s) => s.z === 12 && s.charge === 2)));
-syncRatio();
