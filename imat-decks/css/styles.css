@@ -14,7 +14,7 @@ body {
 .home-link:hover { text-decoration: underline; }
 .eyebrow { margin: 14px 0 2px; color: var(--muted); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 h1 { margin: 0 0 6px; font-family: var(--font-display); font-size: 2rem; color: var(--accent-dark); }
-.lede { margin: 0; color: var(--muted); max-width: 60ch; }
+.lede { margin: 0; color: var(--muted); }
 
 /* House rule: formula subscripts stay readable — ≥50% size, slightly lowered. */
 sub { font-size: 0.62em; vertical-align: -0.18em; }

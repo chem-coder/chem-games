@@ -21,7 +21,7 @@ sup { font-size: 0.62em; line-height: 0; vertical-align: 0.42em; font-weight: in
 .home-link:hover { text-decoration: underline; }
 .eyebrow { margin: 10px 0 4px; color: var(--plum-dark); font-family: var(--font-display); font-size: 0.78rem; font-weight: 850; text-transform: uppercase; }
 h1 { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(1.9rem, 4.5vw, 2.7rem); line-height: 1.05; }
-.lede { margin: 0; max-width: 46rem; color: var(--muted); line-height: 1.5; }
+.lede { margin: 0; color: var(--muted); line-height: 1.5; }
 
 /* tabs (house pattern) */
 .level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }

@@ -63,7 +63,6 @@ h1 {
 
 .lede {
   margin: 10px 0 0;
-  max-width: 44rem;
   color: var(--muted);
   font-size: 1.02rem;
   line-height: 1.45;

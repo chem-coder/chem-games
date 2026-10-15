@@ -17,7 +17,7 @@ sup { font-size: 0.62em; line-height: 0; vertical-align: 0.55em; font-weight: in
   font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
 }
 .app-header h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2.1rem; }
-.lede { margin: 8px 0 0; color: var(--muted); max-width: 52ch; }
+.lede { margin: 8px 0 0; color: var(--muted); }
 
 /* ── card surface ── */
 .game {
