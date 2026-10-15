@@ -21,7 +21,7 @@ This file is the master rulebook for Chem Games. If a rule changes, update this 
 
 ## Folder Rules
 
-- Root-level Markdown is reserved for the master rules file unless a project-wide file truly needs root visibility.
+- Root-level Markdown is reserved for the master rules file and `COPYRIGHT.md` (the ownership notice) unless a project-wide file truly needs root visibility.
 - Internal project documentation belongs in `documentation/`.
 - Old internal documentation that should be preserved but no longer guides active work belongs in `documentation/archive/`.
 - App-specific notes belong beside that app, usually in a local `README.md`.
