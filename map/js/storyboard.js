@@ -93,16 +93,18 @@ const ANIMS = {
       const omega = (SWEEP * POW) / T;                 // angular speed at the end of the spiral
       const ORBIT = (1.3 * 2 * Math.PI) / omega;       // about one and a third laps, then a new entry
       const CYC = T + ORBIT, n = Math.floor(t / CYC), cyc = t - n * CYC;
-      const a0 = mulberry32(n * 104729 + 5)() * Math.PI * 2;  // enters from a different direction each cycle
+      const rnd = mulberry32(n * 104729 + 5);
+      const a0 = rnd() * Math.PI * 2;                  // enters from a different direction each cycle
+      const dir = rnd() < 0.5 ? 1 : -1;                // and spirals clockwise or counter-clockwise
       place(o.p, cx, cy, t, 0, 0);
       let r, a;
       if (cyc < T) {
         const u = cyc / T;
         r = R + (start - R) * Math.pow(1 - u, 1.7);   // from beyond the edge; radius closes faster near the end
-        a = a0 + SWEEP * Math.pow(u, POW);             // sweep accelerates as it falls in
+        a = a0 + dir * SWEEP * Math.pow(u, POW);       // sweep accelerates as it falls in
       } else {
         r = R;
-        a = a0 + SWEEP + (cyc - T) * omega;            // orbit at the arrival speed, never faster
+        a = a0 + dir * (SWEEP + (cyc - T) * omega);    // orbit at the arrival speed, never faster
       }
       place(o.e, cx + r * Math.cos(a), cy + r * Math.sin(a), t, 1, 0.6);
       // fade out at the end of the orbit so the next entry does not pop into place
