@@ -1,8 +1,31 @@
 // Trend Ladder — DOM layer. Gesture grammar mirrors pH Lab's ladder rung:
 // pointer-drag with a ghost, and tap-card-then-tap-slot as the same meaning.
-import { TIERS, expectedKeys, endLabels, grade, shuffledTray, speciesByKey } from "./game.js?v=20260824-trends1";
+import { TIERS, expectedKeys, endLabels, grade, shuffledTray, speciesByKey } from "./game.js?v=20261015-ru2";
+import { detectLang, makeT, applyStatic, langToggleHtml, wireLangToggle } from "../../../shared/js/i18n.js?v=20261015-ru2";
+import en from "../locale/en.js?v=20261015-ru2";
+import ru from "../locale/ru.js?v=20261015-ru2";
 
 const root = document.getElementById("game");
+const lang = detectLang();
+const L = { en, ru };
+const t = makeT(L, lang);
+const OVER = L[lang] || {};          // content overlay for this language (tiers/rounds/properties/chips)
+document.documentElement.lang = lang;
+document.title = t("title");
+applyStatic(t);
+document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
+wireLangToggle(document);
+
+// Localized views of the English content in rounds.js. Missing pieces fall back to English.
+const tierText = (tr, field) => OVER.tiers?.[tr.id]?.[field] ?? tr[field];
+const roundText = (r, field) => OVER.rounds?.[r.id]?.[field] ?? r[field];
+const propGen = (prop) => OVER.properties?.[prop]?.gen ?? prop;
+const endFmt = (kind, prop) => {
+  const o = OVER.properties?.[prop];
+  if (o) return kind === "smallest" ? o.least : o.most;
+  return t(kind, { property: prop });
+};
+const chip = (text) => (OVER.chips || []).reduce((acc, [from, to]) => acc.split(from).join(to), text);
 
 let tierIdx = Math.max(0, TIERS.findIndex((t) => "#" + t.id === location.hash));
 let mode = "intro";          // intro | play | done
@@ -72,7 +95,7 @@ function showHint() { hintsShown += 1; render(); }
 // ── shared chrome ──────────────────────────────────────────────────────────
 function tierTabs() {
   return `<div class="level-tabs" role="tablist">${TIERS.map((t, i) =>
-    `<button class="level-tab${i === tierIdx ? " is-active" : ""}" data-tier="${i}" type="button" role="tab" aria-selected="${i === tierIdx}">${t.label}</button>`).join("")}</div>`;
+    `<button class="level-tab${i === tierIdx ? " is-active" : ""}" data-tier="${i}" type="button" role="tab" aria-selected="${i === tierIdx}">${tierText(t, "label")}</button>`).join("")}</div>`;
 }
 function wireTabs() {
   root.querySelectorAll(".level-tab").forEach((b) =>
@@ -97,25 +120,25 @@ function isoDiagram() {
     <circle cx="${cx}" cy="62" r="${r}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/>
     <text x="${cx}" y="66" text-anchor="middle" font-size="13" font-weight="800" fill="var(--ink)">${p}</text>
     <text x="${cx}" y="128" text-anchor="middle" font-size="13" font-weight="700" fill="var(--muted)">${sym}</text>`;
-  return `<svg class="intro-svg" viewBox="0 0 340 140" role="img" aria-label="three ions with the same electron cloud shrinking as protons increase">
-    ${circle(60, 44, "8 p⁺", "O²⁻")}${circle(170, 36, "10 p⁺", "Ne")}${circle(276, 27, "12 p⁺", "Mg²⁺")}
-    <text x="170" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent-dark)">same 10 electrons — more protons, tighter cloud →</text>
+  return `<svg class="intro-svg" viewBox="0 0 420 140" role="img" aria-label="three ions with the same electron cloud shrinking as protons increase">
+    ${circle(100, 44, "8 p⁺", "O²⁻")}${circle(210, 36, "10 p⁺", "Ne")}${circle(316, 27, "12 p⁺", "Mg²⁺")}
+    <text x="210" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="var(--accent-dark)">${t("iso_caption")}</text>
   </svg>`;
 }
 
 // ── screens ────────────────────────────────────────────────────────────────
 function renderIntro() {
-  const t = tier();
-  const steps = t.introSteps.map((s, i) =>
+  const tr = tier();
+  const steps = tierText(tr, "introSteps").map((s, i) =>
     `<li><span class="step-num">${i + 1}</span><span class="step-text">${s}</span></li>`).join("");
   root.innerHTML = `
     ${tierTabs()}
     <div class="intro-card">
-      <h2>${t.introTitle}</h2>
-      ${t.diagram === "iso" ? isoDiagram() : arrowsDiagram(t.diagramLabels)}
+      <h2>${tierText(tr, "introTitle")}</h2>
+      ${tr.diagram === "iso" ? isoDiagram() : arrowsDiagram(tierText(tr, "diagramLabels"))}
       <ol class="steps">${steps}</ol>
       <div class="controls two-up">
-        <button class="action primary" id="startBtn">Start — ${t.rounds.length} sets</button>
+        <button class="action primary" id="startBtn">${t("start", { n: tr.rounds.length })}</button>
       </div>
     </div>`;
   wireTabs();
@@ -123,18 +146,19 @@ function renderIntro() {
 }
 
 function renderDone() {
-  const t = tier();
+  const tr = tier();
   const nextTier = TIERS[tierIdx + 1];
+  const plain = (x) => String(x).replace(/&amp;/g, "&");
   root.innerHTML = `
     ${tierTabs()}
     <div class="intro-card done-card">
-      <h2>${t.label.replace(/&amp;/g, "&")} — every set ordered 🎉</h2>
-      <p class="done-line">${roundTotal} orderings built. The trend is yours now.</p>
+      <h2>${t("done_h2", { tier: plain(tierText(tr, "label")) })}</h2>
+      <p class="done-line">${t("done_line", { n: roundTotal })}</p>
       <div class="controls two-up">
-        ${nextTier ? `<button class="action primary" id="nextTierBtn">Next: ${nextTier.label.replace(/&amp;/g, "&")} →</button>` : ""}
-        <button class="action ghost" id="replayBtn">Replay this tier ↺</button>
-        <a class="action ghost" href="../#trends">↩ The Periodic System</a>
-        <a class="action ghost" href="../../">⌂ All Chem Games</a>
+        ${nextTier ? `<button class="action primary" id="nextTierBtn">${t("next_tier", { tier: plain(tierText(nextTier, "label")) })}</button>` : ""}
+        <button class="action ghost" id="replayBtn">${t("replay")}</button>
+        <a class="action ghost" href="../#trends">${t("to_topic")}</a>
+        <a class="action ghost" href="../../">${t("to_home")}</a>
       </div>
     </div>`;
   wireTabs();
@@ -146,7 +170,8 @@ function renderDone() {
 function renderPlay() {
   const r = round();
   const dec = r.direction === "dec";
-  const ends = endLabels(r);
+  const ends = endLabels(r, endFmt);
+  const hints = roundText(r, "hints");
   const isSel = (key, from) => selected && selected.key === key && String(selected.from) === String(from);
 
   const cardHtml = (key, from) => {
@@ -162,36 +187,34 @@ function renderPlay() {
   }).join("");
 
   const tray = checked ? "" : `<div class="ladder-tray" id="ladderTray">
-      ${trayPool().length ? trayPool().map((k) => cardHtml(k, "tray")).join("") : `<span class="tray-empty">all placed — Check when you're sure</span>`}
+      ${trayPool().length ? trayPool().map((k) => cardHtml(k, "tray")).join("") : `<span class="tray-empty">${t("tray_empty")}</span>`}
     </div>`;
 
-  const shown = r.hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
+  const shown = hints.slice(0, hintsShown).map((h) => `<li>${h}</li>`).join("");
   const hintBlock = checked ? "" : `<div class="hints">
       ${hintsShown ? `<ul class="hint-list">${shown}</ul>` : ""}
-      ${hintsShown < r.hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${hintsShown ? "Another hint" : "Need a hint?"}</button>` : ""}
+      ${hintsShown < hints.length ? `<button class="hint-btn" id="hintBtn" type="button">${hintsShown ? t("hint_more") : t("hint")}</button>` : ""}
     </div>`;
 
   let reveal = "", feedback = `<p class="feedback">&nbsp;</p>`;
   if (checked) {
     feedback = graded.correct
-      ? `<p class="feedback ok">${hintsShown ? "Ordered." : "Ordered — no hints. 💪"} It leaves the stack.</p>`
-      : `<p class="feedback no">Not quite — this set comes back around.</p>`;
+      ? `<p class="feedback ok">${t(hintsShown ? "ok_hints" : "ok_clean")}</p>`
+      : `<p class="feedback no">${t("wrong")}</p>`;
     reveal = `<div class="ladder-answer">
       <p class="ladder-answer-h">${ends.left} → ${ends.right}</p>
       <div class="ladder-answer-row">${expectedKeys(r).map((k) => {
         const s = speciesByKey(r, k);
-        return `<span class="ladder-answer-card">${s.label}<span class="value-chip">${s.chip}</span></span>`;
+        return `<span class="ladder-answer-card">${s.label}<span class="value-chip">${chip(s.chip)}</span></span>`;
       }).join("")}</div>
-      <p class="why-line">${r.why}</p>
+      <p class="why-line">${roundText(r, "why")}</p>
     </div>`;
   }
 
   root.innerHTML = `
     ${tierTabs()}
-    <button class="intro-link" id="introBtn" type="button">↩ How this tier works</button>
-    <p class="ladder-direction${dec ? " dir-dec" : ""}">${dec
-      ? `⚠ Order by <strong>DECREASING</strong> ${r.property} — largest first.`
-      : `Order by <strong>increasing</strong> ${r.property} — smallest first.`}</p>
+    <button class="intro-link" id="introBtn" type="button">${t("how")}</button>
+    <p class="ladder-direction${dec ? " dir-dec" : ""}">${t(dec ? "dir_dec" : "dir_inc", { property: propGen(r.property) })}</p>
     <div class="strip-ends"><span>${ends.left}</span><span>${ends.right}</span></div>
     <div class="ladder-slots">${slots}</div>
     ${tray}
@@ -199,10 +222,10 @@ function renderPlay() {
     ${reveal}
     ${feedback}
     <div class="controls">
-      <p class="score">Solved ${solved} of ${roundTotal} &middot; ${queue.length} left</p>
+      <p class="score">${t("score", { solved, total: roundTotal, left: queue.length })}</p>
       ${checked
-        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !graded.correct ? "Next →" : "Finish"}</button>`
-        : `<button class="action primary" id="checkBtn" ${placed.includes(null) ? "disabled" : ""}>Check</button>`}
+        ? `<button class="action primary" id="nextBtn">${queue.length > 1 || !graded.correct ? t("next") : t("finish")}</button>`
+        : `<button class="action primary" id="checkBtn" ${placed.includes(null) ? "disabled" : ""}>${t("check")}</button>`}
     </div>`;
 
   root.querySelector("#introBtn").addEventListener("click", () => { mode = "intro"; render(); });

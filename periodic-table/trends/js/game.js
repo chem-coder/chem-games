@@ -1,6 +1,6 @@
 // Trend Ladder — pure game logic (no DOM). Rounds store species in ASCENDING
 // property order; the player builds either that order or its reverse.
-import { TIERS } from "../data/rounds.js?v=20260824-trends1";
+import { TIERS } from "../data/rounds.js?v=20261015-ru2";
 
 export { TIERS };
 
@@ -10,12 +10,13 @@ export function expectedKeys(round) {
   return round.direction === "inc" ? asc : [...asc].reverse();
 }
 
-// The slot-strip end labels, left and right.
-export function endLabels(round) {
+// The slot-strip end labels, left and right. `fmt(kind, property)` renders one label
+// (kind = "smallest" | "largest"); the default is English.
+const defaultFmt = (kind, prop) => `${kind} ${prop}`;
+export function endLabels(round, fmt = defaultFmt) {
   const prop = round.property;
-  return round.direction === "inc"
-    ? { left: `smallest ${prop}`, right: `largest ${prop}` }
-    : { left: `largest ${prop}`, right: `smallest ${prop}` };
+  const small = fmt("smallest", prop), large = fmt("largest", prop);
+  return round.direction === "inc" ? { left: small, right: large } : { left: large, right: small };
 }
 
 export function grade(round, placedKeys) {

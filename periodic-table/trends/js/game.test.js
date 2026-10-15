@@ -102,3 +102,29 @@ test("isoelectronic rounds keep the proton count in every chip", () => {
     for (const s of r.species) assert.match(s.chip, /p⁺/, `${r.id}/${s.key}`);
   }
 });
+
+import ruLocale from "../locale/ru.js";
+
+test("Russian overlay covers every tier, round, and property; hint counts match", () => {
+  for (const tier of TIERS) {
+    const o = ruLocale.tiers[tier.id];
+    assert.ok(o && o.label && o.introTitle, tier.id);
+    assert.equal(o.introSteps.length, tier.introSteps.length, tier.id);
+    if (tier.diagramLabels) assert.ok(o.diagramLabels?.down && o.diagramLabels?.across, tier.id);
+    for (const r of tier.rounds) {
+      const ro = ruLocale.rounds[r.id];
+      assert.ok(ro && ro.why, r.id);
+      assert.equal(ro.hints.length, r.hints.length, r.id);
+      const pr = ruLocale.properties[r.property];
+      assert.ok(pr && pr.gen && pr.least && pr.most, `${r.id} property ${r.property}`);
+    }
+  }
+});
+
+test("endLabels accepts a formatter and flips with direction", () => {
+  const fmt = (kind, prop) => `${kind}|${prop}`;
+  const inc = TIERS[0].rounds.find((r) => r.direction === "inc");
+  const dec = TIERS[0].rounds.find((r) => r.direction === "dec");
+  assert.equal(endLabels(inc, fmt).left, `smallest|${inc.property}`);
+  assert.equal(endLabels(dec, fmt).left, `largest|${dec.property}`);
+});
