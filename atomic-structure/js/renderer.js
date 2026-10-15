@@ -243,6 +243,9 @@ export function createAtomRenderer(host, opts = {}) {
 
   function makeElectron(r) {
     const g = el("g", { class: "bubble electron" }, gElec);
+    // Forgiving grab target: the visible bubble is tiny and springs away from the
+    // pointer, so the hit area is a wide invisible disc.
+    el("circle", { r: Math.max(14, r * 4), fill: "transparent", "pointer-events": "all" }, g);
     el("circle", { r, fill: `url(#${gradE})`, stroke: "#fff", "stroke-opacity": 0.85, "stroke-width": Math.max(0.5, r * 0.12) }, g);
     el("circle", { r: r * 1.02, fill: "none", stroke: COLORS.electronDark, "stroke-opacity": 0.35, "stroke-width": 0.5 }, g);
     el("ellipse", { cx: -r * 0.3, cy: -r * 0.4, rx: r * 0.32, ry: r * 0.18, fill: "#fff", opacity: 0.6, transform: `rotate(-30 ${-r * 0.3} ${-r * 0.4})` }, g);
