@@ -115,7 +115,7 @@ Single source for the Russian names of games and sections as shown on the home p
 
 | EN | RU | Note |
 |---|---|---|
-| Chem Games (home page) | Игры по химии | the brand stays "Chem Games" in the eyebrow |
+| Chem Games (brand) | Химигра | decided 2026-10-15; one word, no hyphen, like химфак. Home headline stays «Игры по химии». Logo stacks ХИМ / ИГРА with «и викторины» small, as CHEM / GAMES «&Quizzes» |
 | The Periodic System | Периодическая система | section hub |
 | Periodic Table Memorizer | Тренажёр таблицы Менделеева | |
 | Trend Ladder | Лестница закономерностей | |
