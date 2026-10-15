@@ -1,6 +1,6 @@
 // Storyboard animations in the bubble language: a plus (proton) and minuses (electrons)
 // on a small SVG stage. Each animation is a function of time; the frame decides which one.
-import { createCapture, advance, simulate, captured, laps, ORBIT_R } from "./capture-sim.js?v=20261016-34";
+import { createCapture, advance, captured, laps, ORBIT_R } from "./capture-sim.js?v=20261016-35";
 
 const NS = "http://www.w3.org/2000/svg";
 function mulberry32(a) {
@@ -93,23 +93,19 @@ const ANIMS = {
     setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−"), round: -1, sim: null, last: 0 }; },
     draw(o, t) {
       const dt = Math.min(0.05, Math.max(0, t - o.last)); o.last = t;
+      // Five starts, graded by the simulation itself (clean capture in about two seconds, no
+      // change of turning sense, never inside the radius, no jolt), played in sequence.
+      const SCENARIOS = [1124, 1565, 2178, 2092, 1472];
       const newRound = () => {
-        let first = null;
-        for (let k = 0; k < 40; k++) {
-          o.round++;
-          const rnd = mulberry32(o.round * 2654435 + 3);
-          const plus = { x: 200 + (rnd() - 0.5) * 60, y: 120 + (rnd() - 0.5) * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
-          plus.home = { x: plus.x, y: plus.y, r: 26 };
-          const ang = rnd() * Math.PI * 2, off = (rnd() < 0.5 ? -1 : 1) * (60 + rnd() * 70);
-          const aimx = plus.x + off * Math.cos(ang + Math.PI / 2), aimy = plus.y + off * Math.sin(ang + Math.PI / 2);
-          const ex = aimx + 380 * Math.cos(ang), ey = aimy + 380 * Math.sin(ang);
-          const speed = 150 + rnd() * 70, L = Math.hypot(aimx - ex, aimy - ey);
-          const init = { pluses: [plus], x: ex, y: ey, vx: ((aimx - ex) / L) * speed, vy: ((aimy - ey) / L) * speed };
-          first ||= init;
-          const r = simulate(init, 6);
-          if (r && r.t <= 4.5) { o.sim = createCapture(init); return; }
-        }
-        o.sim = createCapture(first); // never leave the frame without a round
+        o.round++;
+        const rnd = mulberry32(SCENARIOS[o.round % SCENARIOS.length] * 2654435 + 3);
+        const plus = { x: 200 + (rnd() - 0.5) * 60, y: 120 + (rnd() - 0.5) * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
+        plus.home = { x: plus.x, y: plus.y, r: 26 };
+        const ang = rnd() * Math.PI * 2, off = (rnd() < 0.5 ? -1 : 1) * (60 + rnd() * 70);
+        const aimx = plus.x + off * Math.cos(ang + Math.PI / 2), aimy = plus.y + off * Math.sin(ang + Math.PI / 2);
+        const ex = aimx + 380 * Math.cos(ang), ey = aimy + 380 * Math.sin(ang);
+        const speed = 150 + rnd() * 70, L = Math.hypot(aimx - ex, aimy - ey);
+        o.sim = createCapture({ pluses: [plus], x: ex, y: ey, vx: ((aimx - ex) / L) * speed, vy: ((aimy - ey) / L) * speed });
       };
       if (!o.sim) newRound();
       const S = o.sim;
@@ -182,27 +178,23 @@ const ANIMS = {
     setup(svg, defs) { return { p1: bubble(svg, defs, P, "+"), p2: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−"), round: -1, sim: null, last: 0 }; },
     draw(o, t) {
       const dt = Math.min(0.05, Math.max(0, t - o.last)); o.last = t;
+      // Four starts graded by the simulation: the nearer plus wins within two seconds, no
+      // change of turning sense, never inside the radius, no jolt. Played in sequence.
+      const SCENARIOS = [3009, 3778, 232, 624];
       const newRound = () => {
-        let first = null;
-        for (let k = 0; k < 80; k++) {
-          o.round++;
-          const rnd = mulberry32(o.round * 15485863 + 11);
-          const A = { x: 115 + rnd() * 30, y: 95 + rnd() * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
-          const B = { x: 335 + rnd() * 30, y: 95 + rnd() * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
-          A.home = { x: A.x, y: A.y, r: 22 }; B.home = { x: B.x, y: B.y, r: 22 };   // each keeps to its own small patch
-          const nearA = rnd() < 0.5;
-          const near = nearA ? A : B, far = nearA ? B : A;
-          const f = 0.3 + rnd() * 0.1;
-          const px = near.x + (far.x - near.x) * f, py = near.y + (far.y - near.y) * f + (rnd() - 0.5) * 40;
-          const ang = rnd() * Math.PI * 2;
-          const ex = px + 380 * Math.cos(ang), ey = py + 380 * Math.sin(ang);
-          const speed = 150 + rnd() * 60, L = Math.hypot(px - ex, py - ey);
-          const init = { pluses: [A, B], x: ex, y: ey, vx: ((px - ex) / L) * speed, vy: ((py - ey) / L) * speed };
-          first ||= init;
-          const r = simulate(init, 6);
-          if (r && r.t <= 4.5 && r.plus === (nearA ? 0 : 1)) { o.sim = createCapture(init); return; }
-        }
-        o.sim = createCapture(first);
+        o.round++;
+        const rnd = mulberry32(SCENARIOS[o.round % SCENARIOS.length] * 15485863 + 11);
+        const A = { x: 115 + rnd() * 30, y: 95 + rnd() * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
+        const B = { x: 335 + rnd() * 30, y: 95 + rnd() * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
+        A.home = { x: A.x, y: A.y, r: 22 }; B.home = { x: B.x, y: B.y, r: 22 };
+        const nearA = rnd() < 0.5;
+        const near = nearA ? A : B, far = nearA ? B : A;
+        const f = 0.3 + rnd() * 0.1;
+        const px = near.x + (far.x - near.x) * f, py = near.y + (far.y - near.y) * f + (rnd() - 0.5) * 40;
+        const ang = rnd() * Math.PI * 2;
+        const ex = px + 380 * Math.cos(ang), ey = py + 380 * Math.sin(ang);
+        const speed = 150 + rnd() * 60, L = Math.hypot(px - ex, py - ey);
+        o.sim = createCapture({ pluses: [A, B], x: ex, y: ey, vx: ((px - ex) / L) * speed, vy: ((py - ey) / L) * speed });
       };
       if (!o.sim) newRound();
       const S = o.sim;

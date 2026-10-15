@@ -5,7 +5,7 @@ import { THEMES, getTheme, setTheme, applyTheme } from "../../shared/js/theme.js
 import { loadProgress, saveProgress, seeStoryboard, skillState, levelsDone, pointsOf, emptyProgress } from "../../shared/js/progress.js?v=20261016-32";
 import { SKILLS, SKILLS_BY_ID, SYMBOLS } from "../data/skills.js?v=20261016-32";
 import { STORYBOARDS } from "../data/storyboards.js?v=20261016-32";
-import { mountAnimation } from "./storyboard.js?v=20261016-34";
+import { mountAnimation } from "./storyboard.js?v=20261016-35";
 import en from "../locale/en.js?v=20261016-32";
 import ru from "../locale/ru.js?v=20261016-32";
 
