@@ -55,11 +55,23 @@ export function step(s, dt) {
   if (r < ORBIT_R * s.o.zone) {
     const w = 1 - r / (ORBIT_R * s.o.zone);                       // 0 at the zone edge, 1 at the centre
     vr *= Math.exp(-s.o.radialDamp * w * dt);
-    if (r > ORBIT_R * 1.2) vt *= Math.exp(-s.o.tangentialDamp * w * dt);
+    if (r > ORBIT_R * 1.03) vt *= Math.exp(-s.o.tangentialDamp * w * dt);
   }
   s.vx = nearest.vx + vr * ux - vt * uy;
   s.vy = nearest.vy + vr * uy + vt * ux;
   s.x += s.vx * dt; s.y += s.vy * dt;
+  // the floor: an electron is never closer to a plus than the orbit radius. If a step would
+  // carry it inside, it is held at the radius and its inward motion is taken away; the
+  // sideways motion stays, so it keeps circling.
+  for (const p of s.pluses) {
+    const fx = s.x - p.x, fy = s.y - p.y, fd = Math.hypot(fx, fy) || 1e-6;
+    if (fd < ORBIT_R) {
+      const nx = fx / fd, ny = fy / fd;
+      s.x = p.x + nx * ORBIT_R; s.y = p.y + ny * ORBIT_R;
+      const inward = (s.vx - p.vx) * nx + (s.vy - p.vy) * ny;
+      if (inward < 0) { s.vx -= inward * nx; s.vy -= inward * ny; }
+    }
+  }
   // bookkeeping: how long it has stayed near the orbit radius, and how far it has swept
   const r2 = Math.hypot(s.x - nearest.x, s.y - nearest.y);
   const ang = Math.atan2(s.y - nearest.y, s.x - nearest.x);

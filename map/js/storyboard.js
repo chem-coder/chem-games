@@ -1,6 +1,6 @@
 // Storyboard animations in the bubble language: a plus (proton) and minuses (electrons)
 // on a small SVG stage. Each animation is a function of time; the frame decides which one.
-import { createCapture, advance, simulate, captured, laps, ORBIT_R } from "./capture-sim.js?v=20261016-31";
+import { createCapture, advance, simulate, captured, laps, ORBIT_R } from "./capture-sim.js?v=20261016-33";
 
 const NS = "http://www.w3.org/2000/svg";
 function mulberry32(a) {
@@ -107,7 +107,7 @@ const ANIMS = {
           const init = { pluses: [plus], x: ex, y: ey, vx: ((aimx - ex) / L) * speed, vy: ((aimy - ey) / L) * speed };
           first ||= init;
           const r = simulate(init, 6);
-          if (r && r.t <= 4.5 && r.minD > ORBIT_R * 0.7) { o.sim = createCapture(init); return; }
+          if (r && r.t <= 4.5) { o.sim = createCapture(init); return; }
         }
         o.sim = createCapture(first); // never leave the frame without a round
       };
@@ -200,7 +200,7 @@ const ANIMS = {
           const init = { pluses: [A, B], x: ex, y: ey, vx: ((px - ex) / L) * speed, vy: ((py - ey) / L) * speed };
           first ||= init;
           const r = simulate(init, 6);
-          if (r && r.t <= 4.5 && r.plus === (nearA ? 0 : 1) && r.minD > ORBIT_R * 0.7) { o.sim = createCapture(init); return; }
+          if (r && r.t <= 4.5 && r.plus === (nearA ? 0 : 1)) { o.sim = createCapture(init); return; }
         }
         o.sim = createCapture(first);
       };
