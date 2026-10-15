@@ -124,13 +124,7 @@ function showMap() {
       <div class="map-scroll"><div class="map-canvas" style="width:${w}px;height:${h}px"><svg class="edges" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${edges}</svg>${tiles}</div></div>
       <aside class="panel" id="panel"></aside>
     </div></div>`;
-  app.querySelectorAll(".tile").forEach((b) => b.addEventListener("click", () => {
-    const s = SKILLS_BY_ID[b.dataset.id];
-    selected = s.id;
-    // A tile whose whole content is a storyboard plays it on click; others open their panel.
-    if (s.levels === 0 && s.storyboard) { showStoryboard(s.storyboard, showMap); return; }
-    showMap();
-  }));
+  app.querySelectorAll(".tile").forEach((b) => b.addEventListener("click", () => { selected = b.dataset.id; showMap(); }));
   app.querySelector("#gear").addEventListener("click", showSettings);
   app.querySelector("#toEntry").addEventListener("click", showEntry);
   renderPanel();
