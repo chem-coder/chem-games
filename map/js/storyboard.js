@@ -98,20 +98,22 @@ const ANIMS = {
     }
   },
   repel: {
-    // Two minuses push apart; then two pluses do the same. Alternates every cycle.
+    // Two minuses drift in from the sides, slow as they close, stop short without touching,
+    // and push back out: fast at first, then coasting. Then the same with two pluses.
     setup(svg, defs) { return { a: bubble(svg, defs, E, "−"), b: bubble(svg, defs, E, "−"), c: bubble(svg, defs, P, "+"), d: bubble(svg, defs, P, "+") }; },
     draw(o, t) {
-      const cyc = t % 8;
-      const minuses = cyc < 4;
-      const c = cyc % 4;
-      const gap = minuses ? 15 : 30;
+      const cyc = t % 9;
+      const minuses = cyc < 4.5;
+      const c = cyc % 4.5;
+      const gap = minuses ? 22 : 38;        // closest approach, half the centre distance
+      const far = 150;
       const [a, b, h1, h2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
-      let k;
-      if (c < 0.9) k = 0;                       // sitting too close: a beat of tension
-      else k = easeOut(clamp01((c - 0.9) / 1.7)); // strong push, then coasting to a stop
-      const jitter = c < 0.9 ? 1.5 * Math.sin(t * 40) : 0; // anticipation: a tiny tremble before the push
-      place(a, 240 - gap - 110 * k + jitter, 120, t, 0);
-      place(b, 240 + gap + 110 * k - jitter, 120, t, 1);
+      let d; // half-distance from the centre
+      if (c < 1.9) d = far - (far - gap) * easeOut(c / 1.9);                 // drift in, braking as the push grows
+      else if (c < 3.6) d = gap + (far - gap) * easeOut((c - 1.9) / 1.7);     // shoved out, then coasting
+      else d = far;
+      place(a, 240 - d, 120, t, 0);
+      place(b, 240 + d, 120, t, 1);
       place(h1, -100, -100, t, 0, 0); place(h2, -100, -100, t, 0, 0);
     }
   },
