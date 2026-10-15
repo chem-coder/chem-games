@@ -5,7 +5,7 @@ import { THEMES, getTheme, setTheme, applyTheme } from "../../shared/js/theme.js
 import { loadProgress, saveProgress, seeStoryboard, skillState, levelsDone, pointsOf, emptyProgress } from "../../shared/js/progress.js";
 import { SKILLS, SKILLS_BY_ID, SYMBOLS } from "../data/skills.js";
 import { STORYBOARDS } from "../data/storyboards.js";
-import { mountAnimation } from "./storyboard.js?v=20261016-25";
+import { mountAnimation } from "./storyboard.js?v=20261016-26";
 import en from "../locale/en.js";
 import ru from "../locale/ru.js";
 
@@ -68,7 +68,7 @@ function showStoryboard(id, after = showMap) {
   app.innerHTML = `<div class="story"><div class="story-card">
     <div class="story-stage" id="stage"></div>
     <p class="story-text" id="storyText"></p>
-    <div class="story-dots" id="dots">${sb.frames.map(() => "<span></span>").join("")}</div>
+    <div class="story-dots" id="dots">${sb.frames.map((_, k) => `<button type="button" data-k="${k}" aria-label="${k + 1}"></button>`).join("")}</div>
     <div class="story-nav">
       <button type="button" class="action ghost" id="skip">${t("skip")}</button>
       <button type="button" class="action" id="next"></button>
@@ -79,7 +79,7 @@ function showStoryboard(id, after = showMap) {
     stop();
     stopAnim = mountAnimation(app.querySelector("#stage"), f.anim);
     app.querySelector("#storyText").textContent = t(f.text);
-    app.querySelectorAll("#dots span").forEach((d, k) => d.classList.toggle("is-on", k === i));
+    app.querySelectorAll("#dots button").forEach((d, k) => d.classList.toggle("is-on", k === i));
     const last = i === sb.frames.length - 1;
     app.querySelector("#next").textContent = last ? t(sb.next.label) : t("next");
   };
@@ -93,6 +93,7 @@ function showStoryboard(id, after = showMap) {
     location.href = sb.next.href + (lang === "en" ? "" : "?lang=" + lang);
   });
   app.querySelector("#skip").addEventListener("click", () => { finish(); after(); });
+  app.querySelectorAll("#dots button").forEach((d) => d.addEventListener("click", () => { i = Number(d.dataset.k); frame(); }));
   frame();
 }
 

@@ -82,8 +82,9 @@ a { color: var(--accent); }
 .story-text { margin: 0; font-size: 1.2rem; line-height: 1.55; min-height: 3.2em; }
 .story-nav { display: flex; justify-content: center; gap: 12px; align-items: center; }
 .story-dots { display: flex; gap: 6px; justify-content: center; }
-.story-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
-.story-dots span.is-on { background: var(--accent); }
+.story-dots button { width: 14px; height: 14px; padding: 0; border: 0; border-radius: 50%; background: var(--line); cursor: pointer; }
+.story-dots button:hover { background: var(--muted); }
+.story-dots button.is-on { background: var(--accent); }
 
 /* settings modal */
 .modal-back { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, 0.45); z-index: 20; padding: 16px; }

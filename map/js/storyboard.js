@@ -88,7 +88,7 @@ const ANIMS = {
     draw(o, t) {
       // Capture like a landing: the minus comes in on a spiral, speeding up as the radius
       // shrinks, and by the far side of the plus it is in orbit. Then it just circles.
-      const cx = 200, cy = 120, R = 70, start = 345, T = 2.8;
+      const cx = 200, cy = 120, R = 52, start = 345, T = 2.8;
       const SWEEP = 1.5 * Math.PI, POW = 1.8;
       const omega = (SWEEP * POW) / T;                 // angular speed at the end of the spiral
       const ORBIT = (1.3 * 2 * Math.PI) / omega;       // about one and a third laps, then a new entry
