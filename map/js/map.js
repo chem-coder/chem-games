@@ -34,8 +34,9 @@ const LANG_NAMES = { en: "English", ru: "Русский" };
 function showLanguage() {
   stop();
   app.innerHTML = `<div class="entry"><div class="entry-card">
-    <h1>Chem Games · Химигра</h1>
-    <div class="modes">${LANGS.map((l) => `<button type="button" class="mode lang-pick" data-lang="${l}"><h2>${LANG_NAMES[l]}</h2></button>`).join("")}</div>
+    <h1 class="brand-title">Chem Games<span class="tm">™</span></h1>
+    <div class="modes lang-modes">${LANGS.map((l) => `<button type="button" class="mode lang-pick" data-lang="${l}"><h2>${LANG_NAMES[l]}</h2></button>`).join("")}</div>
+    <p class="entry-foot">© 2026 Dalia M.</p>
   </div></div>`;
   app.querySelectorAll(".lang-pick").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 }
@@ -44,7 +45,7 @@ function showLanguage() {
 function showEntry() {
   stop();
   app.innerHTML = `<div class="entry"><div class="entry-card">
-    <h1>${t("entry_h1")}</h1>
+    <h1 class="brand-title">${t("entry_h1")}<span class="tm">™</span></h1>
     <p class="lede">${t("entry_lede")}</p>
     <div class="modes">
       <button type="button" class="mode" data-mode="campaign"><h2>${t("mode_campaign")}</h2><p>${t("mode_campaign_desc")}</p></button>
