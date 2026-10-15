@@ -1,0 +1,13 @@
+Chem-games:
+
+classifying compounds
+naming compounds from structural formulas
+add a free drawing space; not sure whether to keep the "build your reactants" or "chem reaction"  
+Organic chemistry playground
+mechanics - both are necessary;
+be able to throw things away without having to break the bonds (add a "trashcan")
+Instead of hydrogen atoms falling, have them combine into H2 and float away UP
+Add "addition" / "elimination" etc. in the "header"
+Add something to learn/practice REAGENTS
+
+ADD CHARTS
