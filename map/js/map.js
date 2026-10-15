@@ -5,7 +5,7 @@ import { THEMES, getTheme, setTheme, applyTheme } from "../../shared/js/theme.js
 import { loadProgress, saveProgress, seeStoryboard, skillState, levelsDone, pointsOf, emptyProgress } from "../../shared/js/progress.js";
 import { SKILLS, SKILLS_BY_ID, SYMBOLS } from "../data/skills.js";
 import { STORYBOARDS } from "../data/storyboards.js";
-import { mountAnimation } from "./storyboard.js?v=20261016-28";
+import { mountAnimation } from "./storyboard.js?v=20261016-31";
 import en from "../locale/en.js";
 import ru from "../locale/ru.js";
 
@@ -90,7 +90,8 @@ function showStoryboard(id, after = showMap) {
   app.querySelector("#next").addEventListener("click", () => {
     if (i < sb.frames.length - 1) { i++; frame(); return; }
     finish();
-    location.href = sb.next.href + (lang === "en" ? "" : "?lang=" + lang);
+    if (sb.next.href) location.href = sb.next.href + (lang === "en" ? "" : "?lang=" + lang);
+    else after();
   });
   app.querySelector("#skip").addEventListener("click", () => { finish(); after(); });
   app.querySelectorAll("#dots button").forEach((d) => d.addEventListener("click", () => { i = Number(d.dataset.k); frame(); }));

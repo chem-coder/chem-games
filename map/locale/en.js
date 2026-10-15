@@ -39,7 +39,7 @@ export default {
   sb_pm_3: "Like charges repel. Two minuses push each other apart, and so do two pluses.",
   sb_pm_4: "Closer means stronger. Between two pluses, a minus goes to the nearer one.",
   sb_pm_5: "One plus with one minus around it is the simplest atom there is: hydrogen. Every other atom is more pluses in the middle and more minuses around them.",
-  sb_pm_go: "Build an atom →",
+  sb_pm_done: "Done",
   skills: {
     charges: "Pluses and minuses",
     "atomic-structure": "Atomic structure",

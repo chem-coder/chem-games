@@ -10,6 +10,6 @@ export const STORYBOARDS = {
       { text: "sb_pm_4", anim: "closer" },
       { text: "sb_pm_5", anim: "hydrogen" }
     ],
-    next: { label: "sb_pm_go", href: "../atomic-structure/" }
+    next: { label: "sb_pm_done", href: null }   // first visit ends on the map, not in an exercise
   }
 };
