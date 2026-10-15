@@ -2,7 +2,7 @@
 
 **Status:** draft, 2026-10-15; conventions 1–3 decided by Dalia the same day (18-group table, полуметалл, электронная формула). Single source for term choices in Russian localization. Scope for now: the beginner topics first in line — Periodic System, Memorizer, Trend Ladder, the Atomic Structure game — plus shared interface strings. Terms are taken from the Ch 2 / Ch 8 / Ch 9 materials and the games' current copy. Change anything; once a row is approved it is the only translation the games use.
 
-Decided: the games use the **18-group long table**; **полуметалл**; **электронная формула** (and электронно-графическая формула for orbital diagrams). Still open (⚠): оболочка vs слой; семейство vs группа for the Memorizer scopes. Decimal separator in Russian numbers: comma.
+Decided: the games use the **18-group long table**; **полуметалл**; **электронная формула** (and электронно-графическая формула for orbital diagrams). Also decided: **оболочка** for shell; **группа** for the Memorizer's family scopes. Decimal separator in Russian numbers: comma.
 
 ## Periodic table
 
@@ -37,7 +37,7 @@ Decided: the games use the **18-group long table**; **полуметалл**; **
 | metallic character | металлические свойства | "металличность" is colloquial |
 | isoelectronic | изоэлектронный | изоэлектронные частицы |
 | valence electrons | валентные электроны | |
-| outer shell | внешний (наружный) электронный слой / внешняя оболочка | |
+| outer shell | внешняя электронная оболочка | |
 
 ## Atomic structure
 
@@ -57,8 +57,8 @@ Decided: the games use the **18-group long table**; **полуметалл**; **
 | anion | анион | отрицательный ион |
 | charge | заряд | заряд иона |
 | neutral atom | нейтральный атом | |
-| energy level | энергетический уровень | the 7 levels; also "электронный слой", "электронная оболочка" |
-| shell | электронная оболочка / электронный слой | ⚠ choose one for the games |
+| energy level | энергетический уровень | the 7 levels; synonym in copy: оболочка |
+| shell | электронная оболочка | decided |
 | sublevel | подуровень | s, p, d, f |
 | orbital | орбиталь | |
 | electron configuration | электронная формула | decided; e.g. 1s²2s²2p⁶ |
@@ -92,7 +92,7 @@ Decided: the games use the **18-group long table**; **полуметалл**; **
 | left (3 left) | осталось 3 | |
 | Fill the table | Заполнить таблицу | Memorizer mode |
 | Symbol ↔ Name quiz | Символ ↔ название | |
-| By period / By family | По периодам / По семействам | "семейство" vs "группа" — ⚠ decide |
+| By period / By family | По периодам / По группам | decided: группа |
 | Whole table | Вся таблица | |
 | Rows 1–3 | Периоды 1–3 | use "период", not "ряд" |
 | Order by increasing … | Расположите в порядке возрастания … | |
