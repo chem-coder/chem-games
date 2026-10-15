@@ -88,6 +88,7 @@ export const GAME_BY_SUB = {
   "classical names": "nameBuilder",
   "acid names": "nameBuilder",
   "salt formula validity": "nameBuilder",
+  "oxyacid classification": "nameBuilder",
   "lithium compound formulas": "nameBuilder",
   "criss-cross": "ionTrainer",
 

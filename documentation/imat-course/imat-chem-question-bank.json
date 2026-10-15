@@ -1,9 +1,9 @@
 {
- "title": "IMAT Chemistry Question Bank 2011-2024",
+ "title": "IMAT Chemistry Question Bank 2011-2026",
  "built": "2026-08-10",
  "source": "_teaching-materials/IMAT Past Exams by AcadIMAT/",
- "total_questions": 184,
- "note": "Official past-exam questions: for private teaching/analysis only, NOT for verbatim inclusion in shipped/paid products. 2025 added 2026-08-14: transcribed from the AcadIMAT shuffled paper; answers independently solved, then verified 15/15 against the official key.",
+ "total_questions": 199,
+ "note": "Official past-exam questions: for private teaching/analysis only, NOT for verbatim inclusion in shipped/paid products. 2025 added 2026-08-14: transcribed from the AcadIMAT shuffled paper; answers independently solved, then verified 15/15 against the official key. 2026 added 2026-10-15: transcribed from the original unshuffled official paper (A.A. 2026/2027), in which the correct answer is highlighted and always printed as option A; option order kept verbatim here (answer = A throughout), so any drill built from this year MUST reshuffle options. All 15 answers independently solved blind, then confirmed 15/15 against the highlights.",
  "years": [
   {
    "year": 2011,
@@ -109,6 +109,13 @@
    "source_key": "IMAT Past Exams by AcadIMAT/2025 IMAT Shuffled Answer Key - AcadIMAT.pdf",
    "count": 15,
    "notes": "Chemistry section is Q33-47 (15 questions) in the AcadIMAT shuffled paper, transcribed from page images (pages 7-9). Answers were first derived by independent solving, then verified against the official shuffled key (added same day): 15/15 agree."
+  },
+  {
+   "year": 2026,
+   "source_exam": "2026 IMAT Exam (Original Unshuffled).pdf",
+   "source_key": "same file - correct answer highlighted (and printed first) in the original publication",
+   "count": 15,
+   "notes": "Chemistry section is Q33-47 (15 questions), PDF pages 7-9. Text-extractable; no figures. First thermochemistry question ever tagged (Q47). AcadIMAT shuffled version not yet in the folder."
   }
  ],
  "questions": [
@@ -2884,6 +2891,246 @@
     "C": "They dissolve well in hexane",
     "D": "They are one of the main constituents of carbohydrates",
     "E": "They have no acid/base activity"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 33,
+   "topic": "atomic-structure",
+   "subtopic": "ion electron configuration",
+   "answer": "A",
+   "text": "Which of the following statements about the Mg^2+ ion is correct?",
+   "options": {
+    "A": "The ion has 8 electrons in its outermost electron shell",
+    "B": "The Mg^2+ ion has a larger radius than the Mg atom",
+    "C": "The ion has two more electrons than the neutral atom",
+    "D": "The two chemical species (the ion and the neutral atom) have the same number of protons, electrons, and neutrons",
+    "E": "None of the other statements is correct"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 34,
+   "topic": "redox-electrochem",
+   "subtopic": "balancing redox equation",
+   "answer": "A",
+   "text": "Balance the following reaction equation: Cu + HNO3 → Cu(NO3)2 + NO + H2O",
+   "options": {
+    "A": "3, 8, 3, 2, 4",
+    "B": "2, 6, 3, 2, 4",
+    "C": "3, 8, 3, 2, 6",
+    "D": "3, 8, 3, 1, 4",
+    "E": "None of the other options is correct"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 35,
+   "topic": "kinetics",
+   "subtopic": "rate law determination",
+   "answer": "A",
+   "text": "The rate law for the reaction A + B → C is:",
+   "options": {
+    "A": "To be determined experimentally",
+    "B": "v = k [A] [B]",
+    "C": "v = k [C]",
+    "D": "v = k [A] [B] / [C]",
+    "E": "v = k [C] / ([A] [B])"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 36,
+   "topic": "atomic-structure",
+   "subtopic": "ion electron count",
+   "answer": "A",
+   "text": "How many valence electrons does the Cl^- anion have?",
+   "options": {
+    "A": "8",
+    "B": "7",
+    "C": "6",
+    "D": "17",
+    "E": "35"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 37,
+   "topic": "acids-bases",
+   "subtopic": "salt hydrolysis",
+   "answer": "A",
+   "text": "When sodium bromide is dissolved in water, the result is:",
+   "options": {
+    "A": "A neutral aqueous solution",
+    "B": "A weakly acidic aqueous solution",
+    "C": "A weakly basic aqueous solution",
+    "D": "A strongly acidic aqueous solution",
+    "E": "A strongly basic aqueous solution"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 38,
+   "topic": "acids-bases",
+   "subtopic": "salt hydrolysis",
+   "answer": "A",
+   "text": "When sodium acetate is dissolved in water, the result is:",
+   "options": {
+    "A": "A basic aqueous solution",
+    "B": "An acidic aqueous solution",
+    "C": "A neutral aqueous solution",
+    "D": "An alcoholic solution",
+    "E": "No solution is formed because it does not dissolve"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 39,
+   "topic": "redox-electrochem",
+   "subtopic": "balancing redox equation",
+   "answer": "A",
+   "text": "Balance the following redox equation: PbBr2 + FeBr3 → PbBr4 + FeBr2",
+   "options": {
+    "A": "PbBr2 + 2 FeBr3 → PbBr4 + 2 FeBr2",
+    "B": "2 PbBr2 + FeBr3 → 2 PbBr4 + FeBr2",
+    "C": "PbBr2 + 3 FeBr3 → PbBr4 + 3 FeBr2",
+    "D": "3 PbBr2 + FeBr3 → 3 PbBr4 + FeBr2",
+    "E": "2 PbBr2 + 3 FeBr3 → 2 PbBr4 + 3 FeBr2"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 40,
+   "topic": "redox-electrochem",
+   "subtopic": "disproportionation balancing",
+   "answer": "A",
+   "text": "Balance the following disproportionation reaction: KIO2 ⇌ KI + KIO3",
+   "options": {
+    "A": "3 KIO2 ⇌ KI + 2 KIO3",
+    "B": "3 KIO2 ⇌ 2 KI + KIO3",
+    "C": "4 KIO2 ⇌ 3 KI + KIO3",
+    "D": "4 KIO2 ⇌ 2 KI + KIO3",
+    "E": "5 KIO2 ⇌ 3 KI + 2 KIO3"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 41,
+   "topic": "inorganic-nomenclature",
+   "subtopic": "oxyacid classification",
+   "answer": "A",
+   "text": "HClO is:",
+   "options": {
+    "A": "An oxyacid",
+    "B": "An acidic oxide",
+    "C": "A hydrohalic acid",
+    "D": "An acidic hydroxide",
+    "E": "An acid anhydride"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 42,
+   "topic": "chemical-bond",
+   "subtopic": "intermolecular forces boiling point",
+   "answer": "A",
+   "text": "Substance A has a higher boiling point than Substance B if:",
+   "options": {
+    "A": "The intermolecular forces in A are stronger than those in B",
+    "B": "The intermolecular forces in A are weaker than those in B",
+    "C": "The intramolecular forces in A are stronger than those in B",
+    "D": "The intramolecular forces in A are weaker than those in B",
+    "E": "The intramolecular forces in A are stronger than those in B, but the intermolecular forces in A are weaker than those in B"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 43,
+   "topic": "organic-nomenclature-groups",
+   "subtopic": "functional group identification",
+   "answer": "A",
+   "text": "Pentanones are:",
+   "options": {
+    "A": "Ketones",
+    "B": "Lactones",
+    "C": "Alcohols",
+    "D": "Hydroxyketones",
+    "E": "Carboxylic acids"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 44,
+   "topic": "organic-nomenclature-groups",
+   "subtopic": "hydrocarbon class identification",
+   "answer": "A",
+   "text": "Ethene is:",
+   "options": {
+    "A": "An alkene",
+    "B": "An alkyne",
+    "C": "A diene",
+    "D": "An alkenyne",
+    "E": "A non-existent molecule"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 45,
+   "topic": "organic-structure",
+   "subtopic": "structural isomer identification",
+   "answer": "A",
+   "text": "C3H6O can be:",
+   "options": {
+    "A": "An alcohol, an aldehyde, or a ketone",
+    "B": "An alcohol or an aldehyde, but not a ketone",
+    "C": "An alcohol or a ketone, but not an aldehyde",
+    "D": "An aldehyde or a ketone, but not an alcohol",
+    "E": "An alcohol, but neither an aldehyde nor a ketone"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 46,
+   "topic": "gas-laws",
+   "subtopic": "pressure-volume relationship",
+   "answer": "A",
+   "text": "For an ideal gas undergoing an isothermal process, what happens as the volume increases?",
+   "options": {
+    "A": "The pressure decreases in inverse proportion",
+    "B": "The pressure decreases in direct proportion",
+    "C": "The pressure increases in direct proportion",
+    "D": "The temperature increases",
+    "E": "The pressure remains unchanged"
+   },
+   "key_status": "verified"
+  },
+  {
+   "year": 2026,
+   "number": 47,
+   "topic": "thermochemistry",
+   "subtopic": "exothermic energy change",
+   "answer": "A",
+   "text": "In an exothermic reaction:",
+   "options": {
+    "A": "The products have lower chemical potential energy than the reactants",
+    "B": "The reactants have lower chemical potential energy than the products",
+    "C": "The products have the same chemical potential energy as the reactants",
+    "D": "Heat is absorbed from the surroundings",
+    "E": "The reaction rate is always very high"
    },
    "key_status": "verified"
   }

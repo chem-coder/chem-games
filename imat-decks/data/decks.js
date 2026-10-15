@@ -1,6 +1,6 @@
 // IMAT Decks — generated from documentation/imat-course/imat-chem-question-bank.json
-// (184 exam questions, 2011–2025, official keys) plus 12 authored
-// practice questions marked "Extra practice". Total: 196. Private study material
+// (199 exam questions, 2011–2026, official keys; the 2026 cards' option order is reshuffled from the answer-first original paper) plus 12 authored
+// practice questions marked "Extra practice". Total: 211. Private study material
 // for Malcolm's prep — see the rights note in the topic-frequency report.
 // Regenerate rather than hand-editing exam questions; practice items may be edited freely.
 export const DECKS = [
@@ -327,6 +327,32 @@ export const DECKS = [
     "answer": "D",
     "src": "IMAT 2025 · Q46",
     "sub": "orbitals and spin"
+   },
+   {
+    "text": "Which of the following statements about the Mg^2+ ion is correct?",
+    "options": {
+     "A": "None of the other statements is correct",
+     "B": "The ion has 8 electrons in its outermost electron shell",
+     "C": "The ion has two more electrons than the neutral atom",
+     "D": "The two chemical species (the ion and the neutral atom) have the same number of protons, electrons, and neutrons",
+     "E": "The Mg^2+ ion has a larger radius than the Mg atom"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q33",
+    "sub": "ion electron configuration"
+   },
+   {
+    "text": "How many valence electrons does the Cl^- anion have?",
+    "options": {
+     "A": "17",
+     "B": "35",
+     "C": "7",
+     "D": "6",
+     "E": "8"
+    },
+    "answer": "E",
+    "src": "IMAT 2026 · Q36",
+    "sub": "ion electron count"
    }
   ]
  },
@@ -822,6 +848,19 @@ export const DECKS = [
     "answer": "C",
     "src": "IMAT 2025 · Q38",
     "sub": "bond polarity"
+   },
+   {
+    "text": "Substance A has a higher boiling point than Substance B if:",
+    "options": {
+     "A": "The intermolecular forces in A are weaker than those in B",
+     "B": "The intermolecular forces in A are stronger than those in B",
+     "C": "The intramolecular forces in A are stronger than those in B, but the intermolecular forces in A are weaker than those in B",
+     "D": "The intramolecular forces in A are weaker than those in B",
+     "E": "The intramolecular forces in A are stronger than those in B"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q42",
+    "sub": "intermolecular forces boiling point"
    }
   ]
  },
@@ -907,6 +946,19 @@ export const DECKS = [
     "answer": "A",
     "src": "IMAT 2025 · Q45",
     "sub": "classical names"
+   },
+   {
+    "text": "HClO is:",
+    "options": {
+     "A": "A hydrohalic acid",
+     "B": "An acidic oxide",
+     "C": "An acidic hydroxide",
+     "D": "An oxyacid",
+     "E": "An acid anhydride"
+    },
+    "answer": "D",
+    "src": "IMAT 2026 · Q41",
+    "sub": "oxyacid classification"
    },
    {
     "text": "The correct formula of aluminium sulfate is:",
@@ -1502,6 +1554,19 @@ export const DECKS = [
     "sub": "ideal gas law"
    },
    {
+    "text": "For an ideal gas undergoing an isothermal process, what happens as the volume increases?",
+    "options": {
+     "A": "The pressure increases in direct proportion",
+     "B": "The pressure decreases in inverse proportion",
+     "C": "The temperature increases",
+     "D": "The pressure decreases in direct proportion",
+     "E": "The pressure remains unchanged"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q46",
+    "sub": "pressure-volume relationship"
+   },
+   {
     "text": "A gas occupies 2.0 L at 300 K and 1.0 atm. At 600 K and 2.0 atm its volume is:",
     "options": {
      "A": "1.0 L",
@@ -1956,6 +2021,32 @@ export const DECKS = [
     "answer": "B",
     "src": "IMAT 2025 · Q40",
     "sub": "salt solutions"
+   },
+   {
+    "text": "When sodium bromide is dissolved in water, the result is:",
+    "options": {
+     "A": "A weakly acidic aqueous solution",
+     "B": "A strongly basic aqueous solution",
+     "C": "A neutral aqueous solution",
+     "D": "A weakly basic aqueous solution",
+     "E": "A strongly acidic aqueous solution"
+    },
+    "answer": "C",
+    "src": "IMAT 2026 · Q37",
+    "sub": "salt hydrolysis"
+   },
+   {
+    "text": "When sodium acetate is dissolved in water, the result is:",
+    "options": {
+     "A": "An alcoholic solution",
+     "B": "A basic aqueous solution",
+     "C": "A neutral aqueous solution",
+     "D": "No solution is formed because it does not dissolve",
+     "E": "An acidic aqueous solution"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q38",
+    "sub": "salt hydrolysis"
    }
   ]
  },
@@ -2004,6 +2095,19 @@ export const DECKS = [
     "sub": "activation energy"
    },
    {
+    "text": "The rate law for the reaction A + B → C is:",
+    "options": {
+     "A": "v = k [A] [B]",
+     "B": "v = k [A] [B] / [C]",
+     "C": "To be determined experimentally",
+     "D": "v = k [C]",
+     "E": "v = k [C] / ([A] [B])"
+    },
+    "answer": "C",
+    "src": "IMAT 2026 · Q35",
+    "sub": "rate law determination"
+   },
+   {
     "text": "A catalyst increases the rate of a chemical reaction because it:",
     "options": {
      "A": "increases the temperature of the system",
@@ -2041,6 +2145,26 @@ export const DECKS = [
     "answer": "D",
     "src": "Extra practice",
     "sub": "rate factors"
+   }
+  ]
+ },
+ {
+  "id": "thermochemistry",
+  "name": "Thermochemistry",
+  "chapter": "Energy & Change",
+  "questions": [
+   {
+    "text": "In an exothermic reaction:",
+    "options": {
+     "A": "Heat is absorbed from the surroundings",
+     "B": "The products have lower chemical potential energy than the reactants",
+     "C": "The products have the same chemical potential energy as the reactants",
+     "D": "The reactants have lower chemical potential energy than the products",
+     "E": "The reaction rate is always very high"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q47",
+    "sub": "exothermic energy change"
    }
   ]
  },
@@ -2269,6 +2393,45 @@ export const DECKS = [
     "answer": "C",
     "src": "IMAT 2025 · Q35",
     "sub": "oxidation number concept"
+   },
+   {
+    "text": "Balance the following reaction equation: Cu + HNO3 → Cu(NO3)2 + NO + H2O",
+    "options": {
+     "A": "2, 6, 3, 2, 4",
+     "B": "3, 8, 3, 2, 6",
+     "C": "3, 8, 3, 1, 4",
+     "D": "3, 8, 3, 2, 4",
+     "E": "None of the other options is correct"
+    },
+    "answer": "D",
+    "src": "IMAT 2026 · Q34",
+    "sub": "balancing redox equation"
+   },
+   {
+    "text": "Balance the following redox equation: PbBr2 + FeBr3 → PbBr4 + FeBr2",
+    "options": {
+     "A": "2 PbBr2 + FeBr3 → 2 PbBr4 + FeBr2",
+     "B": "3 PbBr2 + FeBr3 → 3 PbBr4 + FeBr2",
+     "C": "PbBr2 + 3 FeBr3 → PbBr4 + 3 FeBr2",
+     "D": "PbBr2 + 2 FeBr3 → PbBr4 + 2 FeBr2",
+     "E": "2 PbBr2 + 3 FeBr3 → 2 PbBr4 + 3 FeBr2"
+    },
+    "answer": "D",
+    "src": "IMAT 2026 · Q39",
+    "sub": "balancing redox equation"
+   },
+   {
+    "text": "Balance the following disproportionation reaction: KIO2 ⇌ KI + KIO3",
+    "options": {
+     "A": "4 KIO2 ⇌ 3 KI + KIO3",
+     "B": "3 KIO2 ⇌ 2 KI + KIO3",
+     "C": "5 KIO2 ⇌ 3 KI + 2 KIO3",
+     "D": "4 KIO2 ⇌ 2 KI + KIO3",
+     "E": "3 KIO2 ⇌ KI + 2 KIO3"
+    },
+    "answer": "E",
+    "src": "IMAT 2026 · Q40",
+    "sub": "disproportionation balancing"
    }
   ]
  },
@@ -2458,6 +2621,19 @@ export const DECKS = [
     "answer": "A",
     "src": "IMAT 2025 · Q47",
     "sub": "biomolecules"
+   },
+   {
+    "text": "C3H6O can be:",
+    "options": {
+     "A": "An alcohol, but neither an aldehyde nor a ketone",
+     "B": "An alcohol, an aldehyde, or a ketone",
+     "C": "An alcohol or an aldehyde, but not a ketone",
+     "D": "An aldehyde or a ketone, but not an alcohol",
+     "E": "An alcohol or a ketone, but not an aldehyde"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q45",
+    "sub": "structural isomer identification"
    }
   ]
  },
@@ -2569,6 +2745,32 @@ export const DECKS = [
     "answer": "B",
     "src": "IMAT 2024 · Q42",
     "sub": "carbonyl group recognition"
+   },
+   {
+    "text": "Pentanones are:",
+    "options": {
+     "A": "Carboxylic acids",
+     "B": "Lactones",
+     "C": "Ketones",
+     "D": "Alcohols",
+     "E": "Hydroxyketones"
+    },
+    "answer": "C",
+    "src": "IMAT 2026 · Q43",
+    "sub": "functional group identification"
+   },
+   {
+    "text": "Ethene is:",
+    "options": {
+     "A": "A diene",
+     "B": "An alkene",
+     "C": "A non-existent molecule",
+     "D": "An alkenyne",
+     "E": "An alkyne"
+    },
+    "answer": "B",
+    "src": "IMAT 2026 · Q44",
+    "sub": "hydrocarbon class identification"
    }
   ]
  },
