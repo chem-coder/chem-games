@@ -5,7 +5,7 @@ export default {
   pick_skill: "Pick a skill.",
   mode_campaign: "Campaign",
   mode_campaign_desc: "Learn chemistry from the beginning",
-  mode_free: "Master by skill",
+  mode_free: "By topic",
   mode_free_desc: "Study by topic",
   map_title: "Skills",
   settings: "Settings",

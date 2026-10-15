@@ -5,7 +5,7 @@ export default {
   pick_skill: "Выберите навык.",
   mode_campaign: "Кампания",
   mode_campaign_desc: "Изучать химию с самого начала",
-  mode_free: "По навыкам",
+  mode_free: "По темам",
   mode_free_desc: "Заниматься по темам",
   map_title: "Навыки",
   settings: "Настройки",
