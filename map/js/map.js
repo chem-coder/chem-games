@@ -46,13 +46,10 @@ function showEntry() {
   stop();
   app.innerHTML = `<div class="entry"><div class="entry-card">
     <h1 class="brand-title">${t("entry_h1")}</h1>
-    <p class="by-line">${t("by_author")}</p>
-    <p class="lede">${t("entry_lede")}</p>
-    <div class="modes">
+    <div class="modes lang-modes">
       <button type="button" class="mode" data-mode="campaign"><h2>${t("mode_campaign")}</h2><p>${t("mode_campaign_desc")}</p></button>
       <button type="button" class="mode" data-mode="free"><h2>${t("mode_free")}</h2><p>${t("mode_free_desc")}</p></button>
     </div>
-    <p class="entry-foot"><a href="../">${t("library")}</a></p>
   </div></div>`;
   app.querySelectorAll(".mode").forEach((b) => b.addEventListener("click", () => {
     progress.mode = b.dataset.mode;
@@ -135,7 +132,7 @@ function showMap() {
 
 function renderPanel() {
   const panel = app.querySelector("#panel");
-  if (!selected) { panel.innerHTML = `<p class="empty">${t("entry_lede")}</p>`; return; }
+  if (!selected) { panel.innerHTML = `<p class="empty">${t("pick_skill")}</p>`; return; }
   const s = SKILLS_BY_ID[selected];
   const st = skillState(progress, s, SKILLS_BY_ID);
   const done = levelsDone(progress, s.id);
