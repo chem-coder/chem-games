@@ -109,9 +109,16 @@ const ANIMS = {
       const far = 150;
       const [a, b, h1, h2] = minuses ? [o.a, o.b, o.c, o.d] : [o.c, o.d, o.a, o.b];
       let d; // half-distance from the centre
-      if (c < 1.9) d = far - (far - gap) * easeOut(c / 1.9);                 // drift in, braking as the push grows
-      else if (c < 3.6) d = gap + (far - gap) * easeOut((c - 1.9) / 1.7);     // shoved out, then coasting
-      else d = far;
+      const span = far - gap, T_IN = 2.1, T_OUT = 1.5;
+      if (c < T_IN) {
+        // steady approach for most of the way; the brake only comes in the last stretch,
+        // where the push finally has force
+        const u = c / T_IN;
+        const f = u < 0.72 ? (u / 0.72) * 0.86 : 0.86 + 0.14 * easeOut((u - 0.72) / 0.28);
+        d = far - span * f;
+      } else if (c < T_IN + T_OUT) {
+        d = gap + span * easeOut((c - T_IN) / T_OUT);   // shoved out hard, slowing as they separate
+      } else d = far;
       place(a, 240 - d, 120, t, 0);
       place(b, 240 + d, 120, t, 1);
       place(h1, -100, -100, t, 0, 0); place(h2, -100, -100, t, 0, 0);
