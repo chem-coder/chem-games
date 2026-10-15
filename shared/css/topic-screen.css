@@ -9,7 +9,7 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--bg);
-  font-family: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-body);
 }
 
 .app-shell {
@@ -25,7 +25,7 @@ body {
 .eyebrow {
   margin: 14px 0 6px;
   color: var(--accent-dark);
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-display);
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -34,7 +34,7 @@ body {
 
 h1 {
   margin: 0 0 8px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1.05;
 }
@@ -52,7 +52,7 @@ h1 {
 .level-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .level-tab {
   padding: 8px 14px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.9rem;
   color: var(--accent-dark);
@@ -63,12 +63,12 @@ h1 {
 }
 .level-tab.is-active { color: #fff; background: var(--accent); border-color: var(--accent); }
 
-.concept h2 { margin: 0 0 10px; font-family: "Outfit", sans-serif; font-size: 1.25rem; }
+.concept h2 { margin: 0 0 10px; font-family: var(--font-display); font-size: 1.25rem; }
 .concept p { margin: 0 0 10px; line-height: 1.55; }
 
 .law-formula {
   margin: 14px 0 6px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
@@ -84,7 +84,7 @@ a.action {
   align-items: center;
   min-height: 44px;
   padding: 0 20px;
-  font-family: "Outfit", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   border-radius: var(--radius-sm, 10px);
   text-decoration: none;

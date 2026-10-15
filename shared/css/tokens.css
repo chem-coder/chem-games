@@ -52,3 +52,11 @@
   --radius-sm: 11px;
   --shadow: 0 16px 40px rgba(74, 58, 30, 0.13);
 }
+
+/* Russian pages: Outfit and Lexend have no Cyrillic, so pages with lang="ru" switch to
+   Onest (display) and Golos Text (body). Both are loaded by the Google Fonts <link> on
+   every Russian-ready page, next to Outfit and Lexend. */
+:root:lang(ru) {
+  --font-display: "Onest", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body: "Golos Text", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

@@ -2,7 +2,7 @@
 * { box-sizing: border-box; }
 body {
   min-height: 100vh; margin: 0; background: var(--bg); color: var(--ink);
-  font-family: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-body);
 }
 sup { font-size: 0.72em; line-height: 0; vertical-align: 0.45em; }
 sub { font-size: 0.6em; line-height: 0; vertical-align: -0.25em; }
