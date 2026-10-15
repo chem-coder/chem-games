@@ -6,7 +6,7 @@ import { detectLang, makeT, applyStatic, elementName } from "../../shared/js/i18
 import { ELEMENTS } from "../../periodic-table/memorizer/data/pt-data.js";
 import { NAMES_RU } from "../../periodic-table/memorizer/data/pt-names.ru.js";
 import { createAtomRenderer } from "./renderer.js";
-import { SHELLS } from "./model.js";
+import { SHELLS, chargeLabel } from "./model.js";
 import { judge, deal } from "./judge.js";
 import { TIERS, DECK_SIZE } from "../data/rounds.js";
 import en from "../locale/en.js";
@@ -18,6 +18,8 @@ document.documentElement.lang = lang;
 document.title = t("title");
 applyStatic(t);
 
+// Tier-specific copy: "build-ion:intro_h2" wins over "intro_h2" when the tier defines it.
+const tk = (k, vars) => { const key = `${TIERS[state.tier].id}:${k}`; return key in en ? t(key, vars) : t(k, vars); };
 const byZ = Object.fromEntries(ELEMENTS.map((e) => [e.z, e]));
 // Element names are common nouns: lowercase mid-sentence in every language.
 const nameOf = (sp) => elementName(byZ[sp.z], lang, NAMES_RU).toLowerCase();
@@ -34,15 +36,15 @@ function tabsHtml() {
 function showIntro() {
   root.innerHTML = `${tabsHtml()}
     <div class="intro-card">
-      <h2>${t("intro_h2")}</h2>
-      <p class="intro-lede">${t("intro_p1")}</p>
+      <h2>${tk("intro_h2")}</h2>
+      <p class="intro-lede">${tk("intro_p1")}</p>
       <ol class="steps">
-        <li><span class="step-num">1</span><span class="step-text">${t("intro_s1")}</span></li>
-        <li><span class="step-num">2</span><span class="step-text">${t("intro_s2")}</span></li>
-        <li><span class="step-num">3</span><span class="step-text">${t("intro_s3")}</span></li>
-        <li><span class="step-num">4</span><span class="step-text">${t("intro_s4")}</span></li>
+        <li><span class="step-num">1</span><span class="step-text">${tk("intro_s1")}</span></li>
+        <li><span class="step-num">2</span><span class="step-text">${tk("intro_s2")}</span></li>
+        <li><span class="step-num">3</span><span class="step-text">${tk("intro_s3")}</span></li>
+        <li><span class="step-num">4</span><span class="step-text">${tk("intro_s4")}</span></li>
       </ol>
-      <div class="controls"><button type="button" class="action primary" id="start">${t("start", { n: DECK_SIZE })}</button></div>
+      <div class="controls"><button type="button" class="action primary" id="start">${tk("start", { n: DECK_SIZE })}</button></div>
     </div>`;
   wireTabs();
   root.querySelector("#start").addEventListener("click", startDeck);
@@ -55,7 +57,8 @@ function startDeck() {
 }
 
 function nuclideHtml(sp) {
-  return `<span class="nuclide"><span class="nuclide-nums"><sup>${sp.mass}</sup><sub>${sp.z}</sub></span><span class="nuclide-sym">${byZ[sp.z].symbol}</span></span>`;
+  const charge = sp.charge ? `<sup class="nuclide-charge">${chargeLabel(sp.charge)}</sup>` : "";
+  return `<span class="nuclide"><span class="nuclide-nums"><sup>${sp.mass}</sup><sub>${sp.z}</sub></span><span class="nuclide-sym">${byZ[sp.z].symbol}</span>${charge}</span>`;
 }
 
 function showRound() {
@@ -64,8 +67,8 @@ function showRound() {
   root.innerHTML = `${tabsHtml()}
     <p class="score">${t("score", { solved: state.solved, total: DECK_SIZE, left: DECK_SIZE - state.index })}</p>
     <div class="prompt">
-      <p class="prompt-line">${t("build_prompt", { name: nameOf(sp) })}</p>
-      <p class="prompt-nums">${nuclideHtml(sp)} <span class="prompt-sep">·</span> <span>${t("atomic_number")} <b>${sp.z}</b></span> <span class="prompt-sep">·</span> <span>${t("mass_number")} <b>${sp.mass}</b></span></p>
+      <p class="prompt-line">${tk("build_prompt", { name: nameOf(sp) })}</p>
+      <p class="prompt-nums">${nuclideHtml(sp)} <span class="prompt-sep">·</span> <span>${t("atomic_number")} <b>${sp.z}</b></span> <span class="prompt-sep">·</span> <span>${t("mass_number")} <b>${sp.mass}</b></span>${sp.charge ? ` <span class="prompt-sep">·</span> <span>${t("charge")} <b>${Math.abs(sp.charge)}${sp.charge > 0 ? "+" : "−"}</b></span>` : ""}</p>
     </div>
     <div class="board">
       <div class="stage"></div>
@@ -110,7 +113,7 @@ function showHint() {
   const box = root.querySelector("#hintBox");
   const li = document.createElement("div");
   li.className = "hint";
-  li.innerHTML = `<span class="step-num">${state.hints + 1}</span><span class="step-text">${t(HINTS[state.hints])}</span>`;
+  li.innerHTML = `<span class="step-num">${state.hints + 1}</span><span class="step-text">${tk(HINTS[state.hints])}</span>`;
   box.appendChild(li);
   state.hints++;
   if (state.hints >= HINTS.length) root.querySelector("#hint").disabled = true;
@@ -125,13 +128,13 @@ function check(sp) {
     const pr = v.problems[0];
     const key = pr.part === "shell" ? `wrong_shell_${pr.dir}` : `wrong_${pr.part}_${pr.dir}`;
     fb.className = "feedback is-wrong";
-    fb.textContent = t(key, { n: pr.shell });
+    fb.textContent = tk(key, { n: pr.shell });
     return;
   }
   state.checked = true;
   state.solved++;
   fb.className = "feedback is-right";
-  fb.textContent = state.hints ? t("ok_hints") : t("ok_clean");
+  fb.textContent = state.hints ? tk("ok_hints") : tk("ok_clean");
   state.renderer.reveal();
   const controls = root.querySelector(".controls");
   controls.innerHTML = `<button type="button" class="action primary" id="next">${state.index + 1 < DECK_SIZE ? t("next") : t("finish")}</button>`;
@@ -145,9 +148,10 @@ function showDone() {
   root.innerHTML = `${tabsHtml()}
     <div class="intro-card">
       <h2>${t("done_h2", { tier: t("tier_" + TIERS[state.tier].id) })}</h2>
-      <p class="done-line">${t("done_line", { solved: state.solved, total: DECK_SIZE })}</p>
+      <p class="done-line">${tk("done_line", { solved: state.solved, total: DECK_SIZE })}</p>
       <div class="controls two-up done-nav">
-        <button type="button" class="action primary" id="again">${t("replay")}</button>
+        ${TIERS[state.tier + 1] && !TIERS[state.tier + 1].soon ? `<button type="button" class="action primary" id="nextTier">${t("next_tier", { tier: t("tier_" + TIERS[state.tier + 1].id) })}</button>` : ""}
+        <button type="button" class="action ${TIERS[state.tier + 1] && !TIERS[state.tier + 1].soon ? "ghost" : "primary"}" id="again">${t("replay")}</button>
         <button type="button" class="action ghost" id="revisit">${t("revisit")}</button>
       </div>
       <p class="home-line"><a href="../periodic-table/">${t("to_topic")}</a> · <a href="../">${t("to_home")}</a></p>
@@ -155,6 +159,7 @@ function showDone() {
   wireTabs();
   root.querySelector("#again").addEventListener("click", startDeck);
   root.querySelector("#revisit").addEventListener("click", showIntro);
+  root.querySelector("#nextTier")?.addEventListener("click", () => { state.tier++; showIntro(); });
 }
 
 function wireTabs() {

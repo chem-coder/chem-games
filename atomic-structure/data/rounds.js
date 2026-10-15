@@ -10,9 +10,17 @@ export const ATOMS = [
   { z: 17, mass: 35, charge: 0 }, { z: 18, mass: 40, charge: 0 }, { z: 19, mass: 39, charge: 0 }, { z: 20, mass: 40, charge: 0 }
 ];
 
+// Common monoatomic ions of the first 20 elements, both signs.
+export const IONS = [
+  { z: 3, mass: 7, charge: 1 }, { z: 4, mass: 9, charge: 2 }, { z: 7, mass: 14, charge: -3 }, { z: 8, mass: 16, charge: -2 },
+  { z: 9, mass: 19, charge: -1 }, { z: 11, mass: 23, charge: 1 }, { z: 12, mass: 24, charge: 2 }, { z: 13, mass: 27, charge: 3 },
+  { z: 15, mass: 31, charge: -3 }, { z: 16, mass: 32, charge: -2 }, { z: 17, mass: 35, charge: -1 }, { z: 19, mass: 39, charge: 1 },
+  { z: 20, mass: 40, charge: 2 }, { z: 1, mass: 1, charge: -1 }
+];
+
 export const TIERS = [
   { id: "build-atom", pool: ATOMS },
-  { id: "build-ion", pool: [], soon: true },
+  { id: "build-ion", pool: IONS },
   { id: "read-atom", pool: [], soon: true },
   { id: "read-ion", pool: [], soon: true },
   { id: "atom-or-ion", pool: [], soon: true },
