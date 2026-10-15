@@ -331,26 +331,26 @@ export const DECKS = [
    {
     "text": "Which of the following statements about the Mg^2+ ion is correct?",
     "options": {
-     "A": "None of the other statements is correct",
-     "B": "The ion has 8 electrons in its outermost electron shell",
-     "C": "The ion has two more electrons than the neutral atom",
+     "A": "The ion has 8 electrons in its outermost electron shell",
+     "B": "The ion has two more electrons than the neutral atom",
+     "C": "The Mg^2+ ion has a larger radius than the Mg atom",
      "D": "The two chemical species (the ion and the neutral atom) have the same number of protons, electrons, and neutrons",
-     "E": "The Mg^2+ ion has a larger radius than the Mg atom"
+     "E": "None of the other statements is correct"
     },
-    "answer": "B",
+    "answer": "A",
     "src": "IMAT 2026 · Q33",
     "sub": "ion electron configuration"
    },
    {
     "text": "How many valence electrons does the Cl^- anion have?",
     "options": {
-     "A": "17",
-     "B": "35",
-     "C": "7",
+     "A": "35",
+     "B": "7",
+     "C": "8",
      "D": "6",
-     "E": "8"
+     "E": "17"
     },
-    "answer": "E",
+    "answer": "C",
     "src": "IMAT 2026 · Q36",
     "sub": "ion electron count"
    }
@@ -852,13 +852,13 @@ export const DECKS = [
    {
     "text": "Substance A has a higher boiling point than Substance B if:",
     "options": {
-     "A": "The intermolecular forces in A are weaker than those in B",
-     "B": "The intermolecular forces in A are stronger than those in B",
-     "C": "The intramolecular forces in A are stronger than those in B, but the intermolecular forces in A are weaker than those in B",
-     "D": "The intramolecular forces in A are weaker than those in B",
-     "E": "The intramolecular forces in A are stronger than those in B"
+     "A": "The intramolecular forces in A are stronger than those in B, but the intermolecular forces in A are weaker than those in B",
+     "B": "The intermolecular forces in A are weaker than those in B",
+     "C": "The intramolecular forces in A are weaker than those in B",
+     "D": "The intramolecular forces in A are stronger than those in B",
+     "E": "The intermolecular forces in A are stronger than those in B"
     },
-    "answer": "B",
+    "answer": "E",
     "src": "IMAT 2026 · Q42",
     "sub": "intermolecular forces boiling point"
    }
@@ -950,9 +950,9 @@ export const DECKS = [
    {
     "text": "HClO is:",
     "options": {
-     "A": "A hydrohalic acid",
+     "A": "An acidic hydroxide",
      "B": "An acidic oxide",
-     "C": "An acidic hydroxide",
+     "C": "A hydrohalic acid",
      "D": "An oxyacid",
      "E": "An acid anhydride"
     },
@@ -1556,9 +1556,9 @@ export const DECKS = [
    {
     "text": "For an ideal gas undergoing an isothermal process, what happens as the volume increases?",
     "options": {
-     "A": "The pressure increases in direct proportion",
+     "A": "The temperature increases",
      "B": "The pressure decreases in inverse proportion",
-     "C": "The temperature increases",
+     "C": "The pressure increases in direct proportion",
      "D": "The pressure decreases in direct proportion",
      "E": "The pressure remains unchanged"
     },
@@ -2026,25 +2026,25 @@ export const DECKS = [
     "text": "When sodium bromide is dissolved in water, the result is:",
     "options": {
      "A": "A weakly acidic aqueous solution",
-     "B": "A strongly basic aqueous solution",
-     "C": "A neutral aqueous solution",
-     "D": "A weakly basic aqueous solution",
-     "E": "A strongly acidic aqueous solution"
+     "B": "A weakly basic aqueous solution",
+     "C": "A strongly acidic aqueous solution",
+     "D": "A neutral aqueous solution",
+     "E": "A strongly basic aqueous solution"
     },
-    "answer": "C",
+    "answer": "D",
     "src": "IMAT 2026 · Q37",
     "sub": "salt hydrolysis"
    },
    {
     "text": "When sodium acetate is dissolved in water, the result is:",
     "options": {
-     "A": "An alcoholic solution",
-     "B": "A basic aqueous solution",
-     "C": "A neutral aqueous solution",
-     "D": "No solution is formed because it does not dissolve",
+     "A": "A neutral aqueous solution",
+     "B": "An alcoholic solution",
+     "C": "No solution is formed because it does not dissolve",
+     "D": "A basic aqueous solution",
      "E": "An acidic aqueous solution"
     },
-    "answer": "B",
+    "answer": "D",
     "src": "IMAT 2026 · Q38",
     "sub": "salt hydrolysis"
    }
@@ -2097,13 +2097,13 @@ export const DECKS = [
    {
     "text": "The rate law for the reaction A + B → C is:",
     "options": {
-     "A": "v = k [A] [B]",
-     "B": "v = k [A] [B] / [C]",
-     "C": "To be determined experimentally",
-     "D": "v = k [C]",
-     "E": "v = k [C] / ([A] [B])"
+     "A": "v = k [C]",
+     "B": "v = k [A] [B]",
+     "C": "v = k [C] / ([A] [B])",
+     "D": "v = k [A] [B] / [C]",
+     "E": "To be determined experimentally"
     },
-    "answer": "C",
+    "answer": "E",
     "src": "IMAT 2026 · Q35",
     "sub": "rate law determination"
    },
@@ -2156,13 +2156,13 @@ export const DECKS = [
    {
     "text": "In an exothermic reaction:",
     "options": {
-     "A": "Heat is absorbed from the surroundings",
-     "B": "The products have lower chemical potential energy than the reactants",
-     "C": "The products have the same chemical potential energy as the reactants",
-     "D": "The reactants have lower chemical potential energy than the products",
-     "E": "The reaction rate is always very high"
+     "A": "The reactants have lower chemical potential energy than the products",
+     "B": "The reaction rate is always very high",
+     "C": "The products have lower chemical potential energy than the reactants",
+     "D": "The products have the same chemical potential energy as the reactants",
+     "E": "Heat is absorbed from the surroundings"
     },
-    "answer": "B",
+    "answer": "C",
     "src": "IMAT 2026 · Q47",
     "sub": "exothermic energy change"
    }
@@ -2397,39 +2397,39 @@ export const DECKS = [
    {
     "text": "Balance the following reaction equation: Cu + HNO3 → Cu(NO3)2 + NO + H2O",
     "options": {
-     "A": "2, 6, 3, 2, 4",
-     "B": "3, 8, 3, 2, 6",
-     "C": "3, 8, 3, 1, 4",
-     "D": "3, 8, 3, 2, 4",
-     "E": "None of the other options is correct"
+     "A": "3, 8, 3, 2, 6",
+     "B": "2, 6, 3, 2, 4",
+     "C": "3, 8, 3, 2, 4",
+     "D": "None of the other options is correct",
+     "E": "3, 8, 3, 1, 4"
     },
-    "answer": "D",
+    "answer": "C",
     "src": "IMAT 2026 · Q34",
     "sub": "balancing redox equation"
    },
    {
     "text": "Balance the following redox equation: PbBr2 + FeBr3 → PbBr4 + FeBr2",
     "options": {
-     "A": "2 PbBr2 + FeBr3 → 2 PbBr4 + FeBr2",
-     "B": "3 PbBr2 + FeBr3 → 3 PbBr4 + FeBr2",
+     "A": "PbBr2 + 2 FeBr3 → PbBr4 + 2 FeBr2",
+     "B": "2 PbBr2 + 3 FeBr3 → 2 PbBr4 + 3 FeBr2",
      "C": "PbBr2 + 3 FeBr3 → PbBr4 + 3 FeBr2",
-     "D": "PbBr2 + 2 FeBr3 → PbBr4 + 2 FeBr2",
-     "E": "2 PbBr2 + 3 FeBr3 → 2 PbBr4 + 3 FeBr2"
+     "D": "2 PbBr2 + FeBr3 → 2 PbBr4 + FeBr2",
+     "E": "3 PbBr2 + FeBr3 → 3 PbBr4 + FeBr2"
     },
-    "answer": "D",
+    "answer": "A",
     "src": "IMAT 2026 · Q39",
     "sub": "balancing redox equation"
    },
    {
     "text": "Balance the following disproportionation reaction: KIO2 ⇌ KI + KIO3",
     "options": {
-     "A": "4 KIO2 ⇌ 3 KI + KIO3",
+     "A": "3 KIO2 ⇌ KI + 2 KIO3",
      "B": "3 KIO2 ⇌ 2 KI + KIO3",
      "C": "5 KIO2 ⇌ 3 KI + 2 KIO3",
-     "D": "4 KIO2 ⇌ 2 KI + KIO3",
-     "E": "3 KIO2 ⇌ KI + 2 KIO3"
+     "D": "4 KIO2 ⇌ 3 KI + KIO3",
+     "E": "4 KIO2 ⇌ 2 KI + KIO3"
     },
-    "answer": "E",
+    "answer": "A",
     "src": "IMAT 2026 · Q40",
     "sub": "disproportionation balancing"
    }
@@ -2625,13 +2625,13 @@ export const DECKS = [
    {
     "text": "C3H6O can be:",
     "options": {
-     "A": "An alcohol, but neither an aldehyde nor a ketone",
-     "B": "An alcohol, an aldehyde, or a ketone",
-     "C": "An alcohol or an aldehyde, but not a ketone",
-     "D": "An aldehyde or a ketone, but not an alcohol",
-     "E": "An alcohol or a ketone, but not an aldehyde"
+     "A": "An alcohol or a ketone, but not an aldehyde",
+     "B": "An alcohol or an aldehyde, but not a ketone",
+     "C": "An aldehyde or a ketone, but not an alcohol",
+     "D": "An alcohol, an aldehyde, or a ketone",
+     "E": "An alcohol, but neither an aldehyde nor a ketone"
     },
-    "answer": "B",
+    "answer": "D",
     "src": "IMAT 2026 · Q45",
     "sub": "structural isomer identification"
    }
@@ -2749,26 +2749,26 @@ export const DECKS = [
    {
     "text": "Pentanones are:",
     "options": {
-     "A": "Carboxylic acids",
-     "B": "Lactones",
-     "C": "Ketones",
+     "A": "Hydroxyketones",
+     "B": "Carboxylic acids",
+     "C": "Lactones",
      "D": "Alcohols",
-     "E": "Hydroxyketones"
+     "E": "Ketones"
     },
-    "answer": "C",
+    "answer": "E",
     "src": "IMAT 2026 · Q43",
     "sub": "functional group identification"
    },
    {
     "text": "Ethene is:",
     "options": {
-     "A": "A diene",
-     "B": "An alkene",
-     "C": "A non-existent molecule",
+     "A": "An alkyne",
+     "B": "A non-existent molecule",
+     "C": "An alkene",
      "D": "An alkenyne",
-     "E": "An alkyne"
+     "E": "A diene"
     },
-    "answer": "B",
+    "answer": "C",
     "src": "IMAT 2026 · Q44",
     "sub": "hydrocarbon class identification"
    }
