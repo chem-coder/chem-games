@@ -88,10 +88,11 @@ const ANIMS = {
     draw(o, t) {
       // Capture like a landing: the minus comes in on a spiral, speeding up as the radius
       // shrinks, and by the far side of the plus it is in orbit. Then it just circles.
-      const CYC = 9, n = Math.floor(t / CYC), cyc = t - n * CYC;
       const cx = 200, cy = 120, R = 70, start = 345, T = 2.8;
       const SWEEP = 1.5 * Math.PI, POW = 1.8;
       const omega = (SWEEP * POW) / T;                 // angular speed at the end of the spiral
+      const ORBIT = (1.3 * 2 * Math.PI) / omega;       // about one and a third laps, then a new entry
+      const CYC = T + ORBIT, n = Math.floor(t / CYC), cyc = t - n * CYC;
       const a0 = mulberry32(n * 104729 + 5)() * Math.PI * 2;  // enters from a different direction each cycle
       place(o.p, cx, cy, t, 0, 0);
       let r, a;
@@ -104,6 +105,9 @@ const ANIMS = {
         a = a0 + SWEEP + (cyc - T) * omega;            // orbit at the arrival speed, never faster
       }
       place(o.e, cx + r * Math.cos(a), cy + r * Math.sin(a), t, 1, 0.6);
+      // fade out at the end of the orbit so the next entry does not pop into place
+      const left = CYC - cyc;
+      o.e.setAttribute("opacity", left < 0.35 ? (left / 0.35).toFixed(2) : cyc < 0.25 ? (cyc / 0.25).toFixed(2) : "1");
     }
   },
   repel: {
