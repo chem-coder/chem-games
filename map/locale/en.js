@@ -37,7 +37,7 @@ export default {
   sb_pm_1: "Everything in chemistry is pluses and minuses. A proton carries a plus. An electron carries a minus.",
   sb_pm_2: "Opposite charges attract. Bring a minus near a plus and it is pulled in.",
   sb_pm_3: "Like charges repel. Two minuses push each other apart, and so do two pluses.",
-  sb_pm_4: "Closer means stronger. The pull between a plus and a minus grows as the distance shrinks.",
+  sb_pm_4: "Closer means stronger. Between two pluses, a minus goes to the nearer one.",
   sb_pm_5: "One plus with one minus around it is the simplest atom there is: hydrogen. Every other atom is more pluses in the middle and more minuses around them.",
   sb_pm_go: "Build an atom →",
   skills: {

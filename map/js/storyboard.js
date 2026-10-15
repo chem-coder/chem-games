@@ -165,12 +165,40 @@ const ANIMS = {
     }
   },
   closer: {
-    setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), near: bubble(svg, defs, E, "−"), far: bubble(svg, defs, E, "−") }; },
+    // Two pluses; a minus appears between them, nearer to one, and goes to that one: a slow
+    // start, accelerating, a short spiral, then orbit. Next round, elsewhere, nearer the other.
+    setup(svg, defs) { return { p1: bubble(svg, defs, P, "+"), p2: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") }; },
     draw(o, t) {
-      place(o.p, 180, 120, t, 0, 0);
-      // the close one whips around fast; the far one drifts on a wide slow ellipse
-      place(o.near, 180 + 50 * Math.cos(t * 4.2), 120 + 50 * Math.sin(t * 4.2), t, 1, 0.6);
-      place(o.far, 180 + 180 * Math.cos(t * 0.7), 120 + 95 * Math.sin(t * 0.7), t, 2, 0.6);
+      const T_WAIT = 0.6, T_IN = 2.3, R = 52;
+      const SWEEP = 0.9 * Math.PI, POW = 1.9;
+      const omega = (SWEEP * POW) / T_IN;
+      const ORBIT = (1.2 * 2 * Math.PI) / omega;
+      const CYC = T_WAIT + T_IN + ORBIT;
+      const n = Math.floor(t / CYC), cyc = t - n * CYC;
+      const rnd = mulberry32(n * 15485863 + 11);
+      const A = { x: 115 + rnd() * 30, y: 95 + rnd() * 50 }, B = { x: 335 + rnd() * 30, y: 95 + rnd() * 50 };
+      const nearA = rnd() < 0.5;
+      const near = nearA ? A : B, far = nearA ? B : A;
+      const f = 0.36 + rnd() * 0.08;                       // fraction of the way from the nearer plus
+      const sx = near.x + (far.x - near.x) * f, sy = near.y + (far.y - near.y) * f + (rnd() - 0.5) * 30;
+      const dir = rnd() < 0.5 ? 1 : -1;
+      place(o.p1, A.x, A.y, t, 0, 0);
+      place(o.p2, B.x, B.y, t, 2, 0);
+      const r0 = Math.hypot(sx - near.x, sy - near.y), a0 = Math.atan2(sy - near.y, sx - near.x);
+      let x, y;
+      if (cyc < T_WAIT) { x = sx; y = sy; }
+      else if (cyc < T_WAIT + T_IN) {
+        const u = (cyc - T_WAIT) / T_IN;
+        const r = R + (r0 - R) * Math.pow(1 - u, 1.6);
+        const a = a0 + dir * SWEEP * Math.pow(u, POW);
+        x = near.x + r * Math.cos(a); y = near.y + r * Math.sin(a);
+      } else {
+        const a = a0 + dir * (SWEEP + (cyc - T_WAIT - T_IN) * omega);
+        x = near.x + R * Math.cos(a); y = near.y + R * Math.sin(a);
+      }
+      place(o.e, x, y, t, 1, 0.6);
+      const left = CYC - cyc;
+      o.e.setAttribute("opacity", left < 0.35 ? (left / 0.35).toFixed(2) : cyc < 0.25 ? (cyc / 0.25).toFixed(2) : "1");
     }
   },
   hydrogen: {
