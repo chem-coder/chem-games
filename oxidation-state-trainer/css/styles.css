@@ -2,7 +2,7 @@
    component vocabulary so the two games feel like one family. */
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); line-height: 1.5; }
-.app-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+.app-shell { max-width: var(--shell-max); margin: 0 auto; padding: 28px 20px 64px; }
 
 /* House rule: subscripts ≥50% size, slightly lowered — never the tiny default. */
 sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: inherit; }

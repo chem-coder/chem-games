@@ -8,7 +8,7 @@ body {
   font-family: var(--font-body);
   line-height: 1.5;
 }
-.app-shell { max-width: 720px; margin: 0 auto; padding: 28px 20px 64px; }
+.app-shell { max-width: var(--shell-max); margin: 0 auto; padding: 28px 20px 64px; }
 
 /* House rule: formula subscripts render at ≥50% size, slightly lowered. */
 sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: inherit; }

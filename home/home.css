@@ -1,7 +1,7 @@
 /* Home page. Tokens come from shared/css/tokens.css. */
 * { box-sizing: border-box; }
 body { min-height: 100vh; margin: 0; color: var(--ink); background: var(--bg); font-family: var(--font-body); }
-main { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 44px; }
+main { width: min(var(--shell-max), calc(100% - 32px)); margin: 0 auto; padding: 36px 0 44px; }
 header { position: relative; margin-bottom: 24px; padding-right: 150px; }
 header::before {
   content: ""; display: block; width: 120px; height: 6px; margin-bottom: 18px; border-radius: 999px;
