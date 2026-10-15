@@ -88,19 +88,20 @@ const ANIMS = {
     draw(o, t) {
       // Capture like a landing: the minus comes in on a spiral, speeding up as the radius
       // shrinks, and by the far side of the plus it is in orbit. Then it just circles.
-      const cyc = t % 9;
-      const cx = 200, cy = 120, R = 70, start = 235, T = 2.6;
+      const CYC = 9, n = Math.floor(t / CYC), cyc = t - n * CYC;
+      const cx = 200, cy = 120, R = 70, start = 345, T = 2.8;
       const SWEEP = 1.5 * Math.PI, POW = 1.8;
       const omega = (SWEEP * POW) / T;                 // angular speed at the end of the spiral
+      const a0 = mulberry32(n * 104729 + 5)() * Math.PI * 2;  // enters from a different direction each cycle
       place(o.p, cx, cy, t, 0, 0);
       let r, a;
       if (cyc < T) {
         const u = cyc / T;
-        r = R + (start - R) * Math.pow(1 - u, 1.7);   // radius closes faster near the end
-        a = SWEEP * Math.pow(u, POW);                  // sweep accelerates as it falls in
+        r = R + (start - R) * Math.pow(1 - u, 1.7);   // from beyond the edge; radius closes faster near the end
+        a = a0 + SWEEP * Math.pow(u, POW);             // sweep accelerates as it falls in
       } else {
         r = R;
-        a = SWEEP + (cyc - T) * omega;                 // orbit at the arrival speed, never faster
+        a = a0 + SWEEP + (cyc - T) * omega;            // orbit at the arrival speed, never faster
       }
       place(o.e, cx + r * Math.cos(a), cy + r * Math.sin(a), t, 1, 0.6);
     }
@@ -171,7 +172,8 @@ export function mountAnimation(host, id) {
   const objs = anim.setup(svg, defs);
   const t0 = performance.now();
   let raf = 0;
-  const loop = (now) => { anim.draw(objs, (now - t0) / 1000); raf = requestAnimationFrame(loop); };
+  // rAF timestamps can precede t0 by a frame; never hand the animations a negative time.
+  const loop = (now) => { anim.draw(objs, Math.max(0, (now - t0) / 1000)); raf = requestAnimationFrame(loop); };
   raf = requestAnimationFrame(loop);
   return () => cancelAnimationFrame(raf);
 }
