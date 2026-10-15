@@ -102,3 +102,8 @@ a.action.primary:hover { background: var(--accent-dark); }
 .level-tab.is-soon { opacity: 0.65; }
 .concept-soon h2 { color: var(--muted); }
 .concept-soon p { color: var(--muted); }
+
+/* language toggle (shared pattern: EN · RU buttons in the header) */
+.lang-toggle { display: inline-flex; gap: 4px; margin-left: 8px; vertical-align: middle; }
+.lang-btn { padding: 2px 8px; cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.04em; color: var(--accent); background: transparent; border: 1.5px solid var(--line); border-radius: 999px; }
+.lang-btn.is-active { color: #fff; background: var(--accent); border-color: var(--accent-dark); }

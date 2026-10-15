@@ -9,6 +9,7 @@
 //     { id, label, soon: "one-line tease of what's coming" },                 // stub
 //   ],
 //   comingNote: "optional line under the card",
+//   soonNote: "optional override of the stub tabs' 'on the bench' line (localization)",
 // }
 // Tabs are hash-linkable: opening page#boyle lands on that tab.
 
@@ -26,7 +27,7 @@ export function renderTopicScreen(mount, topic) {
       <div class="concept concept-soon">
         <h2>${t.label}</h2>
         <p>${t.soon}</p>
-        <p class="coming-note">This lab is on the bench — it joins the strip when it's ready.</p>
+        <p class="coming-note">${topic.soonNote || "This lab is on the bench — it joins the strip when it's ready."}</p>
       </div>`;
     return `
       <div class="concept">

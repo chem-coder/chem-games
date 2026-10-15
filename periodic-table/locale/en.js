@@ -1,0 +1,22 @@
+// The Periodic System topic screen — English content (fallback for every language).
+export default {
+  title: "The Periodic System",
+  eyebrow: "Atoms &amp; the Periodic Table &middot; The Periodic System",
+  lede: "One table holds every element &mdash; and its shape is the message. Learn to read the rows, the columns, and the trends that run across them.",
+  home: "&larr; Home",
+  soon_note: "This lab is on the bench — it joins the strip when it's ready.",
+  legend_metal: "Metals", legend_metalloid: "Metalloids", legend_nonmetal: "Nonmetals",
+  reading_label: "Reading the Table",
+  reading_h2: "Reading the Table &mdash; rows are periods, columns are groups",
+  reading_p1: "Each horizontal row is a <strong>period</strong>: across a period, every element has the same number of electron shells. Each vertical column is a <strong>group</strong> (also called a family): elements in a group carry the same number of outer electrons, so they behave alike in reactions.",
+  reading_p2: "The table splits into three regions: <strong>metals</strong> on the left and center, <strong>nonmetals</strong> in the upper right, and the staircase of <strong>metalloids</strong> between them. The named families to know: <strong>alkali metals</strong> (group 1), <strong>alkaline earth metals</strong> (group 2), <strong>transition metals</strong> (the middle block), <strong>halogens</strong> (group 17), and <strong>noble gases</strong> (group 18).",
+  reading_game: "Open the Periodic Table Memorizer →",
+  reading_ref: "Oxidation states reference table →",
+  valence_label: "Valence Electrons",
+  valence_soon: "The electrons an atom shows the world. For the main groups, the group number tells you how many — and dot diagrams draw them.",
+  trends_label: "Periodic Trends",
+  trends_h2: "Periodic Trends &mdash; the table's shape predicts the numbers",
+  trends_p1: "<strong>Atomic radius</strong> grows down a group (each row adds an electron shell) and shrinks across a period (same shells, more protons pulling). <strong>Ionization energy</strong> &mdash; the price of removing the outermost electron &mdash; and <strong>electronegativity</strong> &mdash; the pull on shared bonding electrons &mdash; both run the opposite way, climbing toward fluorine&rsquo;s corner.",
+  trends_p2: "In an <strong>isoelectronic series</strong> (same electron count, different ions) size follows one rule only: more protons, tighter cloud. And the smooth trends hide a few famous stumbles &mdash; the Trend Ladder saves those for last.",
+  trends_game: "Open the Trend Ladder →",
+};

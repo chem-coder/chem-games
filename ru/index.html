@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chem Games — по-русски</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/topic-screen.css?v=20261015-ru1">
+  <style>
+    .ru-list { display: grid; gap: 14px; }
+    .ru-card h2 { margin: 0 0 6px; font-family: "Outfit", sans-serif; font-size: 1.25rem; }
+    .ru-card p { margin: 0 0 10px; }
+    .ru-note { color: var(--muted); font-size: 0.92rem; }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../">&#8962; All Chem Games (English)</a>
+      <p class="eyebrow">Chem Games &middot; по-русски</p>
+      <h1>Игры по химии</h1>
+      <p class="lede">Короткие тренажёры для тех, кто только начинает изучать химию. Здесь собраны игры, уже переведённые на русский; остальные пока доступны на английском.</p>
+    </header>
+
+    <section class="game">
+      <div class="ru-list">
+        <div class="concept ru-card">
+          <h2>Периодическая система</h2>
+          <p>Как читать таблицу Менделеева: периоды, группы, металлы и неметаллы, периодические закономерности.</p>
+          <div class="controls"><a class="action primary" href="../periodic-table/?lang=ru">Открыть раздел →</a></div>
+        </div>
+        <div class="concept ru-card">
+          <h2>Тренажёр таблицы Менделеева</h2>
+          <p>Заполните пустую таблицу по памяти: нажмите на клетку и введите символ элемента. Или пройдите викторину «Символ ↔ название» — по периодам или по группам.</p>
+          <div class="controls"><a class="action primary" href="../periodic-table/memorizer/?lang=ru">Открыть тренажёр →</a></div>
+        </div>
+      </div>
+      <p class="ru-note">Следующими на русский переводятся игра «Строение атома» (протоны, нейтроны, электроны, энергетические уровни) и тренажёр периодических закономерностей.</p>
+    </section>
+  </main>
+</body>
+</html>

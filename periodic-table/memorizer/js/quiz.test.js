@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { BY_SYMBOL } from "./game.js";
+import { ELEMENTS } from "../data/pt-data.js";
 import { normalizeName, isCorrectName, gradeQuiz, buildQuizRound, requeue, QUIZ_SIZE } from "./quiz.js";
 
 test("isCorrectName is case/space-forgiving and accepts US + British spellings", () => {
@@ -39,4 +40,24 @@ test("requeue drops a correct item and rotates a missed one", () => {
 
 test("normalizeName collapses whitespace and case", () => {
   assert.equal(normalizeName("  Sodium  "), "sodium");
+});
+
+import { NAMES_RU, ALIASES_RU } from "../data/pt-names.ru.js";
+
+test("Russian names: all 118 present and Cyrillic", () => {
+  for (let z = 1; z <= 118; z += 1) assert.match(NAMES_RU[z] || "", /^[А-ЯЁ][а-яё]+$/, `z=${z}`);
+});
+
+test("Russian grading: case, ё/е, and alias spellings accepted", () => {
+  const opts = { lang: "ru", names: NAMES_RU, aliases: ALIASES_RU };
+  const by = (z) => ELEMENTS[z - 1];
+  assert.equal(isCorrectName(by(1), "водород", opts), true);
+  assert.equal(isCorrectName(by(1), "ВОДОРОД ", opts), true);
+  assert.equal(isCorrectName(by(1), "hydrogen", opts), false);
+  assert.equal(isCorrectName(by(53), "йод", opts), true);
+  assert.equal(isCorrectName(by(53), "Иод", opts), true);
+  assert.equal(isCorrectName(by(38), "стронций", opts), true);
+  assert.equal(gradeQuiz(by(11), "toSymbol", "na", opts), true);
+  assert.equal(gradeQuiz(by(11), "toName", "натрий", opts), true);
+  assert.equal(gradeQuiz(by(11), "toName", "натрий", {}), false);
 });

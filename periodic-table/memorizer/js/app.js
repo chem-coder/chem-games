@@ -1,8 +1,24 @@
 // Periodic Table Memorizer — DOM layer for both modes. Pure logic lives in game.js (fill) and
 // quiz.js (symbol↔name). One page, a mode toggle up top; both share pt-data.js.
-import { ELEMENTS } from "../data/pt-data.js?v=20260728-pt9";
-import { isCorrectSymbol, normalizeSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20260728-pt9";
-import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20260728-pt9";
+import { ELEMENTS } from "../data/pt-data.js?v=20261015-ru1";
+import { NAMES_RU, ALIASES_RU } from "../data/pt-names.ru.js?v=20261015-ru1";
+import { isCorrectSymbol, normalizeSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20261015-ru1";
+import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20261015-ru1";
+import { detectLang, makeT, elementName, applyStatic, langToggleHtml, wireLangToggle } from "../../../shared/js/i18n.js?v=20261015-ru1";
+import en from "../locale/en.js?v=20261015-ru1";
+import ru from "../locale/ru.js?v=20261015-ru1";
+
+const lang = detectLang();
+const t = makeT({ en, ru }, lang);
+const NAMES = { ru: NAMES_RU };
+const ALIASES = { ru: ALIASES_RU };
+const nameOf = (el) => elementName(el, lang, NAMES[lang]);
+const gradeOpts = { lang, names: NAMES[lang], aliases: ALIASES[lang] };
+document.documentElement.lang = lang;
+document.title = t("title").replace(/&[a-z#0-9]+;/g, "");
+applyStatic(t);
+document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
+wireLangToggle(document);
 
 const root = document.querySelector("#game");
 const fillInput = document.querySelector("#fillInput"); // fill mode's real field — see index.html
@@ -80,7 +96,7 @@ function loadQuiz() { qInput = ""; qChecked = false; qCorrect = false; render();
 function quizCheck() {
   if (qChecked || !qInput.trim()) return;
   const el = elByZ(qQueue[0]);
-  qCorrect = gradeQuiz(el, qDir, qInput);
+  qCorrect = gradeQuiz(el, qDir, qInput, gradeOpts);
   qChecked = true;
   if (qCorrect) qNamed += 1; else qMissed.add(el.z);
   render();
@@ -151,18 +167,18 @@ root.addEventListener("click", (e) => {
 // ── rendering ──
 function modeTabs() {
   const tab = (m, label) => `<button class="mode-tab${mode === m ? " is-active" : ""}" data-mode="${m}" type="button">${label}</button>`;
-  return `<div class="mode-tabs">${tab("fill", "Fill the table")}${tab("quiz", "Symbol ↔ Name quiz")}</div>`;
+  return `<div class="mode-tabs">${tab("fill", t("mode_fill"))}${tab("quiz", t("mode_quiz"))}</div>`;
 }
 
 function scopeTabs() {
   const tab = (s) => {
     const i = SCOPES.indexOf(s);
-    return `<button class="scope-tab${i === scopeIndex ? " is-active" : ""}" data-scope="${i}" type="button">${s.label}</button>`;
+    return `<button class="scope-tab${i === scopeIndex ? " is-active" : ""}" data-scope="${i}" type="button">${t("scope." + s.id)}</button>`;
   };
   const row = (g) => {
     const inGroup = SCOPES.filter((s) => s.group === g.id);
     if (!inGroup.length) return "";
-    return `<div class="scope-row"><span class="scope-label">${g.label}</span><div class="scope-tabs">${inGroup.map(tab).join("")}</div></div>`;
+    return `<div class="scope-row"><span class="scope-label">${t("group." + g.id)}</span><div class="scope-tabs">${inGroup.map(tab).join("")}</div></div>`;
   };
   return `<div class="scope-groups">${SCOPE_GROUPS.map(row).join("")}</div>`;
 }
@@ -196,16 +212,17 @@ function fillView() {
   const got = [...earned].filter((s) => poolSyms.has(s)).length;
   const done = got === target;
   const family = isFamilyScope(scope());
-  const caption = family ? `<span class="scope-caption">${scope().label}</span>` : "";
+  const scopeLabel = t("scope." + scope().id);
+  const caption = family ? `<span class="scope-caption">${scopeLabel}</span>` : "";
   const status = done
-    ? `<p class="pt-status ok">🎉 Complete — all ${target}! ${misses ? `(${misses} miss${misses === 1 ? "" : "es"})` : "flawless."}</p>`
+    ? `<p class="pt-status ok">${t("status_done", { n: target, misses })}</p>`
     : revealed
-      ? `<p class="pt-status">Revealed. You'd earned <strong>${got}</strong> of ${target}. Reset to try again.</p>`
+      ? `<p class="pt-status">${t("status_revealed", { got, n: target })}</p>`
       : activeZ != null
-        ? `<p class="pt-status">Filling in <strong>#${activeZ}</strong> — ${TOUCH ? "type the symbol, then tap Go." : "type the symbol, then Enter or an arrow key. (Esc to cancel.)"}</p>`
+        ? `<p class="pt-status">${t(TOUCH ? "status_filling_touch" : "status_filling_kbd", { z: activeZ })}</p>`
         : family
-          ? `<p class="pt-status">Fill the <strong>${scope().label.toLowerCase()}</strong> — the lit squares. ${TOUCH ? "Tap one and type its symbol." : "Click one (or press an arrow key), type its symbol."}</p>`
-          : `<p class="pt-status">${TOUCH ? "Tap a square and type its symbol." : "Click a square (or press an arrow key to start), type its symbol."}</p>`;
+          ? `<p class="pt-status">${t(TOUCH ? "status_family_touch" : "status_family_kbd", { scope: scopeLabel.toLowerCase() })}</p>`
+          : `<p class="pt-status">${t(TOUCH ? "status_any_touch" : "status_any_kbd")}</p>`;
   // Family scopes ghost the whole table for context; period scopes show just the in-scope prefix.
   const cells = family
     ? ELEMENTS.map((el) => cellHtml(el, poolSyms.has(el.symbol))).join("")
@@ -214,8 +231,8 @@ function fillView() {
     <div class="pt-head">
       <p class="count">${caption}<strong>${got}</strong> <span>/ ${target}</span></p>
       <div class="pt-actions">
-        <button class="btn ghost" id="revealBtn" type="button" ${done ? "disabled" : ""}>Reveal all</button>
-        <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+        <button class="btn ghost" id="revealBtn" type="button" ${done ? "disabled" : ""}>${t("reveal_all")}</button>
+        <button class="btn ghost" id="resetBtn" type="button">${t("reset")}</button>
       </div>
     </div>
     ${status}
@@ -224,31 +241,31 @@ function fillView() {
 
 function dirTabs() {
   const tab = (d, label) => `<button class="qdir-choice${qDir === d ? " is-active" : ""}" data-dir="${d}" type="button">${label}</button>`;
-  return `<div class="qdir">${tab("toName", "Symbol → Name")}${tab("toSymbol", "Name → Symbol")}</div>`;
+  return `<div class="qdir">${tab("toName", t("dir_toName"))}${tab("toSymbol", t("dir_toSymbol"))}</div>`;
 }
 
 function quizView() {
   if (qQueue.length === 0) {
     const missed = [...qMissed].map((z) => elByZ(z));
     const missedBlock = missed.length
-      ? `<div class="q-missed"><p class="missed-label">Worth another look — you stumbled on ${missed.length}:</p>
-          <div class="chips">${missed.map((e) => `<span class="chip">${e.symbol} · ${e.name}</span>`).join("")}</div></div>`
-      : `<p class="pt-status ok">Clean round — ${qTotal} for ${qTotal}. 🎉</p>`;
-    return `${dirTabs()}<p class="q-done">Round done — ${qTotal} ${qDir === "toName" ? "named" : "symbolized"}.</p>${missedBlock}
-      <div class="controls"><button class="action primary" id="qAgainBtn" type="button">New round →</button></div>`;
+      ? `<div class="q-missed"><p class="missed-label">${t("missed_label", { n: missed.length })}</p>
+          <div class="chips">${missed.map((e) => `<span class="chip">${e.symbol} · ${nameOf(e)}</span>`).join("")}</div></div>`
+      : `<p class="pt-status ok">${t("clean_round", { n: qTotal })}</p>`;
+    return `${dirTabs()}<p class="q-done">${t(qDir === "toName" ? "round_done_toName" : "round_done_toSymbol", { n: qTotal })}</p>${missedBlock}
+      <div class="controls"><button class="action primary" id="qAgainBtn" type="button">${t("new_round")}</button></div>`;
   }
   const el = elByZ(qQueue[0]);
   const remaining = qQueue.length;
   const prompt = qDir === "toName"
-    ? `<div class="q-prompt"><span class="q-z">#${el.z}</span><span class="q-sym type-${el.type}">${el.symbol}</span></div><p class="q-ask">Name this element</p>`
-    : `<div class="q-prompt"><span class="q-word">${el.name}</span></div><p class="q-ask">Type its symbol</p>`;
+    ? `<div class="q-prompt"><span class="q-z">#${el.z}</span><span class="q-sym type-${el.type}">${el.symbol}</span></div><p class="q-ask">${t("ask_name")}</p>`
+    : `<div class="q-prompt"><span class="q-word">${nameOf(el)}</span></div><p class="q-ask">${t("ask_symbol")}</p>`;
   const answer = qChecked
     ? `<div class="q-answer ${qCorrect ? "ok" : "no"}">${qInput || "—"}</div>`
-    : `<input class="q-input" id="quizInput" type="text" autocomplete="off" autocapitalize="${qDir === "toSymbol" ? "characters" : "none"}" spellcheck="false" placeholder="${qDir === "toName" ? "element name…" : "symbol…"}" value="${esc(qInput)}">`;
+    : `<input class="q-input" id="quizInput" type="text" autocomplete="off" autocapitalize="${qDir === "toSymbol" ? "characters" : "none"}" spellcheck="false" placeholder="${qDir === "toName" ? t("ph_name") : t("ph_symbol")}" value="${esc(qInput)}">`;
   let feedback = `<p class="feedback">&nbsp;</p>`, reveal = "";
   if (qChecked) {
-    feedback = qCorrect ? `<p class="feedback ok">Correct.</p>` : `<p class="feedback no">Not quite.</p>`;
-    reveal = `<p class="q-reveal"><strong>${el.symbol}</strong> — ${el.name} <span class="q-revz">(#${el.z})</span></p>`;
+    feedback = qCorrect ? `<p class="feedback ok">${t("correct")}</p>` : `<p class="feedback no">${t("not_quite")}</p>`;
+    reveal = `<p class="q-reveal"><strong>${el.symbol}</strong> — ${nameOf(el)} <span class="q-revz">(#${el.z})</span></p>`;
   }
   return `${dirTabs()}
     ${prompt}
@@ -256,10 +273,10 @@ function quizView() {
     ${reveal}
     ${feedback}
     <div class="controls">
-      <p class="score">Got ${qNamed} of ${qTotal} &middot; ${remaining} left</p>
+      <p class="score">${t("score", { got: qNamed, total: qTotal, left: remaining })}</p>
       ${qChecked
-        ? `<button class="action primary" id="qNextBtn" type="button">${qQueue.length > 1 || !qCorrect ? "Next →" : "Finish"}</button>`
-        : `<button class="action primary" id="qCheckBtn" type="button" ${qInput.trim() ? "" : "disabled"}>Check</button>`}
+        ? `<button class="action primary" id="qNextBtn" type="button">${qQueue.length > 1 || !qCorrect ? t("next") : t("finish")}</button>`
+        : `<button class="action primary" id="qCheckBtn" type="button" ${qInput.trim() ? "" : "disabled"}>${t("check")}</button>`}
     </div>`;
 }
 

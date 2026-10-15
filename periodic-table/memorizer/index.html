@@ -8,16 +8,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="../../shared/css/tokens.css">
-  <link rel="stylesheet" href="css/styles.css?v=20260727-pt8">
+  <link rel="stylesheet" href="css/styles.css?v=20261015-ru1">
 </head>
 <body>
   <main class="app-shell">
     <header class="app-header">
-      <a class="home-link" href="../">&larr; The Periodic System</a>
-      <a class="home-link" href="../../">&#8962; All Chem Games</a>
-      <p class="eyebrow">Atoms &amp; the Periodic Table &middot; The Periodic System</p>
-      <h1>Periodic Table Memorizer</h1>
-      <p class="lede">Two ways to drill the table. <strong>Fill the table</strong> — click a square, type its symbol, and it locks in (arrows navigate). Or take the <strong>Symbol ↔ Name quiz</strong>: name a symbol, or give the symbol for a name.</p>
+      <a class="home-link" href="../" data-i18n="back_topic">&larr; The Periodic System</a>
+      <a class="home-link" href="../../" data-i18n="home">&#8962; All Chem Games</a>
+      <span id="langToggle"></span>
+      <p class="eyebrow" data-i18n="eyebrow">Atoms &amp; the Periodic Table &middot; The Periodic System</p>
+      <h1 data-i18n="title">Periodic Table Memorizer</h1>
+      <p class="lede" data-i18n="lede">Two ways to drill the table. <strong>Fill the table</strong> — click a square, type its symbol, and it locks in (arrows navigate). Or take the <strong>Symbol ↔ Name quiz</strong>: name a symbol, or give the symbol for a name.</p>
     </header>
 
     <section id="game" class="game" aria-live="polite"></section>
@@ -28,9 +29,9 @@
          phone keyboard stays in plain lowercase instead of fighting the player's shift key. -->
     <input id="fillInput" class="fill-input" type="text" autocomplete="off"
            autocapitalize="none" spellcheck="false" enterkeyhint="go"
-           maxlength="3" tabindex="-1" aria-label="Element symbol">
+           maxlength="3" tabindex="-1" aria-label="Element symbol" data-i18n-attr="aria-label:aria_symbol">
   </main>
 
-  <script type="module" src="js/app.js?v=20260728-pt9"></script>
+  <script type="module" src="js/app.js?v=20261015-ru1"></script>
 </body>
 </html>

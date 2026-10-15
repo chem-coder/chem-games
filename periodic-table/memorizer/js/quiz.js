@@ -1,5 +1,6 @@
 // Periodic Table Memorizer — the symbol ↔ name quiz (second mode). Pure logic. ESM for node --test.
 // Ask either direction: given a symbol, type the element name; or given the name, type the symbol.
+// Names are language-dependent data: pass { lang, names, aliases } to grade in another language.
 
 import { ELEMENTS } from "../data/pt-data.js";
 import { normalizeSymbol, isCorrectSymbol } from "./game.js";
@@ -11,22 +12,27 @@ const NAME_ALIASES = {
   cesium: ["caesium"]
 };
 
+// Lower-case, collapse spaces, fold ё → е so Russian typing never fails on the dots.
 export function normalizeName(s) {
-  return String(s).trim().toLowerCase().replace(/\s+/g, " ");
+  return String(s).trim().toLowerCase().replace(/\s+/g, " ").replace(/ё/g, "е");
 }
 
-export function acceptedNames(el) {
+export function acceptedNames(el, opts = {}) {
+  if (opts.lang && opts.lang !== "en" && opts.names && opts.names[el.z]) {
+    const n = normalizeName(opts.names[el.z]);
+    return [n, ...((opts.aliases && opts.aliases[n]) || [])];
+  }
   const n = el.name.toLowerCase();
   return [n, ...(NAME_ALIASES[n] || [])];
 }
 
-export function isCorrectName(el, typed) {
-  return acceptedNames(el).includes(normalizeName(typed));
+export function isCorrectName(el, typed, opts = {}) {
+  return acceptedNames(el, opts).includes(normalizeName(typed));
 }
 
 // direction: "toName" (symbol shown → type name) | "toSymbol" (name shown → type symbol).
-export function gradeQuiz(el, direction, typed) {
-  return direction === "toSymbol" ? isCorrectSymbol(el, typed) : isCorrectName(el, typed);
+export function gradeQuiz(el, direction, typed, opts = {}) {
+  return direction === "toSymbol" ? isCorrectSymbol(el, typed) : isCorrectName(el, typed, opts);
 }
 
 export const QUIZ_SIZE = 10;
