@@ -13,7 +13,7 @@ a { color: var(--accent); }
 .modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .mode { padding: 22px 20px; text-align: left; cursor: pointer; background: var(--surface); color: var(--ink); border: 1.5px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
 .mode:hover { border-color: var(--accent); }
-.by-line { margin: -4px 0 0; font-family: var(--font-display); font-size: 0.95rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.by-line { margin: -2px 0 0; font-family: var(--font-display); font-size: 1rem; letter-spacing: 0.02em; color: var(--muted); }
 .by-line .tm { font-size: 0.6em; vertical-align: top; margin-left: 1px; }
 .lang-modes { margin-top: 32px; }
 .brand-title .tm { font-size: 0.35em; vertical-align: top; margin-left: 2px; font-weight: 600; opacity: 0.8; }

@@ -1,6 +1,7 @@
 export default {
   title: "Chem Games",
   entry_h1: "Chem Games",
+  by_author: "by Dalia K. Maraoulaite, PhD",
   entry_lede: "Chemistry as skills: each tile is a skill, each skill has levels. Master a level, earn points, open the next skill.",
   mode_campaign: "Campaign",
   mode_campaign_desc: "Start at the beginning. Skills open one after another as you earn points.",
