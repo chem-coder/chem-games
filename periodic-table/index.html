@@ -37,7 +37,6 @@
   <main class="app-shell">
     <header class="app-header">
       <a class="home-link" href="../" data-i18n="home">&larr; Home</a>
-      <span id="langToggle"></span>
       <p class="eyebrow" data-i18n="eyebrow">Atoms &amp; the Periodic Table &middot; The Periodic System</p>
       <h1 data-i18n="title">The Periodic System</h1>
       <p class="lede" data-i18n="lede">One table holds every element &mdash; and its shape is the message. Learn to read the rows, the columns, and the trends that run across them.</p>
@@ -52,7 +51,7 @@
     import { renderTopicScreen } from "../shared/js/topic-screen.js?v=20261015-ru1";
     import { ELEMENTS } from "./memorizer/data/pt-data.js?v=20261015-ru1";
     import { NAMES_RU } from "./memorizer/data/pt-names.ru.js?v=20261015-ru1";
-    import { detectLang, makeT, elementName, applyStatic, langToggleHtml, wireLangToggle } from "../shared/js/i18n.js?v=20261015-ru1";
+    import { detectLang, makeT, elementName, applyStatic } from "../shared/js/i18n.js?v=20261015-ru1";
     import en from "./locale/en.js?v=20261015-ru1";
     import ru from "./locale/ru.js?v=20261015-ru1";
 
@@ -62,8 +61,6 @@
     document.documentElement.lang = lang;
     document.title = t("title");
     applyStatic(t);
-    document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
-    wireLangToggle(document);
 
     const miniPT = `<div class="mini-pt">${ELEMENTS.map((e) =>
       `<div class="cell type-${e.type}" style="grid-row:${e.row + 1};grid-column:${e.col + 1}" title="${elementName(e, lang, names)} (${e.z})">${e.symbol}</div>`

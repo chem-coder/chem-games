@@ -1,7 +1,7 @@
 // Trend Ladder — DOM layer. Gesture grammar mirrors pH Lab's ladder rung:
 // pointer-drag with a ghost, and tap-card-then-tap-slot as the same meaning.
 import { TIERS, expectedKeys, endLabels, grade, shuffledTray, speciesByKey } from "./game.js?v=20261015-ru2";
-import { detectLang, makeT, applyStatic, langToggleHtml, wireLangToggle } from "../../../shared/js/i18n.js?v=20261015-ru2";
+import { detectLang, makeT, applyStatic } from "../../../shared/js/i18n.js?v=20261015-ru2";
 import en from "../locale/en.js?v=20261015-ru2";
 import ru from "../locale/ru.js?v=20261015-ru2";
 
@@ -13,8 +13,6 @@ const OVER = L[lang] || {};          // content overlay for this language (tiers
 document.documentElement.lang = lang;
 document.title = t("title");
 applyStatic(t);
-document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
-wireLangToggle(document);
 
 // Localized views of the English content in rounds.js. Missing pieces fall back to English.
 const tierText = (tr, field) => OVER.tiers?.[tr.id]?.[field] ?? tr[field];

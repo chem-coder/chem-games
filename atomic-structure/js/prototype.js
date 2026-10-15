@@ -1,6 +1,6 @@
 // Renderer prototype page: two panels (default Mg and Mg2+), a species picker each,
 // Reveal / back toggles, and an electron-size slider for the design discussion.
-import { detectLang, makeT, applyStatic, langToggleHtml, wireLangToggle, elementName } from "../../shared/js/i18n.js";
+import { detectLang, makeT, applyStatic, elementName } from "../../shared/js/i18n.js";
 import { ELEMENTS } from "../../periodic-table/memorizer/data/pt-data.js";
 import { NAMES_RU } from "../../periodic-table/memorizer/data/pt-names.ru.js";
 import { createAtomRenderer } from "./renderer.js";
@@ -12,8 +12,6 @@ const lang = detectLang();
 const t = makeT({ en, ru }, lang);
 document.documentElement.lang = lang;
 applyStatic(t);
-document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
-wireLangToggle();
 
 const byZ = Object.fromEntries(ELEMENTS.map((e) => [e.z, e]));
 const SPECIES = [

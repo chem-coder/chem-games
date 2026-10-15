@@ -4,7 +4,7 @@ import { ELEMENTS } from "../data/pt-data.js?v=20261015-ru1";
 import { NAMES_RU, ALIASES_RU } from "../data/pt-names.ru.js?v=20261015-ru1";
 import { isCorrectSymbol, normalizeSymbol, nextUnfilled, neighbor, SCOPES, SCOPE_GROUPS, poolForScope, isFamilyScope } from "./game.js?v=20261015-ru1";
 import { buildQuizRound, gradeQuiz, requeue, QUIZ_SIZE } from "./quiz.js?v=20261015-ru1";
-import { detectLang, makeT, elementName, applyStatic, langToggleHtml, wireLangToggle } from "../../../shared/js/i18n.js?v=20261015-ru1";
+import { detectLang, makeT, elementName, applyStatic } from "../../../shared/js/i18n.js?v=20261015-ru1";
 import en from "../locale/en.js?v=20261015-ru1";
 import ru from "../locale/ru.js?v=20261015-ru1";
 
@@ -17,8 +17,6 @@ const gradeOpts = { lang, names: NAMES[lang], aliases: ALIASES[lang] };
 document.documentElement.lang = lang;
 document.title = t("title").replace(/&[a-z#0-9]+;/g, "");
 applyStatic(t);
-document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
-wireLangToggle(document);
 
 const root = document.querySelector("#game");
 const fillInput = document.querySelector("#fillInput"); // fill mode's real field — see index.html

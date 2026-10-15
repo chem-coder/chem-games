@@ -108,3 +108,39 @@ Decided: the games use the **18-group long table**; **полуметалл**; **
 | Periodic Trends | Периодические закономерности | topic tab |
 | The Periodic System | Периодическая система | topic name |
 | Atoms & the Periodic Table | Атомы и периодическая система | chapter name |
+
+## Game names
+
+Single source for the Russian names of games and sections as shown on the home page (`home/locale/ru.js`). Card descriptions are ordinary interface strings and do not need glossary rows. Decided 2026-10-15: the language is chosen on the home page only; games read it and offer no toggle.
+
+| EN | RU | Note |
+|---|---|---|
+| Chem Games (home page) | Игры по химии | the brand stays "Chem Games" in the eyebrow |
+| The Periodic System | Периодическая система | section hub |
+| Periodic Table Memorizer | Тренажёр таблицы Менделеева | |
+| Trend Ladder | Лестница закономерностей | |
+| Atomic Structure | Строение атома | in progress |
+| Polyatomic Ion Trainer | Тренажёр многоатомных ионов | |
+| Chemical Nomenclature | Номенклатура неорганических соединений | |
+| Visual Equation Balancer | Уравнивание реакций | |
+| Ratio Factory | Фабрика пропорций | |
+| Conversion Conveyor | Конвейер единиц | |
+| Conversion Builder | Конструктор расчётов | |
+| Oxidation-State Trainer | Тренажёр степеней окисления | |
+| IMAT Decks | Колоды IMAT | |
+| Shape Lab | Лаборатория форм | |
+| Acid / Base Sorter | Сортировщик кислот и оснований | |
+| pH Lab | Лаборатория pH | |
+| Gas Laws | Газовые законы | |
+| Organic Nomenclature | Органическая номенклатура | |
+| Organic Reactions | Органические реакции | |
+| Molecule Builder | Конструктор молекул | |
+| Battery Lab | Battery Lab | name kept; sub-games translated |
+| Full-Cell Builder | Сборка полного элемента | |
+| Cell Numbers | Расчёты элемента | |
+| Electrolyte Components | Компоненты электролита | |
+| Cathode Materials | Катодные материалы | |
+| Anode Materials | Анодные материалы | |
+| Potential Ladder | Лестница потенциалов | |
+| Oxidation States (reference) | Степени окисления | |
+| English only (tag on untranslated games) | пока по-английски | |
