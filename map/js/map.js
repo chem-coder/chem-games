@@ -44,7 +44,8 @@ function showEntry() {
   app.querySelectorAll(".mode").forEach((b) => b.addEventListener("click", () => {
     progress.mode = b.dataset.mode;
     saveProgress(progress);
-    if (progress.mode === "campaign" && !progress.storyboards["plus-minus"]) showStoryboard("plus-minus");
+    // Campaign always opens with the storyboard; replaying it never double-counts the point.
+    if (progress.mode === "campaign") showStoryboard("plus-minus");
     else showMap();
   }));
 }
@@ -108,13 +109,14 @@ function showMap() {
       <span class="tile-name">${skillName(s.id)}</span></button>`;
   }).join("");
   app.innerHTML = `<div class="map-shell">
-    <div class="map-bar"><h1>${t("map_title")}</h1><span class="spacer"></span><a href="../${lang === "en" ? "" : "?lang=" + lang}">${t("library")}</a><button type="button" class="gear" id="gear" aria-label="${t("settings")}">${GEAR}</button></div>
+    <div class="map-bar"><button type="button" class="brand" id="toEntry" title="${t("entry_h1")}">${t("entry_h1")}</button><h1>${t("map_title")}</h1><span class="spacer"></span><a href="../${lang === "en" ? "" : "?lang=" + lang}">${t("library")}</a><button type="button" class="gear" id="gear" aria-label="${t("settings")}">${GEAR}</button></div>
     <div class="map-body">
       <div class="map-scroll"><div class="map-canvas" style="width:${w}px;height:${h}px"><svg class="edges" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${edges}</svg>${tiles}</div></div>
       <aside class="panel" id="panel"></aside>
     </div></div>`;
   app.querySelectorAll(".tile").forEach((b) => b.addEventListener("click", () => { selected = b.dataset.id; showMap(); }));
   app.querySelector("#gear").addEventListener("click", showSettings);
+  app.querySelector("#toEntry").addEventListener("click", showEntry);
   renderPanel();
 }
 

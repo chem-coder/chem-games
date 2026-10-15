@@ -20,7 +20,9 @@ a { color: var(--accent); }
 /* map */
 .map-shell { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
 .map-bar { display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
-.map-bar h1 { margin: 0; font-family: var(--font-display); font-size: 1.35rem; }
+.map-bar h1 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--muted); font-weight: 600; }
+.brand { padding: 4px 0; cursor: pointer; background: none; border: 0; color: var(--ink); font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; letter-spacing: 0.02em; }
+.brand:hover { color: var(--accent); }
 .map-bar .spacer { flex: 1; }
 .map-bar a { font-size: 0.9rem; text-decoration: none; font-weight: 600; }
 .gear { width: 40px; height: 40px; display: inline-grid; place-items: center; cursor: pointer; background: var(--surface); border: 1.5px solid var(--line); border-radius: 50%; color: var(--ink); }
