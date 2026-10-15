@@ -37,7 +37,7 @@ function showLanguage() {
     <h1 class="brand-title">Chem Games</h1>
     <p class="by-line">${t("by_author")}</p>
     <div class="modes lang-modes">${LANGS.map((l) => `<button type="button" class="mode lang-pick" data-lang="${l}"><h2>${LANG_NAMES[l]}</h2></button>`).join("")}</div>
-    <p class="entry-foot">© 2026 Dalia K. Maraoulaite, PhD</p>
+    <p class="entry-foot">© 2023–2026 Dalia K. Maraoulaite, PhD</p>
   </div></div>`;
   app.querySelectorAll(".lang-pick").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
 }
