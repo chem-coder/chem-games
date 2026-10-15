@@ -129,10 +129,12 @@ const ANIMS = {
         const r = minuses ? E.r : P.r;
         const mx = 240 + (rnd() - 0.5) * 140, my = 120 + (rnd() - 0.5) * 80;
         const th = rnd() * Math.PI * 2, spread = Math.PI + (rnd() - 0.5) * 1.4;
-        const T = 1.6; // both arrive at the meeting point together, at different speeds
-        const parts = [th, th + spread].map((ang) => {
-          const speed = 110 + rnd() * 110;
-          const dist = Math.max(speed * T, 330); // always from beyond the edge
+        // Both arrive at the meeting point at the same instant, each at its own speed: one
+        // arrival time long enough that even the slower one starts beyond the edge.
+        const speeds = [110 + rnd() * 110, 110 + rnd() * 110];
+        const T = Math.max(1.6, 340 / Math.min(...speeds));
+        const parts = [th, th + spread].map((ang, i) => {
+          const speed = speeds[i], dist = speed * T;
           return { x: mx + dist * Math.cos(ang), y: my + dist * Math.sin(ang), vx: -speed * Math.cos(ang), vy: -speed * Math.sin(ang) };
         });
         o.sim = { minuses, r, parts, phase: "in", nodes: minuses ? [o.a, o.b] : [o.c, o.d], hidden: minuses ? [o.c, o.d] : [o.a, o.b] };
