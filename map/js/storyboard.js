@@ -1,6 +1,6 @@
 // Storyboard animations in the bubble language: a plus (proton) and minuses (electrons)
 // on a small SVG stage. Each animation is a function of time; the frame decides which one.
-import { createCapture, advance, simulate, captured, laps, ORBIT_R } from "./capture-sim.js?v=20261016-33";
+import { createCapture, advance, simulate, captured, laps, ORBIT_R } from "./capture-sim.js?v=20261016-34";
 
 const NS = "http://www.w3.org/2000/svg";
 function mulberry32(a) {

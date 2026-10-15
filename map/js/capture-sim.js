@@ -10,7 +10,7 @@
 // A head-on electron has no sideways motion, so it never orbits: it falls through and out. The
 // storyboard does not show those rounds; `simulate` reports them as not captured.
 export const ORBIT_R = 52;
-export const DEFAULTS = { soft: 18, G: 2.2e6, radialDamp: 4, tangentialDamp: 2.2, zone: 3.4 };
+export const DEFAULTS = { soft: 18, G: 2.2e6, radialDamp: 6, tangentialDamp: 2.2, zone: 3.4, cushion: 2500 };
 export const DT = 1 / 120; // fixed integration step: the live screen and the headless check agree
 
 // A plus may carry `home: { x, y, r }`: it drifts freely inside that patch and is turned
@@ -35,12 +35,16 @@ export function step(s, dt) {
       }
     }
   }
-  // attraction from every plus
+  // attraction from every plus: full inverse-square pull everywhere, so an orbit at the
+  // radius has the force it needs. Inside the radius a smooth, steep cushion pushes back
+  // (it should rarely act: the energy loss below removes the inward motion before arrival).
   let ax = 0, ay = 0, nearest = null, nd = Infinity;
   for (const p of s.pluses) {
     const dx = p.x - s.x, dy = p.y - s.y;
     const d2 = dx * dx + dy * dy;
-    const inv = s.o.G / Math.pow(d2 + s.o.soft * s.o.soft, 1.5);
+    const d = Math.sqrt(d2) || 1e-6;
+    let inv = s.o.G / Math.pow(d2 + s.o.soft * s.o.soft, 1.5);
+    if (d < ORBIT_R) inv -= (s.o.cushion * (Math.pow(ORBIT_R / d, 6) - 1)) / d; // cushion is an acceleration in px/s²
     ax += dx * inv; ay += dy * inv;
     if (d2 < nd) { nd = d2; nearest = p; }
   }
@@ -55,22 +59,19 @@ export function step(s, dt) {
   if (r < ORBIT_R * s.o.zone) {
     const w = 1 - r / (ORBIT_R * s.o.zone);                       // 0 at the zone edge, 1 at the centre
     vr *= Math.exp(-s.o.radialDamp * w * dt);
-    if (r > ORBIT_R * 1.03) vt *= Math.exp(-s.o.tangentialDamp * w * dt);
+    // sideways motion is drained only while the electron carries more angular momentum than
+    // a circular orbit at ORBIT_R needs; then it stops, and the orbit it settles into is that
+    // circle at full speed
+    const vCirc = Math.sqrt((s.o.G * ORBIT_R * ORBIT_R) / Math.pow(ORBIT_R * ORBIT_R + s.o.soft * s.o.soft, 1.5));
+    if (Math.abs(vt) * r > vCirc * ORBIT_R * 1.02) vt *= Math.exp(-s.o.tangentialDamp * w * dt);
   }
   s.vx = nearest.vx + vr * ux - vt * uy;
   s.vy = nearest.vy + vr * uy + vt * ux;
   s.x += s.vx * dt; s.y += s.vy * dt;
-  // the floor: an electron is never closer to a plus than the orbit radius. If a step would
-  // carry it inside, it is held at the radius and its inward motion is taken away; the
-  // sideways motion stays, so it keeps circling.
+  // safety only: the well above keeps the electron out; this clamp should never fire
   for (const p of s.pluses) {
     const fx = s.x - p.x, fy = s.y - p.y, fd = Math.hypot(fx, fy) || 1e-6;
-    if (fd < ORBIT_R) {
-      const nx = fx / fd, ny = fy / fd;
-      s.x = p.x + nx * ORBIT_R; s.y = p.y + ny * ORBIT_R;
-      const inward = (s.vx - p.vx) * nx + (s.vy - p.vy) * ny;
-      if (inward < 0) { s.vx -= inward * nx; s.vy -= inward * ny; }
-    }
+    if (fd < ORBIT_R * 0.85) { s.x = p.x + (fx / fd) * ORBIT_R * 0.85; s.y = p.y + (fy / fd) * ORBIT_R * 0.85; s.clamped = (s.clamped || 0) + 1; }
   }
   // bookkeeping: how long it has stayed near the orbit radius, and how far it has swept
   const r2 = Math.hypot(s.x - nearest.x, s.y - nearest.y);
