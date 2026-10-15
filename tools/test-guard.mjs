@@ -10,6 +10,7 @@ const SUITES = [
   "shared/js/conversion-engine.test.js",
   "shared/js/i18n.test.js",
   "shared/js/progress.test.js",
+  "map/js/capture-sim.test.js",
   "conversion-conveyor/js/problems.test.js",
   "conversion-builder/js/builder.test.js",
   "acid-base-sorter/js/sorter.test.js",

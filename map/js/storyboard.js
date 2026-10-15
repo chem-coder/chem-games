@@ -1,5 +1,7 @@
 // Storyboard animations in the bubble language: a plus (proton) and minuses (electrons)
 // on a small SVG stage. Each animation is a function of time; the frame decides which one.
+import { createCapture, step, simulate, ORBIT_R } from "./capture-sim.js?v=20261016-28";
+
 const NS = "http://www.w3.org/2000/svg";
 function mulberry32(a) {
   return () => {
@@ -84,32 +86,37 @@ const ANIMS = {
     }
   },
   attract: {
-    setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") }; },
+    // One plus (drifting slowly). The minus flies in from beyond the edge, aimed to pass the
+    // plus at some offset; the inverse-square pull bends it in and light damping lets it be
+    // caught: a real falling spiral, no stop. Then about a lap in orbit, fade, new round.
+    setup(svg, defs) { return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−"), round: -1, sim: null, last: 0, caught: 0 }; },
     draw(o, t) {
-      // Capture like a landing: the minus comes in on a spiral, speeding up as the radius
-      // shrinks, and by the far side of the plus it is in orbit. Then it just circles.
-      const cx = 200, cy = 120, R = 52, start = 345, T = 2.8;
-      const SWEEP = 1.5 * Math.PI, POW = 1.8;
-      const omega = (SWEEP * POW) / T;                 // angular speed at the end of the spiral
-      const ORBIT = (1.3 * 2 * Math.PI) / omega;       // about one and a third laps, then a new entry
-      const CYC = T + ORBIT, n = Math.floor(t / CYC), cyc = t - n * CYC;
-      const rnd = mulberry32(n * 104729 + 5);
-      const a0 = rnd() * Math.PI * 2;                  // enters from a different direction each cycle
-      const dir = rnd() < 0.5 ? 1 : -1;                // and spirals clockwise or counter-clockwise
-      place(o.p, cx, cy, t, 0, 0);
-      let r, a;
-      if (cyc < T) {
-        const u = cyc / T;
-        r = R + (start - R) * Math.pow(1 - u, 1.7);   // from beyond the edge; radius closes faster near the end
-        a = a0 + dir * SWEEP * Math.pow(u, POW);       // sweep accelerates as it falls in
-      } else {
-        r = R;
-        a = a0 + dir * (SWEEP + (cyc - T) * omega);    // orbit at the arrival speed, never faster
-      }
-      place(o.e, cx + r * Math.cos(a), cy + r * Math.sin(a), t, 1, 0.6);
-      // fade out at the end of the orbit so the next entry does not pop into place
-      const left = CYC - cyc;
-      o.e.setAttribute("opacity", left < 0.35 ? (left / 0.35).toFixed(2) : cyc < 0.25 ? (cyc / 0.25).toFixed(2) : "1");
+      const dt = Math.min(0.05, Math.max(0, t - o.last)); o.last = t;
+      const newRound = () => {
+        // rejection-sample the real simulation: keep rounds caught within 4.5 s
+        for (let k = 0; k < 40; k++) {
+          o.round++;
+          const rnd = mulberry32(o.round * 2654435 + 3);
+          const plus = { x: 200 + (rnd() - 0.5) * 60, y: 120 + (rnd() - 0.5) * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
+          const ang = rnd() * Math.PI * 2, off = (rnd() < 0.5 ? -1 : 1) * (60 + rnd() * 70);
+          const aimx = plus.x + off * Math.cos(ang + Math.PI / 2), aimy = plus.y + off * Math.sin(ang + Math.PI / 2);
+          const ex = aimx + 380 * Math.cos(ang), ey = aimy + 380 * Math.sin(ang);
+          const speed = 150 + rnd() * 70, L = Math.hypot(aimx - ex, aimy - ey);
+          const init = { pluses: [plus], x: ex, y: ey, vx: ((aimx - ex) / L) * speed, vy: ((aimy - ey) / L) * speed };
+          const r = simulate(init, 6, 1 / 120, { damp: 0.9 });
+          if (r && r.t <= 4.5) { o.sim = createCapture(init, { damp: 0.9 }); o.caught = 0; return; }
+        }
+      };
+      if (!o.sim) newRound();
+      const S = o.sim;
+      step(S, dt);
+      if (S.held) o.caught += dt;
+      const laps = 1.3, orbitTime = S.held ? (laps * 2 * Math.PI) / Math.abs(S.omega) : Infinity;
+      place(o.p, S.pluses[0].x, S.pluses[0].y, t, 0, 0);
+      place(o.e, S.x, S.y, t, 1, 0.6);
+      const left = orbitTime - o.caught;
+      o.e.setAttribute("opacity", S.held && left < 0.35 ? Math.max(0, left / 0.35).toFixed(2) : "1");
+      if (S.held && o.caught >= orbitTime) newRound();
     }
   },
   repel: {
@@ -165,55 +172,55 @@ const ANIMS = {
     }
   },
   closer: {
-    // Two pluses. A minus flies in from beyond the edge at a steady speed, passes between
-    // them nearer to one, and that one takes it: accelerating, a short spiral, then orbit.
-    // Next round from another direction, nearer the other plus.
-    setup(svg, defs) { return { p1: bubble(svg, defs, P, "+"), p2: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") }; },
+    // Two pluses, both drifting slowly. The minus flies in from beyond the edge and passes
+    // between them nearer to one; the pulls do the rest. Rounds are drawn from the real
+    // simulation and kept only when the nearer plus wins within 4.5 s, so the caption is
+    // true of every round shown.
+    setup(svg, defs) { return { p1: bubble(svg, defs, P, "+"), p2: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−"), round: -1, sim: null, last: 0, caught: 0 }; },
     draw(o, t) {
-      const T_FLY = 1.3, T_IN = 2.1, R = 52;
-      const SWEEP = 0.9 * Math.PI, POW = 1.9;
-      const omega = (SWEEP * POW) / T_IN;
-      const ORBIT = (1.2 * 2 * Math.PI) / omega;
-      const CYC = T_FLY + T_IN + ORBIT;
-      const n = Math.floor(t / CYC), cyc = t - n * CYC;
-      const rnd = mulberry32(n * 15485863 + 11);
-      const A = { x: 115 + rnd() * 30, y: 95 + rnd() * 50 }, B = { x: 335 + rnd() * 30, y: 95 + rnd() * 50 };
-      const nearA = rnd() < 0.5;
-      const near = nearA ? A : B, far = nearA ? B : A;
-      const f = 0.36 + rnd() * 0.08;                       // where it passes between them, nearer to `near`
-      const px = near.x + (far.x - near.x) * f, py = near.y + (far.y - near.y) * f + (rnd() - 0.5) * 30;
-      const ang = rnd() * Math.PI * 2;                     // entry from beyond the edge, any direction
-      const ex = px + 360 * Math.cos(ang), ey = py + 360 * Math.sin(ang);
-      const dir = rnd() < 0.5 ? 1 : -1;
-      place(o.p1, A.x, A.y, t, 0, 0);
-      place(o.p2, B.x, B.y, t, 2, 0);
-      const r0 = Math.hypot(px - near.x, py - near.y), a0 = Math.atan2(py - near.y, px - near.x);
-      let x, y;
-      if (cyc < T_FLY) {
-        const u = cyc / T_FLY;                             // steady flight to the passing point
-        x = ex + (px - ex) * u; y = ey + (py - ey) * u;
-      } else if (cyc < T_FLY + T_IN) {
-        const u = (cyc - T_FLY) / T_IN;
-        const r = R + (r0 - R) * Math.pow(1 - u, 1.6);
-        const a = a0 + dir * SWEEP * Math.pow(u, POW);
-        x = near.x + r * Math.cos(a); y = near.y + r * Math.sin(a);
-      } else {
-        const a = a0 + dir * (SWEEP + (cyc - T_FLY - T_IN) * omega);
-        x = near.x + R * Math.cos(a); y = near.y + R * Math.sin(a);
-      }
-      place(o.e, x, y, t, 1, 0.6);
-      const left = CYC - cyc;
-      o.e.setAttribute("opacity", left < 0.35 ? (left / 0.35).toFixed(2) : "1");
+      const dt = Math.min(0.05, Math.max(0, t - o.last)); o.last = t;
+      const newRound = () => {
+        for (let k = 0; k < 60; k++) {
+          o.round++;
+          const rnd = mulberry32(o.round * 15485863 + 11);
+          const A = { x: 115 + rnd() * 30, y: 95 + rnd() * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
+          const B = { x: 335 + rnd() * 30, y: 95 + rnd() * 50, vx: (rnd() - 0.5) * 14, vy: (rnd() - 0.5) * 14 };
+          const nearA = rnd() < 0.5;
+          const near = nearA ? A : B, far = nearA ? B : A;
+          const f = 0.3 + rnd() * 0.1;
+          const px = near.x + (far.x - near.x) * f, py = near.y + (far.y - near.y) * f + (rnd() - 0.5) * 40;
+          const ang = rnd() * Math.PI * 2;
+          const ex = px + 380 * Math.cos(ang), ey = py + 380 * Math.sin(ang);
+          const speed = 150 + rnd() * 60, L = Math.hypot(px - ex, py - ey);
+          const init = { pluses: [A, B], x: ex, y: ey, vx: ((px - ex) / L) * speed, vy: ((py - ey) / L) * speed };
+          const r = simulate(init, 6);
+          if (r && r.t <= 4.5 && r.plus === (nearA ? 0 : 1)) { o.sim = createCapture(init); o.caught = 0; return; }
+        }
+      };
+      if (!o.sim) newRound();
+      const S = o.sim;
+      step(S, dt);
+      if (S.held) o.caught += dt;
+      const laps = 1.2, orbitTime = S.held ? (laps * 2 * Math.PI) / Math.abs(S.omega) : Infinity;
+      place(o.p1, S.pluses[0].x, S.pluses[0].y, t, 0, 0);
+      place(o.p2, S.pluses[1].x, S.pluses[1].y, t, 2, 0);
+      place(o.e, S.x, S.y, t, 1, 0.6);
+      const left = orbitTime - o.caught;
+      o.e.setAttribute("opacity", S.held && left < 0.35 ? Math.max(0, left / 0.35).toFixed(2) : "1");
+      if (S.held && o.caught >= orbitTime) newRound();
     }
   },
   hydrogen: {
+    // The finished atom: the plus drifts slowly, the ring and the orbiting minus go with it.
     setup(svg, defs) {
-      el("circle", { cx: 240, cy: 120, r: 80, fill: "none", stroke: "#3a3630", "stroke-opacity": 0.5, "stroke-width": 1.6 }, svg);
-      return { p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") };
+      const ring = el("circle", { r: ORBIT_R, fill: "none", stroke: "#3a3630", "stroke-opacity": 0.5, "stroke-width": 1.6 }, svg);
+      return { ring, p: bubble(svg, defs, P, "+"), e: bubble(svg, defs, E, "−") };
     },
     draw(o, t) {
-      place(o.p, 240, 120, t, 0, 0);
-      place(o.e, 240 + 80 * Math.cos(t * 2.4), 120 + 80 * Math.sin(t * 2.4), t, 1, 0.5);
+      const cx = 240 + 18 * Math.sin(t * 0.21) + 9 * Math.sin(t * 0.37 + 1), cy = 120 + 12 * Math.sin(t * 0.17 + 2) + 7 * Math.cos(t * 0.29);
+      o.ring.setAttribute("cx", cx.toFixed(1)); o.ring.setAttribute("cy", cy.toFixed(1));
+      place(o.p, cx, cy, t, 0, 0);
+      place(o.e, cx + ORBIT_R * Math.cos(t * 3.2), cy + ORBIT_R * Math.sin(t * 3.2), t, 1, 0.5);
     }
   }
 };
