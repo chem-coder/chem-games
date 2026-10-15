@@ -3,6 +3,7 @@ export default {
   title: "Chem Games Home",
   eyebrow: "Chem Games",
   h1: "Local Game Hub",
+  play_map: "Play: the skills map →",
   footer: "This page is intentionally basic. Add a new card here whenever a new game folder becomes runnable.",
   sections: {
     foundations: { heading: "Foundations", note: "Know your elements, ions, and names — the base everything else builds on." },

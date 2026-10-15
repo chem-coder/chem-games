@@ -16,6 +16,7 @@ document.title = pick((d) => d.title);
 document.querySelector("#eyebrow").innerHTML = pick((d) => d.eyebrow);
 document.querySelector("#h1").innerHTML = pick((d) => d.h1);
 document.querySelector("#footer").innerHTML = pick((d) => d.footer);
+document.querySelector("#playLink").innerHTML = `<a href="map/${lang === "en" ? "" : "?lang=" + lang}">${pick((d) => d.play_map)}</a>`;
 document.querySelector("#langToggle").innerHTML = langToggleHtml(lang);
 wireLangToggle(document);
 

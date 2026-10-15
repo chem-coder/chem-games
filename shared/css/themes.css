@@ -1,0 +1,64 @@
+/* Chem Games — looks (themes). The default look is the True Autumn token set in tokens.css.
+   A look overrides the tokens under html[data-theme="…"]; shared/js/theme.js sets the
+   attribute from the student's choice (localStorage "cg-theme"). Pages that use only the
+   tokens follow the look automatically. */
+
+/* Jewel: deep indigo (not navy), emerald, ruby, amethyst, gold. The game look. */
+html[data-theme="jewel"] {
+  color-scheme: dark;
+  --bg: #141235;
+  --surface: #1d1a48;
+  --surface-soft: #262258;
+  --ink: #efe8ff;
+  --muted: #a79fcf;
+  --line: #3b3675;
+  --accent: #2fb39a;
+  --accent-dark: #1b7f6c;
+  --accent-soft: #1e3f45;
+  --plum: #b86bd6;
+  --plum-dark: #d49af0;
+  --plum-soft: #3a2a55;
+  --success: #3ddc84;
+  --success-soft: #1f3d2f;
+  --success-line: #2e7d4f;
+  --success-vivid: #3ddc84;
+  --success-vivid-soft: #1f3d2f;
+  --warning-soft: #4a3a1a;
+  --warning-line: #e3b341;
+  --danger: #ff5c70;
+  --danger-soft: #4a1f2a;
+  --danger-line: #a33a4b;
+  --gold: #e3b341;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Villainess: vermilion and gold on cream, lattice purple as the second accent, jade for success. */
+html[data-theme="villainess"] {
+  color-scheme: light;
+  --bg: #f8eeea;
+  --surface: #fff9f5;
+  --surface-soft: #f9e9e3;
+  --ink: #3a1f2b;
+  --muted: #9a6b78;
+  --line: #ecd3d3;
+  --accent: #c8102e;
+  --accent-dark: #8e0b20;
+  --accent-soft: #f7dcdc;
+  --plum: #7b4fa0;
+  --plum-dark: #5e3a7e;
+  --plum-soft: #ece0f3;
+  --success: #2f8f6a;
+  --success-soft: #dff2ea;
+  --success-line: #a8d8c4;
+  --success-vivid: #1fa36f;
+  --success-vivid-soft: #d6f2e5;
+  --warning-soft: #fbeccb;
+  --warning-line: #d9a521;
+  --danger: #b4502f;
+  --danger-soft: #f6e3da;
+  --danger-line: #e0b6a3;
+  --gold: #d9a521;
+  --shadow: 0 16px 40px rgba(120, 40, 60, 0.15);
+}
+
+html[data-theme="autumn"], :root { --gold: #c9962b; }

@@ -9,6 +9,7 @@ import { createAtomRenderer } from "./renderer.js";
 import { SHELLS, chargeLabel } from "./model.js";
 import { judge, deal } from "./judge.js";
 import { TIERS, DECK_SIZE } from "../data/rounds.js";
+import { loadProgress, saveProgress, completeLevel } from "../../shared/js/progress.js";
 import en from "../locale/en.js";
 import ru from "../locale/ru.js";
 
@@ -25,7 +26,7 @@ const byZ = Object.fromEntries(ELEMENTS.map((e) => [e.z, e]));
 const nameOf = (sp) => elementName(byZ[sp.z], lang, NAMES_RU).toLowerCase();
 const root = document.querySelector("#game");
 
-const state = { tier: 0, deck: [], index: 0, solved: 0, hints: 0, checked: false, renderer: null };
+const state = { tier: 0, deck: [], index: 0, solved: 0, hints: 0, checked: false, renderer: null, deckHints: 0 };
 
 // ---- screens -----------------------------------------------------------------------
 function tabsHtml() {
@@ -52,7 +53,7 @@ function showIntro() {
 
 function startDeck() {
   state.deck = deal(TIERS[state.tier].pool, DECK_SIZE);
-  state.index = 0; state.solved = 0;
+  state.index = 0; state.solved = 0; state.deckHints = 0;
   showRound();
 }
 
@@ -115,7 +116,7 @@ function showHint() {
   li.className = "hint";
   li.innerHTML = `<span class="step-num">${state.hints + 1}</span><span class="step-text">${tk(HINTS[state.hints])}</span>`;
   box.appendChild(li);
-  state.hints++;
+  state.hints++; state.deckHints++;
   if (state.hints >= HINTS.length) root.querySelector("#hint").disabled = true;
   else root.querySelector("#hint").textContent = t("hint_more");
 }
@@ -145,6 +146,8 @@ function check(sp) {
 }
 
 function showDone() {
+  // The skills map counts a finished deck as the tier's level; clean = no hints at all.
+  if (state.solved === DECK_SIZE) saveProgress(completeLevel(loadProgress(), "atomic-structure", state.tier, { clean: state.deckHints === 0 }));
   root.innerHTML = `${tabsHtml()}
     <div class="intro-card">
       <h2>${t("done_h2", { tier: t("tier_" + TIERS[state.tier].id) })}</h2>

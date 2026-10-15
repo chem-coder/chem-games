@@ -12,6 +12,8 @@ h1, h2, p { margin-top: 0; }
 .eyebrow { margin: 0 0 8px; color: var(--plum-dark); font-size: 0.78rem; font-weight: 850; text-transform: uppercase; }
 h1 { margin-bottom: 8px; font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.05; }
 
+.play-line { margin: 0 0 8px; font-size: 1rem; } .play-line a { color: var(--accent); font-weight: 700; text-decoration: none; }
+
 /* The language is chosen here and nowhere else, so the toggle is easy to find. */
 #langToggle { position: absolute; top: 0; right: 0; }
 .lang-toggle { display: inline-flex; gap: 6px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow); }
