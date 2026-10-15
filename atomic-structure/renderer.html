@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomic Structure — renderer prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20261015-1">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <a class="home-link" href="../periodic-table/" data-i18n="back_topic">&larr; The Periodic System</a>
+      <a class="home-link" href="../" data-i18n="home">&#8962; All Chem Games</a>
+      <span id="langToggle"></span>
+      <p class="eyebrow" data-i18n="eyebrow">Atoms &amp; the Periodic Table &middot; Atomic Structure</p>
+      <h1 data-i18n="proto_title">Atom renderer — prototype</h1>
+      <p class="lede" data-i18n="proto_lede">Press on the nucleus or an electron: the bubbles yield and spring back. Reveal shows the shells as layers with the electrons moving in them.</p>
+    </header>
+
+    <section class="panels" id="panels"></section>
+
+    <p class="proto-options">
+      <span data-i18n="shell_note">Rings are the 7 energy levels (shells). A dark ring holds electrons; a grey ring is empty.</span>
+      <label><span id="ratioLabel"></span> <input type="range" id="ratio" min="3" max="6" step="0.5" value="4.5"></label>
+    </p>
+  </main>
+
+  <script type="module" src="js/prototype.js?v=20261015-1"></script>
+</body>
+</html>
