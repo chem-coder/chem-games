@@ -28,6 +28,7 @@ Reasons, in her words or close to them:
 Her requirement: a complete syllabus-like map that defines the project's boundaries, so development is purposeful and nothing gets rebuilt. Specifically:
 
 - Sequence: Tro, *Introductory Chemistry*, 19 chapters (the "gen chem by book" track from `TRACK_MAPS.md`; the 18-topic universe is unchanged).
+  - **Changed 2026-10-17:** the row spine is now Tro, *Chemistry: A Molecular Approach*, 5th ed. (Pearson, 2019), 26 chapters, because it is the superset and every exam or course becomes a column of it. Built as `slo-matrix/SLO_MATRIX.xlsx`. The chapter-slot table below still uses Introductory Chemistry numbering and is kept as the record of existing assets; the matrix carries the same placements in its Game / asset column.
 - Three blocks: **fundamentals / quantitative / advanced**.
 - Per chapter: what the student must **understand**, **be able to do**, and **memorize** (the format she used in earlier course development).
 - Roughly **7 sub-levels per chapter** → about 140 units.
@@ -67,14 +68,14 @@ Block membership is provisional (Tro's own order interleaves; the block split is
 
 ## 4. Open decisions
 
-1. Confirm Tro's 19 chapters as the course sequence.
+1. ~~Confirm Tro's 19 chapters as the course sequence.~~ Decided 2026-10-17: Molecular Approach 5th ed., 26 chapters, as the SLO matrix spine.
 2. Lesson shape inside a chapter — not decided. The one idea discussed: the interactive module comes before the theory text.
 3. Platform choice.
 4. Public hosting for the games from the private repo.
 
 ## 5. Next steps
 
-1. Write the outline chapter by chapter with Dalia (lists, sub-levels, asset placement), block 1 first.
+1. Review the SLO matrix chapter by chapter with Dalia, block 1 first (rows marked Source = Draft need her SLOs; Block and Type are provisional); then add the sub-levels. Fill the MCAT, AP, A-level, GAMSAT, DAT, and IB columns once each official outline is read.
 2. Resolve hosting.
 3. Build module 1 (Tro ch. 4) and pilot it with the current student.
 4. First PDF guide for the same chapter.
