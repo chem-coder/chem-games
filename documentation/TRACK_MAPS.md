@@ -123,6 +123,44 @@ atomic structure → nuclear decay → periodic system → inorganic naming & io
 - Organic naming is minor on the MCAT; organic is functional-group chemistry (carbonyls, alcohols, acids and derivatives) plus stereochemistry.
 - New work relative to IMAT = exactly the five dashed nodes in the graph. Everything else is shared.
 
+### Tro, *Introductory Chemistry* (19 chapters) — the course sequence (added 2026-10-17)
+
+The first "gen chem by book" track, and the sequence of the EdTech course (`EDTECH_COURSE_PLAN.md`). Chapter order is the book's; each chapter maps to one or more universe topics.
+
+| Ch. | Title | Universe topics |
+|---|---|---|
+| 1 | The Chemical World | matter (intro) |
+| 2 | Measurement and Problem Solving | measurement |
+| 3 | Matter and Energy | matter; thermochemistry (heat, specific heat) |
+| 4 | Atoms and Elements | atomic structure (particles, isotopes, ions) |
+| 5 | Molecules and Compounds | inorganic naming & ions |
+| 6 | Chemical Composition | stoichiometry (mole, composition, formulas) |
+| 7 | Chemical Reactions | stoichiometry (equations, reaction types, net ionic) |
+| 8 | Quantities in Chemical Reactions | stoichiometry (ratios, limiting, yield) |
+| 9 | Electrons in Atoms and the Periodic Table | atomic structure (configurations); periodic system |
+| 10 | Chemical Bonding | chemical bond; shape & polarity |
+| 11 | Gases | gas laws |
+| 12 | Liquids, Solids, and Intermolecular Forces | shape, polarity & IMFs |
+| 13 | Solutions | solutions |
+| 14 | Acids and Bases | acids & bases |
+| 15 | Chemical Equilibrium | kinetics (rates); equilibria |
+| 16 | Oxidation and Reduction | redox; electrochemistry |
+| 17 | Radioactivity and Nuclear Chemistry | nuclear decay |
+| 18 | Organic Chemistry | organic structure, naming, reactions |
+| 19 | Biochemistry | biomolecules |
+
+```mermaid
+flowchart LR
+    c1[1 Chemical world] --> c2[2 Measurement] --> c3[3 Matter & energy] --> c4[4 Atoms] --> c5[5 Compounds & naming] --> c6[6 Composition] --> c7[7 Reactions] --> c8[8 Quantities] --> c9[9 Electrons & PT] --> c10[10 Bonding]
+    c10 --> c11[11 Gases] --> c12[12 Liquids, solids, IMFs] --> c13[13 Solutions] --> c14[14 Acids & bases] --> c15[15 Equilibrium] --> c16[16 Redox] --> c17[17 Nuclear] --> c18[18 Organic] --> c19[19 Biochemistry]
+```
+
+- Where Tro differs from IMAT: reactions and stoichiometry (6–8) come **before** electrons, periodic trends, and bonding (9–10); thermochemistry basics sit in ch. 3; kinetics is folded into the equilibrium chapter; nuclear is a full chapter.
+- Provisional blocks for the course (Dalia to confirm): fundamentals = 1, 2, 3, 4, 9, 10 · quantitative = 5, 6, 7, 8, 13 · advanced = 11, 12, 14–19.
+- Lane check against the universe graph: the book honors every prerequisite arrow except that it teaches stoichiometry (ch. 6–8) before the periodic system (ch. 9); the graph has periodic system → naming → stoichiometry. Tro gets away with it because ch. 4 already covers Z and ions.
+
+**Editable copy:** `TRACK_MAPS.drawio` — three tabs (IMAT, MCAT, Tro), one map per tab, laid out in the three universe lanes with prerequisite arrows. Open in diagrams.net or the VS Code draw.io extension; regenerate from the Mermaid graph if the universe changes.
+
 ### Gen chem, by book
 
 Same universe, same games, a different order per textbook. Every intro text covers the same topics; they differ in sequence (atoms-first vs reactions-first, where the mole lands, when gases appear). So a "Gen chem" track is really a family of tracks, one per book, each just an ordered list of topic IDs mapped from that book's chapter order.
