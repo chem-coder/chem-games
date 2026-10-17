@@ -70,19 +70,19 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Assign oxidation states to atoms in compounds and polyatomic ions.,Do,2,,1,,1,,,,,,,Oxidation-State Trainer,Built,110 §4.6,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Identify redox reactions and the oxidizing and reducing agents.,Do,3,1,1,,1,,,,,,,Oxidation-State Trainer,Built,110 §4.6; 101 §7.9,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict the products of synthesis, decomposition, and single-replacement redox reactions (activity series).",Do,1,,1,,0,,,,,,,,,110 §4.7,,gold
-3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,2,1,1,,,,,,,,,,,101 §11.2; 110 §7.10,,gold
-3 Advanced,6,Gases,"Define pressure and convert among pressure units (atm, mmHg, torr, kPa).",Do,2,1,1,,,,,,,,,,,110 §7.1; 101 §11.3,,gold
+3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,3,1,1,,1,,,,,,,,,101 §11.2; 110 §7.10,,gold
+3 Advanced,6,Gases,"Define pressure and convert among pressure units (atm, mmHg, torr, kPa).",Do,3,1,1,,1,,,,,,,,,110 §7.1; 101 §11.3,,gold
 3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,4,1,1,1,1,,,,,,,,,110 §7.2; 101 §11.4,,gold
 3 Advanced,6,Gases,Use Charles's law (V and absolute T).,Do,4,1,1,1,1,,,,,,,Gas Laws (Charles),Partial,110 §7.3; 101 §11.5,Charles's law only is built.,gold
 3 Advanced,6,Gases,"Use the combined gas law (P, V, and T).",Do,3,1,1,,1,,,,,,,,,110 §7.4; 101 §11.6,,gold
 3 Advanced,6,Gases,Use Avogadro's law (V and moles).,Do,3,1,1,,1,,,,,,,,,110 §7.5; 101 §11.7,,gold
 3 Advanced,6,Gases,"Solve for any variable in the ideal gas law, PV = nRT.",Do,4,1,1,1,1,,,,,,,,,110 §7.6; 101 §11.8,,gold
-3 Advanced,6,Gases,Use the ideal gas law to find molar mass and density of a gas.,Do,1,0,1,,,,,,,,,,,110 §7.8,,gold
-3 Advanced,6,Gases,Relate total pressure to partial pressures (Dalton's law) and mole fractions.,Do,2,1,1,,,,,,,,,,,110 §7.7; 101 §11.9,,gold
-3 Advanced,6,Gases,Calculate stoichiometry for reactions that involve gases.,Do,2,1,1,,,,,,,,,,,110 §7.9; 101 §11.10,,gold
-3 Advanced,6,Gases,Recall the molar volume of a gas at STP.,Memorize,0,,,,,,,,,,,,,Draft,,gold
-3 Advanced,6,Gases,Relate molecular speed to temperature and molar mass; describe diffusion and effusion.,Understand,1,0,1,,,,,,,,,,,110 §7.11,,gold
-3 Advanced,6,Gases,Explain why real gases deviate from ideal behavior.,Understand,1,0,1,,,,,,,,,,,110 §7.12,,gold
+3 Advanced,6,Gases,Use the ideal gas law to find molar mass and density of a gas.,Do,1,0,1,,0,,,,,,,,,110 §7.8,,gold
+3 Advanced,6,Gases,Relate total pressure to partial pressures (Dalton's law) and mole fractions.,Do,3,1,1,,1,,,,,,,,,110 §7.7; 101 §11.9,,gold
+3 Advanced,6,Gases,Calculate stoichiometry for reactions that involve gases.,Do,3,1,1,,1,,,,,,,,,110 §7.9; 101 §11.10,,gold
+3 Advanced,6,Gases,Recall the molar volume of a gas at STP.,Memorize,1,,,,1,,,,,,,,,Draft,,gold
+3 Advanced,6,Gases,Relate molecular speed to temperature and molar mass; describe diffusion and effusion.,Understand,1,0,1,,0,,,,,,,,,110 §7.11,,gold
+3 Advanced,6,Gases,Explain why real gases deviate from ideal behavior.,Understand,2,0,1,,1,,,,,,,,,110 §7.12,,gold
 2 Quantitative,7,Thermochemistry,"Describe kinetic energy, potential energy, and the conservation of energy.",Understand,3,1,1,,1,,,,,,,,,110 §6.1; 101 §3.8,"IMAT: first thermochemistry question in 2026 (bank only, not on the official syllabus).",gold
 2 Quantitative,7,Thermochemistry,"Identify and convert among energy units (J, kJ, cal, Cal).",Do,3,1,1,1,0,,,,,,,,,110 §6.1; 101 §3.8,,gold
 2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,3,1,,1,1,,,,,,,,,101 §3.9,,gold
