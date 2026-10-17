@@ -41,35 +41,35 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 2 Quantitative,3,Molecules and Compounds,"Define the mole; convert between moles and number of particles, and between moles of a compound and moles of each element.",Do,4,1,1,1,1,,,,,,,Conversion Builder,Built,"110 §3.7; 101 §6.2, 6.4",,gold
 2 Quantitative,3,Molecules and Compounds,"Convert between mass, moles, and number of particles using molar mass.",Do,4,1,1,1,1,,,,,,,Conversion Builder,Built,110 §3.8; 101 §6.2-6.3,,gold
 2 Quantitative,3,Molecules and Compounds,Use a chemical formula as a conversion factor between grams of a compound and grams of one of its elements.,Do,3,1,1,,1,,,,,,,Conversion Builder,Built,101 §6.5,,gold
-2 Quantitative,3,Molecules and Compounds,Calculate mass percent composition from a formula and use it as a conversion factor.,Do,2,1,1,,,,,,,,,,,110 §3.9; 101 §6.6-6.7,,gold
-2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from percent composition or mass data.,Do,2,1,1,,,,,,,,,,,110 §3.10; 101 §6.8,,gold
-2 Quantitative,3,Molecules and Compounds,Determine a molecular formula from an empirical formula and molar mass.,Do,2,1,1,,,,,,,,,,,110 §3.11; 101 §6.9,,gold
-2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from combustion analysis data.,Do,1,0,1,,,,,,,,,,,110 §3.12,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the evidence that a chemical reaction has occurred.,Understand,1,1,,,,,,,,,,,,101 §7.2,,gold
+2 Quantitative,3,Molecules and Compounds,Calculate mass percent composition from a formula and use it as a conversion factor.,Do,3,1,1,,1,,,,,,,,,110 §3.9; 101 §6.6-6.7,,gold
+2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from percent composition or mass data.,Do,3,1,1,,1,,,,,,,,,110 §3.10; 101 §6.8,,gold
+2 Quantitative,3,Molecules and Compounds,Determine a molecular formula from an empirical formula and molar mass.,Do,3,1,1,,1,,,,,,,,,110 §3.11; 101 §6.9,,gold
+2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from combustion analysis data.,Do,2,0,1,,1,,,,,,,,,110 §3.12,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the evidence that a chemical reaction has occurred.,Understand,2,1,,,1,,,,,,,,,101 §7.2,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Identify the parts of a chemical equation: reactants, products, phases, coefficients.",Understand,4,1,1,1,1,,,,,,,,,110 §4.1,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write and balance chemical equations from symbols or word descriptions.,Do,4,1,1,1,1,,,,,,,Visual Equation Balancer,Built,110 §4.1; 101 §7.3-7.4,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Recognize the five basic reaction types: synthesis, decomposition, single replacement, double replacement, combustion.",Understand,3,1,1,,1,,,,,,,,,110 §4.2; 101 §7.10,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write balanced equations for combustion reactions.,Do,1,1,,,,,,,,,,,,101 §7.9,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Recognize the five basic reaction types: synthesis, decomposition, single replacement, double replacement, combustion.",Understand,4,1,1,1,1,,,,,,,,,110 §4.2; 101 §7.10,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write balanced equations for combustion reactions.,Do,2,1,,,1,,,,,,,,,101 §7.9,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the numerical relationship between quantities in a balanced equation (mole ratio).,Understand,4,1,1,1,1,,,,,,,Ratio Factory,Built,110 §5.1; 101 §8.2,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,Carry out mole-to-mole conversions between reactants and products.,Do,4,1,1,1,1,,,,,,,Ratio Factory,Built,110 §5.1; 101 §8.3,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,Carry out mass-to-mass conversions between reactants and products through moles.,Do,4,1,1,1,1,,,,,,,Ratio Factory,Built,110 §5.2; 101 §8.4,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,Identify the limiting reactant and calculate the amount of product formed.,Do,4,1,1,1,1,,,,,,,Ratio Factory,Built,110 §5.3; 101 §8.5-8.6,,gold
 2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate theoretical yield and percent yield.,Do,4,1,1,1,1,,,,,,,Ratio Factory,Built,110 §5.4; 101 §8.5-8.6,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate the thermal energy released or absorbed by a reaction from the amounts of reactants.,Do,1,1,,,,,,,,,,,,101 §8.6,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate the thermal energy released or absorbed by a reaction from the amounts of reactants.,Do,1,1,,,0,,,,,,,,,101 §8.6,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Describe how ionic compounds dissolve and dissociate in water; write the dissociation equation.,Understand,3,1,1,,1,,,,,,,,,110 §4.3; 101 §7.5,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Classify solutes as strong electrolytes, weak electrolytes, or nonelectrolytes from their formulas.",Do,2,1,1,,,,,,,,,,,110 §4.3,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Classify solutes as strong electrolytes, weak electrolytes, or nonelectrolytes from their formulas.",Do,3,1,1,,1,,,,,,,,,110 §4.3,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate molarity and use it as a conversion factor.,Do,4,1,1,1,1,,,,,,,,,110 §5.5; 101 §13.6,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate concentrations after dilution.,Do,4,1,1,1,1,,,,,,,pH Lab (dilution rung),Built,110 §5.7; 101 §13.7,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate the molarity of each ion in a solution of an ionic compound.,Do,1,0,1,,,,,,,,,,,110 §5.6,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate the molarity of each ion in a solution of an ionic compound.,Do,2,0,1,,1,,,,,,,,,110 §5.6,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Memorize the solubility rules and use them to decide whether an ionic compound is soluble.,Memorize,3,1,1,,1,,,,,,,,,110 §4.4; 101 §7.5,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict precipitation reactions; write molecular, complete ionic, and net ionic equations.",Do,2,1,1,,,,,,,,,,,110 §4.4; 101 §7.6-7.7,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict precipitation reactions; write molecular, complete ionic, and net ionic equations.",Do,3,1,1,,1,,,,,,,,,110 §4.4; 101 §7.6-7.7,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of acid-base reactions and write their net ionic equations.,Do,3,1,1,,1,,,,,,,,,110 §4.5; 101 §7.7-7.8,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of gas-evolution reactions.,Do,2,1,1,,,,,,,,,,,110 §4.5; 101 §7.8,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Solve solution stoichiometry problems using molarity and balanced equations.,Do,3,1,1,1,,,,,,,,,,110 §5.6-5.7; 101 §13.8,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Determine an unknown concentration by acid-base titration.,Do,3,1,1,1,,,,,,,,,,110 §5.8; 101 §14.6,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of gas-evolution reactions.,Do,3,1,1,,1,,,,,,,,,110 §4.5; 101 §7.8,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Solve solution stoichiometry problems using molarity and balanced equations.,Do,4,1,1,1,1,,,,,,,,,110 §5.6-5.7; 101 §13.8,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Determine an unknown concentration by acid-base titration.,Do,4,1,1,1,1,,,,,,,,,110 §5.8; 101 §14.6,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Assign oxidation states to atoms in compounds and polyatomic ions.,Do,2,,1,,1,,,,,,,Oxidation-State Trainer,Built,110 §4.6,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Identify redox reactions and the oxidizing and reducing agents.,Do,3,1,1,,1,,,,,,,Oxidation-State Trainer,Built,110 §4.6; 101 §7.9,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict the products of synthesis, decomposition, and single-replacement redox reactions (activity series).",Do,1,,1,,,,,,,,,,,110 §4.7,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict the products of synthesis, decomposition, and single-replacement redox reactions (activity series).",Do,1,,1,,0,,,,,,,,,110 §4.7,,gold
 3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,2,1,1,,,,,,,,,,,101 §11.2; 110 §7.10,,gold
 3 Advanced,6,Gases,"Define pressure and convert among pressure units (atm, mmHg, torr, kPa).",Do,2,1,1,,,,,,,,,,,110 §7.1; 101 §11.3,,gold
 3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,4,1,1,1,1,,,,,,,,,110 §7.2; 101 §11.4,,gold
@@ -85,7 +85,7 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,6,Gases,Explain why real gases deviate from ideal behavior.,Understand,1,0,1,,,,,,,,,,,110 §7.12,,gold
 2 Quantitative,7,Thermochemistry,"Describe kinetic energy, potential energy, and the conservation of energy.",Understand,3,1,1,,1,,,,,,,,,110 §6.1; 101 §3.8,"IMAT: first thermochemistry question in 2026 (bank only, not on the official syllabus).",gold
 2 Quantitative,7,Thermochemistry,"Identify and convert among energy units (J, kJ, cal, Cal).",Do,3,1,1,1,0,,,,,,,,,110 §6.1; 101 §3.8,,gold
-2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,2,1,,1,,,,,,,,,,101 §3.9,,gold
+2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,3,1,,1,1,,,,,,,,,101 §3.9,,gold
 2 Quantitative,7,Thermochemistry,"Relate energy, temperature change, and heat capacity: q = mcΔT.",Do,3,1,1,1,0,,,,,,,,,110 §6.5; 101 §3.10-3.11,,gold
 2 Quantitative,7,Thermochemistry,Define system and surroundings; assign the signs of heat q and work w; calculate ΔE = q + w.,Do,1,0,1,,0,,,,,,,,,110 §6.2-6.3,,gold
 2 Quantitative,7,Thermochemistry,Explain what a state function is.,Understand,1,0,1,0,0,,,,,,,,,110 §6.3,,gold
