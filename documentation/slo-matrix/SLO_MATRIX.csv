@@ -135,48 +135,48 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Use molecular orbital theory: bond order and magnetism of diatomic molecules.,Do,1,0,1,0,0,,,,,,,,,110 §11.5,,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Identify the intermolecular forces present in a substance: dispersion, dipole-dipole, hydrogen bonding, ion-dipole.",Do,3,1,1,,1,,,,,,,,,110 §12.1; 101 §12.6,Shape Lab covers the polarity step.,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Use intermolecular forces to compare melting points, boiling points, viscosity, and vapor pressure.",Do,3,1,1,,1,,,,,,,,,110 §12.2; 101 §12.6,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Explain surface tension, viscosity, and capillary action.",Understand,2,1,1,0,,,,,,,,,,101 §12.3; 110 §12.2,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Describe evaporation, condensation, dynamic equilibrium, and vapor pressure.",Understand,2,1,1,,,,,,,,,,,101 §12.4; 110 §12.4,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Explain surface tension, viscosity, and capillary action.",Understand,2,1,1,0,0,,,,,,,,,101 §12.3; 110 §12.2,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Describe evaporation, condensation, dynamic equilibrium, and vapor pressure.",Understand,3,1,1,,1,,,,,,,,,101 §12.4; 110 §12.4,,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Relate vapor pressure to boiling point; use the Clausius-Clapeyron equation.,Do,1,0,1,0,0,,,,,,,,,110 §12.4,,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Interpret heating curves; calculate heats of fusion and vaporization.,Do,2,1,1,,0,,,,,,,,,101 §12.4-12.5; 110 §12.3,,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Read a phase diagram: triple point, critical point, phase boundaries.",Do,1,0,1,0,0,,,,,,,,,110 §12.5,,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Explain the unusual properties of water that arise from hydrogen bonding.,Understand,2,1,,,1,,,,,,,,,101 §12.8; IMAT syllabus,,gold
 3 Advanced,13,Solids and Modern Materials,"Classify solids as molecular, ionic, or atomic (metallic, network covalent).",Do,2,1,1,,0,,,,,,,,,110 §12.6; 101 §12.7,,gold
-3 Advanced,13,Solids and Modern Materials,Distinguish crystalline from amorphous solids.,Understand,0,,,,,,,,,,,,,Draft,,gold
+3 Advanced,13,Solids and Modern Materials,Distinguish crystalline from amorphous solids.,Understand,1,,,,1,,,,,,,,,Draft,,gold
 3 Advanced,13,Solids and Modern Materials,"Count atoms per unit cell for simple cubic, body-centered, and face-centered cubic lattices.",Do,1,0,1,0,0,,,,,,,,,110 §12.7,,gold
 3 Advanced,13,Solids and Modern Materials,Calculate density from unit cell dimensions.,Do,1,0,1,0,0,,,,,,,,,110 §12.7,,gold
 3 Advanced,13,Solids and Modern Materials,"Explain band theory: conductors, semiconductors, and insulators.",Understand,0,0,0,0,0,,,,,,,,,Draft,,gold
 3 Advanced,13,Solids and Modern Materials,"Describe ceramics, polymers, composites, and nanomaterials.",Understand,0,0,0,0,0,,,,,,,,,Draft,,gold
 3 Advanced,14,Solutions,Describe the solution process: solute-solvent interactions and 'like dissolves like'.,Understand,3,1,1,,1,,,,,,,,,110 §13.1; 101 §13.2-13.3,,gold
 3 Advanced,14,Solutions,"Distinguish saturated, unsaturated, and supersaturated solutions; read a solubility curve.",Understand,3,1,1,,1,,,,,,,,,110 §13.2; 101 §13.3,,gold
-3 Advanced,14,Solutions,Describe the solubility of gases in liquids; apply Henry's law.,Understand,1,1,,,,,,,,,,,,101 §13.4,,gold
+3 Advanced,14,Solutions,Describe the solubility of gases in liquids; apply Henry's law.,Understand,2,1,,,1,,,,,,,,,101 §13.4,,gold
 3 Advanced,14,Solutions,Calculate mass percent concentration and use it in calculations.,Do,3,1,1,,1,,,,,,,,,110 §13.3; 101 §13.5,,gold
-3 Advanced,14,Solutions,"Calculate molality, mole fraction, and parts per million.",Do,3,1,1,1,,,,,,,,,,110 §13.3; 101 §13.1,HESI file names molarity and molality.,gold
-3 Advanced,14,Solutions,Calculate freezing point depression and boiling point elevation of nonelectrolyte solutions.,Do,2,1,1,,,,,,,,,,,110 §13.4; 101 §13.9,,gold
+3 Advanced,14,Solutions,"Calculate molality, mole fraction, and parts per million.",Do,4,1,1,1,1,,,,,,,,,110 §13.3; 101 §13.1,HESI file names molarity and molality.,gold
+3 Advanced,14,Solutions,Calculate freezing point depression and boiling point elevation of nonelectrolyte solutions.,Do,3,1,1,,1,,,,,,,,,110 §13.4; 101 §13.9,,gold
 3 Advanced,14,Solutions,Include the van't Hoff factor for electrolyte solutions in colligative property calculations.,Do,1,0,1,0,0,,,,,,,,,110 §13.5,,gold
-3 Advanced,14,Solutions,Explain osmosis and osmotic pressure.,Understand,1,1,,,,,,,,,,,,101 §13.10,,gold
+3 Advanced,14,Solutions,Explain osmosis and osmotic pressure.,Understand,1,1,,,0,,,,,,,,,101 §13.10,,gold
 3 Advanced,15,Chemical Kinetics,Define reaction rate and explain it with collision theory.,Understand,2,1,1,0,0,,,,,,,,,101 §15.2; 110 Ch 14,,gold
 3 Advanced,15,Chemical Kinetics,"Describe how concentration, temperature, surface area, and catalysts change reaction rate.",Understand,2,,1,0,1,,,,,,,,,110 Ch 14,,gold
-3 Advanced,15,Chemical Kinetics,Determine a rate law and reaction order from initial-rate data.,Do,1,0,1,0,0,,,,,,,,,Draft,"Rows below draw on the 110 Ch 14 worksheets, not on an SLO list.",gold
+3 Advanced,15,Chemical Kinetics,Determine a rate law and reaction order from initial-rate data.,Do,2,0,1,0,1,,,,,,,,,Draft,"Rows below draw on the 110 Ch 14 worksheets, not on an SLO list.",gold
 3 Advanced,15,Chemical Kinetics,Use integrated rate laws and half-life for first- and second-order reactions.,Do,1,0,1,0,0,,,,,,,,,Draft,,gold
 3 Advanced,15,Chemical Kinetics,"Use the Arrhenius equation to relate rate, temperature, and activation energy.",Do,1,0,1,0,0,,,,,,,,,Draft,,gold
 3 Advanced,15,Chemical Kinetics,"Describe reaction mechanisms: elementary steps, rate-determining step, intermediates.",Understand,1,0,1,0,0,,,,,,,,,Draft,,gold
 3 Advanced,15,Chemical Kinetics,"Explain how a catalyst lowers activation energy, including enzymes.",Understand,2,,1,0,1,,,,,,,,,Draft,,gold
-3 Advanced,15,Chemical Kinetics,Interpret a reaction energy diagram: activation energy and ΔH.,Do,1,,1,,,,,,,,,,,Draft,,gold
+3 Advanced,15,Chemical Kinetics,Interpret a reaction energy diagram: activation energy and ΔH.,Do,2,,1,,1,,,,,,,,,Draft,,gold
 3 Advanced,16,Chemical Equilibrium,Explain dynamic equilibrium.,Understand,4,1,1,1,1,,,,,,,,,"101 §15.1, 15.3",,gold
 3 Advanced,16,Chemical Equilibrium,Write equilibrium expressions; leave out pure solids and liquids.,Do,4,1,1,1,1,,,,,,,,,101 §15.4-15.5,,gold
-3 Advanced,16,Chemical Equilibrium,Calculate an equilibrium constant from equilibrium concentrations.,Do,3,1,1,1,,,,,,,,,,101 §15.4,,gold
-3 Advanced,16,Chemical Equilibrium,Use K to find an equilibrium concentration (ICE tables).,Do,3,1,1,1,,,,,,,,,,101 §15.4; 110 Ch 15,,gold
-3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,1,,1,,,,,,,,,,,110 Ch 15,,gold
+3 Advanced,16,Chemical Equilibrium,Calculate an equilibrium constant from equilibrium concentrations.,Do,4,1,1,1,1,,,,,,,,,101 §15.4,,gold
+3 Advanced,16,Chemical Equilibrium,Use K to find an equilibrium concentration (ICE tables).,Do,3,1,1,1,0,,,,,,,,,101 §15.4; 110 Ch 15,,gold
+3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,2,,1,,1,,,,,,,,,110 Ch 15,,gold
 3 Advanced,16,Chemical Equilibrium,Convert between Kc and Kp.,Do,1,0,1,0,0,,,,,,,,,110 Ch 15,,gold
 3 Advanced,16,Chemical Equilibrium,"Apply Le Chatelier's principle to changes in concentration, volume or pressure, and temperature.",Do,4,1,1,1,1,,,,,,,,,101 §15.7-15.10,"A catalyst changes the rate, not the equilibrium position.",gold
 3 Advanced,17,Acids and Bases,Identify common acids and bases and describe their properties.,Memorize,4,1,1,1,1,,,,,,,Acid/Base Sorter,Built,101 §14.1-14.3,,gold
 3 Advanced,17,Acids and Bases,Apply the Arrhenius and Bronsted-Lowry definitions; identify conjugate acid-base pairs.,Do,4,1,1,1,1,,,,,,,Acid/Base Sorter,Built,101 §14.4,,gold
-3 Advanced,17,Acids and Bases,Describe Lewis acids and bases.,Understand,1,0,1,,,,,,,,,,,110 Ch 16,,gold
+3 Advanced,17,Acids and Bases,Describe Lewis acids and bases.,Understand,2,0,1,,1,,,,,,,,,110 Ch 16,,gold
 3 Advanced,17,Acids and Bases,Memorize the strong acids and strong bases; classify acids and bases as strong or weak.,Memorize,4,1,1,1,1,,,,,,,Acid/Base Sorter,Built,101 §14.7,,gold
 3 Advanced,17,Acids and Bases,Explain the autoionization of water and use Kw.,Do,4,1,1,1,1,,,,,,,pH Lab (Kw-box),Built,101 §14.8,,gold
 3 Advanced,17,Acids and Bases,"Calculate pH or pOH from [H3O+] or [OH-], and the reverse.",Do,4,1,1,1,1,,,,,,,pH Lab,Built,101 §14.9,,gold
-3 Advanced,17,Acids and Bases,Write neutralization reactions and the reactions of acids with metals and metal oxides.,Do,2,1,1,,,,,,,,,,,101 §14.5,,gold
+3 Advanced,17,Acids and Bases,Write neutralization reactions and the reactions of acids with metals and metal oxides.,Do,3,1,1,,1,,,,,,,,,101 §14.5,,gold
 3 Advanced,17,Acids and Bases,Calculate the pH of strong acid and strong base solutions.,Do,4,1,1,1,1,,,,,,,pH Lab,Built,101 §14.9; 110 Ch 16,,gold
 3 Advanced,17,Acids and Bases,Use Ka and Kb to calculate the pH of weak acid and weak base solutions; find percent ionization.,Do,2,0,1,,1,,,,,,,pH Lab,Built,110 Ch 16,HESI file names pH calculations without saying weak acids.,gold
 3 Advanced,17,Acids and Bases,Relate Ka and Kb of a conjugate pair: Ka × Kb = Kw.,Do,2,0,1,,1,,,,,,,,,110 Ch 16,,gold
@@ -207,8 +207,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,21,Radioactivity and Nuclear Chemistry,"Write nuclear equations for alpha, beta, positron, and gamma decay and electron capture.",Do,1,,1,0,0,,,,,,,,,110 Ch 20,,gold
 3 Advanced,21,Radioactivity and Nuclear Chemistry,Predict nuclear stability from the neutron-to-proton ratio and magic numbers.,Understand,1,,1,0,0,,,,,,,,,110 Ch 20,,gold
 3 Advanced,21,Radioactivity and Nuclear Chemistry,Calculate half-life and radiometric age.,Do,1,,1,0,0,,,,,,,,,110 Ch 20,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe fission and fusion; calculate mass defect and binding energy.,Do,1,,1,,,,,,,,,,,110 Ch 20,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe the biological effects of radiation and its medical uses.,Understand,0,,,,,,,,,,,,,Draft,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe fission and fusion; calculate mass defect and binding energy.,Do,1,,1,,0,,,,,,,,,110 Ch 20,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe the biological effects of radiation and its medical uses.,Understand,0,,,,0,,,,,,,,,Draft,,gold
 3 Advanced,22,Organic Chemistry,"Explain why carbon forms so many compounds: four bonds, chains, and rings.",Understand,1,,0,0,1,,,,,,,Molecule Builder,Built,IMAT syllabus,No SLO list exists for organic in the 101 or 110-111 plans.,gold
 3 Advanced,22,Organic Chemistry,"Read and draw molecular, condensed, and skeletal formulas.",Do,1,,0,0,1,,,,,,,Molecule Builder,Built,IMAT syllabus,,gold
 3 Advanced,22,Organic Chemistry,"Identify and name alkanes, alkenes, alkynes, cycloalkanes, and aromatic hydrocarbons.",Do,1,,0,0,1,,,,,,,Organic Nomenclature,Built,IMAT syllabus,,gold
@@ -220,9 +220,9 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,23,Biochemistry,Name the four classes of biomolecules and their building blocks.,Understand,1,,0,0,1,,,,,,,,,Draft,"IMAT: asked twice in 2025 (glycogen, amino acids); not on the official syllabus.",gold
 3 Advanced,23,Biochemistry,"Describe amino acids, the peptide bond, and the levels of protein structure.",Understand,1,,0,0,1,,,,,,,,,Draft,,gold
 3 Advanced,23,Biochemistry,"Distinguish monosaccharides, disaccharides, and polysaccharides (starch, glycogen, cellulose).",Understand,1,,0,0,1,,,,,,,,,Draft,,gold
-3 Advanced,23,Biochemistry,"Describe fats, fatty acids, saturated versus unsaturated, and phospholipids.",Understand,0,,0,0,,,,,,,,,,Draft,,gold
-3 Advanced,23,Biochemistry,Describe the structure of DNA and RNA and base pairing.,Understand,0,,0,0,,,,,,,,,,Draft,,gold
-3 Advanced,23,Biochemistry,"Describe how enzymes work: active site, substrate, effect of conditions.",Understand,0,,0,0,,,,,,,,,,Draft,,gold
+3 Advanced,23,Biochemistry,"Describe fats, fatty acids, saturated versus unsaturated, and phospholipids.",Understand,1,,0,0,1,,,,,,,,,Draft,,gold
+3 Advanced,23,Biochemistry,Describe the structure of DNA and RNA and base pairing.,Understand,1,,0,0,1,,,,,,,,,Draft,,gold
+3 Advanced,23,Biochemistry,"Describe how enzymes work: active site, substrate, effect of conditions.",Understand,1,,0,0,1,,,,,,,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,Describe the properties and common compounds of hydrogen.,Understand,0,,0,0,0,,,,,,,,,Draft,Not in the 110-111 course folder.,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Describe carbon and silicon: allotropes, oxides, and silicates.",Understand,0,,0,0,0,,,,,,,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Describe nitrogen and phosphorus: ammonia, oxides, oxyacids.",Understand,0,,0,0,0,,,,,,,,,Draft,,gold
@@ -234,8 +234,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,25,Metals and Metallurgy,Describe common alloys and why alloying changes properties.,Understand,0,,0,0,0,,,,,,,,,Draft,,gold
 3 Advanced,25,Metals and Metallurgy,"Describe the reactions of the alkali, alkaline earth, and other main-group metals.",Understand,0,,0,0,0,,,,,,,,,Draft,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,Write electron configurations of transition metals and their ions; explain variable oxidation states.,Do,2,,1,,1,,,,,,,,,110 Ch 22; IMAT syllabus,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Define ligand, coordination number, and complex ion; find the charge of a complex.",Understand,1,,1,,,,,,,,,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Name coordination compounds and write their formulas.,Do,1,,1,,,,,,,,,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Describe isomerism in coordination compounds.,Understand,1,,1,,,,,,,,,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Explain crystal field theory: orbital splitting, high spin versus low spin, color, magnetism.",Understand,1,,1,,,,,,,,,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Describe the roles of transition metals in biology and catalysis.,Understand,0,,,,,,,,,,,,,Draft,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Define ligand, coordination number, and complex ion; find the charge of a complex.",Understand,1,,1,,0,,,,,,,,,110 Ch 22,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Name coordination compounds and write their formulas.,Do,1,,1,,0,,,,,,,,,110 Ch 22,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Describe isomerism in coordination compounds.,Understand,1,,1,,0,,,,,,,,,110 Ch 22,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Explain crystal field theory: orbital splitting, high spin versus low spin, color, magnetism.",Understand,1,,1,,0,,,,,,,,,110 Ch 22,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Describe the roles of transition metals in biology and catalysis.,Understand,0,,,,0,,,,,,,,,Draft,,gold

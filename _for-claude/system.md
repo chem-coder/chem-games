@@ -25,9 +25,19 @@ For Claude. Dalia does not need to read this.
 - 2026-10-17: Ch 5 IMAT ruling (hers): solution stoichiometry = 1, acid-base titration = 1, precipitation/net ionic = 1, electrolytes = 1, gas-evolution = 1, molarity of each ion = 1, redox products/activity series = 0. Ch 7 IMAT (hers): temperature vs heat = 1.
 
 - 2026-10-17: Ch 6 IMAT ruling (hers): pressure units = 1 (2024 Q43), Dalton = 1 (2024 Q33), kinetic molecular theory = 1 (2018 Q50), gas stoichiometry = 1 (prerequisite), molar volume at STP = 1, real gases = 1. Molar mass/density = 0, speed/diffusion/effusion = 0. Boyle through ideal gas law were already 1.
+- 2026-10-17: Ch 12 IMAT ruling (hers): evaporation/condensation/dynamic equilibrium/vapor pressure = 1 (2021 Q43); surface tension, viscosity, capillary action = 0. IMF identification, IMF vs properties, water's properties were already 1.
+- 2026-10-17: Ch 13 IMAT ruling (hers): crystalline vs amorphous = 1 (no bank question). The other five ch 13 rows stay 0.
+- 2026-10-17: Ch 14 IMAT ruling (hers): freezing point depression/boiling point elevation = 1 (2019 Q41, 2021 Q43, qualitative), molality/mole fraction/ppm = 1 (HESI), Henry's law = 1, osmosis = 0. Mass percent, like dissolves like, saturation were already 1; van't Hoff 0.
+- 2026-10-17: Ch 15 IMAT ruling (hers): reaction energy diagram = 1 (2025 Q42, 2026 Q47).
+- 2026-10-17: Ch 16 IMAT ruling (hers): K from equilibrium concentrations = 1 (2019 Q43), interpret K and use Q = 1 (2020 Q47, 2023 Q39), ICE tables = 0. Dynamic equilibrium, expressions, Le Chatelier were already 1; Kc/Kp 0.
+- 2026-10-17: Ch 17 IMAT ruling (hers): Lewis acids and bases = 1 (2024 Q39), neutralization and acid reactions with metals/metal oxides = 1 (2019 Q49, 2020 Q52).
+- 2026-10-17: Ch 21 IMAT ruling (hers): fission/fusion/binding energy = 0, biological effects and medical uses of radiation = 0 (no bank question; the other nuclear rows were already 0). Ch 18, 19, 20 had no IMAT blanks.
+- 2026-10-17: Ch 23 IMAT ruling (hers): fats and fatty acids, DNA/RNA and base pairing, enzymes = 1 (consistent with the other biomolecule rows; no bank question on these three). Ch 22 had no blanks.
+- 2026-10-17: Ch 26 IMAT ruling (hers): all five blank rows = 0 (ligands, naming coordination compounds, isomerism, crystal field theory, transition metals in biology); no bank question. Ch 24 and 25 had no blanks.
+- 2026-10-17: Ch 15 rate law and reaction order from initial-rate data changed 0 to 1 (hers; 2026 Q35).
 
 ## Where we left off
 Done: SLO matrix built (63f9a2a, branch claude/changes): 240 rows over 26 chapters, Version column, Read me and Coverage sheets, CSV export. Blocks 1 and 2 reviewed with her: ch 1, 2, 8, 9, 10, 11 (block 1) and ch 3, 4, 5, 7 (block 2). No blank IMAT cells left in those chapters. Rulings are in Decisions above. Blanks left on purpose where there is no source (ch 3 HESI composition and naming rows; ch 7 110 on temperature vs heat; ch 7 HESI on KE/PE, system/surroundings, calorimetry, Hess, formation enthalpies).
-Ch 6 (Gases) reviewed too, no IMAT blanks left. Open: block 3 review (ch 12-26, one chapter at a time). Unresolved: platform, public hosting from the private repo, soft vs hard gating, sub-levels per chapter (hers to write).
-Next action: ch 6: show the 13-row table (CSV lines 73-85), ask one question about the IMAT blanks. Review one chapter at a time, one question at a time; propose a mark and the evidence, she rules.
-Branch: `claude/changes`, not pushed. Uncommitted: modified `SLO_MATRIX.xlsx` and `SLO_MATRIX.csv` (block 2 rulings); untracked `CLAUDE.md` and `_for-claude/`.
+Block 3 IMAT review COMPLETE: ch 6, 12-17, 21, 23, 26 reviewed with her; ch 18-20, 22, 24, 25 had no IMAT blanks. The IMAT column has no blank cell in any of the 240 rows. Rulings are in Decisions above. Ch 15 rate-law-from-data row changed 0 to 1 (hers; 2026 Q35). Unresolved: platform, public hosting from the private repo, soft vs hard gating, sub-levels per chapter (hers to write).
+Next action: ask her what is next (other exam columns stay blank on purpose; MCAT, AP, A-level, GAMSAT, DAT, IB each need the official outline read).
+Branch: `claude/changes`, not pushed. Last commit 38a910b (ch 6). Uncommitted: SLO_MATRIX.xlsx, SLO_MATRIX.csv and _for-claude/system.md (ch 12-26 rulings); untracked CLAUDE.md.
