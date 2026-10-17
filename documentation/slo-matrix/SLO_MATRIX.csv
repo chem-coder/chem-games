@@ -219,25 +219,63 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,22,Organic Chemistry,Identify and count constitutional isomers and stereoisomers.,Do,2,,0,0,1,,,,,,,,1,Molecule Builder,Built,IMAT syllabus,,gold
 3 Advanced,22,Organic Chemistry,"Predict the products of addition, substitution, elimination, and alcohol oxidation reactions.",Do,1,,0,0,0,,,,,,,,1,Reactions Lab,Built,Draft,IMAT has asked one reaction question since 2014.,gold
 3 Advanced,22,Organic Chemistry,Predict boiling points and solubility of organic compounds from intermolecular forces.,Do,2,,0,0,1,,,,,,,,1,,,IMAT bank,,gold
+3 Advanced,22,Organic Chemistry,"Explain the radical and ionic mechanisms of organic reactions, electrophiles and nucleophiles, and apply the Markovnikov and Zaitsev rules.",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.4,,gold
+3 Advanced,22,Organic Chemistry,"Explain how atoms in an organic molecule influence each other, and predict the effect of substituents on reactivity (for example OH in phenol, CH3 and NO2 on benzene).",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.2,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkanes and small cycloalkanes: halogenation, dehydrogenation, cracking, isomerization, combustion.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.5,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkenes and dienes: addition (hydrogenation, halogenation, hydrohalogenation, hydration), oxidation, combustion, polymerization.",Do,1,,,,,,,,,,,,1,,,"ЕГЭ КОДИФ 3.6, 3.7",,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkynes: addition, hydration of acetylene, substitution at a terminal C–H, combustion.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.8,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of benzene, toluene, and styrene: substitution, addition, oxidation of the side chain, polymerization of styrene.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.9,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alcohols, ethylene glycol, and glycerol: with sodium and hydrogen halides, dehydration, oxidation, esterification, and the Cu(OH)2 test for polyols.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.10,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of phenol: with sodium, with sodium hydroxide, with bromine water.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.11,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of aldehydes and ketones: hydrogenation, oxidation (silver mirror, Cu(OH)2), acetone as a ketone.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.12,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of carboxylic acids, including the special properties of formic acid.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.13,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of esters and fats: esterification, hydrolysis, saponification, hydrogenation of fats, soaps.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.14,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of amines and aniline: as bases, with acids, aniline with bromine water, alkylation of ammonia, reduction of nitro compounds.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.16,,gold
+3 Advanced,22,Organic Chemistry,"Distinguish addition polymerization from polycondensation, and relate the structure of a polymer to its properties.",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.18,,gold
+3 Advanced,22,Organic Chemistry,"Identify organic substances by their qualitative reactions (bromine water, KMnO4, silver mirror, Cu(OH)2, FeCl3 with phenol).",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.19,,gold
+3 Advanced,22,Organic Chemistry,Link the classes of organic compounds into reaction chains (genetic links) and write each step.,Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.20,,gold
 3 Advanced,23,Biochemistry,Name the four classes of biomolecules and their building blocks.,Understand,2,,0,0,1,,,,,,,,1,,,Draft,"IMAT: asked twice in 2025 (glycogen, amino acids); not on the official syllabus.",gold
 3 Advanced,23,Biochemistry,"Describe amino acids, the peptide bond, and the levels of protein structure.",Understand,2,,0,0,1,,,,,,,,1,,,Draft,,gold
 3 Advanced,23,Biochemistry,"Distinguish monosaccharides, disaccharides, and polysaccharides (starch, glycogen, cellulose).",Understand,2,,0,0,1,,,,,,,,1,,,Draft,,gold
 3 Advanced,23,Biochemistry,"Describe fats, fatty acids, saturated versus unsaturated, and phospholipids.",Understand,2,,0,0,1,,,,,,,,1,,,Draft,,gold
 3 Advanced,23,Biochemistry,Describe the structure of DNA and RNA and base pairing.,Understand,1,,0,0,1,,,,,,,,0,,,Draft,,gold
 3 Advanced,23,Biochemistry,"Describe how enzymes work: active site, substrate, effect of conditions.",Understand,1,,0,0,1,,,,,,,,0,,,Draft,,gold
+3 Advanced,23,Biochemistry,"Write the reactions of glucose, disaccharides, starch, and cellulose: reactions of the alcohol and aldehyde groups of glucose, fermentation, hydrolysis, the iodine test for starch.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.15,,gold
+3 Advanced,23,Biochemistry,"Write the reactions of amino acids and proteins: amino acids as amphoteric compounds, peptide bond formation, hydrolysis, denaturation, color (qualitative) reactions of proteins.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 3.17,,gold
 3 Advanced,24,Chemistry of the Nonmetals,Describe the properties and common compounds of hydrogen.,Understand,1,,0,0,0,,,,,,,,1,,,Draft,Not in the 110-111 course folder.,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Describe carbon and silicon: allotropes, oxides, and silicates.",Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Describe nitrogen and phosphorus: ammonia, oxides, oxyacids.",Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Describe oxygen and sulfur: ozone, sulfur oxides, sulfuric acid.",Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,Describe the halogens and the hydrohalic acids.,Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,Explain why nonmetal oxides give acidic solutions and metal oxides give basic ones.,Understand,2,,,,1,,,,,,,,1,,,IMAT syllabus,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of the halogens and their compounds: with metals, hydrogen, water, and alkali; displacement of one halogen by another; hydrogen halides and halides.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of sulfur and its compounds: S, H2S and sulfides, SO2, SO3, sulfites, and sulfates.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of nitrogen and its compounds: N2, NH3 and ammonium salts, the nitrogen oxides, and nitrates.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of phosphorus and its compounds: P, P2O5, phosphoric acid, and phosphates.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of carbon, silicon, and their compounds: CO, CO2, carbonates, Si, SiO2, and silicates.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Explain how concentrated sulfuric and nitric acids act as oxidizing agents, and predict the products from the metal and the acid concentration.",Understand,1,,,,,,,,,,,,1,,,"ЕГЭ КОДИФ 2.3, 2.2",,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Explain disproportionation, for example Cl2 in cold and hot alkali and NO2 in water and alkali.",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe the industrial production of ammonia and sulfuric acid, and of glass and other silicate materials.",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 4.4,,gold
 3 Advanced,25,Metals and Metallurgy,Describe the electron-sea model of metallic bonding and the properties it explains.,Understand,2,,,,1,,,,,,,,1,,,IMAT syllabus,Same skill as the metallic bonding row in chapter 10.,gold
 3 Advanced,25,Metals and Metallurgy,Describe how metals are extracted from their ores (metallurgy).,Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
 3 Advanced,25,Metals and Metallurgy,Describe common alloys and why alloying changes properties.,Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
 3 Advanced,25,Metals and Metallurgy,"Describe the reactions of the alkali, alkaline earth, and other main-group metals.",Understand,1,,0,0,0,,,,,,,,1,,,Draft,,gold
+3 Advanced,25,Metals and Metallurgy,"Write the reactions of sodium and potassium and their compounds: with water, oxygen, and halogens; oxides, peroxides, hydroxides, and salts.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,25,Metals and Metallurgy,"Write the reactions of calcium and magnesium and their compounds: oxides, hydroxides, carbonates, and the hardness of water.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,25,Metals and Metallurgy,"Write the reactions of aluminum and its compounds: the amphoteric Al2O3 and Al(OH)3, and aluminothermy.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,25,Metals and Metallurgy,"Predict how metals react with water, acids, and salt solutions using the activity series, including the passivation of Fe, Al, and Cr by concentrated HNO3 and H2SO4.",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,25,Metals and Metallurgy,"Describe the thermal decomposition of hydroxides, nitrates, and carbonates, and predict the products.",Understand,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,Write electron configurations of transition metals and their ions; explain variable oxidation states.,Do,3,,1,,1,,,,,,,,1,,,110 Ch 22; IMAT syllabus,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,"Define ligand, coordination number, and complex ion; find the charge of a complex.",Understand,2,,1,,0,,,,,,,,1,,,110 Ch 22,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,Name coordination compounds and write their formulas.,Do,2,,1,,0,,,,,,,,1,,,110 Ch 22,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,Describe isomerism in coordination compounds.,Understand,1,,1,,0,,,,,,,,0,,,110 Ch 22,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,"Explain crystal field theory: orbital splitting, high spin versus low spin, color, magnetism.",Understand,1,,1,,0,,,,,,,,0,,,110 Ch 22,,gold
 3 Advanced,26,Transition Metals and Coordination Compounds,Describe the roles of transition metals in biology and catalysis.,Understand,0,,,,0,,,,,,,,0,,,Draft,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of zinc and its compounds: ZnO, Zn(OH)2, and the reactions with acids and alkali.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of chromium and its compounds in the +2, +3, and +6 states, including chromate and dichromate.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of iron and its compounds: FeO, Fe2O3, Fe(OH)2, Fe(OH)3, and Fe2+ and Fe3+ salts.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of copper and its compounds: Cu2O, CuO, Cu(OH)2, and copper salts.",Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Explain amphoteric oxides and hydroxides (Al, Zn, Cr(III)): their reactions with acids and alkali and the hydroxo complexes they form.",Understand,1,,,,,,,,,,,,1,,,"ЕГЭ КОДИФ 2.2, 7.3",,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Predict the redox behavior of Cr and Fe compounds from the oxidation state: lowest is a reducing agent, highest an oxidizing agent.",Understand,1,,,,,,,,,,,,1,,,"ЕГЭ КОДИФ 2.2, 1.12",,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Identify inorganic ions and substances by their qualitative reactions.,Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.5,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Link the classes of inorganic substances into reaction chains (genetic links) and write each step.,Do,1,,,,,,,,,,,,1,,,ЕГЭ КОДИФ 2.4,,gold
