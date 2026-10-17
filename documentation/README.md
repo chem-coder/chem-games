@@ -4,7 +4,9 @@ This folder is for internal project documentation: goals, decisions, implementat
 
 ## Active Internal Docs
 
-- `PRODUCT_STRATEGY.md` - **START HERE. The north-star doc (2026-07-27).** The shift from web learning library to a commercial indie chemistry puzzle game on Steam: first product scope (the Nomenclature bundle), the three-shells-one-codebase rule, free-vs-paid line, the mobile audit, go-to-market, and the current sequence. Supersedes `ROADMAP.md` wherever they disagree.
+- `EDTECH_COURSE_PLAN.md` - **START HERE (2026-10-17).** Course first, Steam later: the decision and reasons, business model (course platform + Etsy PDFs), the five-step module template, the 19-chapter outline with existing assets placed, open questions, next steps.
+- `STEAM_CONCEPT_PARKED.md` - the Steam game concept and mechanics catalogue (identity triad, hidden tiles, apparatus collecting, fail states), kept for when the game is built.
+- `PRODUCT_STRATEGY.md` - the 2026-07-27 Steam-first doc, superseded in part on 2026-10-17. The north-star doc (2026-07-27).** The shift from web learning library to a commercial indie chemistry puzzle game on Steam: first product scope (the Nomenclature bundle), the three-shells-one-codebase rule, free-vs-paid line, the mobile audit, go-to-market, and the current sequence. Supersedes `ROADMAP.md` wherever they disagree.
 - `TOPIC_UNIVERSE_PLAN.md` - **the web library's organizing plan (2026-08-12).** Chapter → Topic → Ladder-tab hierarchy for the whole site, the 11 chapters with topics/games/ladders mapped to Dalia's course sections, tracks (IMAT first) as pathways over the universe, decisions log, and rollout order.
 - `TRACK_MAPS.md` - **pathway maps (2026-10-03).** The business process (build loop → ready gate → channels → first dollar), the single universe prerequisite graph (all topics, MCAT additions dashed), and tracks as ordered subsets of it: IMAT, draft MCAT, and gen chem by textbook (books TBD). Mermaid, renders on GitHub.
 - `BONDING_GAME_DESIGN.md` - Shape Lab spec (2026-08-12): the Bonding & Structure game — Model Kit workspace (dot-drag bonds, Check→rotating 3D), formal charge → Lewis → geometries → build → polarity ladder, side-by-side Kit+quiz layout, resonance/octet rules, build order.
@@ -20,6 +22,7 @@ This folder is for internal project documentation: goals, decisions, implementat
 - `IDEA_BACKLOG.md` - organized product and learning-game ideas migrated from the old `.docx` backlog.
 - `GAME_IDEAS_NOTEBOOK.md` - active brainstorming notebook for new game concepts and lookup tools before they become formal specs.
 - `idea-box/README.md` - landing zone for raw idea docs and summaries before they are processed into the notebook.
+- `idea-box/steam-and-edtech-plan-gemini-2026-10.txt` - raw Gemini transcript (Oct 2026) behind the course-first decision and the Steam concept.
 - `idea-box/stoichiometry_game_ideas_summary.md` - raw source summary for the Ratio Factory / stoichiometry game direction.
 - `idea-box/handoff-periodic-table-touch.md` - ready-to-paste prompt for a fresh session: make Periodic Table fill mode playable on a phone (confirmed diagnosis + the traps that sink the fix).
 - `idea-box/competitive-research-notes.md` - worksheet to fill in while playing the reference titles (`while True: learn()`, `Turing Complete`) and reviewing chemistry visualizations, so research yields decisions.

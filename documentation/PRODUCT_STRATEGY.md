@@ -1,6 +1,6 @@
 # Chem Games — Product Strategy
 
-Created: 2026-07-27. **This is the current north-star doc.** It supersedes `ROADMAP.md` wherever the two disagree.
+Created: 2026-07-27. **Superseded in part on 2026-10-17:** the first product is now an interactive exam-prep course, with the Steam game parked for later — see `EDTECH_COURSE_PLAN.md` (current plan) and `STEAM_CONCEPT_PARKED.md`. The sections below remain the record of the Steam-first reasoning and still apply to the game when it is built. It supersedes `ROADMAP.md` wherever the two disagree.
 
 It records the decisions made when the project's goal changed from "a web learning library for one tutoring student" to "a commercial indie chemistry puzzle game." Companion docs: `ARCHITECTURE.md` (how it's built), `NOMENCLATURE_DESIGN.md` (the spine game), `idea-box/README.md` (the raw Steam context notes).
 
