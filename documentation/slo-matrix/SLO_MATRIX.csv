@@ -105,7 +105,7 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Draw orbital diagrams using the Pauli exclusion principle, Hund's rule, and the Aufbau order.",Do,5,1,1,1,1,,,,,,,0,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.6,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write full and noble-gas electron configurations for atoms, using the periodic table position.",Do,6,1,1,1,1,,,,,,,1,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.7,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write electron configurations for ions and for the exceptions (Cr, Cu).",Do,3,,1,,1,,,,,,,0,1,,,110 §8.7,IMAT bank: ion configurations and isoelectronic species recur.,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Distinguish the ground and excited states of an atom.,Do,1,,,,,,,,,,,0,1,,,ЕГЭ КОДИФ 1.1; req. 5,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Distinguish the ground and excited states of an atom.,Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 1.1; req. 5,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Identify valence electrons and core electrons.,Do,6,1,1,1,1,,,,,,,1,1,,,101 §9.7,,gold
 1 Fundamentals,9,Periodic Properties of the Elements,Relate the number of valence electrons to group number; explain that chemical properties are set by valence electrons.,Understand,6,1,1,1,1,,,,,,,1,1,Periodic System screen,Built,110 §9.1; 101 §9.8,,gold
 1 Fundamentals,9,Periodic Properties of the Elements,Explain effective nuclear charge and shielding.,Understand,1,,1,0,0,,,,,,,0,,,,110 §9.2,,gold
@@ -152,7 +152,7 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,14,Solutions,"Distinguish saturated, unsaturated, and supersaturated solutions; read a solubility curve.",Understand,4,1,1,,1,,,,,,,0,1,,,110 §13.2; 101 §13.3,,gold
 3 Advanced,14,Solutions,Describe the solubility of gases in liquids; apply Henry's law.,Understand,2,1,,,1,,,,,,,0,0,,,101 §13.4,,gold
 3 Advanced,14,Solutions,Calculate mass percent concentration and use it in calculations.,Do,5,1,1,,1,,,,,,,1,1,,,110 §13.3; 101 §13.5,,gold
-3 Advanced,14,Solutions,Describe crystal hydrates (for example CuSO4·5H2O) and do calculations with them.,Do,1,,,,,,,,,,,0,1,,,ЕГЭ КОДИФ 1.11,,gold
+3 Advanced,14,Solutions,Describe crystal hydrates (for example CuSO4·5H2O) and do calculations with them.,Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 1.11,,gold
 3 Advanced,14,Solutions,"Calculate molality, mole fraction, and parts per million.",Do,4,1,1,1,1,,,,,,,0,0,,,110 §13.3; 101 §13.1,HESI file names molarity and molality.,gold
 3 Advanced,14,Solutions,Calculate freezing point depression and boiling point elevation of nonelectrolyte solutions.,Do,3,1,1,,1,,,,,,,0,0,,,110 §13.4; 101 §13.9,,gold
 3 Advanced,14,Solutions,Include the van't Hoff factor for electrolyte solutions in colligative property calculations.,Do,1,0,1,0,0,,,,,,,0,0,,,110 §13.5,,gold
@@ -242,11 +242,11 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,23,Biochemistry,"Describe how enzymes work: active site, substrate, effect of conditions.",Understand,1,,0,0,1,,,,,,,0,0,,,Draft,,gold
 3 Advanced,23,Biochemistry,"Write the reactions of glucose, disaccharides, starch, and cellulose: reactions of the alcohol and aldehyde groups of glucose, fermentation, hydrolysis, the iodine test for starch.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.15,,gold
 3 Advanced,23,Biochemistry,"Write the reactions of amino acids and proteins: amino acids as amphoteric compounds, peptide bond formation, hydrolysis, denaturation, color (qualitative) reactions of proteins.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.17,,gold
-3 Advanced,24,Chemistry of the Nonmetals,Describe the properties and common compounds of hydrogen.,Understand,2,,0,0,0,,,,,,,1,1,,,Draft,Not in the 110-111 course folder.,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe carbon and silicon: allotropes, oxides, and silicates.",Understand,2,,0,0,0,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe nitrogen and phosphorus: ammonia, oxides, oxyacids.",Understand,2,,0,0,0,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe oxygen and sulfur: ozone, sulfur oxides, sulfuric acid.",Understand,2,,0,0,0,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,Describe the halogens and the hydrohalic acids.,Understand,2,,0,0,0,,,,,,,1,1,,,Draft,,gold
+3 Advanced,24,Chemistry of the Nonmetals,Describe the properties and common compounds of hydrogen.,Understand,3,,0,0,1,,,,,,,1,1,,,Draft,Not in the 110-111 course folder.,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe carbon and silicon: allotropes, oxides, and silicates.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe nitrogen and phosphorus: ammonia, oxides, oxyacids.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe oxygen and sulfur: ozone, sulfur oxides, sulfuric acid.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
+3 Advanced,24,Chemistry of the Nonmetals,Describe the halogens and the hydrohalic acids.,Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
 3 Advanced,24,Chemistry of the Nonmetals,Explain why nonmetal oxides give acidic solutions and metal oxides give basic ones.,Understand,3,,,,1,,,,,,,1,1,,,IMAT syllabus,,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of the halogens and their compounds: with metals, hydrogen, water, and alkali; displacement of one halogen by another; hydrogen halides and halides.",Do,3,,,,1,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
 3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of sulfur and its compounds: S, H2S and sulfides, SO2, SO3, sulfites, and sulfates.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
