@@ -13,7 +13,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Report the result of a calculation to the correct number of significant figures (multiplication/division and addition/subtraction).,Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.6; 101 §2.4; IB Tool 3,"IMAT: prerequisite skill, not named in the syllabus.",gold
 1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Use the units of a measurement as a guide in setting up calculations, including multistep conversions and units raised to a power.",Do,5,1,1,1,1,,,,,,1,0,,Conversion Builder; Conversion Conveyor,Built,110 §1.7; 101 §2.7-2.8; IB Tool 3; S1.4.5,"IMAT: prerequisite skill, not named in the syllabus.",gold
 1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Calculate density, volume, or mass when two of the three are known; use density as a conversion factor.",Do,4,1,1,1,1,,,,,,0,0,,,,110 §1.8; 101 §2.9,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Convert temperature values between Fahrenheit, Celsius, and Kelvin.",Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.9; 101 §3.9; IB S1.1.3 (Celsius-Kelvin only),"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Convert temperature values between Celsius and Kelvin.,Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.9; 101 §3.9; IB S1.1.3,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Convert temperature values between Fahrenheit and Celsius or Kelvin.,Do,4,1,1,1,1,,,,,,0,0,,,,110 §1.9; 101 §3.9,"IMAT: prerequisite skill, not named in the syllabus.",gold
 1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Plan a multistep numerical problem with a solution map.,Do,3,1,,1,1,,,,,,0,0,,,,101 §2.10,"IMAT: prerequisite skill, not named in the syllabus.",gold
 1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Record measurements with uncertainty (±), calculate percentage error and percentage uncertainty, propagate uncertainties, and draw and interpret graphs with lines of best fit.",Do,1,,,,0,,,,,,1,0,0,,,"IB Tool 3, Inquiry 2-3",,gold
 1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Describe the purpose of common laboratory techniques: preparing a standard solution, filtration, distillation, recrystallization, chromatography (calculate Rf), titration, calorimetry, and melting point determination.",Understand,1,,,,0,,,,,,1,0,0,,,"IB Tool 1, S1.1.1, S2.2.10",,gold
@@ -75,7 +76,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Identify redox reactions and the oxidizing and reducing agents.,Do,6,1,1,,1,,,,,,1,1,1,Oxidation-State Trainer,Built,110 §4.6; 101 §7.9; IB R3.2.1,,gold
 2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict the products of synthesis, decomposition, and single-replacement redox reactions (activity series).",Do,4,,1,,0,,,,,,1,1,1,,,110 §4.7; IB R3.2.3-4,,gold
 3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,4,1,1,,1,,,,,,1,0,,,,"101 §11.2; 110 §7.10; IB S1.1.2, S1.5.1",,gold
-3 Advanced,6,Gases,"Define pressure and convert among pressure units (atm, mmHg, torr, kPa).",Do,4,1,1,,1,,,,,,1,0,,,,"110 §7.1; 101 §11.3; IB S1.5.4 (SI units: Pa, kPa)",,gold
+3 Advanced,6,Gases,Define pressure and use the SI units pascal and kilopascal.,Do,4,1,1,,1,,,,,,1,0,,,,110 §7.1; 101 §11.3; IB S1.5.4,,gold
+3 Advanced,6,Gases,"Convert among the pressure units atm, mmHg, torr, and kPa.",Do,3,1,1,,1,,,,,,0,0,,,,110 §7.1; 101 §11.3,,gold
 3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,5,1,1,1,1,,,,,,1,0,,,,110 §7.2; 101 §11.4; IB S1.5.3,,gold
 3 Advanced,6,Gases,Use Charles's law (V and absolute T).,Do,5,1,1,1,1,,,,,,1,0,,Gas Laws (Charles),Partial,110 §7.3; 101 §11.5; IB S1.5.3,Charles's law only is built.,gold
 3 Advanced,6,Gases,"Use the combined gas law (P, V, and T).",Do,4,1,1,,1,,,,,,1,0,,,,110 §7.4; 101 §11.6; IB S1.5.4,,gold
@@ -88,7 +90,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,6,Gases,Relate molecular speed to temperature and molar mass; describe diffusion and effusion.,Understand,1,0,1,,0,,,,,,0,0,,,,110 §7.11,,gold
 3 Advanced,6,Gases,Explain why real gases deviate from ideal behavior.,Understand,3,0,1,,1,,,,,,1,0,,,,110 §7.12; IB S1.5.2,,gold
 2 Quantitative,7,Thermochemistry,"Describe kinetic energy, potential energy, and the conservation of energy.",Understand,4,1,1,,1,,,,,,1,0,,,,"110 §6.1; 101 §3.8; IB R1.1.1, R1.1.3, S1.1.3","IMAT: first thermochemistry question in 2026 (bank only, not on the official syllabus).",gold
-2 Quantitative,7,Thermochemistry,"Identify and convert among energy units (J, kJ, cal, Cal).",Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.1; 101 §3.8; IB R1.1.4 (J and kJ only),,gold
+2 Quantitative,7,Thermochemistry,Identify and convert between joules and kilojoules.,Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.1; 101 §3.8; IB R1.1.4,,gold
+2 Quantitative,7,Thermochemistry,"Convert between joules and calories (cal, Cal).",Do,3,1,1,1,0,,,,,,0,0,,,,110 §6.1; 101 §3.8,,gold
 2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,4,1,,1,1,,,,,,1,0,,,,"101 §3.9; IB R1.1.1, S1.1.3",,gold
 2 Quantitative,7,Thermochemistry,"Relate energy, temperature change, and heat capacity: q = mcΔT.",Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.5; 101 §3.10-3.11; IB R1.1.4,,gold
 2 Quantitative,7,Thermochemistry,Define system and surroundings and describe the transfer of energy between them.,Understand,2,0,1,,0,,,,,,1,0,,,,110 §6.2-6.3; IB R1.1.1,,gold
@@ -108,7 +111,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Explain wave-particle duality and the de Broglie wavelength.,Understand,1,0,1,0,0,,,,,,0,0,,,,110 §8.3,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Explain the quantum-mechanical model: electrons occupy orbitals, regions of probability.",Understand,4,1,1,0,0,,,,,,1,0,1,,,101 §9.5; 110 §8.4; IB S1.3.4-5,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Assign the four quantum numbers and list the allowed sets.,Do,1,,1,0,0,,,,,,0,0,,,,110 §8.4,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Describe the shapes and orientations of s, p, and d orbitals.",Understand,4,1,1,0,0,,,,,,1,0,1,,,101 §9.6; 110 §8.5; IB S1.3.4 (s and p only),,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Describe the shapes and orientations of s and p orbitals.,Understand,4,1,1,0,0,,,,,,1,0,1,,,101 §9.6; 110 §8.5; IB S1.3.4,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Describe the shapes and orientations of d orbitals.,Understand,3,1,1,0,0,,,,,,0,0,1,,,101 §9.6; 110 §8.5,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Draw orbital diagrams using the Pauli exclusion principle, Hund's rule, and the Aufbau order.",Do,6,1,1,1,1,,,,,,1,0,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.6; IB S1.3.5,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write full and noble-gas electron configurations for atoms, using the periodic table position.",Do,7,1,1,1,1,,,,,,1,1,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.7; IB S1.3.5,,gold
 1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write electron configurations for ions and for the exceptions (Cr, Cu).",Do,4,,1,,1,,,,,,1,0,1,,,110 §8.7; IB S1.3.5,IMAT bank: ion configurations and isoelectronic species recur.,gold
@@ -141,7 +145,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Predict electron geometry and molecular shape with VSEPR (two to six electron groups).,Do,5,1,1,1,1,,,,,,1,0,0,Shape Lab,Built,"110 §11.1; 101 §10.7; IB S2.2.4, S2.2.13 (HL)",,gold
 1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Memorize the ideal bond angle for each geometry.,Memorize,4,1,1,,1,,,,,,1,0,0,Shape Lab,Built,110 §11.1; 101 §10.7; IB S2.2.4,,gold
 1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Decide whether a molecule is polar from its shape and bond polarities.,Do,4,1,1,,1,,,,,,1,0,0,Shape Lab,Built,110 §11.2; 101 §10.8; IB S2.2.6,,gold
-1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory","Predict hybridization (sp, sp2, sp3, sp3d, sp3d2) and describe sigma and pi bonds.",Do,4,,1,,1,,,,,,1,0,1,,,"110 §11.3-11.4; IB S2.2.15-16 (HL; sp, sp2, sp3 only)",IMAT: bank 2025 Q43 (benzene sp2/sp3).,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory","Predict hybridization (sp, sp2, sp3) and describe sigma and pi bonds.",Do,4,,1,,1,,,,,,1,0,1,,,110 §11.3-11.4; IB S2.2.15-16 (HL),IMAT: bank 2025 Q43 (benzene sp2/sp3).,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Predict sp3d and sp3d2 hybridization in molecules with an expanded octet.,Do,1,,1,,0,,,,,,0,0,0,,,110 §11.3-11.4,,gold
 1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Use molecular orbital theory: bond order and magnetism of diatomic molecules.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 §11.5,,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Identify the intermolecular forces present in a substance: dispersion, dipole-dipole, hydrogen bonding, ion-dipole.",Do,5,1,1,,1,,,,,,1,0,1,,,110 §12.1; 101 §12.6; IB S2.2.8,Shape Lab covers the polarity step.,gold
 3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Use intermolecular forces to compare melting points, boiling points, viscosity, and vapor pressure.",Do,5,1,1,,1,,,,,,1,0,1,,,"110 §12.2; 101 §12.6; IB S2.2.9, S3.2.4",,gold
@@ -177,7 +182,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,15,Chemical Kinetics,"Explain how a catalyst lowers activation energy, including enzymes.",Understand,4,,1,0,1,,,,,,1,0,1,,,Draft; IB R2.2.5,,gold
 3 Advanced,15,Chemical Kinetics,Interpret a reaction energy diagram: activation energy and ΔH.,Do,3,,1,,1,,,,,,1,0,0,,,"Draft; IB R1.1.3, R2.2.5, R2.2.7",,gold
 3 Advanced,16,Chemical Equilibrium,Explain dynamic equilibrium.,Understand,6,1,1,1,1,,,,,,1,0,1,,,"101 §15.1, 15.3; IB R2.3.1",,gold
-3 Advanced,16,Chemical Equilibrium,Write equilibrium expressions; leave out pure solids and liquids.,Do,5,1,1,1,1,,,,,,1,0,0,,,101 §15.4-15.5; IB R2.3.2 (homogeneous only),,gold
+3 Advanced,16,Chemical Equilibrium,Write equilibrium expressions for homogeneous reactions.,Do,5,1,1,1,1,,,,,,1,0,0,,,101 §15.4-15.5; IB R2.3.2,,gold
+3 Advanced,16,Chemical Equilibrium,"Write equilibrium expressions for heterogeneous reactions, leaving out pure solids and liquids.",Do,4,1,1,1,1,,,,,,0,0,0,,,101 §15.4-15.5,,gold
 3 Advanced,16,Chemical Equilibrium,Calculate an equilibrium constant from equilibrium concentrations.,Do,5,1,1,1,1,,,,,,1,0,0,,,101 §15.4; IB R2.3.2-3,,gold
 3 Advanced,16,Chemical Equilibrium,Use K to find an equilibrium concentration (ICE tables).,Do,5,1,1,1,0,,,,,,1,0,1,,,101 §15.4; 110 Ch 15; IB R2.3.6 (HL),,gold
 3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,3,,1,,1,,,,,,1,0,0,,,"110 Ch 15; IB R2.3.3, R2.3.5 (HL)",,gold
