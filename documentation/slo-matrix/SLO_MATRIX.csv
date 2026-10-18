@@ -1,281 +1,281 @@
 Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (CHEM 110-111),HESI,IMAT,MCAT,AP Chem,A-level Chem,GAMSAT,DAT,IB Chem,ОГЭ,ЕГЭ,Game / asset,Status,Source,Notes,Version
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Recognize that all things are made of atoms and molecules, and that chemicals make up everything we encounter.",Understand,3,1,0,0,0,,,,,,,1,1,,,101 §1,,gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Explain the scientific method and distinguish hypotheses, theories, and laws.",Understand,2,1,1,0,0,,,,,,,0,0,,,101 §1.4; 110 §1.4,,gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Classify matter as solid, liquid, or gas by the arrangement and motion of its particles.",Understand,3,1,1,,1,,,,,,,0,,,,101 §3.3,,gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Classify matter as an element, compound, or mixture, and a mixture as homogeneous or heterogeneous.",Do,5,1,1,,1,,,,,,,1,1,,,101 §3.4; 110 §1.1,,gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Distinguish physical from chemical properties, and physical from chemical changes.",Understand,4,1,1,0,1,,,,,,,1,,,,110 §1.2; 101 §3.5-3.6,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Distinguish matter, mass, and weight; distinguish matter from energy.",Understand,3,1,1,0,1,,,,,,,0,,,,110 §1.3,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving",State and apply the law of conservation of mass.,Do,5,1,1,0,1,,,,,,,1,1,,,110 §1.3; 101 §3.7,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Write and read numbers in scientific notation.,Do,3,1,,1,1,,,,,,,0,,,,101 §2.2,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Recognize SI base units and prefixes, and convert within SI.",Do,4,1,1,1,1,,,,,,,0,,,,110 §1.5; 101 §2.5,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Convert between imperial and metric units.,Do,4,1,1,1,1,,,,,,,0,,,,110 §1.5; 101 §2.6,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Determine which digits in a number are significant, and round to the correct number of significant figures.",Do,4,1,1,1,1,,,,,,,0,,,,110 §1.6; 101 §2.3,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Report the result of a calculation to the correct number of significant figures (multiplication/division and addition/subtraction).,Do,4,1,1,1,1,,,,,,,0,,,,110 §1.6; 101 §2.4,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Use the units of a measurement as a guide in setting up calculations, including multistep conversions and units raised to a power.",Do,4,1,1,1,1,,,,,,,0,,Conversion Builder; Conversion Conveyor,Built,110 §1.7; 101 §2.7-2.8,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Calculate density, volume, or mass when two of the three are known; use density as a conversion factor.",Do,4,1,1,1,1,,,,,,,0,,,,110 §1.8; 101 §2.9,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Convert temperature values between Fahrenheit, Celsius, and Kelvin.",Do,4,1,1,1,1,,,,,,,0,,,,110 §1.9; 101 §3.9,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Plan a multistep numerical problem with a solution map.,Do,3,1,,1,1,,,,,,,0,,,,101 §2.10,"IMAT: prerequisite skill, not named in the syllabus.",gold
-1 Fundamentals,2,Atoms and Elements,Recognize and recall the symbols of the commonly used elements.,Memorize,6,1,1,1,1,,,,,,,1,1,PT Memorizer,Built,110 §2.1,,gold
-1 Fundamentals,2,Atoms and Elements,Explain the laws of conservation of mass and constant composition using Dalton's atomic theory.,Understand,3,1,1,0,0,,,,,,,1,0,,,110 §2.2-2.3; 101 §4.2,,gold
-1 Fundamentals,2,Atoms and Elements,Apply the laws of chemical composition to calculate the quantities involved when elements combine.,Do,2,1,1,0,0,,,,,,,0,,,,110 §2.2; 101 §5.2,,gold
-1 Fundamentals,2,Atoms and Elements,Outline the experiments of Thomson and Rutherford that led to the nuclear model of the atom.,Understand,2,1,1,0,0,,,,,,,0,,,,110 §2.3; 101 §4.3,,gold
-1 Fundamentals,2,Atoms and Elements,"State the relative mass, charge, and location of protons, neutrons, and electrons.",Memorize,6,1,1,1,1,,,,,,,1,1,Atomic Structure game (renderer prototype),Prototype,101 §4.4,,gold
-1 Fundamentals,2,Atoms and Elements,Identify an element from its atomic number; explain that the number of protons defines the element.,Do,6,1,1,1,1,,,,,,,1,1,,,101 §4.5,,gold
-1 Fundamentals,2,Atoms and Elements,"Determine the numbers of protons, neutrons, and electrons from an isotope symbol or mass number, and the reverse.",Do,6,1,1,1,1,,,,,,,1,1,Atomic Structure game (renderer prototype),Prototype,110 §2.4; 101 §4.8,,gold
-1 Fundamentals,2,Atoms and Elements,Determine the charge and the numbers of protons and electrons of an ion.,Do,6,1,1,1,1,,,,,,,1,1,Atomic Structure game (renderer prototype),Prototype,101 §4.7,,gold
-1 Fundamentals,2,Atoms and Elements,Calculate atomic mass from isotope masses and natural abundances.,Do,4,1,1,1,1,,,,,,,0,,,,110 §2.5; 101 §4.9,,gold
-1 Fundamentals,2,Atoms and Elements,"Identify periods, groups, and sections (metals, nonmetals, metalloids, main-group and transition elements) by name and number.",Memorize,6,1,1,1,1,,,,,,,1,1,Periodic System screen; PT Memorizer,Built,110 §2.6; 101 §4.6,,gold
-1 Fundamentals,2,Atoms and Elements,Discuss Mendeleev's and Meyer's contributions and the periodic law.,Understand,4,1,1,0,0,,,,,,,1,1,,,110 §2.6; 101 §4.6,,gold
-2 Quantitative,3,Molecules and Compounds,"Classify elements as atomic or molecular, and compounds as ionic or molecular.",Do,5,1,1,0,1,,,,,,,1,1,,,101 §5.1,,gold
-2 Quantitative,3,Molecules and Compounds,"Interpret a chemical formula: count the atoms of each element, including those inside parentheses.",Do,5,1,1,,1,,,,,,,1,1,,,110 §3.1; 101 §5.3,,gold
-2 Quantitative,3,Molecules and Compounds,Write the formula of an ionic compound from the charges of its ions (by calculation; criss-cross only as a check).,Do,5,1,1,,1,,,,,,,1,1,Polyatomic Ion Trainer; Name Builder,Built,110 §3.3; 101 §5.5,,gold
-2 Quantitative,3,Molecules and Compounds,"Memorize the charges of the common monatomic ions and the names, formulas, and charges of the common polyatomic ions.",Memorize,5,1,1,,1,,,,,,,1,1,Polyatomic Ion Trainer,Built,110 §3.4; 101 §5.7,,gold
-2 Quantitative,3,Molecules and Compounds,"Name binary ionic compounds, including metals that form more than one ion (Roman numerals).",Do,5,1,1,,1,,,,,,,1,1,Name Builder,Built,110 §3.4; 101 §5.7,,gold
-2 Quantitative,3,Molecules and Compounds,Name ionic compounds that contain polyatomic ions.,Do,5,1,1,,1,,,,,,,1,1,Name Builder,Built,110 §3.4; 101 §5.7,,gold
-2 Quantitative,3,Molecules and Compounds,Name binary molecular compounds with Greek prefixes.,Do,5,1,1,,1,,,,,,,1,1,Name Builder,Built,110 §3.2; 101 §5.8,,gold
-2 Quantitative,3,Molecules and Compounds,"Name binary acids and oxyacids (-ate gives -ic, -ite gives -ous).",Do,5,1,1,,1,,,,,,,1,1,Name Builder,Built,110 §3.5; 101 §5.9,,gold
-2 Quantitative,3,Molecules and Compounds,Choose the correct naming system for a given compound.,Do,5,1,1,,1,,,,,,,1,1,Name Builder,Built,110 §3.6; 101 §5.10,,gold
-2 Quantitative,3,Molecules and Compounds,"Distinguish common names from systematic names (water, ammonia, table salt).",Memorize,4,1,,,1,,,,,,,1,1,,,101 §5.1,,gold
-2 Quantitative,3,Molecules and Compounds,"Describe the main classes of inorganic compounds (oxides, hydroxides, acids, salts) and recognize each from its formula.",Understand,3,,,,1,,,,,,,1,1,,,IMAT syllabus,,gold
-2 Quantitative,3,Molecules and Compounds,Calculate formula mass and molar mass.,Do,6,1,1,1,1,,,,,,,1,1,Conversion Builder,Built,110 §3.8; 101 §5.11,,gold
-2 Quantitative,3,Molecules and Compounds,"Define the mole; convert between moles and number of particles, and between moles of a compound and moles of each element.",Do,6,1,1,1,1,,,,,,,1,1,Conversion Builder,Built,"110 §3.7; 101 §6.2, 6.4",,gold
-2 Quantitative,3,Molecules and Compounds,"Convert between mass, moles, and number of particles using molar mass.",Do,6,1,1,1,1,,,,,,,1,1,Conversion Builder,Built,110 §3.8; 101 §6.2-6.3,,gold
-2 Quantitative,3,Molecules and Compounds,Use a chemical formula as a conversion factor between grams of a compound and grams of one of its elements.,Do,5,1,1,,1,,,,,,,1,1,Conversion Builder,Built,101 §6.5,,gold
-2 Quantitative,3,Molecules and Compounds,Calculate mass percent composition from a formula and use it as a conversion factor.,Do,5,1,1,,1,,,,,,,1,1,,,110 §3.9; 101 §6.6-6.7,,gold
-2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from percent composition or mass data.,Do,4,1,1,,1,,,,,,,0,1,,,110 §3.10; 101 §6.8,,gold
-2 Quantitative,3,Molecules and Compounds,Determine a molecular formula from an empirical formula and molar mass.,Do,4,1,1,,1,,,,,,,0,1,,,110 §3.11; 101 §6.9,,gold
-2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from combustion analysis data.,Do,3,0,1,,1,,,,,,,0,1,,,110 §3.12,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the evidence that a chemical reaction has occurred.,Understand,4,1,,,1,,,,,,,1,1,,,101 §7.2,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Identify the parts of a chemical equation: reactants, products, phases, coefficients.",Understand,6,1,1,1,1,,,,,,,1,1,,,110 §4.1,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write and balance chemical equations from symbols or word descriptions.,Do,6,1,1,1,1,,,,,,,1,1,Visual Equation Balancer,Built,110 §4.1; 101 §7.3-7.4,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Recognize the five basic reaction types: synthesis, decomposition, single replacement, double replacement, combustion.",Understand,6,1,1,1,1,,,,,,,1,1,,,110 §4.2; 101 §7.10,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write balanced equations for combustion reactions.,Do,4,1,,,1,,,,,,,1,1,,,101 §7.9,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the numerical relationship between quantities in a balanced equation (mole ratio).,Understand,6,1,1,1,1,,,,,,,1,1,Ratio Factory,Built,110 §5.1; 101 §8.2,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Carry out mole-to-mole conversions between reactants and products.,Do,6,1,1,1,1,,,,,,,1,1,Ratio Factory,Built,110 §5.1; 101 §8.3,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Carry out mass-to-mass conversions between reactants and products through moles.,Do,6,1,1,1,1,,,,,,,1,1,Ratio Factory,Built,110 §5.2; 101 §8.4,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Identify the limiting reactant and calculate the amount of product formed.,Do,5,1,1,1,1,,,,,,,0,1,Ratio Factory,Built,110 §5.3; 101 §8.5-8.6,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate theoretical yield and percent yield.,Do,5,1,1,1,1,,,,,,,0,1,Ratio Factory,Built,110 §5.4; 101 §8.5-8.6,,gold
-2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate the thermal energy released or absorbed by a reaction from the amounts of reactants.,Do,3,1,,,0,,,,,,,1,1,,,101 §8.6,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Describe how ionic compounds dissolve and dissociate in water; write the dissociation equation.,Understand,5,1,1,,1,,,,,,,1,1,,,110 §4.3; 101 §7.5,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Classify solutes as strong electrolytes, weak electrolytes, or nonelectrolytes from their formulas.",Do,5,1,1,,1,,,,,,,1,1,,,110 §4.3,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate molarity and use it as a conversion factor.,Do,5,1,1,1,1,,,,,,,0,1,,,110 §5.5; 101 §13.6,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate concentrations after dilution.,Do,5,1,1,1,1,,,,,,,0,1,pH Lab (dilution rung),Built,110 §5.7; 101 §13.7,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate the molarity of each ion in a solution of an ionic compound.,Do,2,0,1,,1,,,,,,,0,0,,,110 §5.6,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Memorize the solubility rules and use them to decide whether an ionic compound is soluble.,Memorize,3,1,1,,1,,,,,,,0,0,,,110 §4.4; 101 §7.5,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict precipitation reactions; write molecular, complete ionic, and net ionic equations.",Do,5,1,1,,1,,,,,,,1,1,,,110 §4.4; 101 §7.6-7.7,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of acid-base reactions and write their net ionic equations.,Do,5,1,1,,1,,,,,,,1,1,,,110 §4.5; 101 §7.7-7.8,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of gas-evolution reactions.,Do,5,1,1,,1,,,,,,,1,1,,,110 §4.5; 101 §7.8,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Solve solution stoichiometry problems using molarity and balanced equations.,Do,6,1,1,1,1,,,,,,,1,1,,,110 §5.6-5.7; 101 §13.8,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Determine an unknown concentration by acid-base titration.,Do,4,1,1,1,1,,,,,,,0,,,,110 §5.8; 101 §14.6,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Assign oxidation states to atoms in compounds and polyatomic ions.,Do,4,,1,,1,,,,,,,1,1,Oxidation-State Trainer,Built,110 §4.6,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Identify redox reactions and the oxidizing and reducing agents.,Do,5,1,1,,1,,,,,,,1,1,Oxidation-State Trainer,Built,110 §4.6; 101 §7.9,,gold
-2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict the products of synthesis, decomposition, and single-replacement redox reactions (activity series).",Do,3,,1,,0,,,,,,,1,1,,,110 §4.7,,gold
-3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,3,1,1,,1,,,,,,,0,,,,101 §11.2; 110 §7.10,,gold
-3 Advanced,6,Gases,"Define pressure and convert among pressure units (atm, mmHg, torr, kPa).",Do,3,1,1,,1,,,,,,,0,,,,110 §7.1; 101 §11.3,,gold
-3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,4,1,1,1,1,,,,,,,0,,,,110 §7.2; 101 §11.4,,gold
-3 Advanced,6,Gases,Use Charles's law (V and absolute T).,Do,4,1,1,1,1,,,,,,,0,,Gas Laws (Charles),Partial,110 §7.3; 101 §11.5,Charles's law only is built.,gold
-3 Advanced,6,Gases,"Use the combined gas law (P, V, and T).",Do,3,1,1,,1,,,,,,,0,,,,110 §7.4; 101 §11.6,,gold
-3 Advanced,6,Gases,Use Avogadro's law (V and moles).,Do,5,1,1,,1,,,,,,,1,1,,,110 §7.5; 101 §11.7,,gold
-3 Advanced,6,Gases,"Solve for any variable in the ideal gas law, PV = nRT.",Do,4,1,1,1,1,,,,,,,0,,,,110 §7.6; 101 §11.8,,gold
-3 Advanced,6,Gases,Use the ideal gas law to find molar mass and density of a gas.,Do,1,0,1,,0,,,,,,,0,,,,110 §7.8,,gold
-3 Advanced,6,Gases,Relate total pressure to partial pressures (Dalton's law) and mole fractions.,Do,3,1,1,,1,,,,,,,0,,,,110 §7.7; 101 §11.9,,gold
-3 Advanced,6,Gases,Calculate stoichiometry for reactions that involve gases.,Do,5,1,1,,1,,,,,,,1,1,,,110 §7.9; 101 §11.10,,gold
-3 Advanced,6,Gases,Recall the molar volume of a gas at STP.,Memorize,3,,,,1,,,,,,,1,1,,,Draft,,gold
-3 Advanced,6,Gases,Relate molecular speed to temperature and molar mass; describe diffusion and effusion.,Understand,1,0,1,,0,,,,,,,0,,,,110 §7.11,,gold
-3 Advanced,6,Gases,Explain why real gases deviate from ideal behavior.,Understand,2,0,1,,1,,,,,,,0,,,,110 §7.12,,gold
-2 Quantitative,7,Thermochemistry,"Describe kinetic energy, potential energy, and the conservation of energy.",Understand,3,1,1,,1,,,,,,,0,,,,110 §6.1; 101 §3.8,"IMAT: first thermochemistry question in 2026 (bank only, not on the official syllabus).",gold
-2 Quantitative,7,Thermochemistry,"Identify and convert among energy units (J, kJ, cal, Cal).",Do,3,1,1,1,0,,,,,,,0,,,,110 §6.1; 101 §3.8,,gold
-2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,3,1,,1,1,,,,,,,0,,,,101 §3.9,,gold
-2 Quantitative,7,Thermochemistry,"Relate energy, temperature change, and heat capacity: q = mcΔT.",Do,3,1,1,1,0,,,,,,,0,,,,110 §6.5; 101 §3.10-3.11,,gold
-2 Quantitative,7,Thermochemistry,Define system and surroundings; assign the signs of heat q and work w; calculate ΔE = q + w.,Do,1,0,1,,0,,,,,,,0,,,,110 §6.2-6.3,,gold
-2 Quantitative,7,Thermochemistry,Explain what a state function is.,Understand,1,0,1,0,0,,,,,,,0,,,,110 §6.3,,gold
-2 Quantitative,7,Thermochemistry,Distinguish exothermic from endothermic processes; define enthalpy as heat at constant pressure.,Understand,6,1,1,1,1,,,,,,,1,1,,,110 §6.4; 101 §8.6,IMAT: 2026 question asked exothermic = products lower in potential energy.,gold
-2 Quantitative,7,Thermochemistry,Calculate pressure-volume work.,Do,1,0,1,0,0,,,,,,,0,,,,110 §6.4,,gold
-2 Quantitative,7,Thermochemistry,Calculate heat and enthalpy changes from calorimetry data.,Do,1,0,1,,0,,,,,,,0,,,,110 §6.6,,gold
-2 Quantitative,7,Thermochemistry,Use thermochemical equations: relate ΔH to the amounts of reactants and products.,Do,5,1,1,1,0,,,,,,,1,1,,,110 §6.7; 101 §8.6,,gold
-2 Quantitative,7,Thermochemistry,Apply Hess's law to find the enthalpy of a reaction.,Do,1,0,1,,0,,,,,,,0,,,,110 §6.7,,gold
-2 Quantitative,7,Thermochemistry,Calculate ΔH°rxn from standard enthalpies of formation.,Do,1,0,1,,0,,,,,,,0,,,,110 §6.8,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Describe light as electromagnetic radiation; relate wavelength, frequency, and energy (c = λν, E = hν).",Understand,2,1,1,0,0,,,,,,,0,,,,101 §9.2; 110 §8.1,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Rank regions of the electromagnetic spectrum by wavelength, frequency, and energy.",Do,2,1,1,0,0,,,,,,,0,,,,101 §9.3; 110 §8.1,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Explain the Bohr model: energy levels and emission spectra.,Understand,2,1,1,0,0,,,,,,,0,,,,101 §9.4; 110 §8.2,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Explain wave-particle duality and the de Broglie wavelength.,Understand,1,0,1,0,0,,,,,,,0,,,,110 §8.3,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Explain the quantum-mechanical model: electrons occupy orbitals, regions of probability.",Understand,3,1,1,0,0,,,,,,,0,1,,,101 §9.5; 110 §8.4,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Assign the four quantum numbers and list the allowed sets.,Do,1,,1,0,0,,,,,,,0,,,,110 §8.4,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Describe the shapes and orientations of s, p, and d orbitals.",Understand,3,1,1,0,0,,,,,,,0,1,,,101 §9.6; 110 §8.5,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Draw orbital diagrams using the Pauli exclusion principle, Hund's rule, and the Aufbau order.",Do,5,1,1,1,1,,,,,,,0,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.6,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write full and noble-gas electron configurations for atoms, using the periodic table position.",Do,6,1,1,1,1,,,,,,,1,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.7,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write electron configurations for ions and for the exceptions (Cr, Cu).",Do,3,,1,,1,,,,,,,0,1,,,110 §8.7,IMAT bank: ion configurations and isoelectronic species recur.,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Distinguish the ground and excited states of an atom.,Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 1.1; req. 5,,gold
-1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Identify valence electrons and core electrons.,Do,6,1,1,1,1,,,,,,,1,1,,,101 §9.7,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,Relate the number of valence electrons to group number; explain that chemical properties are set by valence electrons.,Understand,6,1,1,1,1,,,,,,,1,1,Periodic System screen,Built,110 §9.1; 101 §9.8,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,Explain effective nuclear charge and shielding.,Understand,1,,1,0,0,,,,,,,0,,,,110 §9.2,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,Predict the trends in atomic radius and in ionic radius compared with the parent atom.,Do,6,1,1,1,1,,,,,,,1,1,Trend Ladder,Built,110 §9.2; 101 §9.9,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,"Rank ionization energies and explain the exceptions (Be/B, N/O).",Do,4,1,1,1,1,,,,,,,0,0,Trend Ladder,Built,110 §9.3; 101 §9.9,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,Rank electron affinities from the periodic table.,Do,2,,1,,1,,,,,,,0,0,Trend Ladder,Built,110 §9.3,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,"Describe the trend in metallic character; contrast metals, nonmetals, and metalloids.",Understand,5,1,1,,1,,,,,,,1,1,Trend Ladder,Built,101 §9.9,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,Predict the common ion charge of a main-group element from its group.,Do,6,1,1,1,1,,,,,,,1,1,Periodic System screen,Built,110 §9.4,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,Compare the sizes of isoelectronic species.,Do,1,,,,1,,,,,,,0,0,,,IMAT bank,,gold
-1 Fundamentals,9,Periodic Properties of the Elements,"Describe the properties of the alkali metals, alkaline earth metals, halogens, and noble gases, and of the transition elements.",Memorize,6,1,1,1,1,,,,,,,1,1,PT Memorizer,Built,IMAT syllabus; 101 §4.6,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Represent valence electrons with Lewis dot symbols.,Do,5,1,1,1,1,,,,,,,0,1,,,101 §10.2,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,"Distinguish ionic, covalent, and metallic bonds; describe the bonding continuum.",Understand,6,1,1,1,1,,,,,,,1,1,"Bonding game (designed, not built)",Planned,110 §10.5; 101 §10.1,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Write Lewis structures for ionic compounds (electrons transferred) and use them to predict formulas.,Do,5,1,1,1,1,,,,,,,0,1,"Bonding game (designed, not built)",Planned,101 §10.3,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Describe an ionic solid as a three-dimensional lattice held by electrostatic attraction.,Understand,5,1,1,1,1,,,,,,,0,1,,,110 §9.4,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Explain lattice energy and its periodic trends; use the Born-Haber cycle.,Understand,1,0,1,0,0,,,,,,,0,0,,,110 §9.5,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Predict the number of bonds an atom forms; count shared and unshared electrons.,Do,6,1,1,1,1,,,,,,,1,1,"Bonding game (designed, not built)",Planned,110 §10.1; 101 §10.4,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Draw Lewis structures for molecules and polyatomic ions that follow the octet rule.,Do,5,1,1,1,1,,,,,,,0,1,"Bonding game (designed, not built)",Planned,110 §10.2; 101 §10.4-10.5,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Draw resonance structures.,Do,2,1,1,,0,,,,,,,0,0,,,110 §10.3; 101 §10.6,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Calculate formal charge and use it to choose the best Lewis structure.,Do,1,0,1,0,0,,,,,,,0,0,,,110 §10.3,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,"Apply the octet-rule exceptions: H, Be, B, radicals, expanded octets.",Do,2,0,1,,0,,,,,,,0,1,,,110 §10.4,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Determine bond polarity from electronegativity values.,Do,6,1,1,1,1,,,,,,,1,1,,,110 §10.5; 101 §10.8,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,"Relate bond length, bond order, and bond energy.",Understand,2,,1,,1,,,,,,,0,0,,,110 §10.6,,gold
-1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Describe metallic bonding and the properties it explains.,Understand,3,,,,1,,,,,,,1,1,,,IMAT syllabus,,gold
-1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Predict electron geometry and molecular shape with VSEPR (two to six electron groups).,Do,4,1,1,1,1,,,,,,,0,0,Shape Lab,Built,110 §11.1; 101 §10.7,,gold
-1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Memorize the ideal bond angle for each geometry.,Memorize,3,1,1,,1,,,,,,,0,0,Shape Lab,Built,110 §11.1; 101 §10.7,,gold
-1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Decide whether a molecule is polar from its shape and bond polarities.,Do,3,1,1,,1,,,,,,,0,0,Shape Lab,Built,110 §11.2; 101 §10.8,,gold
-1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory","Predict hybridization (sp, sp2, sp3, sp3d, sp3d2) and describe sigma and pi bonds.",Do,3,,1,,1,,,,,,,0,1,,,110 §11.3-11.4,IMAT: bank 2025 Q43 (benzene sp2/sp3).,gold
-1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Use molecular orbital theory: bond order and magnetism of diatomic molecules.,Do,1,0,1,0,0,,,,,,,0,0,,,110 §11.5,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Identify the intermolecular forces present in a substance: dispersion, dipole-dipole, hydrogen bonding, ion-dipole.",Do,4,1,1,,1,,,,,,,0,1,,,110 §12.1; 101 §12.6,Shape Lab covers the polarity step.,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Use intermolecular forces to compare melting points, boiling points, viscosity, and vapor pressure.",Do,4,1,1,,1,,,,,,,0,1,,,110 §12.2; 101 §12.6,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Explain surface tension, viscosity, and capillary action.",Understand,2,1,1,0,0,,,,,,,0,0,,,101 §12.3; 110 §12.2,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Describe evaporation, condensation, dynamic equilibrium, and vapor pressure.",Understand,3,1,1,,1,,,,,,,0,0,,,101 §12.4; 110 §12.4,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Relate vapor pressure to boiling point; use the Clausius-Clapeyron equation.,Do,1,0,1,0,0,,,,,,,0,0,,,110 §12.4,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Interpret heating curves; calculate heats of fusion and vaporization.,Do,2,1,1,,0,,,,,,,0,0,,,101 §12.4-12.5; 110 §12.3,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Read a phase diagram: triple point, critical point, phase boundaries.",Do,1,0,1,0,0,,,,,,,0,0,,,110 §12.5,,gold
-3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Explain the unusual properties of water that arise from hydrogen bonding.,Understand,3,1,,,1,,,,,,,0,1,,,101 §12.8; IMAT syllabus,,gold
-3 Advanced,13,Solids and Modern Materials,"Classify solids as molecular, ionic, or atomic (metallic, network covalent).",Do,3,1,1,,0,,,,,,,0,1,,,110 §12.6; 101 §12.7,,gold
-3 Advanced,13,Solids and Modern Materials,Distinguish crystalline from amorphous solids.,Understand,1,,,,1,,,,,,,0,0,,,Draft,,gold
-3 Advanced,13,Solids and Modern Materials,"Count atoms per unit cell for simple cubic, body-centered, and face-centered cubic lattices.",Do,1,0,1,0,0,,,,,,,0,0,,,110 §12.7,,gold
-3 Advanced,13,Solids and Modern Materials,Calculate density from unit cell dimensions.,Do,1,0,1,0,0,,,,,,,0,0,,,110 §12.7,,gold
-3 Advanced,13,Solids and Modern Materials,"Explain band theory: conductors, semiconductors, and insulators.",Understand,0,0,0,0,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,13,Solids and Modern Materials,"Describe ceramics, polymers, composites, and nanomaterials.",Understand,1,0,0,0,0,,,,,,,0,1,,,Draft,,gold
-3 Advanced,14,Solutions,Describe the solution process: solute-solvent interactions and 'like dissolves like'.,Understand,3,1,1,,1,,,,,,,0,0,,,110 §13.1; 101 §13.2-13.3,,gold
-3 Advanced,14,Solutions,"Distinguish saturated, unsaturated, and supersaturated solutions; read a solubility curve.",Understand,4,1,1,,1,,,,,,,0,1,,,110 §13.2; 101 §13.3,,gold
-3 Advanced,14,Solutions,Describe the solubility of gases in liquids; apply Henry's law.,Understand,2,1,,,1,,,,,,,0,0,,,101 §13.4,,gold
-3 Advanced,14,Solutions,Calculate mass percent concentration and use it in calculations.,Do,5,1,1,,1,,,,,,,1,1,,,110 §13.3; 101 §13.5,,gold
-3 Advanced,14,Solutions,Describe crystal hydrates (for example CuSO4·5H2O) and do calculations with them.,Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 1.11,,gold
-3 Advanced,14,Solutions,"Calculate molality, mole fraction, and parts per million.",Do,4,1,1,1,1,,,,,,,0,0,,,110 §13.3; 101 §13.1,HESI file names molarity and molality.,gold
-3 Advanced,14,Solutions,Calculate freezing point depression and boiling point elevation of nonelectrolyte solutions.,Do,3,1,1,,1,,,,,,,0,0,,,110 §13.4; 101 §13.9,,gold
-3 Advanced,14,Solutions,Include the van't Hoff factor for electrolyte solutions in colligative property calculations.,Do,1,0,1,0,0,,,,,,,0,0,,,110 §13.5,,gold
-3 Advanced,14,Solutions,Explain osmosis and osmotic pressure.,Understand,1,1,,,0,,,,,,,0,0,,,101 §13.10,,gold
-3 Advanced,15,Chemical Kinetics,Define reaction rate and explain it with collision theory.,Understand,3,1,1,0,0,,,,,,,0,1,,,101 §15.2; 110 Ch 14,,gold
-3 Advanced,15,Chemical Kinetics,"Describe how concentration, temperature, surface area, and catalysts change reaction rate.",Understand,3,,1,0,1,,,,,,,0,1,,,110 Ch 14,,gold
-3 Advanced,15,Chemical Kinetics,Determine a rate law and reaction order from initial-rate data.,Do,2,0,1,0,1,,,,,,,0,0,,,Draft,"Rows below draw on the 110 Ch 14 worksheets, not on an SLO list.",gold
-3 Advanced,15,Chemical Kinetics,Use integrated rate laws and half-life for first- and second-order reactions.,Do,1,0,1,0,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,15,Chemical Kinetics,"Use the Arrhenius equation to relate rate, temperature, and activation energy.",Do,1,0,1,0,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,15,Chemical Kinetics,"Describe reaction mechanisms: elementary steps, rate-determining step, intermediates.",Understand,1,0,1,0,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,15,Chemical Kinetics,"Explain how a catalyst lowers activation energy, including enzymes.",Understand,3,,1,0,1,,,,,,,0,1,,,Draft,,gold
-3 Advanced,15,Chemical Kinetics,Interpret a reaction energy diagram: activation energy and ΔH.,Do,2,,1,,1,,,,,,,0,0,,,Draft,,gold
-3 Advanced,16,Chemical Equilibrium,Explain dynamic equilibrium.,Understand,5,1,1,1,1,,,,,,,0,1,,,"101 §15.1, 15.3",,gold
-3 Advanced,16,Chemical Equilibrium,Write equilibrium expressions; leave out pure solids and liquids.,Do,4,1,1,1,1,,,,,,,0,0,,,101 §15.4-15.5,,gold
-3 Advanced,16,Chemical Equilibrium,Calculate an equilibrium constant from equilibrium concentrations.,Do,4,1,1,1,1,,,,,,,0,0,,,101 §15.4,,gold
-3 Advanced,16,Chemical Equilibrium,Use K to find an equilibrium concentration (ICE tables).,Do,4,1,1,1,0,,,,,,,0,1,,,101 §15.4; 110 Ch 15,,gold
-3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,2,,1,,1,,,,,,,0,0,,,110 Ch 15,,gold
-3 Advanced,16,Chemical Equilibrium,Convert between Kc and Kp.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 15,,gold
-3 Advanced,16,Chemical Equilibrium,"Apply Le Chatelier's principle to changes in concentration, volume or pressure, and temperature.",Do,5,1,1,1,1,,,,,,,0,1,,,101 §15.7-15.10,"A catalyst changes the rate, not the equilibrium position.",gold
-3 Advanced,17,Acids and Bases,Identify common acids and bases and describe their properties.,Memorize,6,1,1,1,1,,,,,,,1,1,Acid/Base Sorter,Built,101 §14.1-14.3,,gold
-3 Advanced,17,Acids and Bases,Apply the Arrhenius and Bronsted-Lowry definitions; identify conjugate acid-base pairs.,Do,4,1,1,1,1,,,,,,,0,0,Acid/Base Sorter,Built,101 §14.4,,gold
-3 Advanced,17,Acids and Bases,Describe Lewis acids and bases.,Understand,2,0,1,,1,,,,,,,0,0,,,110 Ch 16,,gold
-3 Advanced,17,Acids and Bases,Memorize the strong acids and strong bases; classify acids and bases as strong or weak.,Memorize,6,1,1,1,1,,,,,,,1,1,Acid/Base Sorter,Built,101 §14.7,,gold
-3 Advanced,17,Acids and Bases,Explain the autoionization of water and use Kw.,Do,5,1,1,1,1,,,,,,,0,1,pH Lab (Kw-box),Built,101 §14.8,,gold
-3 Advanced,17,Acids and Bases,"Calculate pH or pOH from [H3O+] or [OH-], and the reverse.",Do,5,1,1,1,1,,,,,,,0,1,pH Lab,Built,101 §14.9,,gold
-3 Advanced,17,Acids and Bases,Write neutralization reactions and the reactions of acids with metals and metal oxides.,Do,5,1,1,,1,,,,,,,1,1,,,101 §14.5,,gold
-3 Advanced,17,Acids and Bases,Calculate the pH of strong acid and strong base solutions.,Do,5,1,1,1,1,,,,,,,0,1,pH Lab,Built,101 §14.9; 110 Ch 16,,gold
-3 Advanced,17,Acids and Bases,Use Ka and Kb to calculate the pH of weak acid and weak base solutions; find percent ionization.,Do,2,0,1,,1,,,,,,,0,0,pH Lab,Built,110 Ch 16,HESI file names pH calculations without saying weak acids.,gold
-3 Advanced,17,Acids and Bases,Relate Ka and Kb of a conjugate pair: Ka × Kb = Kw.,Do,2,0,1,,1,,,,,,,0,0,,,110 Ch 16,,gold
-3 Advanced,17,Acids and Bases,"Predict whether a salt solution is acidic, basic, or neutral (hydrolysis).",Do,3,0,1,,1,,,,,,,0,1,,,110 Ch 16; IMAT syllabus,,gold
-3 Advanced,17,Acids and Bases,Describe polyprotic acids and the trends in acid strength.,Understand,3,0,1,,1,,,,,,,1,0,,,110 Ch 16,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Explain how a buffer resists pH change.,Understand,3,1,1,,1,,,,,,,0,0,,,101 §14.10; IMAT syllabus,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Calculate buffer pH with the Henderson-Hasselbalch equation.,Do,2,0,1,0,1,,,,,,,0,0,,,110 Ch 17,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Choose or prepare a buffer; explain buffer capacity.,Do,2,0,1,,1,,,,,,,0,0,,,110 Ch 17,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,"Describe titration curves: equivalence point, half-equivalence point, indicators.",Do,2,0,1,1,0,,,,,,,0,0,,,110 Ch 17,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Calculate pH at points along a titration curve.,Do,1,0,1,,0,,,,,,,0,0,,,110 Ch 17,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Write the solubility-product expression; calculate Ksp and molar solubility.,Do,2,1,1,0,0,,,,,,,0,0,,,101 §15.4; 110 Ch 17,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Apply the common-ion effect and pH to solubility; compare Q with Ksp to predict precipitation.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 17,,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Use the formation constant Kf for complex ions.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 17,,gold
-3 Advanced,19,Free Energy and Thermodynamics,Distinguish spontaneous from nonspontaneous processes; state the second law.,Understand,1,0,1,,0,,,,,,,0,0,,,110 Ch 18,,gold
-3 Advanced,19,Free Energy and Thermodynamics,Define entropy and predict the sign of ΔS.,Do,2,0,1,1,0,,,,,,,0,0,,,110 Ch 18,HESI file names entropy.,gold
-3 Advanced,19,Free Energy and Thermodynamics,Calculate ΔS°rxn from standard molar entropies; state the third law.,Do,1,0,1,,0,,,,,,,0,0,,,110 Ch 18,,gold
-3 Advanced,19,Free Energy and Thermodynamics,Use ΔG = ΔH - TΔS to predict spontaneity at different temperatures.,Do,1,0,1,,0,,,,,,,0,0,,,110 Ch 18,,gold
-3 Advanced,19,Free Energy and Thermodynamics,Calculate ΔG°rxn from standard free energies of formation and ΔG under nonstandard conditions.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 18,,gold
-3 Advanced,19,Free Energy and Thermodynamics,Relate ΔG° to the equilibrium constant: ΔG° = -RT ln K.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 18,,gold
-3 Advanced,20,Electrochemistry,Balance redox equations by the half-reaction method in acidic and basic solution.,Do,4,0,1,0,1,,,,,,,1,1,Oxidation-State Trainer,Built,110 Ch 19; IMAT syllabus,IMAT: 2026 redox questions were all full-equation balancing.,gold
-3 Advanced,20,Electrochemistry,"Describe a galvanic cell: anode, cathode, salt bridge, direction of electron flow.",Understand,2,0,1,0,0,,,,,,,0,1,,,110 Ch 19,No cell questions in 14 years of IMAT.,gold
-3 Advanced,20,Electrochemistry,Write cell notation and calculate E°cell from standard reduction potentials.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 19,,gold
-3 Advanced,20,Electrochemistry,Relate E°cell to ΔG° and to K.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 19,,gold
-3 Advanced,20,Electrochemistry,Use the Nernst equation; describe concentration cells.,Do,1,0,1,0,0,,,,,,,0,0,,,110 Ch 19,,gold
-3 Advanced,20,Electrochemistry,"Describe common batteries (alkaline, lead-acid, lithium-ion) and fuel cells.",Understand,0,0,,0,0,,,,,,,0,0,Battery Lab,Partial,Draft,Battery Lab covers lithium-ion electrolytes; cathodes drafted.,gold
-3 Advanced,20,Electrochemistry,Predict the products of electrolysis; use Faraday's law.,Do,2,0,1,0,0,,,,,,,0,1,,,110 Ch 19,,gold
-3 Advanced,20,Electrochemistry,Explain corrosion and how it is prevented.,Understand,0,0,,0,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,"Write nuclear equations for alpha, beta, positron, and gamma decay and electron capture.",Do,1,,1,0,0,,,,,,,0,0,,,110 Ch 20,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,Predict nuclear stability from the neutron-to-proton ratio and magic numbers.,Understand,1,,1,0,0,,,,,,,0,0,,,110 Ch 20,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,Calculate half-life and radiometric age.,Do,1,,1,0,0,,,,,,,0,0,,,110 Ch 20,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe fission and fusion; calculate mass defect and binding energy.,Do,1,,1,,0,,,,,,,0,0,,,110 Ch 20,,gold
-3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe the biological effects of radiation and its medical uses.,Understand,0,,,,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,22,Organic Chemistry,"Explain why carbon forms so many compounds: four bonds, chains, and rings.",Understand,2,,0,0,1,,,,,,,0,1,Molecule Builder,Built,IMAT syllabus,No SLO list exists for organic in the 101 or 110-111 plans.,gold
-3 Advanced,22,Organic Chemistry,"Read and draw molecular, condensed, and skeletal formulas.",Do,2,,0,0,1,,,,,,,0,1,Molecule Builder,Built,IMAT syllabus,,gold
-3 Advanced,22,Organic Chemistry,"Identify and name alkanes, alkenes, alkynes, cycloalkanes, and aromatic hydrocarbons.",Do,2,,0,0,1,,,,,,,0,1,Organic Nomenclature,Built,IMAT syllabus,,gold
-3 Advanced,22,Organic Chemistry,"Recognize the functional groups: alcohols, ethers, amines, aldehydes, ketones, carboxylic acids, esters, amides.",Memorize,2,,0,0,1,,,,,,,0,1,Organic Nomenclature,Built,IMAT syllabus,,gold
-3 Advanced,22,Organic Chemistry,Name compounds that have substituents and functional groups (IUPAC).,Do,2,,0,0,1,,,,,,,0,1,Organic Nomenclature,Built,IMAT syllabus,,gold
-3 Advanced,22,Organic Chemistry,Identify and count constitutional isomers and stereoisomers.,Do,2,,0,0,1,,,,,,,0,1,Molecule Builder,Built,IMAT syllabus,,gold
-3 Advanced,22,Organic Chemistry,"Predict the products of addition, substitution, elimination, and alcohol oxidation reactions.",Do,2,,0,0,1,,,,,,,0,1,Reactions Lab,Built,Draft,"Bank: 2011 Q61, 2012 Q67, 2013 Q46, 2014 Q46 and Q51, 2022 Q38; not in syllabus.",gold
-3 Advanced,22,Organic Chemistry,Predict boiling points and solubility of organic compounds from intermolecular forces.,Do,2,,0,0,1,,,,,,,0,1,,,IMAT bank,,gold
-3 Advanced,22,Organic Chemistry,"Explain the radical and ionic mechanisms of organic reactions, electrophiles and nucleophiles, and apply the Markovnikov and Zaitsev rules.",Understand,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.4,,gold
-3 Advanced,22,Organic Chemistry,"Explain how atoms in an organic molecule influence each other, and predict the effect of substituents on reactivity (for example OH in phenol, CH3 and NO2 on benzene).",Understand,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.2,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkanes and small cycloalkanes: halogenation, dehydrogenation, cracking, isomerization, combustion.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.5,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkenes and dienes: addition (hydrogenation, halogenation, hydrohalogenation, hydration), oxidation, combustion, polymerization.",Do,2,,,,1,,,,,,,0,1,,,"ЕГЭ КОДИФ 3.6, 3.7",,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkynes: addition, hydration of acetylene, substitution at a terminal C–H, combustion.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.8,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of benzene, toluene, and styrene: substitution, addition, oxidation of the side chain, polymerization of styrene.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.9,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alcohols, ethylene glycol, and glycerol: with sodium and hydrogen halides, dehydration, oxidation, esterification, and the Cu(OH)2 test for polyols.",Do,2,,,,1,,,,,,,0,1,,,ЕГЭ КОДИФ 3.10,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of phenol: with sodium, with sodium hydroxide, with bromine water.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.11,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of aldehydes and ketones: hydrogenation, oxidation (silver mirror, Cu(OH)2), acetone as a ketone.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.12,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of carboxylic acids, including the special properties of formic acid.",Do,2,,,,1,,,,,,,0,1,,,ЕГЭ КОДИФ 3.13,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of esters and fats: esterification, hydrolysis, saponification, hydrogenation of fats, soaps.",Do,2,,,,1,,,,,,,0,1,,,ЕГЭ КОДИФ 3.14,,gold
-3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of amines and aniline: as bases, with acids, aniline with bromine water, alkylation of ammonia, reduction of nitro compounds.",Do,2,,,,1,,,,,,,0,1,,,ЕГЭ КОДИФ 3.16,,gold
-3 Advanced,22,Organic Chemistry,"Distinguish addition polymerization from polycondensation, and relate the structure of a polymer to its properties.",Understand,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.18,,gold
-3 Advanced,22,Organic Chemistry,"Identify organic substances by their qualitative reactions (bromine water, KMnO4, silver mirror, Cu(OH)2, FeCl3 with phenol).",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.19,,gold
-3 Advanced,22,Organic Chemistry,Link the classes of organic compounds into reaction chains (genetic links) and write each step.,Do,2,,,,1,,,,,,,0,1,,,ЕГЭ КОДИФ 3.20,,gold
-3 Advanced,23,Biochemistry,Name the four classes of biomolecules and their building blocks.,Understand,2,,0,0,1,,,,,,,0,1,,,Draft,"IMAT: asked twice in 2025 (glycogen, amino acids); not on the official syllabus.",gold
-3 Advanced,23,Biochemistry,"Describe amino acids, the peptide bond, and the levels of protein structure.",Understand,2,,0,0,1,,,,,,,0,1,,,Draft,,gold
-3 Advanced,23,Biochemistry,"Distinguish monosaccharides, disaccharides, and polysaccharides (starch, glycogen, cellulose).",Understand,2,,0,0,1,,,,,,,0,1,,,Draft,,gold
-3 Advanced,23,Biochemistry,"Describe fats, fatty acids, saturated versus unsaturated, and phospholipids.",Understand,2,,0,0,1,,,,,,,0,1,,,Draft,,gold
-3 Advanced,23,Biochemistry,Describe the structure of DNA and RNA and base pairing.,Understand,1,,0,0,1,,,,,,,0,0,,,Draft,,gold
-3 Advanced,23,Biochemistry,"Describe how enzymes work: active site, substrate, effect of conditions.",Understand,1,,0,0,1,,,,,,,0,0,,,Draft,,gold
-3 Advanced,23,Biochemistry,"Write the reactions of glucose, disaccharides, starch, and cellulose: reactions of the alcohol and aldehyde groups of glucose, fermentation, hydrolysis, the iodine test for starch.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.15,,gold
-3 Advanced,23,Biochemistry,"Write the reactions of amino acids and proteins: amino acids as amphoteric compounds, peptide bond formation, hydrolysis, denaturation, color (qualitative) reactions of proteins.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 3.17,,gold
-3 Advanced,24,Chemistry of the Nonmetals,Describe the properties and common compounds of hydrogen.,Understand,3,,0,0,1,,,,,,,1,1,,,Draft,Not in the 110-111 course folder.,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe carbon and silicon: allotropes, oxides, and silicates.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe nitrogen and phosphorus: ammonia, oxides, oxyacids.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe oxygen and sulfur: ozone, sulfur oxides, sulfuric acid.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,Describe the halogens and the hydrohalic acids.,Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
-3 Advanced,24,Chemistry of the Nonmetals,Explain why nonmetal oxides give acidic solutions and metal oxides give basic ones.,Understand,3,,,,1,,,,,,,1,1,,,IMAT syllabus,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of the halogens and their compounds: with metals, hydrogen, water, and alkali; displacement of one halogen by another; hydrogen halides and halides.",Do,3,,,,1,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of sulfur and its compounds: S, H2S and sulfides, SO2, SO3, sulfites, and sulfates.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of nitrogen and its compounds: N2, NH3 and ammonium salts, the nitrogen oxides, and nitrates.",Do,3,,,,1,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of phosphorus and its compounds: P, P2O5, phosphoric acid, and phosphates.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of carbon, silicon, and their compounds: CO, CO2, carbonates, Si, SiO2, and silicates.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.3,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Explain how concentrated sulfuric and nitric acids act as oxidizing agents, and predict the products from the metal and the acid concentration.",Understand,2,,,,0,,,,,,,1,1,,,"ЕГЭ КОДИФ 2.3, 2.2",,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Explain disproportionation, for example Cl2 in cold and hot alkali and NO2 in water and alkali.",Understand,2,,,,1,,,,,,,0,1,,,ЕГЭ КОДИФ 2.3,,gold
-3 Advanced,24,Chemistry of the Nonmetals,"Describe the industrial production of ammonia and sulfuric acid, and of glass and other silicate materials.",Understand,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 4.4,,gold
-3 Advanced,25,Metals and Metallurgy,Describe the electron-sea model of metallic bonding and the properties it explains.,Understand,3,,,,1,,,,,,,1,1,,,IMAT syllabus,Same skill as the metallic bonding row in chapter 10.,gold
-3 Advanced,25,Metals and Metallurgy,Describe how metals are extracted from their ores (metallurgy).,Understand,2,,0,0,0,,,,,,,1,1,,,Draft,,gold
-3 Advanced,25,Metals and Metallurgy,Describe common alloys and why alloying changes properties.,Understand,1,,0,0,0,,,,,,,0,1,,,Draft,,gold
-3 Advanced,25,Metals and Metallurgy,"Describe the reactions of the alkali, alkaline earth, and other main-group metals.",Understand,3,,0,0,1,,,,,,,1,1,,,Draft,,gold
-3 Advanced,25,Metals and Metallurgy,"Write the reactions of sodium and potassium and their compounds: with water, oxygen, and halogens; oxides, peroxides, hydroxides, and salts.",Do,3,,,,1,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,25,Metals and Metallurgy,"Write the reactions of calcium and magnesium and their compounds: oxides, hydroxides, carbonates, and the hardness of water.",Do,3,,,,1,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,25,Metals and Metallurgy,"Write the reactions of aluminum and its compounds: the amphoteric Al2O3 and Al(OH)3, and aluminothermy.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,25,Metals and Metallurgy,"Predict how metals react with water, acids, and salt solutions using the activity series, including the passivation of Fe, Al, and Cr by concentrated HNO3 and H2SO4.",Understand,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,25,Metals and Metallurgy,"Describe the thermal decomposition of hydroxides, nitrates, and carbonates, and predict the products.",Understand,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Write electron configurations of transition metals and their ions; explain variable oxidation states.,Do,3,,1,,1,,,,,,,0,1,,,110 Ch 22; IMAT syllabus,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Define ligand, coordination number, and complex ion; find the charge of a complex.",Understand,2,,1,,0,,,,,,,0,1,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Name coordination compounds and write their formulas.,Do,2,,1,,0,,,,,,,0,1,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Describe isomerism in coordination compounds.,Understand,1,,1,,0,,,,,,,0,0,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Explain crystal field theory: orbital splitting, high spin versus low spin, color, magnetism.",Understand,1,,1,,0,,,,,,,0,0,,,110 Ch 22,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Describe the roles of transition metals in biology and catalysis.,Understand,0,,,,0,,,,,,,0,0,,,Draft,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of zinc and its compounds: ZnO, Zn(OH)2, and the reactions with acids and alkali.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of chromium and its compounds in the +2, +3, and +6 states, including chromate and dichromate.",Do,1,,,,0,,,,,,,0,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of iron and its compounds: FeO, Fe2O3, Fe(OH)2, Fe(OH)3, and Fe2+ and Fe3+ salts.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of copper and its compounds: Cu2O, CuO, Cu(OH)2, and copper salts.",Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.2,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Explain amphoteric oxides and hydroxides (Al, Zn, Cr(III)): their reactions with acids and alkali and the hydroxo complexes they form.",Understand,3,,,,1,,,,,,,1,1,,,"ЕГЭ КОДИФ 2.2, 7.3",,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,"Predict the redox behavior of Cr and Fe compounds from the oxidation state: lowest is a reducing agent, highest an oxidizing agent.",Understand,3,,,,1,,,,,,,1,1,,,"ЕГЭ КОДИФ 2.2, 1.12",,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Identify inorganic ions and substances by their qualitative reactions.,Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.5,,gold
-3 Advanced,26,Transition Metals and Coordination Compounds,Link the classes of inorganic substances into reaction chains (genetic links) and write each step.,Do,2,,,,0,,,,,,,1,1,,,ЕГЭ КОДИФ 2.4,,gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Recognize that all things are made of atoms and molecules, and that chemicals make up everything we encounter.",Understand,4,1,0,0,0,,,,,,1,1,1,,,"101 §1; IB S1.1.1-2, S1.2.1",,gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Explain the scientific method and distinguish hypotheses, theories, and laws.",Understand,3,1,1,0,0,,,,,,1,0,0,,,101 §1.4; 110 §1.4; IB Nature of science; Inquiry 1-3,,gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Classify matter as solid, liquid, or gas by the arrangement and motion of its particles.",Understand,4,1,1,,1,,,,,,1,0,,,,101 §3.3; IB S1.1.2,,gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Classify matter as an element, compound, or mixture, and a mixture as homogeneous or heterogeneous.",Do,6,1,1,,1,,,,,,1,1,1,,,101 §3.4; 110 §1.1; IB S1.1.1,,gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Distinguish physical from chemical properties, and physical from chemical changes.",Understand,5,1,1,0,1,,,,,,1,1,,,,"110 §1.2; 101 §3.5-3.6; IB S1.1.1-2, R1.4.1","IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Distinguish matter, mass, and weight; distinguish matter from energy.",Understand,3,1,1,0,1,,,,,,0,0,,,,110 §1.3,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",State and apply the law of conservation of mass.,Do,6,1,1,0,1,,,,,,1,1,1,,,110 §1.3; 101 §3.7; IB R2.1.1-2,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Write and read numbers in scientific notation.,Do,4,1,,1,1,,,,,,1,0,,,,101 §2.2; IB Tool 3,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Recognize SI base units and prefixes, and convert within SI.",Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.5; 101 §2.5; IB Tool 3; S1.4.1,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Convert between imperial and metric units.,Do,4,1,1,1,1,,,,,,0,0,,,,110 §1.5; 101 §2.6,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Determine which digits in a number are significant, and round to the correct number of significant figures.",Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.6; 101 §2.3; IB Tool 3,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Report the result of a calculation to the correct number of significant figures (multiplication/division and addition/subtraction).,Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.6; 101 §2.4; IB Tool 3,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Use the units of a measurement as a guide in setting up calculations, including multistep conversions and units raised to a power.",Do,5,1,1,1,1,,,,,,1,0,,Conversion Builder; Conversion Conveyor,Built,110 §1.7; 101 §2.7-2.8; IB Tool 3; S1.4.5,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Calculate density, volume, or mass when two of the three are known; use density as a conversion factor.",Do,4,1,1,1,1,,,,,,0,0,,,,110 §1.8; 101 §2.9,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving","Convert temperature values between Fahrenheit, Celsius, and Kelvin.",Do,5,1,1,1,1,,,,,,1,0,,,,110 §1.9; 101 §3.9; IB S1.1.3 (Celsius-Kelvin only),"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,1,"Matter, Measurement, and Problem Solving",Plan a multistep numerical problem with a solution map.,Do,3,1,,1,1,,,,,,0,0,,,,101 §2.10,"IMAT: prerequisite skill, not named in the syllabus.",gold
+1 Fundamentals,2,Atoms and Elements,Recognize and recall the symbols of the commonly used elements.,Memorize,6,1,1,1,1,,,,,,0,1,1,PT Memorizer,Built,110 §2.1,,gold
+1 Fundamentals,2,Atoms and Elements,Explain the laws of conservation of mass and constant composition using Dalton's atomic theory.,Understand,3,1,1,0,0,,,,,,0,1,0,,,110 §2.2-2.3; 101 §4.2,,gold
+1 Fundamentals,2,Atoms and Elements,Apply the laws of chemical composition to calculate the quantities involved when elements combine.,Do,2,1,1,0,0,,,,,,0,0,,,,110 §2.2; 101 §5.2,,gold
+1 Fundamentals,2,Atoms and Elements,Outline the experiments of Thomson and Rutherford that led to the nuclear model of the atom.,Understand,2,1,1,0,0,,,,,,0,0,,,,110 §2.3; 101 §4.3,,gold
+1 Fundamentals,2,Atoms and Elements,"State the relative mass, charge, and location of protons, neutrons, and electrons.",Memorize,7,1,1,1,1,,,,,,1,1,1,Atomic Structure game (renderer prototype),Prototype,101 §4.4; IB S1.2.1,,gold
+1 Fundamentals,2,Atoms and Elements,Identify an element from its atomic number; explain that the number of protons defines the element.,Do,7,1,1,1,1,,,,,,1,1,1,,,101 §4.5; IB S1.2.1,,gold
+1 Fundamentals,2,Atoms and Elements,"Determine the numbers of protons, neutrons, and electrons from an isotope symbol or mass number, and the reverse.",Do,7,1,1,1,1,,,,,,1,1,1,Atomic Structure game (renderer prototype),Prototype,110 §2.4; 101 §4.8; IB S1.2.1,,gold
+1 Fundamentals,2,Atoms and Elements,Determine the charge and the numbers of protons and electrons of an ion.,Do,7,1,1,1,1,,,,,,1,1,1,Atomic Structure game (renderer prototype),Prototype,101 §4.7; IB S1.2.1,,gold
+1 Fundamentals,2,Atoms and Elements,Calculate atomic mass from isotope masses and natural abundances.,Do,5,1,1,1,1,,,,,,1,0,,,,110 §2.5; 101 §4.9; IB S1.2.2,,gold
+1 Fundamentals,2,Atoms and Elements,"Identify periods, groups, and sections (metals, nonmetals, metalloids, main-group and transition elements) by name and number.",Memorize,7,1,1,1,1,,,,,,1,1,1,Periodic System screen; PT Memorizer,Built,110 §2.6; 101 §4.6; IB S3.1.1-2,,gold
+1 Fundamentals,2,Atoms and Elements,Discuss Mendeleev's and Meyer's contributions and the periodic law.,Understand,4,1,1,0,0,,,,,,0,1,1,,,110 §2.6; 101 §4.6,,gold
+2 Quantitative,3,Molecules and Compounds,"Classify elements as atomic or molecular, and compounds as ionic or molecular.",Do,6,1,1,0,1,,,,,,1,1,1,,,"101 §5.1; IB S2.1, S2.2, S2.4.1",,gold
+2 Quantitative,3,Molecules and Compounds,"Interpret a chemical formula: count the atoms of each element, including those inside parentheses.",Do,6,1,1,,1,,,,,,1,1,1,,,110 §3.1; 101 §5.3; IB S1.4.2,,gold
+2 Quantitative,3,Molecules and Compounds,Write the formula of an ionic compound from the charges of its ions (by calculation; criss-cross only as a check).,Do,6,1,1,,1,,,,,,1,1,1,Polyatomic Ion Trainer; Name Builder,Built,110 §3.3; 101 §5.5; IB S2.1.2,,gold
+2 Quantitative,3,Molecules and Compounds,"Memorize the charges of the common monatomic ions and the names, formulas, and charges of the common polyatomic ions.",Memorize,6,1,1,,1,,,,,,1,1,1,Polyatomic Ion Trainer,Built,110 §3.4; 101 §5.7; IB S2.1.1-2,,gold
+2 Quantitative,3,Molecules and Compounds,"Name binary ionic compounds, including metals that form more than one ion (Roman numerals).",Do,6,1,1,,1,,,,,,1,1,1,Name Builder,Built,"110 §3.4; 101 §5.7; IB S2.1.2, S3.1.6",,gold
+2 Quantitative,3,Molecules and Compounds,Name ionic compounds that contain polyatomic ions.,Do,6,1,1,,1,,,,,,1,1,1,Name Builder,Built,110 §3.4; 101 §5.7; IB S2.1.2,,gold
+2 Quantitative,3,Molecules and Compounds,Name binary molecular compounds with Greek prefixes.,Do,5,1,1,,1,,,,,,0,1,1,Name Builder,Built,110 §3.2; 101 §5.8,,gold
+2 Quantitative,3,Molecules and Compounds,"Name binary acids and oxyacids (-ate gives -ic, -ite gives -ous).",Do,5,1,1,,1,,,,,,0,1,1,Name Builder,Built,110 §3.5; 101 §5.9,,gold
+2 Quantitative,3,Molecules and Compounds,Choose the correct naming system for a given compound.,Do,5,1,1,,1,,,,,,0,1,1,Name Builder,Built,110 §3.6; 101 §5.10,,gold
+2 Quantitative,3,Molecules and Compounds,"Distinguish common names from systematic names (water, ammonia, table salt).",Memorize,4,1,,,1,,,,,,0,1,1,,,101 §5.1,,gold
+2 Quantitative,3,Molecules and Compounds,"Describe the main classes of inorganic compounds (oxides, hydroxides, acids, salts) and recognize each from its formula.",Understand,4,,,,1,,,,,,1,1,1,,,"IMAT syllabus; IB S3.1.5, R3.1.7",,gold
+2 Quantitative,3,Molecules and Compounds,Calculate formula mass and molar mass.,Do,7,1,1,1,1,,,,,,1,1,1,Conversion Builder,Built,110 §3.8; 101 §5.11; IB S1.4.2-3,,gold
+2 Quantitative,3,Molecules and Compounds,"Define the mole; convert between moles and number of particles, and between moles of a compound and moles of each element.",Do,7,1,1,1,1,,,,,,1,1,1,Conversion Builder,Built,"110 §3.7; 101 §6.2, 6.4; IB S1.4.1",,gold
+2 Quantitative,3,Molecules and Compounds,"Convert between mass, moles, and number of particles using molar mass.",Do,7,1,1,1,1,,,,,,1,1,1,Conversion Builder,Built,110 §3.8; 101 §6.2-6.3; IB S1.4.3,,gold
+2 Quantitative,3,Molecules and Compounds,Use a chemical formula as a conversion factor between grams of a compound and grams of one of its elements.,Do,6,1,1,,1,,,,,,1,1,1,Conversion Builder,Built,101 §6.5; IB S1.4.4,,gold
+2 Quantitative,3,Molecules and Compounds,Calculate mass percent composition from a formula and use it as a conversion factor.,Do,6,1,1,,1,,,,,,1,1,1,,,110 §3.9; 101 §6.6-6.7; IB S1.4.4,,gold
+2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from percent composition or mass data.,Do,5,1,1,,1,,,,,,1,0,1,,,110 §3.10; 101 §6.8; IB S1.4.4,,gold
+2 Quantitative,3,Molecules and Compounds,Determine a molecular formula from an empirical formula and molar mass.,Do,5,1,1,,1,,,,,,1,0,1,,,110 §3.11; 101 §6.9; IB S1.4.4,,gold
+2 Quantitative,3,Molecules and Compounds,Determine an empirical formula from combustion analysis data.,Do,4,0,1,,1,,,,,,1,0,1,,,110 §3.12; IB S1.4.4 (Tool 1 link),,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the evidence that a chemical reaction has occurred.,Understand,4,1,,,1,,,,,,0,1,1,,,101 §7.2,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Identify the parts of a chemical equation: reactants, products, phases, coefficients.",Understand,7,1,1,1,1,,,,,,1,1,1,,,110 §4.1; IB R2.1.1,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write and balance chemical equations from symbols or word descriptions.,Do,7,1,1,1,1,,,,,,1,1,1,Visual Equation Balancer,Built,110 §4.1; 101 §7.3-7.4; IB R2.1.1,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,"Recognize the five basic reaction types: synthesis, decomposition, single replacement, double replacement, combustion.",Understand,6,1,1,1,1,,,,,,0,1,1,,,110 §4.2; 101 §7.10,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Write balanced equations for combustion reactions.,Do,5,1,,,1,,,,,,1,1,1,,,101 §7.9; IB R1.3.1-2,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Recognize the numerical relationship between quantities in a balanced equation (mole ratio).,Understand,7,1,1,1,1,,,,,,1,1,1,Ratio Factory,Built,110 §5.1; 101 §8.2; IB R2.1.2,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Carry out mole-to-mole conversions between reactants and products.,Do,7,1,1,1,1,,,,,,1,1,1,Ratio Factory,Built,110 §5.1; 101 §8.3; IB R2.1.2,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Carry out mass-to-mass conversions between reactants and products through moles.,Do,7,1,1,1,1,,,,,,1,1,1,Ratio Factory,Built,110 §5.2; 101 §8.4; IB R2.1.2,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Identify the limiting reactant and calculate the amount of product formed.,Do,6,1,1,1,1,,,,,,1,0,1,Ratio Factory,Built,110 §5.3; 101 §8.5-8.6; IB R2.1.3,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate theoretical yield and percent yield.,Do,6,1,1,1,1,,,,,,1,0,1,Ratio Factory,Built,110 §5.4; 101 §8.5-8.6; IB R2.1.4,,gold
+2 Quantitative,4,Chemical Reactions and Chemical Quantities,Calculate the thermal energy released or absorbed by a reaction from the amounts of reactants.,Do,4,1,,,0,,,,,,1,1,1,,,101 §8.6; IB R1.1.4,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Describe how ionic compounds dissolve and dissociate in water; write the dissociation equation.,Understand,6,1,1,,1,,,,,,1,1,1,,,110 §4.3; 101 §7.5; IB S2.1.3,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Classify solutes as strong electrolytes, weak electrolytes, or nonelectrolytes from their formulas.",Do,6,1,1,,1,,,,,,1,1,1,,,110 §4.3; IB R3.1.6,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate molarity and use it as a conversion factor.,Do,6,1,1,1,1,,,,,,1,0,1,,,110 §5.5; 101 §13.6; IB S1.4.5,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate concentrations after dilution.,Do,6,1,1,1,1,,,,,,1,0,1,pH Lab (dilution rung),Built,110 §5.7; 101 §13.7; IB S1.4.5; Tool 1,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Calculate the molarity of each ion in a solution of an ionic compound.,Do,2,0,1,,1,,,,,,0,0,0,,,110 §5.6,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Memorize the solubility rules and use them to decide whether an ionic compound is soluble.,Memorize,3,1,1,,1,,,,,,0,0,0,,,110 §4.4; 101 §7.5,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict precipitation reactions; write molecular, complete ionic, and net ionic equations.",Do,5,1,1,,1,,,,,,0,1,1,,,110 §4.4; 101 §7.6-7.7,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of acid-base reactions and write their net ionic equations.,Do,6,1,1,,1,,,,,,1,1,1,,,110 §4.5; 101 §7.7-7.8; IB R3.1.7,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Predict the products of gas-evolution reactions.,Do,6,1,1,,1,,,,,,1,1,1,,,110 §4.5; 101 §7.8; IB R3.1.7,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Solve solution stoichiometry problems using molarity and balanced equations.,Do,7,1,1,1,1,,,,,,1,1,1,,,110 §5.6-5.7; 101 §13.8; IB R2.1.2,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Determine an unknown concentration by acid-base titration.,Do,5,1,1,1,1,,,,,,1,0,,,,110 §5.8; 101 §14.6; IB Tool 1; R3.1.8,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Assign oxidation states to atoms in compounds and polyatomic ions.,Do,5,,1,,1,,,,,,1,1,1,Oxidation-State Trainer,Built,110 §4.6; IB S3.1.6,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,Identify redox reactions and the oxidizing and reducing agents.,Do,6,1,1,,1,,,,,,1,1,1,Oxidation-State Trainer,Built,110 §4.6; 101 §7.9; IB R3.2.1,,gold
+2 Quantitative,5,Introduction to Solutions and Aqueous Reactions,"Predict the products of synthesis, decomposition, and single-replacement redox reactions (activity series).",Do,4,,1,,0,,,,,,1,1,1,,,110 §4.7; IB R3.2.3-4,,gold
+3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,4,1,1,,1,,,,,,1,0,,,,"101 §11.2; 110 §7.10; IB S1.1.2, S1.5.1",,gold
+3 Advanced,6,Gases,"Define pressure and convert among pressure units (atm, mmHg, torr, kPa).",Do,3,1,1,,1,,,,,,0,0,,,,110 §7.1; 101 §11.3,,gold
+3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,5,1,1,1,1,,,,,,1,0,,,,110 §7.2; 101 §11.4; IB S1.5.3,,gold
+3 Advanced,6,Gases,Use Charles's law (V and absolute T).,Do,5,1,1,1,1,,,,,,1,0,,Gas Laws (Charles),Partial,110 §7.3; 101 §11.5; IB S1.5.3,Charles's law only is built.,gold
+3 Advanced,6,Gases,"Use the combined gas law (P, V, and T).",Do,4,1,1,,1,,,,,,1,0,,,,110 §7.4; 101 §11.6; IB S1.5.4,,gold
+3 Advanced,6,Gases,Use Avogadro's law (V and moles).,Do,6,1,1,,1,,,,,,1,1,1,,,110 §7.5; 101 §11.7; IB S1.4.6,,gold
+3 Advanced,6,Gases,"Solve for any variable in the ideal gas law, PV = nRT.",Do,5,1,1,1,1,,,,,,1,0,,,,110 §7.6; 101 §11.8; IB S1.5.4,,gold
+3 Advanced,6,Gases,Use the ideal gas law to find molar mass and density of a gas.,Do,2,0,1,,0,,,,,,1,0,,,,110 §7.8; IB S1.5.4 (Tool 1 link: molar mass),,gold
+3 Advanced,6,Gases,Relate total pressure to partial pressures (Dalton's law) and mole fractions.,Do,3,1,1,,1,,,,,,0,0,,,,110 §7.7; 101 §11.9,,gold
+3 Advanced,6,Gases,Calculate stoichiometry for reactions that involve gases.,Do,6,1,1,,1,,,,,,1,1,1,,,"110 §7.9; 101 §11.10; IB S1.4.6, R2.1.2",,gold
+3 Advanced,6,Gases,Recall the molar volume of a gas at STP.,Memorize,4,,,,1,,,,,,1,1,1,,,Draft; IB S1.5.3,,gold
+3 Advanced,6,Gases,Relate molecular speed to temperature and molar mass; describe diffusion and effusion.,Understand,1,0,1,,0,,,,,,0,0,,,,110 §7.11,,gold
+3 Advanced,6,Gases,Explain why real gases deviate from ideal behavior.,Understand,3,0,1,,1,,,,,,1,0,,,,110 §7.12; IB S1.5.2,,gold
+2 Quantitative,7,Thermochemistry,"Describe kinetic energy, potential energy, and the conservation of energy.",Understand,4,1,1,,1,,,,,,1,0,,,,"110 §6.1; 101 §3.8; IB R1.1.1, R1.1.3, S1.1.3","IMAT: first thermochemistry question in 2026 (bank only, not on the official syllabus).",gold
+2 Quantitative,7,Thermochemistry,"Identify and convert among energy units (J, kJ, cal, Cal).",Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.1; 101 §3.8; IB R1.1.4 (J and kJ only),,gold
+2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,4,1,,1,1,,,,,,1,0,,,,"101 §3.9; IB R1.1.1, S1.1.3",,gold
+2 Quantitative,7,Thermochemistry,"Relate energy, temperature change, and heat capacity: q = mcΔT.",Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.5; 101 §3.10-3.11; IB R1.1.4,,gold
+2 Quantitative,7,Thermochemistry,Define system and surroundings; assign the signs of heat q and work w; calculate ΔE = q + w.,Do,1,0,1,,0,,,,,,0,0,,,,110 §6.2-6.3,,gold
+2 Quantitative,7,Thermochemistry,Explain what a state function is.,Understand,1,0,1,0,0,,,,,,0,0,,,,110 §6.3,,gold
+2 Quantitative,7,Thermochemistry,Distinguish exothermic from endothermic processes; define enthalpy as heat at constant pressure.,Understand,7,1,1,1,1,,,,,,1,1,1,,,"110 §6.4; 101 §8.6; IB R1.1.2, R1.1.4",IMAT: 2026 question asked exothermic = products lower in potential energy.,gold
+2 Quantitative,7,Thermochemistry,Calculate pressure-volume work.,Do,1,0,1,0,0,,,,,,0,0,,,,110 §6.4,,gold
+2 Quantitative,7,Thermochemistry,Calculate heat and enthalpy changes from calorimetry data.,Do,2,0,1,,0,,,,,,1,0,,,,110 §6.6; IB R1.1.4,,gold
+2 Quantitative,7,Thermochemistry,Use thermochemical equations: relate ΔH to the amounts of reactants and products.,Do,6,1,1,1,0,,,,,,1,1,1,,,110 §6.7; 101 §8.6; IB R1.1.4,,gold
+2 Quantitative,7,Thermochemistry,Apply Hess's law to find the enthalpy of a reaction.,Do,2,0,1,,0,,,,,,1,0,,,,110 §6.7; IB R1.2.2,,gold
+2 Quantitative,7,Thermochemistry,Calculate ΔH°rxn from standard enthalpies of formation.,Do,2,0,1,,0,,,,,,1,0,,,,110 §6.8; IB R1.2.3-4 (HL),,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Describe light as electromagnetic radiation; relate wavelength, frequency, and energy (c = λν, E = hν).",Understand,3,1,1,0,0,,,,,,1,0,,,,"101 §9.2; 110 §8.1; IB S1.3.1, S1.3.6 (HL)",,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Rank regions of the electromagnetic spectrum by wavelength, frequency, and energy.",Do,3,1,1,0,0,,,,,,1,0,,,,101 §9.3; 110 §8.1; IB S1.3.1,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Explain the Bohr model: energy levels and emission spectra.,Understand,3,1,1,0,0,,,,,,1,0,,,,101 §9.4; 110 §8.2; IB S1.3.2,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Explain wave-particle duality and the de Broglie wavelength.,Understand,1,0,1,0,0,,,,,,0,0,,,,110 §8.3,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Explain the quantum-mechanical model: electrons occupy orbitals, regions of probability.",Understand,4,1,1,0,0,,,,,,1,0,1,,,101 §9.5; 110 §8.4; IB S1.3.4-5,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Assign the four quantum numbers and list the allowed sets.,Do,1,,1,0,0,,,,,,0,0,,,,110 §8.4,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Describe the shapes and orientations of s, p, and d orbitals.",Understand,4,1,1,0,0,,,,,,1,0,1,,,101 §9.6; 110 §8.5; IB S1.3.4 (s and p only),,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Draw orbital diagrams using the Pauli exclusion principle, Hund's rule, and the Aufbau order.",Do,6,1,1,1,1,,,,,,1,0,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.6; IB S1.3.5,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write full and noble-gas electron configurations for atoms, using the periodic table position.",Do,7,1,1,1,1,,,,,,1,1,1,Atomic Structure game (renderer prototype),Prototype,101 §9.7; 110 §8.7; IB S1.3.5,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,"Write electron configurations for ions and for the exceptions (Cr, Cu).",Do,4,,1,,1,,,,,,1,0,1,,,110 §8.7; IB S1.3.5,IMAT bank: ion configurations and isoelectronic species recur.,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Distinguish the ground and excited states of an atom.,Do,2,,,,0,,,,,,1,0,1,,,ЕГЭ КОДИФ 1.1; req. 5; IB S1.3.1,,gold
+1 Fundamentals,8,The Quantum-Mechanical Model of the Atom,Identify valence electrons and core electrons.,Do,7,1,1,1,1,,,,,,1,1,1,,,101 §9.7; IB S3.1.2,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,Relate the number of valence electrons to group number; explain that chemical properties are set by valence electrons.,Understand,7,1,1,1,1,,,,,,1,1,1,Periodic System screen,Built,110 §9.1; 101 §9.8; IB S3.1.2,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,Explain effective nuclear charge and shielding.,Understand,2,,1,0,0,,,,,,1,0,,,,110 §9.2; IB S3.1.3 (explanation of periodicity),,gold
+1 Fundamentals,9,Periodic Properties of the Elements,Predict the trends in atomic radius and in ionic radius compared with the parent atom.,Do,7,1,1,1,1,,,,,,1,1,1,Trend Ladder,Built,110 §9.2; 101 §9.9; IB S3.1.3,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,"Rank ionization energies and explain the exceptions (Be/B, N/O).",Do,5,1,1,1,1,,,,,,1,0,0,Trend Ladder,Built,"110 §9.3; 101 §9.9; IB S3.1.3, S3.1.7 (HL), S1.3.6 (HL)",,gold
+1 Fundamentals,9,Periodic Properties of the Elements,Rank electron affinities from the periodic table.,Do,3,,1,,1,,,,,,1,0,0,Trend Ladder,Built,110 §9.3; IB S3.1.3,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,"Describe the trend in metallic character; contrast metals, nonmetals, and metalloids.",Understand,6,1,1,,1,,,,,,1,1,1,Trend Ladder,Built,101 §9.9; IB S3.1.4-5,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,Predict the common ion charge of a main-group element from its group.,Do,7,1,1,1,1,,,,,,1,1,1,Periodic System screen,Built,110 §9.4; IB S2.1.1,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,Compare the sizes of isoelectronic species.,Do,1,,,,1,,,,,,0,0,0,,,IMAT bank,,gold
+1 Fundamentals,9,Periodic Properties of the Elements,"Describe the properties of the alkali metals, alkaline earth metals, halogens, and noble gases, and of the transition elements.",Memorize,7,1,1,1,1,,,,,,1,1,1,PT Memorizer,Built,"IMAT syllabus; 101 §4.6; IB S3.1.2, S3.1.4, S3.1.8 (HL)",,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Represent valence electrons with Lewis dot symbols.,Do,6,1,1,1,1,,,,,,1,0,1,,,101 §10.2; IB S2.2.1,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,"Distinguish ionic, covalent, and metallic bonds; describe the bonding continuum.",Understand,7,1,1,1,1,,,,,,1,1,1,"Bonding game (designed, not built)",Planned,110 §10.5; 101 §10.1; IB S2.4.1,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Write Lewis structures for ionic compounds (electrons transferred) and use them to predict formulas.,Do,6,1,1,1,1,,,,,,1,0,1,"Bonding game (designed, not built)",Planned,101 §10.3; IB S2.1.1-2,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Describe an ionic solid as a three-dimensional lattice held by electrostatic attraction.,Understand,6,1,1,1,1,,,,,,1,0,1,,,110 §9.4; IB S2.1.3,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Explain lattice energy and its periodic trends; use the Born-Haber cycle.,Understand,2,0,1,0,0,,,,,,1,0,0,,,"110 §9.5; IB S2.1.3, R1.2.5 (HL)",,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Predict the number of bonds an atom forms; count shared and unshared electrons.,Do,7,1,1,1,1,,,,,,1,1,1,"Bonding game (designed, not built)",Planned,110 §10.1; 101 §10.4; IB S2.2.1,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Draw Lewis structures for molecules and polyatomic ions that follow the octet rule.,Do,6,1,1,1,1,,,,,,1,0,1,"Bonding game (designed, not built)",Planned,110 §10.2; 101 §10.4-10.5; IB S2.2.1,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Draw resonance structures.,Do,3,1,1,,0,,,,,,1,0,0,,,110 §10.3; 101 §10.6; IB S2.2.11 (HL),,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Calculate formal charge and use it to choose the best Lewis structure.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 §10.3; IB S2.2.14 (HL),,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,"Apply the octet-rule exceptions: H, Be, B, radicals, expanded octets.",Do,3,0,1,,0,,,,,,1,0,1,,,"110 §10.4; IB S2.2.1, S2.2.13 (HL), R3.3.1",,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Determine bond polarity from electronegativity values.,Do,7,1,1,1,1,,,,,,1,1,1,,,110 §10.5; 101 §10.8; IB S2.2.5,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,"Relate bond length, bond order, and bond energy.",Understand,3,,1,,1,,,,,,1,0,0,,,110 §10.6; IB S2.2.2,,gold
+1 Fundamentals,10,Chemical Bonding I: The Lewis Model,Describe metallic bonding and the properties it explains.,Understand,4,,,,1,,,,,,1,1,1,,,IMAT syllabus; IB S2.3.1,,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Predict electron geometry and molecular shape with VSEPR (two to six electron groups).,Do,5,1,1,1,1,,,,,,1,0,0,Shape Lab,Built,"110 §11.1; 101 §10.7; IB S2.2.4, S2.2.13 (HL)",,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Memorize the ideal bond angle for each geometry.,Memorize,4,1,1,,1,,,,,,1,0,0,Shape Lab,Built,110 §11.1; 101 §10.7; IB S2.2.4,,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Decide whether a molecule is polar from its shape and bond polarities.,Do,4,1,1,,1,,,,,,1,0,0,Shape Lab,Built,110 §11.2; 101 §10.8; IB S2.2.6,,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory","Predict hybridization (sp, sp2, sp3, sp3d, sp3d2) and describe sigma and pi bonds.",Do,4,,1,,1,,,,,,1,0,1,,,"110 §11.3-11.4; IB S2.2.15-16 (HL; sp, sp2, sp3 only)",IMAT: bank 2025 Q43 (benzene sp2/sp3).,gold
+1 Fundamentals,11,"Chemical Bonding II: Molecular Shapes, Valence Bond Theory, and Molecular Orbital Theory",Use molecular orbital theory: bond order and magnetism of diatomic molecules.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 §11.5,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Identify the intermolecular forces present in a substance: dispersion, dipole-dipole, hydrogen bonding, ion-dipole.",Do,5,1,1,,1,,,,,,1,0,1,,,110 §12.1; 101 §12.6; IB S2.2.8,Shape Lab covers the polarity step.,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Use intermolecular forces to compare melting points, boiling points, viscosity, and vapor pressure.",Do,5,1,1,,1,,,,,,1,0,1,,,"110 §12.2; 101 §12.6; IB S2.2.9, S3.2.4",,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Explain surface tension, viscosity, and capillary action.",Understand,2,1,1,0,0,,,,,,0,0,0,,,101 §12.3; 110 §12.2,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Describe evaporation, condensation, dynamic equilibrium, and vapor pressure.",Understand,4,1,1,,1,,,,,,1,0,0,,,"101 §12.4; 110 §12.4; IB S1.1.2, R2.3.1",,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Relate vapor pressure to boiling point; use the Clausius-Clapeyron equation.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 §12.4,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Interpret heating curves; calculate heats of fusion and vaporization.,Do,3,1,1,,0,,,,,,1,0,0,,,101 §12.4-12.5; 110 §12.3; IB S1.1.3,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces","Read a phase diagram: triple point, critical point, phase boundaries.",Do,1,0,1,0,0,,,,,,0,0,0,,,110 §12.5,,gold
+3 Advanced,12,"Liquids, Solids, and Intermolecular Forces",Explain the unusual properties of water that arise from hydrogen bonding.,Understand,4,1,,,1,,,,,,1,0,1,,,101 §12.8; IMAT syllabus; IB S2.2.8-9,,gold
+3 Advanced,13,Solids and Modern Materials,"Classify solids as molecular, ionic, or atomic (metallic, network covalent).",Do,4,1,1,,0,,,,,,1,0,1,,,"110 §12.6; 101 §12.7; IB S2.1.3, S2.2.7, S2.3, S2.4",,gold
+3 Advanced,13,Solids and Modern Materials,Distinguish crystalline from amorphous solids.,Understand,1,,,,1,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,13,Solids and Modern Materials,"Count atoms per unit cell for simple cubic, body-centered, and face-centered cubic lattices.",Do,1,0,1,0,0,,,,,,0,0,0,,,110 §12.7,,gold
+3 Advanced,13,Solids and Modern Materials,Calculate density from unit cell dimensions.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 §12.7,,gold
+3 Advanced,13,Solids and Modern Materials,"Explain band theory: conductors, semiconductors, and insulators.",Understand,0,0,0,0,0,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,13,Solids and Modern Materials,"Describe ceramics, polymers, composites, and nanomaterials.",Understand,2,0,0,0,0,,,,,,1,0,1,,,Draft; IB S2.4.4-6 (polymers; composites in S2.4.2),,gold
+3 Advanced,14,Solutions,Describe the solution process: solute-solvent interactions and 'like dissolves like'.,Understand,4,1,1,,1,,,,,,1,0,0,,,110 §13.1; 101 §13.2-13.3; IB S2.2.8-9,,gold
+3 Advanced,14,Solutions,"Distinguish saturated, unsaturated, and supersaturated solutions; read a solubility curve.",Understand,4,1,1,,1,,,,,,0,0,1,,,110 §13.2; 101 §13.3,,gold
+3 Advanced,14,Solutions,Describe the solubility of gases in liquids; apply Henry's law.,Understand,3,1,,,1,,,,,,1,0,0,,,"101 §13.4; IB R2.3.4 (X(g) = X(aq)), S3.1.5",,gold
+3 Advanced,14,Solutions,Calculate mass percent concentration and use it in calculations.,Do,5,1,1,,1,,,,,,0,1,1,,,110 §13.3; 101 §13.5,,gold
+3 Advanced,14,Solutions,Describe crystal hydrates (for example CuSO4·5H2O) and do calculations with them.,Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 1.11,,gold
+3 Advanced,14,Solutions,"Calculate molality, mole fraction, and parts per million.",Do,4,1,1,1,1,,,,,,0,0,0,,,110 §13.3; 101 §13.1,HESI file names molarity and molality.,gold
+3 Advanced,14,Solutions,Calculate freezing point depression and boiling point elevation of nonelectrolyte solutions.,Do,3,1,1,,1,,,,,,0,0,0,,,110 §13.4; 101 §13.9,,gold
+3 Advanced,14,Solutions,Include the van't Hoff factor for electrolyte solutions in colligative property calculations.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 §13.5,,gold
+3 Advanced,14,Solutions,Explain osmosis and osmotic pressure.,Understand,1,1,,,0,,,,,,0,0,0,,,101 §13.10,,gold
+3 Advanced,15,Chemical Kinetics,Define reaction rate and explain it with collision theory.,Understand,4,1,1,0,0,,,,,,1,0,1,,,101 §15.2; 110 Ch 14; IB R2.2.1-2,,gold
+3 Advanced,15,Chemical Kinetics,"Describe how concentration, temperature, surface area, and catalysts change reaction rate.",Understand,4,,1,0,1,,,,,,1,0,1,,,110 Ch 14; IB R2.2.3,,gold
+3 Advanced,15,Chemical Kinetics,Determine a rate law and reaction order from initial-rate data.,Do,3,0,1,0,1,,,,,,1,0,0,,,Draft; IB R2.2.9 (HL),"Rows below draw on the 110 Ch 14 worksheets, not on an SLO list.",gold
+3 Advanced,15,Chemical Kinetics,Use integrated rate laws and half-life for first- and second-order reactions.,Do,1,0,1,0,0,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,15,Chemical Kinetics,"Use the Arrhenius equation to relate rate, temperature, and activation energy.",Do,2,0,1,0,0,,,,,,1,0,0,,,Draft; IB R2.2.12-13 (HL),,gold
+3 Advanced,15,Chemical Kinetics,"Describe reaction mechanisms: elementary steps, rate-determining step, intermediates.",Understand,2,0,1,0,0,,,,,,1,0,0,,,Draft; IB R2.2.6-8 (HL),,gold
+3 Advanced,15,Chemical Kinetics,"Explain how a catalyst lowers activation energy, including enzymes.",Understand,4,,1,0,1,,,,,,1,0,1,,,Draft; IB R2.2.5,,gold
+3 Advanced,15,Chemical Kinetics,Interpret a reaction energy diagram: activation energy and ΔH.,Do,3,,1,,1,,,,,,1,0,0,,,"Draft; IB R1.1.3, R2.2.5, R2.2.7",,gold
+3 Advanced,16,Chemical Equilibrium,Explain dynamic equilibrium.,Understand,6,1,1,1,1,,,,,,1,0,1,,,"101 §15.1, 15.3; IB R2.3.1",,gold
+3 Advanced,16,Chemical Equilibrium,Write equilibrium expressions; leave out pure solids and liquids.,Do,5,1,1,1,1,,,,,,1,0,0,,,101 §15.4-15.5; IB R2.3.2 (homogeneous only),,gold
+3 Advanced,16,Chemical Equilibrium,Calculate an equilibrium constant from equilibrium concentrations.,Do,5,1,1,1,1,,,,,,1,0,0,,,101 §15.4; IB R2.3.2-3,,gold
+3 Advanced,16,Chemical Equilibrium,Use K to find an equilibrium concentration (ICE tables).,Do,5,1,1,1,0,,,,,,1,0,1,,,101 §15.4; 110 Ch 15; IB R2.3.6 (HL),,gold
+3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,3,,1,,1,,,,,,1,0,0,,,"110 Ch 15; IB R2.3.3, R2.3.5 (HL)",,gold
+3 Advanced,16,Chemical Equilibrium,Convert between Kc and Kp.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 Ch 15,,gold
+3 Advanced,16,Chemical Equilibrium,"Apply Le Chatelier's principle to changes in concentration, volume or pressure, and temperature.",Do,6,1,1,1,1,,,,,,1,0,1,,,101 §15.7-15.10; IB R2.3.4,"A catalyst changes the rate, not the equilibrium position.",gold
+3 Advanced,17,Acids and Bases,Identify common acids and bases and describe their properties.,Memorize,7,1,1,1,1,,,,,,1,1,1,Acid/Base Sorter,Built,101 §14.1-14.3; IB R3.1.6-7,,gold
+3 Advanced,17,Acids and Bases,Apply the Arrhenius and Bronsted-Lowry definitions; identify conjugate acid-base pairs.,Do,5,1,1,1,1,,,,,,1,0,0,Acid/Base Sorter,Built,101 §14.4; IB R3.1.1-2,,gold
+3 Advanced,17,Acids and Bases,Describe Lewis acids and bases.,Understand,3,0,1,,1,,,,,,1,0,0,,,110 Ch 16; IB R3.4.6 (HL),,gold
+3 Advanced,17,Acids and Bases,Memorize the strong acids and strong bases; classify acids and bases as strong or weak.,Memorize,7,1,1,1,1,,,,,,1,1,1,Acid/Base Sorter,Built,101 §14.7; IB R3.1.6,,gold
+3 Advanced,17,Acids and Bases,Explain the autoionization of water and use Kw.,Do,6,1,1,1,1,,,,,,1,0,1,pH Lab (Kw-box),Built,101 §14.8; IB R3.1.5,,gold
+3 Advanced,17,Acids and Bases,"Calculate pH or pOH from [H3O+] or [OH-], and the reverse.",Do,6,1,1,1,1,,,,,,1,0,1,pH Lab,Built,"101 §14.9; IB R3.1.4, R3.1.9 (HL)",,gold
+3 Advanced,17,Acids and Bases,Write neutralization reactions and the reactions of acids with metals and metal oxides.,Do,6,1,1,,1,,,,,,1,1,1,,,"101 §14.5; IB R3.1.7, R3.2.4",,gold
+3 Advanced,17,Acids and Bases,Calculate the pH of strong acid and strong base solutions.,Do,6,1,1,1,1,,,,,,1,0,1,pH Lab,Built,101 §14.9; 110 Ch 16; IB R3.1.4,,gold
+3 Advanced,17,Acids and Bases,Use Ka and Kb to calculate the pH of weak acid and weak base solutions; find percent ionization.,Do,3,0,1,,1,,,,,,1,0,0,pH Lab,Built,110 Ch 16; IB R3.1.10-11 (HL),HESI file names pH calculations without saying weak acids.,gold
+3 Advanced,17,Acids and Bases,Relate Ka and Kb of a conjugate pair: Ka × Kb = Kw.,Do,3,0,1,,1,,,,,,1,0,0,,,110 Ch 16; IB R3.1.11 (HL),,gold
+3 Advanced,17,Acids and Bases,"Predict whether a salt solution is acidic, basic, or neutral (hydrolysis).",Do,4,0,1,,1,,,,,,1,0,1,,,110 Ch 16; IMAT syllabus; IB R3.1.12 (HL),,gold
+3 Advanced,17,Acids and Bases,Describe polyprotic acids and the trends in acid strength.,Understand,3,0,1,,1,,,,,,0,1,0,,,110 Ch 16,,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Explain how a buffer resists pH change.,Understand,4,1,1,,1,,,,,,1,0,0,,,101 §14.10; IMAT syllabus; IB R3.1.16,,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Calculate buffer pH with the Henderson-Hasselbalch equation.,Do,3,0,1,0,1,,,,,,1,0,0,,,110 Ch 17; IB R3.1.17 (HL),,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Choose or prepare a buffer; explain buffer capacity.,Do,3,0,1,,1,,,,,,1,0,0,,,110 Ch 17; IB R3.1.17 (HL),,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,"Describe titration curves: equivalence point, half-equivalence point, indicators.",Do,3,0,1,1,0,,,,,,1,0,0,,,"110 Ch 17; IB R3.1.8, R3.1.13-15 (HL)",,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Calculate pH at points along a titration curve.,Do,2,0,1,,0,,,,,,1,0,0,,,110 Ch 17; IB R3.1.13 (HL),,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Write the solubility-product expression; calculate Ksp and molar solubility.,Do,2,1,1,0,0,,,,,,0,0,0,,,101 §15.4; 110 Ch 17,,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Apply the common-ion effect and pH to solubility; compare Q with Ksp to predict precipitation.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 Ch 17,,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Use the formation constant Kf for complex ions.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 Ch 17,,gold
+3 Advanced,19,Free Energy and Thermodynamics,Distinguish spontaneous from nonspontaneous processes; state the second law.,Understand,2,0,1,,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.3 (HL),,gold
+3 Advanced,19,Free Energy and Thermodynamics,Define entropy and predict the sign of ΔS.,Do,3,0,1,1,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.1 (HL),HESI file names entropy.,gold
+3 Advanced,19,Free Energy and Thermodynamics,Calculate ΔS°rxn from standard molar entropies; state the third law.,Do,2,0,1,,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.1 (HL),,gold
+3 Advanced,19,Free Energy and Thermodynamics,Use ΔG = ΔH - TΔS to predict spontaneity at different temperatures.,Do,2,0,1,,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.2 (HL),,gold
+3 Advanced,19,Free Energy and Thermodynamics,Calculate ΔG°rxn from standard free energies of formation and ΔG under nonstandard conditions.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.4 (HL),,gold
+3 Advanced,19,Free Energy and Thermodynamics,Relate ΔG° to the equilibrium constant: ΔG° = -RT ln K.,Do,2,0,1,0,0,,,,,,1,0,0,,,"110 Ch 18; IB R1.4.4, R2.3.7 (HL)",,gold
+3 Advanced,20,Electrochemistry,Balance redox equations by the half-reaction method in acidic and basic solution.,Do,5,0,1,0,1,,,,,,1,1,1,Oxidation-State Trainer,Built,110 Ch 19; IMAT syllabus; IB R3.2.2 (acidic or neutral only),IMAT: 2026 redox questions were all full-equation balancing.,gold
+3 Advanced,20,Electrochemistry,"Describe a galvanic cell: anode, cathode, salt bridge, direction of electron flow.",Understand,3,0,1,0,0,,,,,,1,0,1,,,110 Ch 19; IB R3.2.5-6,No cell questions in 14 years of IMAT.,gold
+3 Advanced,20,Electrochemistry,Write cell notation and calculate E°cell from standard reduction potentials.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 Ch 19; IB R3.2.12-13 (HL),,gold
+3 Advanced,20,Electrochemistry,Relate E°cell to ΔG° and to K.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 Ch 19; IB R3.2.14 (HL),,gold
+3 Advanced,20,Electrochemistry,Use the Nernst equation; describe concentration cells.,Do,1,0,1,0,0,,,,,,0,0,0,,,110 Ch 19,,gold
+3 Advanced,20,Electrochemistry,"Describe common batteries (alkaline, lead-acid, lithium-ion) and fuel cells.",Understand,1,0,,0,0,,,,,,1,0,0,Battery Lab,Partial,"Draft; IB R3.2.7, R1.3.5",Battery Lab covers lithium-ion electrolytes; cathodes drafted.,gold
+3 Advanced,20,Electrochemistry,Predict the products of electrolysis; use Faraday's law.,Do,3,0,1,0,0,,,,,,1,0,1,,,"110 Ch 19; IB R3.2.8, R3.2.15-16 (HL)",,gold
+3 Advanced,20,Electrochemistry,Explain corrosion and how it is prevented.,Understand,0,0,,0,0,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,"Write nuclear equations for alpha, beta, positron, and gamma decay and electron capture.",Do,1,,1,0,0,,,,,,0,0,0,,,110 Ch 20,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,Predict nuclear stability from the neutron-to-proton ratio and magic numbers.,Understand,1,,1,0,0,,,,,,0,0,0,,,110 Ch 20,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,Calculate half-life and radiometric age.,Do,1,,1,0,0,,,,,,0,0,0,,,110 Ch 20,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe fission and fusion; calculate mass defect and binding energy.,Do,1,,1,,0,,,,,,0,0,0,,,110 Ch 20,,gold
+3 Advanced,21,Radioactivity and Nuclear Chemistry,Describe the biological effects of radiation and its medical uses.,Understand,0,,,,0,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,22,Organic Chemistry,"Explain why carbon forms so many compounds: four bonds, chains, and rings.",Understand,3,,0,0,1,,,,,,1,0,1,Molecule Builder,Built,"IMAT syllabus; IB S3.2.1-2, S2.2.7",No SLO list exists for organic in the 101 or 110-111 plans.,gold
+3 Advanced,22,Organic Chemistry,"Read and draw molecular, condensed, and skeletal formulas.",Do,3,,0,0,1,,,,,,1,0,1,Molecule Builder,Built,IMAT syllabus; IB S3.2.1,,gold
+3 Advanced,22,Organic Chemistry,"Identify and name alkanes, alkenes, alkynes, cycloalkanes, and aromatic hydrocarbons.",Do,3,,0,0,1,,,,,,1,0,1,Organic Nomenclature,Built,"IMAT syllabus; IB S3.2.3, S3.2.5, S2.2.12 (HL)",,gold
+3 Advanced,22,Organic Chemistry,"Recognize the functional groups: alcohols, ethers, amines, aldehydes, ketones, carboxylic acids, esters, amides.",Memorize,3,,0,0,1,,,,,,1,0,1,Organic Nomenclature,Built,IMAT syllabus; IB S3.2.2,,gold
+3 Advanced,22,Organic Chemistry,Name compounds that have substituents and functional groups (IUPAC).,Do,3,,0,0,1,,,,,,1,0,1,Organic Nomenclature,Built,IMAT syllabus; IB S3.2.5,,gold
+3 Advanced,22,Organic Chemistry,Identify and count constitutional isomers and stereoisomers.,Do,3,,0,0,1,,,,,,1,0,1,Molecule Builder,Built,IMAT syllabus; IB S3.2.6-7 (HL),,gold
+3 Advanced,22,Organic Chemistry,"Predict the products of addition, substitution, elimination, and alcohol oxidation reactions.",Do,3,,0,0,1,,,,,,1,0,1,Reactions Lab,Built,"Draft; IB R3.4.5, R3.4.9, R3.2.9, R3.3.3","Bank: 2011 Q61, 2012 Q67, 2013 Q46, 2014 Q46 and Q51, 2022 Q38; not in syllabus.",gold
+3 Advanced,22,Organic Chemistry,Predict boiling points and solubility of organic compounds from intermolecular forces.,Do,3,,0,0,1,,,,,,1,0,1,,,"IMAT bank; IB S3.2.4, S2.2.9",,gold
+3 Advanced,22,Organic Chemistry,"Explain the radical and ionic mechanisms of organic reactions, electrophiles and nucleophiles, and apply the Markovnikov and Zaitsev rules.",Understand,2,,,,0,,,,,,1,0,1,,,"ЕГЭ КОДИФ 3.4; IB R3.3, R3.4 (HL)",,gold
+3 Advanced,22,Organic Chemistry,"Explain how atoms in an organic molecule influence each other, and predict the effect of substituents on reactivity (for example OH in phenol, CH3 and NO2 on benzene).",Understand,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.2,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkanes and small cycloalkanes: halogenation, dehydrogenation, cracking, isomerization, combustion.",Do,2,,,,0,,,,,,1,0,1,,,"ЕГЭ КОДИФ 3.5; IB R3.3.3, R1.3.1",,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkenes and dienes: addition (hydrogenation, halogenation, hydrohalogenation, hydration), oxidation, combustion, polymerization.",Do,3,,,,1,,,,,,1,0,1,,,"ЕГЭ КОДИФ 3.6, 3.7; IB R3.4.5, R3.4.11-12 (HL), R3.2.11, S2.4.5",,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alkynes: addition, hydration of acetylene, substitution at a terminal C–H, combustion.",Do,2,,,,0,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.8; IB R3.2.11,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of benzene, toluene, and styrene: substitution, addition, oxidation of the side chain, polymerization of styrene.",Do,2,,,,0,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.9; IB R3.4.13 (HL),,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of alcohols, ethylene glycol, and glycerol: with sodium and hydrogen halides, dehydration, oxidation, esterification, and the Cu(OH)2 test for polyols.",Do,3,,,,1,,,,,,1,0,1,,,"ЕГЭ КОДИФ 3.10; IB R3.2.9, R1.3.1",,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of phenol: with sodium, with sodium hydroxide, with bromine water.",Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.11,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of aldehydes and ketones: hydrogenation, oxidation (silver mirror, Cu(OH)2), acetone as a ketone.",Do,2,,,,0,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.12; IB R3.2.9-10,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of carboxylic acids, including the special properties of formic acid.",Do,3,,,,1,,,,,,1,0,1,,,"ЕГЭ КОДИФ 3.13; IB R3.1.7, R3.2.10",,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of esters and fats: esterification, hydrolysis, saponification, hydrogenation of fats, soaps.",Do,2,,,,1,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.14,,gold
+3 Advanced,22,Organic Chemistry,"Write the reactions and the preparation of amines and aniline: as bases, with acids, aniline with bromine water, alkylation of ammonia, reduction of nitro compounds.",Do,3,,,,1,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.16; IB R3.1.7,,gold
+3 Advanced,22,Organic Chemistry,"Distinguish addition polymerization from polycondensation, and relate the structure of a polymer to its properties.",Understand,2,,,,0,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.18; IB S2.4.4-6,,gold
+3 Advanced,22,Organic Chemistry,"Identify organic substances by their qualitative reactions (bromine water, KMnO4, silver mirror, Cu(OH)2, FeCl3 with phenol).",Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.19,,gold
+3 Advanced,22,Organic Chemistry,Link the classes of organic compounds into reaction chains (genetic links) and write each step.,Do,3,,,,1,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.20; IB S3.2.2 (reaction pathways),,gold
+3 Advanced,23,Biochemistry,Name the four classes of biomolecules and their building blocks.,Understand,2,,0,0,1,,,,,,0,0,1,,,Draft,"IMAT: asked twice in 2025 (glycogen, amino acids); not on the official syllabus.",gold
+3 Advanced,23,Biochemistry,"Describe amino acids, the peptide bond, and the levels of protein structure.",Understand,3,,0,0,1,,,,,,1,0,1,,,Draft; IB S2.4.6 (HL; dipeptide),,gold
+3 Advanced,23,Biochemistry,"Distinguish monosaccharides, disaccharides, and polysaccharides (starch, glycogen, cellulose).",Understand,2,,0,0,1,,,,,,0,0,1,,,Draft,,gold
+3 Advanced,23,Biochemistry,"Describe fats, fatty acids, saturated versus unsaturated, and phospholipids.",Understand,2,,0,0,1,,,,,,0,0,1,,,Draft,,gold
+3 Advanced,23,Biochemistry,Describe the structure of DNA and RNA and base pairing.,Understand,1,,0,0,1,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,23,Biochemistry,"Describe how enzymes work: active site, substrate, effect of conditions.",Understand,1,,0,0,1,,,,,,0,0,0,,,Draft,,gold
+3 Advanced,23,Biochemistry,"Write the reactions of glucose, disaccharides, starch, and cellulose: reactions of the alcohol and aldehyde groups of glucose, fermentation, hydrolysis, the iodine test for starch.",Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.15,,gold
+3 Advanced,23,Biochemistry,"Write the reactions of amino acids and proteins: amino acids as amphoteric compounds, peptide bond formation, hydrolysis, denaturation, color (qualitative) reactions of proteins.",Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.17,,gold
+3 Advanced,24,Chemistry of the Nonmetals,Describe the properties and common compounds of hydrogen.,Understand,3,,0,0,1,,,,,,0,1,1,,,Draft,Not in the 110-111 course folder.,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe carbon and silicon: allotropes, oxides, and silicates.",Understand,4,,0,0,1,,,,,,1,1,1,,,Draft; IB S2.2.7,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe nitrogen and phosphorus: ammonia, oxides, oxyacids.",Understand,4,,0,0,1,,,,,,1,1,1,,,Draft; IB S3.1.5 (NOx and acid rain),,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe oxygen and sulfur: ozone, sulfur oxides, sulfuric acid.",Understand,4,,0,0,1,,,,,,1,1,1,,,"Draft; IB S3.1.5, S1.3 (ozone)",,gold
+3 Advanced,24,Chemistry of the Nonmetals,Describe the halogens and the hydrohalic acids.,Understand,4,,0,0,1,,,,,,1,1,1,,,"Draft; IB S3.1.4, R3.1.6",,gold
+3 Advanced,24,Chemistry of the Nonmetals,Explain why nonmetal oxides give acidic solutions and metal oxides give basic ones.,Understand,4,,,,1,,,,,,1,1,1,,,IMAT syllabus; IB S3.1.5,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of the halogens and their compounds: with metals, hydrogen, water, and alkali; displacement of one halogen by another; hydrogen halides and halides.",Do,4,,,,1,,,,,,1,1,1,,,"ЕГЭ КОДИФ 2.3; IB S3.1.4, R3.2.3",,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of sulfur and its compounds: S, H2S and sulfides, SO2, SO3, sulfites, and sulfates.",Do,3,,,,0,,,,,,1,1,1,,,ЕГЭ КОДИФ 2.3; IB S3.1.5,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of nitrogen and its compounds: N2, NH3 and ammonium salts, the nitrogen oxides, and nitrates.",Do,3,,,,1,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of phosphorus and its compounds: P, P2O5, phosphoric acid, and phosphates.",Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Write the reactions of carbon, silicon, and their compounds: CO, CO2, carbonates, Si, SiO2, and silicates.",Do,3,,,,0,,,,,,1,1,1,,,"ЕГЭ КОДИФ 2.3; IB S3.1.5, R3.1.7",,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Explain how concentrated sulfuric and nitric acids act as oxidizing agents, and predict the products from the metal and the acid concentration.",Understand,2,,,,0,,,,,,0,1,1,,,"ЕГЭ КОДИФ 2.3, 2.2",,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Explain disproportionation, for example Cl2 in cold and hot alkali and NO2 in water and alkali.",Understand,2,,,,1,,,,,,0,0,1,,,ЕГЭ КОДИФ 2.3,,gold
+3 Advanced,24,Chemistry of the Nonmetals,"Describe the industrial production of ammonia and sulfuric acid, and of glass and other silicate materials.",Understand,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 4.4,,gold
+3 Advanced,25,Metals and Metallurgy,Describe the electron-sea model of metallic bonding and the properties it explains.,Understand,4,,,,1,,,,,,1,1,1,,,IMAT syllabus; IB S2.3.1,Same skill as the metallic bonding row in chapter 10.,gold
+3 Advanced,25,Metals and Metallurgy,Describe how metals are extracted from their ores (metallurgy).,Understand,2,,0,0,0,,,,,,0,1,1,,,Draft,,gold
+3 Advanced,25,Metals and Metallurgy,Describe common alloys and why alloying changes properties.,Understand,2,,0,0,0,,,,,,1,0,1,,,Draft; IB S2.4.3,,gold
+3 Advanced,25,Metals and Metallurgy,"Describe the reactions of the alkali, alkaline earth, and other main-group metals.",Understand,4,,0,0,1,,,,,,1,1,1,,,"Draft; IB S3.1.4, R3.2.3-4",,gold
+3 Advanced,25,Metals and Metallurgy,"Write the reactions of sodium and potassium and their compounds: with water, oxygen, and halogens; oxides, peroxides, hydroxides, and salts.",Do,4,,,,1,,,,,,1,1,1,,,ЕГЭ КОДИФ 2.2; IB S3.1.4,,gold
+3 Advanced,25,Metals and Metallurgy,"Write the reactions of calcium and magnesium and their compounds: oxides, hydroxides, carbonates, and the hardness of water.",Do,4,,,,1,,,,,,1,1,1,,,"ЕГЭ КОДИФ 2.2; IB S3.1.5, R3.2.4",,gold
+3 Advanced,25,Metals and Metallurgy,"Write the reactions of aluminum and its compounds: the amphoteric Al2O3 and Al(OH)3, and aluminothermy.",Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,25,Metals and Metallurgy,"Predict how metals react with water, acids, and salt solutions using the activity series, including the passivation of Fe, Al, and Cr by concentrated HNO3 and H2SO4.",Understand,3,,,,0,,,,,,1,1,1,,,ЕГЭ КОДИФ 2.2; IB R3.2.3-4,,gold
+3 Advanced,25,Metals and Metallurgy,"Describe the thermal decomposition of hydroxides, nitrates, and carbonates, and predict the products.",Understand,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Write electron configurations of transition metals and their ions; explain variable oxidation states.,Do,4,,1,,1,,,,,,1,0,1,,,"110 Ch 22; IMAT syllabus; IB S3.1.8-9 (HL), S2.3.3 (HL)",,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Define ligand, coordination number, and complex ion; find the charge of a complex.",Understand,3,,1,,0,,,,,,1,0,1,,,110 Ch 22; IB R3.4.8 (HL),,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Name coordination compounds and write their formulas.,Do,2,,1,,0,,,,,,0,0,1,,,110 Ch 22,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Describe isomerism in coordination compounds.,Understand,1,,1,,0,,,,,,0,0,0,,,110 Ch 22,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Explain crystal field theory: orbital splitting, high spin versus low spin, color, magnetism.",Understand,2,,1,,0,,,,,,1,0,0,,,110 Ch 22; IB S3.1.10 (HL),,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Describe the roles of transition metals in biology and catalysis.,Understand,1,,,,0,,,,,,1,0,0,,,"Draft; IB S3.1.8 (HL), R2.2.5",,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of zinc and its compounds: ZnO, Zn(OH)2, and the reactions with acids and alkali.",Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of chromium and its compounds in the +2, +3, and +6 states, including chromate and dichromate.",Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of iron and its compounds: FeO, Fe2O3, Fe(OH)2, Fe(OH)3, and Fe2+ and Fe3+ salts.",Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Write the reactions of copper and its compounds: Cu2O, CuO, Cu(OH)2, and copper salts.",Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.2,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Explain amphoteric oxides and hydroxides (Al, Zn, Cr(III)): their reactions with acids and alkali and the hydroxo complexes they form.",Understand,4,,,,1,,,,,,1,1,1,,,"ЕГЭ КОДИФ 2.2, 7.3; IB S3.1.5",,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,"Predict the redox behavior of Cr and Fe compounds from the oxidation state: lowest is a reducing agent, highest an oxidizing agent.",Understand,4,,,,1,,,,,,1,1,1,,,"ЕГЭ КОДИФ 2.2, 1.12; IB R3.2.1",,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Identify inorganic ions and substances by their qualitative reactions.,Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.5,,gold
+3 Advanced,26,Transition Metals and Coordination Compounds,Link the classes of inorganic substances into reaction chains (genetic links) and write each step.,Do,2,,,,0,,,,,,0,1,1,,,ЕГЭ КОДИФ 2.4,,gold
