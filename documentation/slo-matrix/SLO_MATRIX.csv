@@ -91,7 +91,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 2 Quantitative,7,Thermochemistry,"Identify and convert among energy units (J, kJ, cal, Cal).",Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.1; 101 §3.8; IB R1.1.4 (J and kJ only),,gold
 2 Quantitative,7,Thermochemistry,Relate temperature to random molecular motion and distinguish it from heat.,Understand,4,1,,1,1,,,,,,1,0,,,,"101 §3.9; IB R1.1.1, S1.1.3",,gold
 2 Quantitative,7,Thermochemistry,"Relate energy, temperature change, and heat capacity: q = mcΔT.",Do,4,1,1,1,0,,,,,,1,0,,,,110 §6.5; 101 §3.10-3.11; IB R1.1.4,,gold
-2 Quantitative,7,Thermochemistry,Define system and surroundings; assign the signs of heat q and work w; calculate ΔE = q + w.,Do,1,0,1,,0,,,,,,0,0,,,,110 §6.2-6.3,,gold
+2 Quantitative,7,Thermochemistry,Define system and surroundings and describe the transfer of energy between them.,Understand,2,0,1,,0,,,,,,1,0,,,,110 §6.2-6.3; IB R1.1.1,,gold
+2 Quantitative,7,Thermochemistry,"Assign the signs of heat q and work w, and calculate ΔE = q + w.",Do,1,0,1,,0,,,,,,0,0,,,,110 §6.2-6.3,,gold
 2 Quantitative,7,Thermochemistry,Explain what a state function is.,Understand,1,0,1,0,0,,,,,,0,0,,,,110 §6.3,,gold
 2 Quantitative,7,Thermochemistry,Distinguish exothermic from endothermic processes; define enthalpy as heat at constant pressure.,Understand,7,1,1,1,1,,,,,,1,1,1,,,"110 §6.4; 101 §8.6; IB R1.1.2, R1.1.4",IMAT: 2026 question asked exothermic = products lower in potential energy.,gold
 2 Quantitative,7,Thermochemistry,Calculate pressure-volume work.,Do,1,0,1,0,0,,,,,,0,0,,,,110 §6.4,,gold
