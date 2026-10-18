@@ -85,10 +85,10 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,6,Gases,Describe the properties of gases and the kinetic molecular theory.,Understand,5,1,1,,1,,,1,,,1,0,,,,"101 §11.2; 110 §7.10; IB S1.1.2, S1.5.1; A-level 4.1.1-2",,gold
 3 Advanced,6,Gases,Define pressure and use the SI units pascal and kilopascal.,Do,5,1,1,,1,,,1,,,1,0,,,,"110 §7.1; 101 §11.3; IB S1.5.4; A-level 4.1.1, Mathematical requirements",,gold
 3 Advanced,6,Gases,"Convert among the pressure units atm, mmHg, torr, and kPa.",Do,3,1,1,,1,,,0,,,0,0,,,,110 §7.1; 101 §11.3,,gold
-3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,5,1,1,1,1,,,0,,,1,0,,,,110 §7.2; 101 §11.4; IB S1.5.3,,gold
-3 Advanced,6,Gases,Use Charles's law (V and absolute T).,Do,5,1,1,1,1,,,0,,,1,0,,Gas Laws (Charles),Partial,110 §7.3; 101 §11.5; IB S1.5.3,Charles's law only is built.,gold
-3 Advanced,6,Gases,"Use the combined gas law (P, V, and T).",Do,4,1,1,,1,,,0,,,1,0,,,,110 §7.4; 101 §11.6; IB S1.5.4,,gold
-3 Advanced,6,Gases,Use Avogadro's law (V and moles).,Do,6,1,1,,1,,,0,,,1,1,1,,,110 §7.5; 101 §11.7; IB S1.4.6,,gold
+3 Advanced,6,Gases,Use Boyle's law (P and V).,Do,6,1,1,1,1,,,1,,,1,0,,,,110 §7.2; 101 §11.4; IB S1.5.3; A-level 4.1.3,A-level: not named; the ideal gas equation (4.1.3) with n and T fixed. Hers: include.,gold
+3 Advanced,6,Gases,Use Charles's law (V and absolute T).,Do,6,1,1,1,1,,,1,,,1,0,,Gas Laws (Charles),Partial,110 §7.3; 101 §11.5; IB S1.5.3; A-level 4.1.3,Charles's law only is built. A-level: not named; the ideal gas equation (4.1.3) with n and p fixed. Hers: include.,gold
+3 Advanced,6,Gases,"Use the combined gas law (P, V, and T).",Do,5,1,1,,1,,,1,,,1,0,,,,110 §7.4; 101 §11.6; IB S1.5.4; A-level 4.1.3,A-level: not named; the ideal gas equation (4.1.3). Hers: include.,gold
+3 Advanced,6,Gases,Use Avogadro's law (V and moles).,Do,7,1,1,,1,,,1,,,1,1,1,,,110 §7.5; 101 §11.7; IB S1.4.6; A-level 4.1.3,A-level: not named; the ideal gas equation (4.1.3) with p and T fixed. Hers: include.,gold
 3 Advanced,6,Gases,"Solve for any variable in the ideal gas law, PV = nRT.",Do,6,1,1,1,1,,,1,,,1,0,,,,110 §7.6; 101 §11.8; IB S1.5.4; A-level 4.1.3,,gold
 3 Advanced,6,Gases,Use the ideal gas law to find molar mass and density of a gas.,Do,3,0,1,,0,,,1,,,1,0,,,,110 §7.8; IB S1.5.4 (Tool 1 link: molar mass); A-level 4.1.3,,gold
 3 Advanced,6,Gases,Relate total pressure to partial pressures (Dalton's law) and mole fractions.,Do,4,1,1,,1,,,1,,,0,0,,,,110 §7.7; 101 §11.9; A-level 7.1.5-6,,gold
@@ -213,7 +213,7 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,16,Chemical Equilibrium,Calculate an equilibrium constant from equilibrium concentrations.,Do,6,1,1,1,1,,,1,,,1,0,0,,,101 §15.4; IB R2.3.2-3; A-level 7.1.7-8,,gold
 3 Advanced,16,Chemical Equilibrium,Use K to find an equilibrium concentration (ICE tables).,Do,6,1,1,1,0,,,1,,,1,0,1,,,101 §15.4; 110 Ch 15; IB R2.3.6 (HL); A-level 7.1.8,,gold
 3 Advanced,16,Chemical Equilibrium,Write Kp expressions and calculate Kp and equilibrium amounts for gas-phase reactions using partial pressures and mole fractions.,Do,1,,,,0,,,1,,,0,0,0,,,A-level 7.1.5-7,,gold
-3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,3,,1,,1,,,0,,,1,0,0,,,"110 Ch 15; IB R2.3.3, R2.3.5 (HL)",,gold
+3 Advanced,16,Chemical Equilibrium,Interpret the size of K and use the reaction quotient Q to predict the direction of change.,Do,4,,1,,1,,,1,,,1,0,0,,,"110 Ch 15; IB R2.3.3, R2.3.5 (HL); A-level 7.1.3, 7.1.9",A-level: Q is not named; qualitative direction via Le Chatelier (7.1.3). Hers: include.,gold
 3 Advanced,16,Chemical Equilibrium,Convert between Kc and Kp.,Do,1,0,1,0,0,,,0,,,0,0,0,,,110 Ch 15,,gold
 3 Advanced,16,Chemical Equilibrium,"Apply Le Chatelier's principle to changes in concentration, volume or pressure, and temperature.",Do,7,1,1,1,1,,,1,,,1,0,1,,,"101 §15.7-15.10; IB R2.3.4; A-level 7.1.2-3, 7.1.9","A catalyst changes the rate, not the equilibrium position.",gold
 3 Advanced,17,Acids and Bases,Identify common acids and bases and describe their properties.,Memorize,8,1,1,1,1,,,1,,,1,1,1,Acid/Base Sorter,Built,101 §14.1-14.3; IB R3.1.6-7; A-level 7.2.1-2,,gold
@@ -229,7 +229,7 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,17,Acids and Bases,Use Ka to calculate the pH of weak acid solutions.,Do,4,0,1,,1,,,1,,,1,0,0,pH Lab,Built,110 Ch 16; IB R3.1.10-11 (HL); A-level 25.1.3-4,HESI file names pH calculations without saying weak acids.,gold
 3 Advanced,17,Acids and Bases,Use Kb to calculate the pH of weak base solutions; find percent ionization.,Do,3,0,1,,1,,,0,,,1,0,0,,,110 Ch 16; IB R3.1.10-11 (HL),,gold
 3 Advanced,17,Acids and Bases,Relate Ka and Kb of a conjugate pair: Ka × Kb = Kw.,Do,3,0,1,,1,,,0,,,1,0,0,,,110 Ch 16; IB R3.1.11 (HL),,gold
-3 Advanced,17,Acids and Bases,"Predict whether a salt solution is acidic, basic, or neutral (hydrolysis).",Do,4,0,1,,1,,,0,,,1,0,1,,,110 Ch 16; IMAT syllabus; IB R3.1.12 (HL),,gold
+3 Advanced,17,Acids and Bases,"Predict whether a salt solution is acidic, basic, or neutral (hydrolysis).",Do,5,0,1,,1,,,1,,,1,0,1,,,110 Ch 16; IMAT syllabus; IB R3.1.12 (HL); A-level 9.2.5,A-level: only the Period 3 chlorides with water (9.2.5); no general salt hydrolysis. Hers: include.,gold
 3 Advanced,17,Acids and Bases,Describe polyprotic acids and the trends in acid strength.,Understand,3,0,1,,1,,,0,,,0,1,0,,,110 Ch 16,,gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Explain how a buffer resists pH change.,Understand,5,1,1,,1,,,1,,,1,0,0,,,101 §14.10; IMAT syllabus; IB R3.1.16; A-level 25.1.5,,gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Calculate buffer pH with the Henderson-Hasselbalch equation.,Do,4,0,1,0,1,,,1,,,1,0,0,,,110 Ch 17; IB R3.1.17 (HL); A-level 25.1.6,,gold
@@ -237,7 +237,7 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,18,Aqueous Ionic Equilibrium,Explain buffer capacity.,Understand,3,0,1,,1,,,0,,,1,0,0,,,110 Ch 17; IB R3.1.17 (HL),,gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Describe titration curves: equivalence point and indicators.,Do,4,0,1,1,0,,,1,,,1,0,0,,,"110 Ch 17; IB R3.1.8, R3.1.13-15 (HL); A-level 7.2.9-10",,gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Describe the half-equivalence point of a titration curve.,Understand,3,0,1,1,0,,,0,,,1,0,0,,,"110 Ch 17; IB R3.1.8, R3.1.13-15 (HL)",,gold
-3 Advanced,18,Aqueous Ionic Equilibrium,Calculate pH at points along a titration curve.,Do,2,0,1,,0,,,0,,,1,0,0,,,110 Ch 17; IB R3.1.13 (HL),,gold
+3 Advanced,18,Aqueous Ionic Equilibrium,Calculate pH at points along a titration curve.,Do,3,0,1,,0,,,1,,,1,0,0,,,"110 Ch 17; IB R3.1.13 (HL); A-level 8.9, 25.1.4, 25.1.6","A-level: curves are sketched (8.9); the points follow from the strong acid/alkali, weak acid and buffer calculations (25.1.4, 25.1.6). Hers: include.",gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Write the solubility-product expression; calculate Ksp and molar solubility.,Do,3,1,1,0,0,,,1,,,0,0,0,,,101 §15.4; 110 Ch 17; A-level 25.1.7-9,,gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Apply the common-ion effect to solubility.,Do,2,0,1,0,0,,,1,,,0,0,0,,,110 Ch 17; A-level 25.1.10,,gold
 3 Advanced,18,Aqueous Ionic Equilibrium,Apply pH to solubility; compare Q with Ksp to predict precipitation.,Do,1,0,1,0,0,,,0,,,0,0,0,,,110 Ch 17,,gold
