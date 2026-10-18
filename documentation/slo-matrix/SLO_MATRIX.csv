@@ -244,7 +244,10 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,22,Organic Chemistry,"Distinguish addition polymerization from polycondensation, and relate the structure of a polymer to its properties.",Understand,2,,,,0,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.18; IB S2.4.4-6,,gold
 3 Advanced,22,Organic Chemistry,"Identify organic substances by their qualitative reactions (bromine water, KMnO4, silver mirror, Cu(OH)2, FeCl3 with phenol).",Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 3.19,,gold
 3 Advanced,22,Organic Chemistry,Link the classes of organic compounds into reaction chains (genetic links) and write each step.,Do,3,,,,1,,,,,,1,0,1,,,ЕГЭ КОДИФ 3.20; IB S3.2.2 (reaction pathways),,gold
-3 Advanced,22,Organic Chemistry,"Interpret infrared, 1H NMR, and mass spectra, alone and combined, to deduce the structure of an organic compound.",Do,1,,,,0,,,,,,1,0,0,,,IB S3.2.8-12,,gold
+3 Advanced,22,Organic Chemistry,Deduce structural features of an organic compound from its mass spectrum: the molecular ion and fragmentation patterns.,Do,1,,,,0,,,,,,1,0,0,,,IB S3.2.8 (HL),,gold
+3 Advanced,22,Organic Chemistry,"Interpret an infrared spectrum to identify the bonds and functional groups present, using a table of characteristic frequencies.",Do,1,,,,0,,,,,,1,0,0,,,IB S3.2.9 (HL),,gold
+3 Advanced,22,Organic Chemistry,"Interpret a 1H NMR spectrum: number of signals, chemical shifts, integration, and splitting patterns (singlet to quartet), to deduce the structure.",Do,1,,,,0,,,,,,1,0,0,,,IB S3.2.10-11 (HL),,gold
+3 Advanced,22,Organic Chemistry,"Combine data from mass, infrared, and NMR spectra to determine the structure of a molecule.",Do,1,,,,0,,,,,,1,0,0,,,IB S3.2.12 (HL),,gold
 3 Advanced,23,Biochemistry,Name the four classes of biomolecules and their building blocks.,Understand,2,,0,0,1,,,,,,0,0,1,,,Draft,"IMAT: asked twice in 2025 (glycogen, amino acids); not on the official syllabus.",gold
 3 Advanced,23,Biochemistry,"Describe amino acids, the peptide bond, and the levels of protein structure.",Understand,3,,0,0,1,,,,,,1,0,1,,,Draft; IB S2.4.6 (HL; dipeptide),,gold
 3 Advanced,23,Biochemistry,"Distinguish monosaccharides, disaccharides, and polysaccharides (starch, glycogen, cellulose).",Understand,2,,0,0,1,,,,,,0,0,1,,,Draft,,gold
