@@ -207,7 +207,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,19,Free Energy and Thermodynamics,Use ΔG = ΔH - TΔS to predict spontaneity at different temperatures.,Do,2,0,1,,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.2 (HL),,gold
 3 Advanced,19,Free Energy and Thermodynamics,Calculate ΔG°rxn from standard free energies of formation and ΔG under nonstandard conditions.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 Ch 18; IB R1.4.4 (HL),,gold
 3 Advanced,19,Free Energy and Thermodynamics,Relate ΔG° to the equilibrium constant: ΔG° = -RT ln K.,Do,2,0,1,0,0,,,,,,1,0,0,,,"110 Ch 18; IB R1.4.4, R2.3.7 (HL)",,gold
-3 Advanced,20,Electrochemistry,Balance redox equations by the half-reaction method in acidic and basic solution.,Do,5,0,1,0,1,,,,,,1,1,1,Oxidation-State Trainer,Built,110 Ch 19; IMAT syllabus; IB R3.2.2 (acidic or neutral only),IMAT: 2026 redox questions were all full-equation balancing.,gold
+3 Advanced,20,Electrochemistry,Balance redox equations by the half-reaction method in acidic solution.,Do,5,0,1,0,1,,,,,,1,1,1,Oxidation-State Trainer,Built,110 Ch 19; IMAT syllabus; IB R3.2.2 (acidic and neutral),IMAT: 2026 redox questions were all full-equation balancing.,gold
+3 Advanced,20,Electrochemistry,Balance redox equations by the half-reaction method in basic solution.,Do,4,0,1,0,1,,,,,,0,1,1,,,110 Ch 19; IMAT syllabus,,gold
 3 Advanced,20,Electrochemistry,"Describe a galvanic cell: anode, cathode, salt bridge, direction of electron flow.",Understand,3,0,1,0,0,,,,,,1,0,1,,,110 Ch 19; IB R3.2.5-6,No cell questions in 14 years of IMAT.,gold
 3 Advanced,20,Electrochemistry,Write cell notation and calculate E°cell from standard reduction potentials.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 Ch 19; IB R3.2.12-13 (HL),,gold
 3 Advanced,20,Electrochemistry,Relate E°cell to ΔG° and to K.,Do,2,0,1,0,0,,,,,,1,0,0,,,110 Ch 19; IB R3.2.14 (HL),,gold
