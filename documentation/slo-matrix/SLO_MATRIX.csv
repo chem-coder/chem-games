@@ -158,7 +158,8 @@ Block (provisional),Ch,Topic,SLO,Type,Count,Tro Intro Chem (CHEM 101),Gen Chem (
 3 Advanced,13,Solids and Modern Materials,"Describe ceramics, polymers, composites, and nanomaterials.",Understand,2,0,0,0,0,,,,,,1,0,1,,,Draft; IB S2.4.4-6 (polymers; composites in S2.4.2),,gold
 3 Advanced,14,Solutions,Describe the solution process: solute-solvent interactions and 'like dissolves like'.,Understand,4,1,1,,1,,,,,,1,0,0,,,110 §13.1; 101 §13.2-13.3; IB S2.2.8-9,,gold
 3 Advanced,14,Solutions,"Distinguish saturated, unsaturated, and supersaturated solutions; read a solubility curve.",Understand,4,1,1,,1,,,,,,0,0,1,,,110 §13.2; 101 §13.3,,gold
-3 Advanced,14,Solutions,Describe the solubility of gases in liquids; apply Henry's law.,Understand,2,1,,,1,,,,,,0,0,0,,,101 §13.4,,gold
+3 Advanced,14,Solutions,Describe the solubility of gases in liquids and how temperature and pressure change it.,Understand,3,1,,,1,,,,,,1,0,0,,,"101 §13.4; IB R2.3.4 (X(g) = X(aq)), S3.1.5",,gold
+3 Advanced,14,Solutions,Apply Henry's law to calculate the solubility of a gas at a given pressure.,Do,2,1,,,1,,,,,,0,0,0,,,101 §13.4,,gold
 3 Advanced,14,Solutions,Calculate mass percent concentration and use it in calculations.,Do,5,1,1,,1,,,,,,0,1,1,,,110 §13.3; 101 §13.5,,gold
 3 Advanced,14,Solutions,Describe crystal hydrates (for example CuSO4·5H2O) and do calculations with them.,Do,1,,,,0,,,,,,0,0,1,,,ЕГЭ КОДИФ 1.11,,gold
 3 Advanced,14,Solutions,"Calculate molality, mole fraction, and parts per million.",Do,4,1,1,1,1,,,,,,0,0,0,,,110 §13.3; 101 §13.1,HESI file names molarity and molality.,gold
