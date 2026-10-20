@@ -107,6 +107,8 @@ For Claude. Dalia does not need to read this.
 
 - 2026-10-20: Quantum-numbers row SPLIT by quantum number (hers): row 162 n (MCAT 1; A-level changed 0 to 1 via 1.3.1, my call), 163 l (MCAT 0), 164 ml (MCAT 0), 165 ms + Pauli + allowed sets (MCAT 1 via electrons per orbital and Pauli, my call). Gen Chem 1, AP 0 (excluded), IB 0, ОГЭ 0, ЕГЭ blank copied to all four. Matrix = 527 SLOs; MCAT 404 ones / 123 zeros.
 
+- 2026-10-20: MCAT review (hers): Dalton/laws row kept at 1.
+
 ## Where we left off
 Done (2026-10-20): MCAT column FILLED, first draft: 404 ones / 123 zeros / 0 blank after the US-basics rule (27 rows net) and the solubility, battery, addition, mechanism, standard-enthalpy and quantum-number splits (matrix = 527 SLOs); Read me updated; CSV refreshed. Committed. Review with her started: solubility rules ruled (split), US-basics rule made and refined, Russian side applied (ЕГЭ 7 rows), batteries split by type. Grade 8 outline file is still the skeleton; no section reviewed.
 Column state: IMAT, A-level, IB, ОГЭ, AP complete and reviewed. MCAT complete as draft (her review pending). ЕГЭ 50 blanks (old ch 1-9 rule plus copies). Tro Intro, Gen Chem, HESI blank on purpose (partial sources). GAMSAT, DAT empty except the valence row.
