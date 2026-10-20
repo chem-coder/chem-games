@@ -89,10 +89,11 @@ For Claude. Dalia does not need to read this.
 - 2026-10-20: AP ruling (hers): oxides row (ch 3) = 1, everyone should recognize oxides (Source 'AP prerequisite (hers)'). AP 292 ones / 223 zeros.
 - 2026-10-20: Arrhenius and Nernst rows SPLIT (hers) into a qualitative row (Understand, AP 1: 5.6.A.4 / 9.10.A.4) and a calculation row right after (Do, AP 0: Arrhenius calculations excluded; Nernst algorithmic calculations stated insufficient); other exam marks and Source copied (Arrhenius: IB 1 on both; Nernst: A-level 1 on both). Matrix = 517 SLOs; AP 292 ones / 225 zeros.
 - 2026-10-20: AP ruling (hers): transition-elements family row (ch 9) stays 0.
+- 2026-10-20: AP ruling (hers): all partial/implicit 1s kept. AP Chem column COMPLETE and reviewed with her (292 ones / 225 zeros / 0 blank, matrix = 517 SLOs).
 
 ## Where we left off
-Done (2026-10-20): AP Chem column filled for all rows (292 ones, 225 zeros, 0 blank), 5 splits, nomenclature = 1 (hers), 12 AP-only rows inserted (hers), five-reaction-types row split by type (hers), matrix = 517 SLOs, Read me updated; see the AP entry under Decisions for the judgment calls and the 12 proposed new rows. Earlier the same day: valence row added, 87 ambiguous rows split (bf514d0). Grade 8 outline file is still the skeleton; no section reviewed.
+Done (2026-10-20): AP Chem column COMPLETE, reviewed with her: 292 ones / 225 zeros / 0 blank; nomenclature and oxides = 1 as prerequisites (hers); 12 AP-only rows inserted; splits: 5 mixed rows, five reaction types by type, Arrhenius and Nernst into qualitative/calculation; matrix = 517 SLOs; Read me updated. Grade 8 outline file is still the skeleton; no section reviewed.
 Column state: IMAT, A-level, IB, ОГЭ, AP complete. ЕГЭ 52 blanks (old ch 1-9 rule plus copies). Tro Intro, Gen Chem, HESI blank on purpose (partial sources). MCAT, GAMSAT, DAT empty except the valence row.
-Open: her review of the remaining AP judgment calls (one question at a time); the other exam marks on the 12 new AP rows are unchecked zeros. Then MCAT / DAT / GAMSAT when she asks.
-Branch/uncommitted: `main`. She pushes.
+Open: the other exam marks on the 12 new AP rows are unchecked zeros (noted in the rows). Next column when she asks (MCAT, DAT or GAMSAT; sources are in _teaching-materials, see the 2026-10-19 entry).
+Branch/uncommitted: `main`, clean. She pushes.
 Row-insert/split method: snapshot values and styles by original row, write new order, regenerate Count formula per row (=COUNTIF(G{r}:S{r},1)), rebuild conditional-format ranges, filter ref and the data-validation range, verify zero diffs on old cells, run export_csv.py. Edit the xlsx in place on sheet 'SLO Matrix'.
