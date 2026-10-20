@@ -88,6 +88,7 @@ For Claude. Dalia does not need to read this.
 - 2026-10-20: AP rulings (hers): gas-evolution reactions = 0 and activity-series row = 0 confirmed (neither is in the CED; feasibility via E°).
 - 2026-10-20: AP ruling (hers): oxides row (ch 3) = 1, everyone should recognize oxides (Source 'AP prerequisite (hers)'). AP 292 ones / 223 zeros.
 - 2026-10-20: Arrhenius and Nernst rows SPLIT (hers) into a qualitative row (Understand, AP 1: 5.6.A.4 / 9.10.A.4) and a calculation row right after (Do, AP 0: Arrhenius calculations excluded; Nernst algorithmic calculations stated insufficient); other exam marks and Source copied (Arrhenius: IB 1 on both; Nernst: A-level 1 on both). Matrix = 517 SLOs; AP 292 ones / 225 zeros.
+- 2026-10-20: AP ruling (hers): transition-elements family row (ch 9) stays 0.
 
 ## Where we left off
 Done (2026-10-20): AP Chem column filled for all rows (292 ones, 225 zeros, 0 blank), 5 splits, nomenclature = 1 (hers), 12 AP-only rows inserted (hers), five-reaction-types row split by type (hers), matrix = 517 SLOs, Read me updated; see the AP entry under Decisions for the judgment calls and the 12 proposed new rows. Earlier the same day: valence row added, 87 ambiguous rows split (bf514d0). Grade 8 outline file is still the skeleton; no section reviewed.
