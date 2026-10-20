@@ -109,6 +109,8 @@ For Claude. Dalia does not need to read this.
 
 - 2026-10-20: MCAT review (hers): Dalton/laws row kept at 1.
 
+- 2026-10-20: MCAT review (hers): biological effects of radiation kept at 1 (4E description text counts).
+
 ## Where we left off
 Done (2026-10-20): MCAT column FILLED, first draft: 404 ones / 123 zeros / 0 blank after the US-basics rule (27 rows net) and the solubility, battery, addition, mechanism, standard-enthalpy and quantum-number splits (matrix = 527 SLOs); Read me updated; CSV refreshed. Committed. Review with her started: solubility rules ruled (split), US-basics rule made and refined, Russian side applied (ЕГЭ 7 rows), batteries split by type. Grade 8 outline file is still the skeleton; no section reviewed.
 Column state: IMAT, A-level, IB, ОГЭ, AP complete and reviewed. MCAT complete as draft (her review pending). ЕГЭ 50 blanks (old ch 1-9 rule plus copies). Tro Intro, Gen Chem, HESI blank on purpose (partial sources). GAMSAT, DAT empty except the valence row.
