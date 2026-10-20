@@ -97,6 +97,8 @@ For Claude. Dalia does not need to read this.
 
 - 2026-10-20: Batteries row SPLIT by type (hers): row 350 alkaline (MCAT 0), 351 lead-acid (MCAT 1, 4C lead-storage), 352 lithium-ion (MCAT 0; Game Battery Lab / Partial moved here, since the lab is lithium-ion), 353 nickel-cadmium (new topic, MCAT 1, 4C). All Understand; other marks copied (Tro 0, HESI 0, IMAT 0, AP 0, A-level 0, IB 1, ОГЭ 0, ЕГЭ 0); Source Draft; IB R3.2.7, R1.3.5. Matrix = 521 SLOs; MCAT 403 ones / 118 zeros.
 
+- 2026-10-20: MCAT review (hers): nuclear-equations row kept whole at 1 (positron and electron capture not named by MCAT).
+
 ## Where we left off
 Done (2026-10-20): MCAT column FILLED, first draft: 403 ones / 118 zeros / 0 blank after the US-basics rule (27 rows net), the solubility split and the battery split (matrix = 521 SLOs); Read me updated; CSV refreshed. Committed. Review with her started: solubility rules ruled (split), US-basics rule made and refined, Russian side applied (ЕГЭ 7 rows), batteries split by type. Grade 8 outline file is still the skeleton; no section reviewed.
 Column state: IMAT, A-level, IB, ОГЭ, AP complete and reviewed. MCAT complete as draft (her review pending). ЕГЭ 50 blanks (old ch 1-9 rule plus copies). Tro Intro, Gen Chem, HESI blank on purpose (partial sources). GAMSAT, DAT empty except the valence row.
