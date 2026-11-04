@@ -28,6 +28,7 @@ export const SECTIONS = [
   { id: "acids-bases", layout: "grid", cards: [
     { id: "acid-base-sorter", href: "acid-base-sorter/", tags: ["classification"] },
     { id: "ph-lab", href: "ph-lab/", tags: ["ph", "imat"] },
+    { id: "acids-bases-guide", href: "acids-bases-guide/", tags: ["guide", "new"] },
     { id: "ph-calculator-2", href: "chem-pH-calculator/v2-pH-SW-AB/", tags: ["calculator"], placeholder: true },
     { id: "ph-calculator-1", href: "chem-pH-calculator/pH-1.html", tags: ["calculator"], placeholder: true }
   ] },

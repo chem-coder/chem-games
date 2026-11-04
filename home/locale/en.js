@@ -27,7 +27,7 @@ export default {
     gas_laws: "Gas Laws", balloon: "Balloon", organic: "Organic", reactions: "Reactions", new: "New", sandbox: "Sandbox",
     batteries: "Batteries", construct: "Construct", numbers: "Numbers", structures: "Structures", lattices: "Lattices",
     anodes: "Anodes", electrochemistry: "Electrochemistry", hub: "Hub", reference: "Reference", periodic_table: "Periodic table",
-    archive: "Archive", planned: "Planned", english_only: "English only"
+    archive: "Archive", planned: "Planned", english_only: "English only", guide: "Guide"
   },
   cards: {
     "periodic-system": { title: "The Periodic System", desc: "How to read the table — periods, groups, and families. The section hub: the Periodic Table Memorizer for the elements themselves, the Trend Ladder for how their properties run." },
@@ -58,6 +58,7 @@ export default {
     "potential-ladder": { title: "Potential Ladder", desc: "The electrochemistry underneath it all: place every species on one voltage axis, balance the half-reactions, and learn which metals work and which merely watch." },
     "battery-lab": { title: "Battery Lab", desc: "The section hub: eight trainers from electrolyte structures to the potential ladder, with analytical methods and voltage curves on the horizon." },
     "oxidation-states-reference": { title: "Oxidation States", desc: "The whole periodic table at a glance — every element's oxidation states, shaded by how commonly each is met (dark = common, faint = rare)." },
+    "acids-bases-guide": { title: "Acids and Bases Guide", desc: "The written guide, section by section: definitions and classification, the constants to memorize, the formulas, and the worked problem types with practice sets. In progress." },
     "acid-base-constants": { title: "Acid and Base Constants", desc: "Ka, pKa, Kb and pKb at 25 °C: strong and weak acids, strong and weak bases, one table each." },
     "nomenclature-v4": { title: "Nomenclature App v4", desc: "Earlier element lookup and naming experiment, superseded by the Nomenclature games above." },
     "early-game": { title: "Early Chemistry Game", desc: "Original exploratory chemistry game prototype." },

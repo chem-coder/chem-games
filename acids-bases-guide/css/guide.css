@@ -8,6 +8,14 @@ body {
 .page { width: min(var(--shell-max), calc(100% - 32px)); margin: 0 auto; padding: 28px 0 64px; }
 
 /* header */
+.guide-nav { margin: 0 0 14px; font-size: 0.92rem; }
+.home-link { color: var(--accent); text-decoration: none; font-weight: 600; }
+.home-link:hover { text-decoration: underline; }
+.guide-nav .sep { color: var(--muted); margin: 0 8px; }
+ol.contents { padding-left: 24px; font-size: 1.05rem; }
+ol.contents li { margin: 8px 0; }
+ol.contents a { color: var(--accent-dark); font-weight: 600; text-decoration: none; }
+ol.contents a:hover { text-decoration: underline; }
 .page-header { margin-bottom: 20px; }
 .eyebrow {
   margin: 0 0 4px; color: var(--plum-dark); font-weight: 700; font-size: 0.78rem;
@@ -43,10 +51,76 @@ table.ref td:nth-child(n+3) { font-variant-numeric: tabular-nums; white-space: n
 .note { color: var(--muted); font-size: 0.82em; white-space: nowrap; }
 .foot { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; }
 
+/* guide body pages */
+/* new vocabulary, first introduction (hers, 2026-11-04): italic, slightly bigger, accent */
+.term { font-style: italic; font-size: 1.08em; color: var(--accent-dark); font-weight: 600; }
+.lbl .term { font-size: 1.05em; }
+.why {
+  margin: 0 0 26px; padding: 14px 18px; background: var(--accent-soft);
+  border-left: 5px solid var(--accent); border-radius: var(--radius-sm);
+  font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; color: var(--accent-dark);
+}
+.why .lead { display: block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+p { margin: 8px 0; }
+ul.plain { margin: 6px 0 10px; padding-left: 22px; }
+ul.plain li { margin: 3px 0; }
+table.ref td.head { font-family: var(--font-display); font-weight: 700; color: var(--accent-dark); white-space: nowrap; }
+table.ref td:nth-child(n+3) { white-space: normal; }
+table.def td:nth-child(n+2) { font-variant-numeric: normal; }
+table.def tr.main td { font-weight: 600; font-size: 1.02em; }
+table.def tr.main td.head { font-size: 1em; }
+table.def tr.sub td { color: var(--muted); font-size: 0.9em; }
+table.def tr.sub td.head { font-weight: 500; color: var(--muted); }
+table.def tr.cut td { border-top: 3px solid var(--accent); }
+.eq { margin: 10px 0; padding: 10px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 1.05rem; }
+.eq .lbl { color: var(--muted); font-size: 0.85em; margin-right: 10px; }
+.eq-rows { display: grid; grid-template-columns: max-content auto; column-gap: 16px; row-gap: 8px; align-items: baseline; margin: 10px 0; font-size: 1.05rem; }
+.eq-rows .lbl { color: var(--muted); font-size: 0.85em; }
+.eq.plain-eq { background: none; border: 0; padding: 2px 0; }
+.diagram { margin: 12px 0 6px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 8px 12px 4px; }
+.diagram svg { display: block; width: 100%; height: auto; max-width: 720px; margin: 0 auto; }
+.diagram text { font-family: var(--font-body); font-size: 19px; fill: var(--ink); }
+.diagram text.role { font-size: 14px; fill: var(--muted); font-weight: 600; }
+.diagram text.tag { font-size: 14px; font-weight: 700; }
+.diagram .acidpair { stroke: var(--plum); fill: none; stroke-width: 2.2; }
+.diagram .basepair { stroke: var(--accent); fill: none; stroke-width: 2.2; }
+.diagram text.acidpair { fill: var(--plum-dark); stroke: none; }
+.diagram text.basepair { fill: var(--accent-dark); stroke: none; }
+.diagram.lewis text.atom { font-size: 20px; font-weight: 600; }
+.diagram.lewis text.hot { fill: var(--accent); }
+.diagram.lewis text.charge { font-size: 15px; font-weight: 700; }
+.diagram.lewis .bond { stroke: var(--ink); stroke-width: 1.8; }
+.diagram.lewis .lp { fill: var(--ink); }
+.diagram.lewis .lp.hot { fill: var(--accent); r: 3.4; }
+.diagram.lewis .curve { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+.diagram.lewis .curve.thin { stroke-width: 1.6; }
+.diagram.lewis .bracket { fill: none; stroke: var(--ink); stroke-width: 1.8; }
+table.mnemo td:nth-child(n+2) { white-space: normal; }
+.diagram .cap { font-size: 0.88rem; color: var(--muted); margin: 6px 0 2px; text-align: center; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+.circles svg { width: 100%; max-width: 380px; display: block; margin: 0 auto; }
+.circles text { font-family: var(--font-display); font-weight: 700; font-size: 15px; fill: var(--accent-dark); }
+.circles text.small { font-family: var(--font-body); font-weight: 400; font-size: 12.5px; fill: var(--ink); }
+.callout { margin: 12px 0; padding: 10px 14px; background: var(--plum-soft); border-left: 4px solid var(--plum); border-radius: var(--radius-sm); }
+.callout strong { color: var(--plum-dark); }
+ol.practice { padding-left: 24px; }
+ol.practice > li { margin: 10px 0; }
+ol.practice ol { list-style: lower-alpha; padding-left: 22px; margin: 4px 0; }
+ol.practice ol li { margin: 2px 0; }
+.answers { margin-top: 18px; padding: 12px 16px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.answers h3 { margin-top: 4px; }
+.answers ol.practice > li { margin: 8px 0; }
+@media print {
+  .why, .diagram, .callout, .eq { break-inside: avoid; }
+  .answers { break-before: page; }
+}
+
 /* print: letter/A4 PDF */
 @page { margin: 18mm 16mm; }
 @media print {
   body { background: #fff; }
+  .guide-nav { display: none; }
   .page { width: 100%; padding: 0; }
   h2 { break-after: avoid; }
   h3 { break-after: avoid; }
