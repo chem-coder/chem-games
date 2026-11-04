@@ -9,8 +9,7 @@
 * { box-sizing: border-box; }
 
 /* House rule: formula subscripts at a comfortably readable size, never the tiny default. */
-sub { font-size: 0.72em; line-height: 0; vertical-align: -0.18em; }
-sup.charge { font-size: 0.62em; line-height: 0; vertical-align: 0.5em; margin-left: 0.04em; font-weight: 700; }
+sup.charge { margin-left: 0.04em; font-weight: 700; }
 
 body {
   min-height: 100vh;

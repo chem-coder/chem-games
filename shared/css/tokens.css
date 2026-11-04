@@ -58,6 +58,15 @@
   --shadow: 0 16px 40px rgba(74, 58, 30, 0.13);
 }
 
+/* Formula subscripts and superscripts (Dalia, 2026-11-04): BIGGER than before. The old
+   house rule was "at least 50% of the text size"; 0.62em still read as unreadable
+   ("what's a Ko?" for K_a). New baseline: 0.8em, shifted only slightly, so H2O, Ka, pKb
+   stay legible at table size. Every page that loads this file inherits it; do not set
+   sub/sup smaller in an app stylesheet. */
+sub, sup { font-size: 0.8em; line-height: 0; position: relative; vertical-align: baseline; }
+sub { bottom: -0.22em; }
+sup { top: -0.5em; }
+
 /* Russian pages: Outfit and Lexend have no Cyrillic, so pages with lang="ru" switch to
    Onest (display) and Golos Text (body). Both are loaded by the Google Fonts <link> on
    every Russian-ready page, next to Outfit and Lexend. */

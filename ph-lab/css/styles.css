@@ -6,9 +6,6 @@ body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f
 .app-shell { max-width: var(--shell-max); margin: 0 auto; padding: 28px 20px 64px; }
 
 /* House rule: subscripts/superscripts ≥50% size — never the tiny default. */
-sub { font-size: 0.72em; line-height: 0; vertical-align: -0.3em; font-weight: inherit; }
-sup { font-size: 0.62em; line-height: 0; vertical-align: 0.55em; font-weight: inherit; }
-
 /* ── header ── */
 .home-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.92rem; }
 .home-link:hover { text-decoration: underline; }
