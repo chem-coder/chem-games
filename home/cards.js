@@ -49,7 +49,8 @@ export const SECTIONS = [
     { id: "battery-lab", href: "battery-lab/", tags: ["hub"] }
   ] },
   { id: "reference", layout: "grid", cards: [
-    { id: "oxidation-states-reference", href: "reference/oxidation-states/", tags: ["reference", "periodic_table"] }
+    { id: "oxidation-states-reference", href: "reference/oxidation-states/", tags: ["reference", "periodic_table"] },
+    { id: "acid-base-constants", href: "acids-bases-guide/reference-tables.html", tags: ["reference", "ph"] }
   ] },
   { id: "archive", layout: "grid", cards: [
     { id: "nomenclature-v4", href: "chem-nomenclature/v4/", tags: ["archive"], placeholder: true },

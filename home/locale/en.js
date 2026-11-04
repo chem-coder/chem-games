@@ -58,6 +58,7 @@ export default {
     "potential-ladder": { title: "Potential Ladder", desc: "The electrochemistry underneath it all: place every species on one voltage axis, balance the half-reactions, and learn which metals work and which merely watch." },
     "battery-lab": { title: "Battery Lab", desc: "The section hub: eight trainers from electrolyte structures to the potential ladder, with analytical methods and voltage curves on the horizon." },
     "oxidation-states-reference": { title: "Oxidation States", desc: "The whole periodic table at a glance — every element's oxidation states, shaded by how commonly each is met (dark = common, faint = rare)." },
+    "acid-base-constants": { title: "Acid and Base Constants", desc: "Ka, pKa, Kb and pKb at 25 °C: strong and weak acids, strong and weak bases, one table each." },
     "nomenclature-v4": { title: "Nomenclature App v4", desc: "Earlier element lookup and naming experiment, superseded by the Nomenclature games above." },
     "early-game": { title: "Early Chemistry Game", desc: "Original exploratory chemistry game prototype." },
     "ion-charge-builder": { title: "Ion Charge Builder", desc: "Future game for building neutral ionic formulas from cation and anion charges." },

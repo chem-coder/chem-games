@@ -1,0 +1,56 @@
+/* Acids and Bases guide — shared page styles. Palette + fonts from shared/css/tokens.css. */
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); line-height: 1.5;
+}
+.page { width: min(var(--shell-max), calc(100% - 32px)); margin: 0 auto; padding: 28px 0 64px; }
+
+/* header */
+.page-header { margin-bottom: 20px; }
+.eyebrow {
+  margin: 0 0 4px; color: var(--plum-dark); font-weight: 700; font-size: 0.78rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+h1 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 2rem; }
+h2 {
+  margin: 34px 0 10px; font-family: var(--font-display); font-weight: 800; font-size: 1.7rem;
+  color: var(--accent-dark); border-bottom: 3px solid var(--accent); padding-bottom: 4px;
+}
+h3 {
+  margin: 22px 0 8px; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem;
+  color: var(--ink);
+}
+
+/* subscripts and superscripts come from shared/css/tokens.css (0.8em house rule) */
+.f { white-space: nowrap; }
+
+/* reference tables */
+table.ref {
+  width: 100%; border-collapse: collapse; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden;
+  font-size: 0.95rem;
+}
+table.ref th, table.ref td { padding: 7px 10px; text-align: left; border-bottom: 1px solid var(--line); }
+table.ref th {
+  background: var(--accent-soft); color: var(--accent-dark); font-family: var(--font-display);
+  font-weight: 700; font-size: 0.9rem;
+}
+table.ref tbody tr:last-child td { border-bottom: 0; }
+table.ref tbody tr:nth-child(even) td { background: var(--surface-soft); }
+table.ref td:nth-child(n+3) { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.note { color: var(--muted); font-size: 0.82em; white-space: nowrap; }
+.foot { margin: 8px 0 0; color: var(--muted); font-size: 0.88rem; }
+
+/* print: letter/A4 PDF */
+@page { margin: 18mm 16mm; }
+@media print {
+  body { background: #fff; }
+  .page { width: 100%; padding: 0; }
+  h2 { break-after: avoid; }
+  h3 { break-after: avoid; }
+  table.ref { border-radius: 0; }
+  table.ref thead { display: table-header-group; }
+  table.ref tr { break-inside: avoid; }
+}
