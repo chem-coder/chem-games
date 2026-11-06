@@ -26,6 +26,7 @@ export const SECTIONS = [
     { id: "shape-lab", href: "shape-lab/", tags: ["vsepr", "three_d", "imat"] }
   ] },
   { id: "acids-bases", layout: "grid", cards: [
+    { id: "acid-base-theories", href: "acid-base-theories/", tags: ["classification", "new"] },
     { id: "acid-base-sorter", href: "acid-base-sorter/", tags: ["classification"] },
     { id: "ph-lab", href: "ph-lab/", tags: ["ph", "imat"] },
     { id: "acids-bases-guide", href: "acids-bases-guide/", tags: ["guide", "new"] },

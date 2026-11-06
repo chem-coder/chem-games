@@ -42,6 +42,7 @@ export default {
     "oxidation-state-trainer": { title: "Oxidation-State Trainer", desc: "Find the oxidation state of one highlighted atom by the sum-to-charge method — free elements &amp; ions, then molecules, then polyatomic ions (Mn in MnO₄⁻ = +7). The on-ramp to redox." },
     "imat-decks": { title: "IMAT Decks", desc: "Every chemistry question from the official 2011&ndash;2025 papers &mdash; 196 cards sorted into 15 topic decks in study order, with extra practice where the exams run thin." },
     "shape-lab": { title: "Shape Lab", desc: "From Lewis structures to 3D shapes: learn the geometries in a clickable catalog of slowly turning molecules, then build your own in the Model Kit." },
+    "acid-base-theories": { title: "Acid-Base Theories", desc: "A reaction, one species at a time: acid, base, conjugate or neither, and the narrowest theory that fits (Arrhenius, Brønsted-Lowry, Lewis). The wider theories light up on their own." },
     "acid-base-sorter": { title: "Acid / Base Sorter", desc: "Flashcard drill: see a formula, classify it (strong/weak, mono/polyprotic, binary/oxy), then flip to the name." },
     "ph-lab": { title: "pH Lab", desc: "All six rungs of the IMAT acid–base ladder: the pH square, Strong Stuff, the Dilution Bench, the pH Ladder, Salt Court, and Neutral Ground — from reading an exponent to running a titration." },
     "ph-calculator-2": { title: "pH Calculator v2", desc: "Strong and weak acid/base pH calculation." },
