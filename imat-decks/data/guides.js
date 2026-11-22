@@ -11,6 +11,15 @@ export const SCHEDULE = {
   note: "Twelve sessions from 24 August to the exam on 21 September.",
 };
 
+// The topic checklist is a page of this app (topics.html), not a PDF, so it has an
+// `href` and no `file`: tools/sync-study-guides.mjs checks every `file` against the
+// study-guides folder.
+export const CHECKLIST = {
+  label: "IMAT chemistry topic checklist",
+  href: "topics.html",
+  note: "Check off what you have covered and mark how comfortable you feel with each topic.",
+};
+
 const set = (stem, opts = {}) => [
   { label: "Study sheet", file: `${stem}-study-sheet.pdf` },
   { label: "Worksheet · set 1", file: `${stem}-worksheet-1.pdf` },

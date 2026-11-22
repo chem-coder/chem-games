@@ -3,7 +3,7 @@
 // offer next deck AND revisit AND home. Deck list is one click from everywhere.
 
 import { DECKS } from "../data/decks.js";
-import { GUIDES, SCHEDULE } from "../data/guides.js";
+import { GUIDES, SCHEDULE, CHECKLIST } from "../data/guides.js";
 import { GAMES, GAME_BY_SUB, GAME_BY_DECK } from "../data/games.js";
 
 const root = document.getElementById("game");
@@ -189,10 +189,15 @@ function renderList() {
       <p class="intro-eyebrow">the decks, in study order</p>
       <p class="intro-lede">Decks follow the IMAT track: foundations first, the Big Three in the middle, organic at the end. Every card shows its source paper on the reveal — <em>Extra practice</em> marks questions written for this trainer in the exam's style.</p>
     </div>
-    <a class="schedule-row" href="study-guides/${SCHEDULE.file}" target="_blank" rel="noopener">
+    <a class="schedule-row stacked" href="study-guides/${SCHEDULE.file}" target="_blank" rel="noopener">
       <span class="schedule-name">${esc(SCHEDULE.label)}</span>
       <span class="schedule-note">${esc(SCHEDULE.note)}</span>
       <span class="schedule-go">open ↗</span>
+    </a>
+    <a class="schedule-row" href="${CHECKLIST.href}">
+      <span class="schedule-name">${esc(CHECKLIST.label)}</span>
+      <span class="schedule-note">${esc(CHECKLIST.note)}</span>
+      <span class="schedule-go">open →</span>
     </a>
     ${rows}
     <p class="done-next"><a class="home-link" href="../">⌂ All Chem Games</a></p>`;

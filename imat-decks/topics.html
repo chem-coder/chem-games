@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IMAT Chemistry Topic Checklist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css?v=20261117-topics">
+  <link rel="stylesheet" href="css/topics.css?v=20261117-topics">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="app-header">
+      <div class="header-links">
+        <a class="home-link" href="./">&larr; IMAT Decks</a>
+        <a class="home-link" href="../">Home</a>
+      </div>
+      <p class="eyebrow">IMAT &middot; Chemistry</p>
+      <h1>Topic Checklist</h1>
+      <p class="lede">Every chemistry topic on the IMAT, with its subtopics.</p>
+    </header>
+
+    <div class="intro">
+      <p class="intro-lede">Check a subtopic when you have covered it. Use the three dots to mark how comfortable you feel with it. Click a dot again to clear it.</p>
+      <ul class="legend">
+        <li><span class="swatch swatch-1"></span>Not comfortable at all</li>
+        <li><span class="swatch swatch-2"></span>Somewhat comfortable</li>
+        <li><span class="swatch swatch-3"></span>Very comfortable</li>
+      </ul>
+      <p class="saved-note">Your marks are saved in this browser, on this device.</p>
+    </div>
+
+    <p class="summary" id="summary" aria-live="polite"></p>
+    <div id="checklist"></div>
+
+    <p class="page-links">
+      <a class="home-link" href="./">&larr; IMAT Decks</a>
+      <a class="home-link" href="../">&#8962; All Chem Games</a>
+    </p>
+  </main>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "./data/topics.js": "./data/topics.js?v=20261117-topics",
+      "./js/checklist.js": "./js/checklist.js?v=20261117-topics"
+    }
+  }
+  </script>
+  <script type="module" src="js/topics.js?v=20261117-topics"></script>
+</body>
+</html>
